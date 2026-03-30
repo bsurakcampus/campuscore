@@ -713,6 +713,9 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
             </div>
           </div>
         </div>
+        <div style="display:flex;justify-content:flex-end;margin-bottom:6px;flex-shrink:0;">
+          <div id="students-showing-count" style="font-size:11px;font-weight:600;background:var(--surface3);color:var(--text2);padding:3px 12px;border-radius:20px;border:1px solid var(--border);">— students</div>
+        </div>
         <div class="data-table-wrap" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;">
           <table class="data-table" id="students-table" style="table-layout:fixed;">
             <colgroup>
@@ -749,7 +752,7 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
             </tbody>
           </table>
         </div>
-        <div style="padding:8px 0 4px;font-size:11px;color:var(--text2);flex-shrink:0;" id="students-showing-count">Showing all students.</div>
+        <div style="padding:8px 0 4px;font-size:11px;color:var(--text2);flex-shrink:0;display:none;" id="students-showing-count"></div>
       </div><!-- /students -->
 
 
@@ -2859,9 +2862,17 @@ function updateStudentsShowingCount(visible, total){
     total = rows.length;
     visible = [...rows].filter(r=>r.style.display!=='none').length;
   }
-  el.textContent = visible === total
-    ? `Showing all ${total} students.`
-    : `Showing ${visible} of ${total} students. Use filters or search to refine.`;
+  if(visible === total){
+    el.textContent = total + ' students';
+    el.style.background = 'var(--surface3)';
+    el.style.color = 'var(--text2)';
+    el.style.borderColor = 'var(--border)';
+  } else {
+    el.textContent = visible + ' of ' + total + ' students';
+    el.style.background = 'var(--accent-light)';
+    el.style.color = 'var(--accent)';
+    el.style.borderColor = 'var(--accent-border)';
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════
