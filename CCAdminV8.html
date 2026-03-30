@@ -696,7 +696,7 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
           <div><h1>Current Students</h1><p>187 active students across all programs</p></div>
         </div>
         <div style="margin-bottom:10px;">
-          <input class="search-input" placeholder="Search by name, BSU ID, or email..." style="width:100%;margin-bottom:10px;" oninput="filterStudents(this.value)">
+          <input class="search-input" id="students-search" placeholder="Search by name, BSU ID, or email..." style="width:100%;margin-bottom:10px;" oninput="filterStudents(this.value)">
           <div style="font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:6px;">Program</div>
           <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;" id="prog-filter-btns">
             <div id="programme-pills" style="display:flex;flex-wrap:wrap;gap:6px;">
@@ -715,18 +715,29 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
         </div>
         <div class="data-table-wrap">
           <div class="td-scroll-wrap">
-          <table class="data-table" id="students-table">
+          <table class="data-table" id="students-table" style="table-layout:fixed;">
+            <colgroup>
+              <col style="width:90px;">   <!-- BSU ID -->
+              <col style="width:220px;">  <!-- Name -->
+              <col>                        <!-- Programme — takes remaining -->
+              <col style="width:80px;">   <!-- Year -->
+              <col style="width:75px;">   <!-- Gender -->
+              <col style="width:110px;">  <!-- Nationality -->
+              <col style="width:110px;">  <!-- Registration -->
+              <col style="width:130px;">  <!-- Accounts Status -->
+              <col style="width:110px;">  <!-- Attnd% -->
+            </colgroup>
             <thead>
               <tr>
-                <th onclick="sortTable('students-table',0)" style="cursor:pointer;white-space:nowrap;">BSU ID <span id="stsort-0">↕</span></th>
-                <th onclick="sortTable('students-table',1)" style="cursor:pointer;white-space:nowrap;">Name <span id="stsort-1">↕</span></th>
-                <th onclick="sortTable('students-table',2)" style="cursor:pointer;white-space:nowrap;">Program <span id="stsort-2">↕</span></th>
-                <th onclick="sortTable('students-table',3)" style="cursor:pointer;text-align:center;white-space:nowrap;">Year <span id="stsort-3">↕</span></th>
-                <th onclick="sortTable('students-table',4)" style="cursor:pointer;text-align:center;white-space:nowrap;">Gender <span id="stsort-4">↕</span></th>
-                <th onclick="sortTable('students-table',5)" style="cursor:pointer;text-align:center;white-space:nowrap;">Nationality <span id="stsort-5">↕</span></th>
-                <th onclick="sortTable('students-table',6)" style="cursor:pointer;text-align:center;white-space:nowrap;">Registration <span id="stsort-8">↕</span></th>
-                <th onclick="sortTable('students-table',7)" style="cursor:pointer;text-align:center;white-space:nowrap;">Accounts Status <span id="stsort-9">↕</span></th>
-                <th onclick="sortTable('students-table',8)" style="cursor:pointer;text-align:center;white-space:nowrap;">Overall Attnd% <span id="stsort-10">↕</span></th>
+                <th onclick="sortTable('students-table',0)" style="cursor:pointer;">BSU ID <span id="stsort-0">↕</span></th>
+                <th onclick="sortTable('students-table',1)" style="cursor:pointer;">Name <span id="stsort-1">↕</span></th>
+                <th onclick="sortTable('students-table',2)" style="cursor:pointer;">Programme <span id="stsort-2">↕</span></th>
+                <th onclick="sortTable('students-table',3)" style="cursor:pointer;text-align:center;">Year <span id="stsort-3">↕</span></th>
+                <th onclick="sortTable('students-table',4)" style="cursor:pointer;text-align:center;">Gender <span id="stsort-4">↕</span></th>
+                <th onclick="sortTable('students-table',5)" style="cursor:pointer;text-align:center;">Nationality <span id="stsort-5">↕</span></th>
+                <th onclick="sortTable('students-table',6)" style="cursor:pointer;text-align:center;">Registration <span id="stsort-8">↕</span></th>
+                <th onclick="sortTable('students-table',7)" style="cursor:pointer;text-align:center;">Accounts Status <span id="stsort-9">↕</span></th>
+                <th onclick="sortTable('students-table',8)" style="cursor:pointer;text-align:center;">Attnd% <span id="stsort-10">↕</span></th>
               </tr>
             </thead>
             <tbody id="students-tbody">
@@ -2695,13 +2706,12 @@ function renderStudentsTable(){
   }
 
   tbody.innerHTML = current.map(s => {
-    const yr = s.year || '—';
     return `<tr data-prog="${s.programme||''}" data-year="${s.year||''}" data-group="${s.group||''}"
       onclick="openStudentDetail('${s.bsuId}','${s.name.replace(/'/g,"\\'")}')">
       <td class="td-id">${s.bsuId}</td>
       <td class="td-name"><a href="#" onclick="openStudentDetail('${s.bsuId}','${s.name.replace(/'/g,"\\'")}');return false;" style="color:var(--accent);font-weight:600;text-decoration:none;">${s.name}</a></td>
       <td style="font-size:12px;">${s.programme||'—'}</td>
-      <td style="font-family:'DM Mono',monospace;text-align:center;">${yr}</td>
+      <td style="text-align:center;font-size:12px;">${s.year||'—'}</td>
       <td style="font-size:12px;text-align:center;">${s.gender||'—'}</td>
       <td style="font-size:12px;text-align:center;">${s.nationality||'—'}</td>
       <td style="text-align:center;"><span style="font-size:10px;background:var(--green-bg);color:var(--green);border:1px solid var(--green-border);padding:1px 7px;border-radius:4px;font-weight:600;">Registered</span></td>
