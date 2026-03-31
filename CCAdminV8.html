@@ -1167,37 +1167,37 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
       <!-- ALUMNI -->
       <div id="page-alumni" class="page">
         <div class="page-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
-          <div><h1>Alumni</h1><p id="alumni-count-label">Students shifted to Alumni status appear here</p></div>
+          <div><h1>Alumni</h1><p id="alumni-count-label">—</p></div>
         </div>
         <div style="margin-bottom:8px;">
           <input class="search-input" placeholder="Search by name, BSU ID, or programme..." style="width:100%;margin-bottom:8px;" id="alumni-search" oninput="filterAlumni()">
           <div id="alumni-prog-pills" style="display:flex;flex-wrap:wrap;gap:5px;">
-            <button class="filter-pill active" onclick="setAlumniProgFilter(this,'')">All</button>
+            <button class="filter-pill active" onclick="setAlumniProgFilter(this)" data-val="">All</button>
           </div>
         </div>
         <div style="display:flex;justify-content:flex-end;margin-bottom:6px;">
           <div id="alumni-showing-count" style="font-size:11px;font-weight:600;background:var(--surface3);color:var(--text2);padding:3px 12px;border-radius:20px;border:1px solid var(--border);">— alumni</div>
         </div>
-        <div class="data-table-wrap" style="overflow-y:auto;max-height:calc(100vh - 340px);">
+        <div class="data-table-wrap" style="overflow-y:auto;max-height:calc(100vh - 310px);">
           <table class="data-table" id="alumni-table" style="table-layout:fixed;">
             <colgroup>
-              <col style="width:90px;">   <!-- BSU ID -->
-              <col style="width:190px;">  <!-- Name -->
-              <col>                        <!-- Programme -->
-              <col style="width:90px;">   <!-- Year of Entry -->
-              <col style="width:90px;">   <!-- Level of Entry -->
-              <col style="width:90px;">   <!-- Year of Graduation -->
-              <col style="width:100px;">  <!-- Degree Class -->
-              <col style="width:185px;">  <!-- Email -->
-              <col style="width:130px;">  <!-- Phone -->
+              <col style="width:90px;">
+              <col style="width:190px;">
+              <col>
+              <col style="width:90px;">
+              <col style="width:90px;">
+              <col style="width:90px;">
+              <col style="width:100px;">
+              <col style="width:185px;">
+              <col style="width:130px;">
             </colgroup>
             <thead>
               <tr>
                 <th onclick="sortTable('alumni-table',0)" style="cursor:pointer;">BSU ID <span id="alsort-0">↕</span></th>
                 <th onclick="sortTable('alumni-table',1)" style="cursor:pointer;">Name <span id="alsort-1">↕</span></th>
                 <th onclick="sortTable('alumni-table',2)" style="cursor:pointer;">Programme <span id="alsort-2">↕</span></th>
-                <th onclick="sortTable('alumni-table',3)" style="cursor:pointer;text-align:center;">Year Entry <span id="alsort-3">↕</span></th>
-                <th onclick="sortTable('alumni-table',4)" style="cursor:pointer;text-align:center;">Level Entry <span id="alsort-4">↕</span></th>
+                <th onclick="sortTable('alumni-table',3)" style="cursor:pointer;text-align:center;">Year of Entry <span id="alsort-3">↕</span></th>
+                <th onclick="sortTable('alumni-table',4)" style="cursor:pointer;text-align:center;">Level of Entry <span id="alsort-4">↕</span></th>
                 <th onclick="sortTable('alumni-table',5)" style="cursor:pointer;text-align:center;">Grad. Year <span id="alsort-5">↕</span></th>
                 <th onclick="sortTable('alumni-table',6)" style="cursor:pointer;text-align:center;">Degree Class <span id="alsort-6">↕</span></th>
                 <th onclick="sortTable('alumni-table',7)" style="cursor:pointer;">Email <span id="alsort-7">↕</span></th>
@@ -2885,8 +2885,8 @@ function renderAlumniTable(){
   const pillsEl = document.getElementById('alumni-prog-pills');
   if(pillsEl){
     const progs = [...new Set(alumni.map(s=>s.programme).filter(Boolean))].sort();
-    pillsEl.innerHTML = '<button class="filter-pill active" onclick="setAlumniProgFilter(this,\'\')">All</button>'
-      + progs.map(p=>`<button class="filter-pill" onclick="setAlumniProgFilter(this,'${p.replace(/'/g,"\\'")}'">${p}</button>`).join('');
+    pillsEl.innerHTML = '<button class="filter-pill active" onclick="setAlumniProgFilter(this)" data-val="">All</button>'
+      + progs.map(p=>'<button class="filter-pill" onclick="setAlumniProgFilter(this)" data-val="'+p.replace(/"/g,'&quot;')+'">'+p+'</button>').join('');
   }
 
   const cl = document.getElementById('alumni-count-label');
@@ -2926,7 +2926,7 @@ function updateAlumniShowingCount(visible, total){
 
 let _alumniProg = '';
 function setAlumniProgFilter(btn, val){
-  _alumniProg = val;
+  _alumniProg = (val !== undefined) ? val : (btn.dataset.val || '');
   btn.closest('div').querySelectorAll('.filter-pill').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   filterAlumni();
