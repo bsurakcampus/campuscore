@@ -139,9 +139,9 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
 .doc-alert-item .da-days{font-family:'DM Mono',monospace;font-size:12px;font-weight:700;white-space:nowrap;}
 
 /* FILTER PILLS */
-.filter-pill{padding:5px 12px;border-radius:20px;border:1.5px solid var(--border2);background:#fff;color:var(--text2);font-family:'Sora',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:all 0.15s;white-space:nowrap;}
+.filter-pill{padding:5px 12px;border-radius:20px;border:1.5px solid var(--border2);background:#fff;color:var(--text2);font-family:'Sora',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:background 0.15s,border-color 0.15s,color 0.15s;white-space:nowrap;min-width:fit-content;}
 .filter-pill:hover{border-color:var(--accent);color:var(--accent);}
-.filter-pill.active{background:var(--sb-bg);border-color:var(--sb-bg);color:#fff;font-weight:600;}
+.filter-pill.active{background:var(--sb-bg);border-color:var(--sb-bg);color:#fff;font-weight:500;}
 
 /* SEARCH BAR */
 .search-bar{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
@@ -696,28 +696,22 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
         <div class="page-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;flex-shrink:0;">
           <div><h1>Current Students</h1><p>187 active students across all programs</p></div>
         </div>
-        <div style="margin-bottom:10px;flex-shrink:0;">
-          <input class="search-input" id="students-search" placeholder="Search by name, BSU ID, or email..." style="width:100%;margin-bottom:10px;" oninput="filterStudents(this.value)">
-          <div style="font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:6px;">Program</div>
-          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;" id="prog-filter-btns">
-            <div id="programme-pills" style="display:flex;flex-wrap:wrap;gap:6px;">
-              <button class="filter-pill active" onclick="setProgramFilter(this,'')">All</button>
-            </div>
+        <div style="margin-bottom:8px;flex-shrink:0;">
+          <input class="search-input" id="students-search" placeholder="Search by name, BSU ID, or email..." style="width:100%;margin-bottom:8px;" oninput="filterStudents(this.value)">
+          <div id="programme-pills" style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:5px;">
+            <button class="filter-pill active" onclick="setProgramFilter(this,'')">All</button>
           </div>
-          <div style="font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:6px;">Year</div>
-          <div style="display:flex;flex-wrap:wrap;gap:6px;" id="year-filter-btns">
-            <div id="year-pills" style="display:flex;flex-wrap:wrap;gap:6px;">
-              <button class="filter-pill active" onclick="setYearFilter(this,'')">All Years</button>
-              <button class="filter-pill" onclick="setYearFilter(this,'Year 1')">Year 1</button>
-              <button class="filter-pill" onclick="setYearFilter(this,'Year 2')">Year 2</button>
-              <button class="filter-pill" onclick="setYearFilter(this,'Year 3')">Year 3</button>
-            </div>
+          <div id="year-pills" style="display:flex;flex-wrap:wrap;gap:5px;">
+            <button class="filter-pill active" onclick="setYearFilter(this,'')">All Years</button>
+            <button class="filter-pill" onclick="setYearFilter(this,'Year 1')">Year 1</button>
+            <button class="filter-pill" onclick="setYearFilter(this,'Year 2')">Year 2</button>
+            <button class="filter-pill" onclick="setYearFilter(this,'Year 3')">Year 3</button>
           </div>
         </div>
         <div style="display:flex;justify-content:flex-end;margin-bottom:6px;flex-shrink:0;">
           <div id="students-showing-count" style="font-size:11px;font-weight:600;background:var(--surface3);color:var(--text2);padding:3px 12px;border-radius:20px;border:1px solid var(--border);">— students</div>
         </div>
-        <div class="data-table-wrap" style="overflow-y:auto;max-height:calc(100vh - 380px);">
+        <div class="data-table-wrap" style="overflow-y:auto;max-height:calc(100vh - 340px);">
           <table class="data-table" id="students-table" style="table-layout:fixed;">
             <colgroup>
               <col style="width:90px;">   <!-- BSU ID -->
@@ -1173,47 +1167,47 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
       <!-- ALUMNI -->
       <div id="page-alumni" class="page">
         <div class="page-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
-          <div><h1>Alumni</h1><p>Students who have graduated or been shifted to alumni status</p></div>
+          <div><h1>Alumni</h1><p id="alumni-count-label">Students shifted to Alumni status appear here</p></div>
         </div>
-        <div style="margin-bottom:14px;">
-          <input class="search-input" placeholder="Search by name, BSU ID, or program..." style="width:100%;margin-bottom:10px;" id="alumni-search" oninput="filterAlumni()">
-          <div style="font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:6px;">Program</div>
-          <div style="display:flex;flex-wrap:wrap;gap:6px;">
+        <div style="margin-bottom:8px;">
+          <input class="search-input" placeholder="Search by name, BSU ID, or programme..." style="width:100%;margin-bottom:8px;" id="alumni-search" oninput="filterAlumni()">
+          <div id="alumni-prog-pills" style="display:flex;flex-wrap:wrap;gap:5px;">
             <button class="filter-pill active" onclick="setAlumniProgFilter(this,'')">All</button>
-            <button class="filter-pill" onclick="setAlumniProgFilter(this,'BSc (Hons) Creative Computing')">Creative Computing</button>
-            <button class="filter-pill" onclick="setAlumniProgFilter(this,'BA (Hons) Creative Media')">Creative Media</button>
-            <button class="filter-pill" onclick="setAlumniProgFilter(this,'BSc (Hons) Cyber Security')">Cyber Security</button>
-            <button class="filter-pill" onclick="setAlumniProgFilter(this,'BA (Hons) Business')">Business</button>
-            <button class="filter-pill" onclick="setAlumniProgFilter(this,'BSc (Hons) Psychology')">Psychology</button>
           </div>
         </div>
-        <div class="data-table-wrap">
-          <div class="td-scroll-wrap">
-          <table class="data-table" id="alumni-table">
+        <div style="display:flex;justify-content:flex-end;margin-bottom:6px;">
+          <div id="alumni-showing-count" style="font-size:11px;font-weight:600;background:var(--surface3);color:var(--text2);padding:3px 12px;border-radius:20px;border:1px solid var(--border);">— alumni</div>
+        </div>
+        <div class="data-table-wrap" style="overflow-y:auto;max-height:calc(100vh - 340px);">
+          <table class="data-table" id="alumni-table" style="table-layout:fixed;">
+            <colgroup>
+              <col style="width:90px;">   <!-- BSU ID -->
+              <col style="width:190px;">  <!-- Name -->
+              <col>                        <!-- Programme -->
+              <col style="width:90px;">   <!-- Year of Entry -->
+              <col style="width:90px;">   <!-- Level of Entry -->
+              <col style="width:90px;">   <!-- Year of Graduation -->
+              <col style="width:100px;">  <!-- Degree Class -->
+              <col style="width:185px;">  <!-- Email -->
+              <col style="width:130px;">  <!-- Phone -->
+            </colgroup>
             <thead>
               <tr>
-                <th onclick="sortTable('alumni-table',0)" style="cursor:pointer;white-space:nowrap;">BSU ID <span id="alsort-0">↕</span></th>
-                <th onclick="sortTable('alumni-table',1)" style="cursor:pointer;white-space:nowrap;">Name <span id="alsort-1">↕</span></th>
-                <th onclick="sortTable('alumni-table',2)" style="cursor:pointer;white-space:nowrap;">Program <span id="alsort-2">↕</span></th>
-                <th onclick="sortTable('alumni-table',3)" style="cursor:pointer;text-align:center;white-space:nowrap;">Grad. Year <span id="alsort-3">↕</span></th>
-                <th onclick="sortTable('alumni-table',4)" style="cursor:pointer;text-align:center;white-space:nowrap;">Degree Class <span id="alsort-4">↕</span></th>
-                <th onclick="sortTable('alumni-table',5)" style="cursor:pointer;text-align:center;white-space:nowrap;">Gender <span id="alsort-5">↕</span></th>
-                <th onclick="sortTable('alumni-table',6)" style="cursor:pointer;text-align:center;white-space:nowrap;">Nationality <span id="alsort-6">↕</span></th>
-                <th style="white-space:nowrap;">Email</th>
-                <th style="white-space:nowrap;">Phone</th>
+                <th onclick="sortTable('alumni-table',0)" style="cursor:pointer;">BSU ID <span id="alsort-0">↕</span></th>
+                <th onclick="sortTable('alumni-table',1)" style="cursor:pointer;">Name <span id="alsort-1">↕</span></th>
+                <th onclick="sortTable('alumni-table',2)" style="cursor:pointer;">Programme <span id="alsort-2">↕</span></th>
+                <th onclick="sortTable('alumni-table',3)" style="cursor:pointer;text-align:center;">Year Entry <span id="alsort-3">↕</span></th>
+                <th onclick="sortTable('alumni-table',4)" style="cursor:pointer;text-align:center;">Level Entry <span id="alsort-4">↕</span></th>
+                <th onclick="sortTable('alumni-table',5)" style="cursor:pointer;text-align:center;">Grad. Year <span id="alsort-5">↕</span></th>
+                <th onclick="sortTable('alumni-table',6)" style="cursor:pointer;text-align:center;">Degree Class <span id="alsort-6">↕</span></th>
+                <th onclick="sortTable('alumni-table',7)" style="cursor:pointer;">Email <span id="alsort-7">↕</span></th>
+                <th onclick="sortTable('alumni-table',8)" style="cursor:pointer;">Phone <span id="alsort-8">↕</span></th>
               </tr>
             </thead>
             <tbody id="alumni-tbody">
-              <tr onclick="openAlumniDetail('521120','Amara Diallo','BSc Creative Computing','2025','2:1','Female','Filipino','amara.diallo@alumni.bathspa.ac.uk','+971 50 112 3344','green')"><td class="td-id">521120</td><td class="td-name"><a href="#" onclick="openAlumniDetail('521120','Amara Diallo','BSc Creative Computing','2025','2:1','Female','Filipino','amara.diallo@alumni.bathspa.ac.uk','+971 50 112 3344','green');return false;" style="color:var(--accent);font-weight:600;text-decoration:none;">Amara Diallo</a></td><td style="font-size:12px;">BSc Creative Computing</td><td style="font-family:'DM Mono',monospace;">2025</td><td><span class="badge green">2:1</span></td><td style="font-size:12px;">Female</td><td style="font-size:12px;">Filipino</td><td style="font-size:11px;"><a href="/cdn-cgi/l/email-protection#f6979b978497d8929f979a9a99b6979a839b989fd89497829e858697d89795d8839d" onclick="event.stopPropagation()"><span class="__cf_email__" data-cfemail="13727e7261723d777a727f7f7c53727f667e7d7a3d7172677b6063723d72703d6678">[email&#160;protected]</span></a></td><td style="font-size:12px;font-family:'DM Mono',monospace;">+971 50 112 3344</td></tr>
-              <tr onclick="openAlumniDetail('519834','Bruno Costa','BSc Cyber Security','2025','2:1','Male','Brazilian','bruno.costa@alumni.bathspa.ac.uk','+971 55 223 4455','green')"><td class="td-id">519834</td><td class="td-name"><a href="#" onclick="openAlumniDetail('519834','Bruno Costa','BSc Cyber Security','2025','2:1','Male','Brazilian','bruno.costa@alumni.bathspa.ac.uk','+971 55 223 4455','green');return false;" style="color:var(--accent);font-weight:600;text-decoration:none;">Bruno Costa</a></td><td style="font-size:12px;">BSc Cyber Security</td><td style="font-family:'DM Mono',monospace;">2025</td><td><span class="badge green">2:1</span></td><td style="font-size:12px;">Male</td><td style="font-size:12px;">Brazilian</td><td style="font-size:11px;"><a href="/cdn-cgi/l/email-protection#7e1c0c0b1011501d110d0a1f3e1f120b131017501c1f0a160d0e1f501f1d500b15" onclick="event.stopPropagation()"><span class="__cf_email__" data-cfemail="dbb9a9aeb5b4f5b8b4a8afba9bbab7aeb6b5b2f5b9baafb3a8abbaf5bab8f5aeb0">[email&#160;protected]</span></a></td><td style="font-size:12px;font-family:'DM Mono',monospace;">+971 55 223 4455</td></tr>
-              <tr onclick="openAlumniDetail('517291','Celine Dubois','BSc Psychology','2025','1st','Female','French','celine.dubois@alumni.bathspa.ac.uk','+971 50 334 5566','blue')"><td class="td-id">517291</td><td class="td-name"><a href="#" onclick="openAlumniDetail('517291','Celine Dubois','BSc Psychology','2025','1st','Female','French','celine.dubois@alumni.bathspa.ac.uk','+971 50 334 5566','blue');return false;" style="color:var(--accent);font-weight:600;text-decoration:none;">Celine Dubois</a></td><td style="font-size:12px;">BSc Psychology</td><td style="font-family:'DM Mono',monospace;">2025</td><td><span class="badge blue">1st</span></td><td style="font-size:12px;">Female</td><td style="font-size:12px;">French</td><td style="font-size:11px;"><a href="/cdn-cgi/l/email-protection#f291979e9b9c97dc9687909d9b81b2939e879f9c9bdc9093869a818293dc9391dc8799" onclick="event.stopPropagation()"><span class="__cf_email__" data-cfemail="cfacaaa3a6a1aae1abbaada0a6bc8faea3baa2a1a6e1adaebba7bcbfaee1aeace1baa4">[email&#160;protected]</span></a></td><td style="font-size:12px;font-family:'DM Mono',monospace;">+971 50 334 5566</td></tr>
-              <tr onclick="openAlumniDetail('514455','Darius Petrov','BA Business (Marketing)','2024','2:2','Male','Bulgarian','darius.petrov@alumni.bathspa.ac.uk','+971 55 445 6677','green')"><td class="td-id">514455</td><td class="td-name"><a href="#" onclick="openAlumniDetail('514455','Darius Petrov','BA Business (Marketing)','2024','2:2','Male','Bulgarian','darius.petrov@alumni.bathspa.ac.uk','+971 55 445 6677','green');return false;" style="color:var(--accent);font-weight:600;text-decoration:none;">Darius Petrov</a></td><td style="font-size:12px;">BA Business (Marketing)</td><td style="font-family:'DM Mono',monospace;">2024</td><td><span class="badge green">2:2</span></td><td style="font-size:12px;">N/A</td><td style="font-size:12px;">N/A</td><td style="font-size:11px;"><a href="/cdn-cgi/l/email-protection#365257445f43451846534244594076575a435b585f185457425e45465718575518435d" onclick="event.stopPropagation()"><span class="__cf_email__" data-cfemail="4a2e2b38233f39643a2f3e38253c0a2b263f27242364282b3e22393a2b642b29643f21">[email&#160;protected]</span></a></td><td style="font-size:12px;font-family:'DM Mono',monospace;">+971 55 445 6677</td></tr>
-              <tr onclick="openAlumniDetail('511678','Elena Vasquez','MBA General','2024','Pass','Female','Spanish','elena.vasquez@alumni.bathspa.ac.uk','+971 50 556 7788','green')"><td class="td-id">511678</td><td class="td-name"><a href="#" onclick="openAlumniDetail('511678','Elena Vasquez','MBA General','2024','Pass','Female','Spanish','elena.vasquez@alumni.bathspa.ac.uk','+971 50 556 7788','green');return false;" style="color:var(--accent);font-weight:600;text-decoration:none;">Elena Vasquez</a></td><td style="font-size:12px;">MBA General</td><td style="font-family:'DM Mono',monospace;">2024</td><td><span class="badge green">Pass</span></td><td style="font-size:12px;">Female</td><td style="font-size:12px;">Spanish</td><td style="font-size:11px;"><a href="/cdn-cgi/l/email-protection#1d787178737c336b7c6e6c6878675d7c7168707374337f7c69756e6d7c337c7e336876" onclick="event.stopPropagation()"><span class="__cf_email__" data-cfemail="d8bdb4bdb6b9f6aeb9aba9adbda298b9b4adb5b6b1f6bab9acb0aba8b9f6b9bbf6adb3">[email&#160;protected]</span></a></td><td style="font-size:12px;font-family:'DM Mono',monospace;">+971 50 556 7788</td></tr>
             </tbody>
           </table>
-          </div>
         </div>
-        <div style="margin-top:10px;font-size:11px;color:var(--text2);">Showing 5 alumni. Students shifted via the student detail page appear here automatically.</div>
       </div><!-- /alumni -->
 
 
@@ -2262,6 +2256,7 @@ const API = 'https://script.google.com/macros/s/AKfycbycKFnbEm2aXY6JJ8QS-x-vUQMA
 
 // ── App state ────────────────────────────────────────────────
 let _students = [];
+let _alumni   = [];
 let _staff    = [];
 let _alerts   = [];
 let _programs = [];
@@ -2349,13 +2344,15 @@ async function enterPortal(){
   try {
     // Get the logged-in email from the login screen
     const loginEmail = document.getElementById('email-sent-display')?.textContent || 'iftikhar@bathspa.ae';
-    const [students, staff, alerts, programs] = await Promise.all([
+    const [students, alumni, staff, alerts, programs] = await Promise.all([
       apiFetch({action:'getStudents'}),
+      apiFetch({action:'getAlumni'}),
       apiFetch({action:'getStaff'}),
       apiFetch({action:'getAlerts'}),
       apiFetch({action:'getPrograms'})
     ]);
     _students = students;
+    _alumni   = alumni;
     _staff    = staff;
     _alerts   = alerts;
     _programs = programs;
@@ -2882,45 +2879,71 @@ function updateStudentsShowingCount(visible, total){
 function renderAlumniTable(){
   const tbody = document.getElementById('alumni-tbody');
   if(!tbody) return;
-  const alumni = _students.filter(s => s.status === 'Alumni');
+  const alumni = _alumni;
+
+  // Dynamic programme pills
+  const pillsEl = document.getElementById('alumni-prog-pills');
+  if(pillsEl){
+    const progs = [...new Set(alumni.map(s=>s.programme).filter(Boolean))].sort();
+    pillsEl.innerHTML = '<button class="filter-pill active" onclick="setAlumniProgFilter(this,\'\')">All</button>'
+      + progs.map(p=>`<button class="filter-pill" onclick="setAlumniProgFilter(this,'${p.replace(/'/g,"\\'")}'">${p}</button>`).join('');
+  }
+
+  const cl = document.getElementById('alumni-count-label');
+  if(cl) cl.textContent = alumni.length + ' alumni';
+
   if(!alumni.length){
-    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--text3);font-size:13px;">No alumni yet — change a student\'s Academic Status to "Alumni" in the sheet</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--text3);font-size:13px;">No alumni yet — add students to the ALUMNI sheet to see them here</td></tr>';
+    updateAlumniShowingCount(0,0);
     return;
   }
-  tbody.innerHTML = alumni.map(s => `
-    <tr onclick="openAlumniDetail('${s.bsuId}','${s.name.replace(/'/g,"\\'")}')">
+
+  tbody.innerHTML = alumni.map(s => {
+    const emailCell = s.email ? `<a href="mailto:${s.email}" onclick="event.stopPropagation()" style="color:var(--accent);">${s.email}</a>` : '—';
+    const degBadge  = s.degreeClass ? `<span style="font-size:11px;font-weight:600;background:var(--accent-light);color:var(--accent);border:1px solid var(--accent-border);padding:1px 8px;border-radius:4px;">${s.degreeClass}</span>` : '—';
+    return `<tr data-prog="${s.programme||''}">
       <td class="td-id">${s.bsuId}</td>
-      <td class="td-name"><a href="#" onclick="openAlumniDetail('${s.bsuId}','${s.name.replace(/'/g,"\\'")}');return false;" style="color:var(--accent);font-weight:600;text-decoration:none;">${s.name}</a></td>
+      <td class="td-name" style="font-weight:600;">${s.name}</td>
       <td style="font-size:12px;">${s.programme||'—'}</td>
-      <td style="font-family:'DM Mono',monospace;text-align:center;">${s.yearEntry||'—'}</td>
-      <td style="text-align:center;"><span class="badge green">Alumni</span></td>
-      <td style="font-size:12px;text-align:center;">${s.gender||'—'}</td>
-      <td style="font-size:12px;text-align:center;">${s.nationality||'—'}</td>
-      <td style="font-size:11px;">${s.email||'—'}</td>
+      <td style="font-size:12px;text-align:center;">${s.yearEntry||'—'}</td>
+      <td style="font-size:12px;text-align:center;">${s.levelEntry||'—'}</td>
+      <td style="font-size:12px;text-align:center;">${s.gradYear||'—'}</td>
+      <td style="text-align:center;">${degBadge}</td>
+      <td style="font-size:11px;">${emailCell}</td>
       <td style="font-size:12px;font-family:'DM Mono',monospace;">${s.phone||'—'}</td>
-    </tr>`).join('');
+    </tr>`;
+  }).join('');
+
+  updateAlumniShowingCount(alumni.length, alumni.length);
 }
 
-function openAlumniDetail(id, name){
-  const s = _students.find(x => x.bsuId === String(id));
-  if(!s) return;
-  setTxt('ad-name', s.name); setTxt('ad-hero-name', s.name);
-  setTxt('ad-bsuid', s.bsuId); setTxt('ad-fullname', s.name);
-  setTxt('ad-gender', s.gender||'—'); setTxt('ad-nat', s.nationality||'—');
-  setTxt('ad-phone', s.phone||'—');
-  const emailEl = document.getElementById('ad-email');
-  if(emailEl) emailEl.innerHTML = s.email ? `<a href="mailto:${s.email}">${s.email}</a>` : '—';
-  setTxt('ad-prog2', s.programme||'—'); setTxt('ad-yr2', s.yearEntry||'—');
-  const progChip = document.getElementById('ad-prog-chip');
-  if(progChip) progChip.textContent = s.programme||'—';
-  showPage('alumni-detail');
+function updateAlumniShowingCount(visible, total){
+  const el = document.getElementById('alumni-showing-count');
+  if(!el) return;
+  if(visible===total){ el.textContent=total+' alumni'; el.style.background='var(--surface3)'; el.style.color='var(--text2)'; el.style.borderColor='var(--border)'; }
+  else { el.textContent=visible+' of '+total+' alumni'; el.style.background='var(--accent-light)'; el.style.color='var(--accent)'; el.style.borderColor='var(--accent-border)'; }
+}
+
+let _alumniProg = '';
+function setAlumniProgFilter(btn, val){
+  _alumniProg = val;
+  btn.closest('div').querySelectorAll('.filter-pill').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  filterAlumni();
 }
 
 function filterAlumni(){
-  const q = (document.getElementById('alumni-search')?.value || '').toLowerCase();
+  const q = (document.getElementById('alumni-search')?.value||'').toLowerCase();
+  let visible=0, total=0;
   document.querySelectorAll('#alumni-tbody tr').forEach(r=>{
-    r.style.display = !q || r.textContent.toLowerCase().includes(q) ? '' : 'none';
+    total++;
+    const matchQ    = !q || r.textContent.toLowerCase().includes(q);
+    const matchProg = !_alumniProg || (r.dataset.prog||'').toLowerCase()===_alumniProg.toLowerCase();
+    const show = matchQ && matchProg;
+    r.style.display = show?'':'none';
+    if(show) visible++;
   });
+  updateAlumniShowingCount(visible, total);
 }
 
 // ═══════════════════════════════════════════════════════════════
