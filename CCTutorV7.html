@@ -564,9 +564,9 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
       <div class="sidebar-nav">
         <div class="nav-section-label">Overview</div>
         <button class="nav-item active" onclick="showPage('dashboard',this)"><span class="icon">🏠</span> Dashboard</button>
-        <button class="nav-item" onclick="showPage('announcements',this)"><span class="icon">📢</span> Announcements <span class="nav-badge">2</span></button>
+        <button class="nav-item" onclick="showPage('announcements',this)"><span class="icon">📢</span> Announcements </button>
         <div class="nav-section-label">Teaching</div>
-        <button class="nav-item" onclick="showPage('leave',this)"><span class="icon">📋</span> Leave Applications <span class="nav-badge amber">2</span></button>
+        <button class="nav-item" onclick="showPage('leave',this)"><span class="icon">📋</span> Leave Applications </button>
         <div class="nav-section-label">Account</div>
         <button class="nav-item" onclick="showPage('profile',this)"><span class="icon">👤</span> My Profile</button>
         <div class="nav-section-label">University</div>
@@ -1117,8 +1117,8 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
         </div>
 
         <div class="mod-detail-header c1" id="mod-detail-header">
-          <div class="mdh-title" id="md-module-name">Final Year Project</div><div style="font-size:12px;color:rgba(255,255,255,0.5);margin-top:2px;" id="md-module-code">CCO5001</div>
-          <div class="mdh-meta" id="md-prog">BSc Creative Computing · Year 3 · Semester 2 · 2025/2026</div>
+          <div class="mdh-title" id="md-module-name">—</div><div style="font-size:12px;color:rgba(255,255,255,0.5);margin-top:2px;" id="md-module-code">—</div>
+          <div class="mdh-meta" id="md-prog">—</div>
           <div class="mdh-stats">
             <div class="mdh-stat"><div class="mds-label">Students</div><div class="mds-val blue" id="md-stud-count">—</div></div>
             <div class="mdh-stat"><div class="mds-label">Avg Attendance</div><div class="mds-val amber" id="md-avg-att">—</div></div>
@@ -1126,29 +1126,19 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
             <div class="mdh-stat"><div class="mds-label">Male / Female</div><div class="mds-val" id="md-mf" style="color:var(--text2);font-size:14px;">—</div></div>
           </div>
         </div>
-          <!-- Bottom 3 attendees -->
-          <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow-sm);">
-            <div style="background:var(--red-bg);border-bottom:1px solid var(--red-border);padding:10px 14px;font-size:12px;font-weight:700;color:var(--red);">Students under 65% Attendance</div>
-            <div style="padding:0 14px;">
-              <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);font-size:12px;"><span>Bert Bitor</span><span style="font-family:'DM Mono',monospace;font-weight:700;color:var(--red);">50%</span></div>
-              <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);font-size:12px;"><span>Blessie Francis</span><span style="font-family:'DM Mono',monospace;font-weight:700;color:var(--red);">56%</span></div>
-              <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;font-size:12px;"><span>Prithvi Binny</span><span style="font-family:'DM Mono',monospace;font-weight:700;color:var(--red);">64%</span></div>
-            </div>
-          </div>
-        </div>
 
         <!-- Full student list -->
         <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow-sm);">
           <div style="background:var(--sb-bg);padding:10px 14px;font-size:12px;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:space-between;"><span id="md-all-students-header">All Students</span><input type="text" placeholder="🔍 Search by name or BSU ID..." oninput="filterDetailTable(this.value)" style="padding:5px 10px;border:1.5px solid rgba(255,255,255,0.2);border-radius:6px;background:rgba(255,255,255,0.1);color:#fff;font-family:'Sora',sans-serif;font-size:11px;outline:none;width:200px;" /></div>
-          <div style="overflow-y:auto;max-height:420px;">
+          <div style="overflow-y:auto;max-height:570px;">
           <table class="student-list-table" id="detail-student-table" data-live="true" style="border-collapse:separate;border-spacing:0;">
             <thead>
               <tr>
                 <th onclick="sortDetailTable(0)" style="cursor:pointer;position:sticky;top:0;z-index:5;background:var(--surface3);">Name <span id="sort-0">↕</span></th>
                 <th onclick="sortDetailTable(1)" style="cursor:pointer;position:sticky;top:0;z-index:5;background:var(--surface3);">BSU ID <span id="sort-1">↕</span></th>
                 <th onclick="sortDetailTable(2)" style="cursor:pointer;position:sticky;top:0;z-index:5;background:var(--surface3);">Registration <span id="sort-2">↕</span></th>
-                <th onclick="sortDetailTable(3)" style="cursor:pointer;position:sticky;top:0;z-index:5;background:var(--surface3);">Accounts Status</th>
-                <th onclick="sortDetailTable(4)" style="cursor:pointer;text-align:center;position:sticky;top:0;z-index:5;background:var(--surface3);">Attendance %</th>
+                <th onclick="sortDetailTable(3)" style="cursor:pointer;position:sticky;top:0;z-index:5;background:var(--surface3);">Accounts Status <span id="sort-3">↕</span></th>
+                <th onclick="sortDetailTable(4)" style="cursor:pointer;text-align:center;position:sticky;top:0;z-index:5;background:var(--surface3);">Attendance % <span id="sort-4">↕</span></th>
                 <th onclick="sortDetailTable(5)" style="cursor:pointer;text-align:center;position:sticky;top:0;z-index:5;background:var(--surface3);">LMS Access <button onclick="event.stopPropagation();resetLmsAccess()" title="Uncheck all" style="margin-left:4px;background:none;border:none;cursor:pointer;font-size:11px;color:var(--text3);padding:1px 3px;border-radius:3px;vertical-align:middle;">↺</button> <span id="sort-5">↕</span></th>
                 <th onclick="sortDetailTable(6)" style="cursor:pointer;text-align:center;position:sticky;top:0;z-index:5;background:var(--surface3);">SA1 Mark <span id="sort-6">↕</span></th>
                 <th onclick="sortDetailTable(7)" style="cursor:pointer;text-align:center;position:sticky;top:0;z-index:5;background:var(--surface3);">SA2 Mark <span id="sort-7">↕</span></th>
@@ -1544,6 +1534,7 @@ const API = 'https://script.google.com/macros/s/AKfycbycKFnbEm2aXY6JJ8QS-x-vUQMA
 let _tutor    = null;
 let _modules  = [];
 let _students = [];
+let _rkMap    = {};  // bsuId → {registration, accountsStatus}
 
 async function apiFetch(params){
   const url = API+'?'+Object.entries(params).map(([k,v])=>k+'='+encodeURIComponent(v)).join('&');
@@ -1578,14 +1569,18 @@ async function enterPortal(){
   document.getElementById('screen-app').classList.add('active');
   const email = document.getElementById('email-sent-display').textContent.trim() || 'iftikhar@bathspa.ae';
   try {
-    const [staffData, modulesData, studentsData] = await Promise.all([
+    const [staffData, modulesData, studentsData, rkData] = await Promise.all([
       apiFetch({action:'getStaffMember', email}),
       apiFetch({action:'getTutorModules', email}),
-      apiFetch({action:'getStudents'})
+      apiFetch({action:'getStudents'}),
+      apiFetch({action:'getRkData'})
     ]);
     _tutor    = staffData;
     _modules  = modulesData;
     _students = studentsData;
+    // Build RK map
+    _rkMap = {};
+    (rkData||[]).forEach(r=>{ _rkMap[r.bsuId] = {registration:r.registration, accountsStatus:r.accountsStatus}; });
     populateTutor();
     renderDashboardModules();
   } catch(e){
@@ -1611,7 +1606,7 @@ function populateTutor(){
 
   const chipsEl = document.getElementById('hero-chips');
   if(chipsEl){
-    const progs = [...new Set(_modules.map(m=>m.programme.replace('BSc (Hons) ','BSc ').replace('BA (Hons) ','')))].join(' · ');
+    const progs = [...new Set(_modules.map(m=>m.programme))].join(' · ');
     const sems  = [...new Set(_modules.map(m=>m.semester))].join(' & ');
     chipsEl.innerHTML =
       `<span class="hero-chip green"><span class="dot" style="background:#4ade80"></span>Active</span>`+
@@ -1625,6 +1620,67 @@ function populateTutor(){
   sTxt('p-email-big', t.email);
   const pp = document.getElementById('profile-photo');
   if(pp && t.photoUrl) pp.src = driveImgUrl(t.photoUrl);
+
+  // Profile sidebar card — quick stats
+  const pChip = document.querySelector('.profile-program-chip');
+  if(pChip) pChip.textContent = (t.department||'—')+' · '+(t.designation||'—');
+  const qStats = document.querySelectorAll('.profile-quick-stat');
+  const qMap = [
+    ['Dept', t.department], ['Group', t.group], ['Gender', t.gender],
+    ['DOB', t.dobDisplay], ['Nationality', t.nationality]
+  ];
+  qStats.forEach((el, i) => {
+    if(qMap[i]) el.innerHTML = qMap[i][0]+': <strong>'+(qMap[i][1]||'—')+'</strong>';
+  });
+
+  // Passport alert banner — show only if expiring within 90 days
+  const banner = document.querySelector('.alert-banner.red');
+  if(banner){
+    if(t.passportDays !== null && t.passportDays <= 90){
+      banner.style.display = '';
+      banner.innerHTML = '🛂 &nbsp;Your passport ('+t.passportNo+') expires on '+t.passportExpDisplay+' — only '+t.passportDays+' days away. Please begin the renewal process immediately.';
+    } else { banner.style.display = 'none'; }
+  }
+
+  // Personal Info section
+  const piItems = document.querySelectorAll('#personal-t-view .info-item');
+  if(piItems.length>=6){
+    piItems[0].querySelector('.info-value').textContent = t.name||'—';
+    piItems[1].querySelector('.info-value').textContent = t.email||'—';
+    piItems[2].querySelector('.info-value').textContent = t.personalEmail||'—';
+    piItems[3].querySelector('.info-value').textContent = t.phone||'—';
+    piItems[4].querySelector('.info-value').textContent = t.nationality||'—';
+    piItems[5].querySelector('.info-value').textContent = t.dobDisplay||'—';
+  }
+
+  // Employment section
+  const empItems = document.querySelectorAll('.info-card:nth-child(2) .info-grid .info-item');
+  if(empItems.length>=8){
+    empItems[0].querySelector('.info-value').textContent = t.designation||'—';
+    empItems[1].querySelector('.info-value').textContent = t.department||'—';
+    empItems[2].querySelector('.info-value').textContent = t.passportNo||'—';  // Visa Provider
+    empItems[3].querySelector('.info-value').textContent = t.contractStart||'—';
+    const ceEl = empItems[4].querySelector('.info-value');
+    if(ceEl){ ceEl.textContent = t.contractExpDisplay||'—'; ceEl.style.color = t.contractColour==='green'?'var(--green)':t.contractColour==='amber'?'var(--amber)':'var(--red)'; }
+    empItems[5].querySelector('.info-value').textContent = t.contractStatus||'—';
+    const wpEl = empItems[6].querySelector('.info-value');
+    if(wpEl){ wpEl.textContent = t.workPermitExpDisplay||'—'; wpEl.style.color = t.workPermitColour==='green'?'var(--green)':t.workPermitColour==='amber'?'var(--amber)':'var(--red)'; }
+  }
+
+  // Emergency contacts
+  const ecItems = document.querySelectorAll('#emergency-t-view .info-item');
+  if(ecItems.length>=4){
+    ecItems[0].querySelector('.info-value').textContent = t.ec1Name||'—';
+    ecItems[1].querySelector('.info-value').textContent = t.ec1Phone||'—';
+    ecItems[2].querySelector('.info-value').textContent = t.ec2Name||'—';
+    ecItems[3].querySelector('.info-value').textContent = t.ec2Phone||'—';
+  }
+
+  // Wire note modal "Posted By" field
+  const notePosted = document.getElementById('modal-note-tutor');
+  if(notePosted) notePosted.value = t.name||'';
+  const notePostedAs = document.getElementById('modal-note-posted-as');
+  if(notePostedAs) notePostedAs.textContent = t.name||'—';
 
   // Hero stats box
   sTxt('hero-dob',          t.dobDisplay||'—');
@@ -1695,6 +1751,12 @@ function renderDashboardModules(){
         if(e.target.closest('button')||e.target.closest('a')) return;
         openModuleDetail(m.moduleCode, m.moduleName, m.programme, m.year, m.semester);
       };})(mod);
+
+      // Rewire Attendance and Assessments buttons with live module data
+      const attBtn = card.querySelector('.btn-mod.green');
+      if(attBtn) attBtn.onclick = (function(m){ return function(e){ e.stopPropagation(); showAttendance(m.moduleCode, m.moduleName); }; })(mod);
+      const asmBtn = card.querySelector('.btn-mod.red');
+      if(asmBtn) asmBtn.onclick = (function(m){ return function(e){ e.stopPropagation(); showAssessments(m.moduleCode, m.moduleName); }; })(mod);
     });
 
     // Update block header counts
@@ -1714,37 +1776,46 @@ function openModuleDetail(code, name, prog, year, sem){
   sTxt('md-module-code', code);
   sTxt('md-prog', prog+' · '+year+' · '+sem);
 
-  // Stats
-
-  const male   = mdStuds.filter(s=>s.gender==='Male').length;
-  const female = mdStuds.filter(s=>s.gender==='Female').length;
-  sTxt('md-stud-count', mdStuds.length);
-  sTxt('md-mf', male+'M / '+female+'F');
+  // Live stats
+  const studs = _students.filter(s=>s.programme===prog && s.year===year);
+  const male  = studs.filter(s=>s.gender==='Male').length;
+  const fem   = studs.filter(s=>s.gender==='Female').length;
+  sTxt('md-stud-count', studs.length);
+  sTxt('md-mf', male+'M / '+fem+'F');
   sTxt('md-avg-att', '—');
-  sTxt('md-classes', '—');
-
-  // Students for this module
-  const mdStuds = _students.filter(s=>s.programme===prog && s.year===year);
+  sTxt('md-classes',  '—');
   sTxt('md-all-students-header', 'All Students — '+code);
 
+  // Students table
   const tbody = document.getElementById('md-students-tbody');
   if(tbody){
-    tbody.innerHTML = mdStuds.map(s=>`<tr onclick="openStudentRecord('${s.bsuId}')" style="cursor:pointer;">
-      <td class="td-name"><div style="display:flex;align-items:center;gap:7px;">${s.photoUrl?`<img src="${driveImgUrl(s.photoUrl)}" style="width:26px;height:26px;border-radius:50%;object-fit:cover;border:1px solid var(--border);flex-shrink:0;" onerror="this.style.display='none'">`:''}
-      <span style="font-weight:600;color:var(--accent);">${s.name}</span></div></td>
-      <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text2);">${s.bsuId}</td>
-      <td style="font-size:12px;">—</td>
-      <td style="font-size:12px;">—</td>
-      <td style="text-align:center;font-size:12px;">—</td>
-      <td style="text-align:center;"><input type="checkbox" style="width:15px;height:15px;accent-color:var(--green);cursor:pointer;" class="lms-access-cb"></td>
-      <td style="text-align:center;color:var(--text3);">—</td>
-      <td style="text-align:center;color:var(--text3);">—</td>
-      <td style="text-align:center;color:var(--text3);">—</td>
-      <td style="text-align:center;" onclick="event.stopPropagation()"><button onclick="openNoteModal('${s.name}')" title="Add Critical Note" style="background:none;border:none;cursor:pointer;font-size:16px;padding:2px 6px;">📝</button></td>
-    </tr>`).join('');
+    tbody.innerHTML = studs.map(s=>{
+      const rk = _rkMap[s.bsuId] || {};
+      const regBadge = rk.registration
+        ? `<span style="font-size:10px;background:var(--green-bg);color:var(--green);border:1px solid var(--green-border);padding:1px 7px;border-radius:4px;font-weight:600;">${rk.registration}</span>`
+        : '—';
+      const accBadge = rk.accountsStatus
+        ? (rk.accountsStatus.toLowerCase()==='clear'
+          ? `<span style="font-size:10px;background:var(--green-bg);color:var(--green);border:1px solid var(--green-border);padding:1px 7px;border-radius:4px;font-weight:600;">Clear</span>`
+          : `<span style="font-size:10px;background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-border);padding:1px 7px;border-radius:4px;font-weight:600;">${rk.accountsStatus}</span>`)
+        : '—';
+      const safeName = s.name.replace(/'/g, "\'");
+      return `<tr onclick="openStudentRecord('${s.bsuId}')" style="cursor:pointer;">
+        <td class="td-name"><div style="display:flex;align-items:center;gap:7px;">${s.photoUrl?`<img src="${driveImgUrl(s.photoUrl)}" style="width:26px;height:26px;border-radius:50%;object-fit:cover;border:1px solid var(--border);flex-shrink:0;" onerror="this.style.display='none'">`:''}
+        <span style="font-weight:600;color:var(--accent);">${s.name}</span></div></td>
+        <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text2);">${s.bsuId}</td>
+        <td style="text-align:center;">${regBadge}</td>
+        <td style="text-align:center;">${accBadge}</td>
+        <td style="text-align:center;color:var(--text3);">—</td>
+        <td style="text-align:center;"><input type="checkbox" style="width:15px;height:15px;accent-color:var(--green);cursor:pointer;" class="lms-access-cb"></td>
+        <td style="text-align:center;color:var(--text3);">—</td>
+        <td style="text-align:center;color:var(--text3);">—</td>
+        <td style="text-align:center;color:var(--text3);">—</td>
+        <td style="text-align:center;" onclick="event.stopPropagation()"><button onclick="openNoteModal('${s.bsuId}','${safeName}','')" title="Add Critical Note" style="background:none;border:none;cursor:pointer;font-size:16px;padding:2px 6px;">📝</button></td>
+      </tr>`;
+    }).join('');
   }
 
-  // Store current module context
   window._currentModule = {code, name, prog, year, sem};
   showPage('module-detail');
 }
@@ -1854,77 +1925,37 @@ function showPage(id, btn){
 }
 
 // Attendance
-const attStudents = [
-  {name:'Charmaine Diaz',id:'638019',overall:96,module:96,reg:'Registered',lms:'Clear'},
-  {name:'Adwaith Binish',id:'640649',overall:94,module:92,reg:'Registered',lms:'Clear'},
-  {name:'Rihan Aboobacker',id:'640829',overall:92,module:88,reg:'Registered',lms:'Clear'},
-  {name:'Fathhiyya Al Amri',id:'640773',overall:88,module:80,reg:'Registered',lms:'Clear'},
-  {name:'Nairah Cherooli',id:'640778',overall:88,module:84,reg:'Registered',lms:'Clear'},
-  {name:'Elisangela Francisco',id:'638020',overall:84,module:80,reg:'Registered',lms:'Clear'},
-  {name:'Omar-Nabil Fahmi',id:'640283',overall:80,module:76,reg:'Registered',lms:'Clear'},
-  {name:'Gaby Banjao',id:'638021',overall:76,module:72,reg:'Registered',lms:'Please see Accounts!'},
-  {name:'John Fernandez',id:'638026',overall:72,module:68,reg:'Registered',lms:'Clear'},
-  {name:'Eana Mae Tagana',id:'638149',overall:71,module:65,reg:'Registered',lms:'Clear'},
-  {name:'Prithvi Binny',id:'638031',overall:68,module:64,reg:'Registered',lms:'Clear'},
-  {name:'Blessie Francis',id:'640771',overall:60,module:56,reg:'Registered',lms:'Please see Accounts!'},
-  {name:'Bert Bitor',id:'638110',overall:55,module:50,reg:'Registered',lms:'Clear'},
-  {name:'Aisha Rahman',id:'640801',overall:90,module:87,reg:'Registered',lms:'Clear'},
-  {name:'Carlos Mendoza',id:'638055',overall:85,module:82,reg:'Registered',lms:'Clear'},
-  {name:'Divya Krishnan',id:'640812',overall:83,module:79,reg:'Registered',lms:'Clear'},
-  {name:'Farid Al Mansouri',id:'638073',overall:81,module:78,reg:'Registered',lms:'Clear'},
-  {name:'Grace Okonkwo',id:'640834',overall:79,module:75,reg:'Registered',lms:'Clear'},
-  {name:'Hassan Al Farsi',id:'638088',overall:77,module:73,reg:'Registered',lms:'Clear'},
-  {name:'Iris Lim',id:'640856',overall:76,module:71,reg:'Registered',lms:'Clear'},
-  {name:'Javier Torres',id:'638094',overall:74,module:70,reg:'Registered',lms:'Please see Accounts!'},
-  {name:'Kavya Nair',id:'640867',overall:73,module:69,reg:'Registered',lms:'Clear'},
-  {name:'Liam Murphy',id:'638102',overall:71,module:67,reg:'Registered',lms:'Clear'},
-  {name:'Maya Patel',id:'640878',overall:70,module:66,reg:'Registered',lms:'Clear'},
-  {name:'Noor Al Hashimi',id:'638115',overall:69,module:65,reg:'Registered',lms:'Clear'},
-  {name:'Oscar Fernandes',id:'640889',overall:67,module:63,reg:'Registered',lms:'Clear'},
-  {name:'Priya Sharma',id:'638123',overall:66,module:62,reg:'Registered',lms:'Clear'},
-  {name:'Qassim Al Balushi',id:'640891',overall:65,module:61,reg:'Unregistered',lms:'Please see Accounts!'},
-  {name:'Radhika Menon',id:'638131',overall:63,module:59,reg:'Registered',lms:'Clear'},
-  {name:'Sanjay Kapoor',id:'640902',overall:62,module:58,reg:'Registered',lms:'Clear'},
-  {name:'Tara O\'Brien',id:'638144',overall:61,module:57,reg:'Registered',lms:'Clear'},
-  {name:'Umar Farooq',id:'640913',overall:60,module:56,reg:'Registered',lms:'Please see Accounts!'},
-  {name:'Valentina Cruz',id:'638156',overall:59,module:55,reg:'Registered',lms:'Clear'},
-  {name:'William Osei',id:'640924',overall:91,module:89,reg:'Registered',lms:'Clear'},
-  {name:'Xinyi Zhang',id:'638162',overall:87,module:84,reg:'Registered',lms:'Clear'},
-  {name:'Yara Al Zaabi',id:'640935',overall:86,module:83,reg:'Registered',lms:'Clear'},
-  {name:'Zaid Hussain',id:'638178',overall:84,module:81,reg:'Registered',lms:'Clear'},
-  {name:'Amara Diallo',id:'640946',overall:82,module:78,reg:'Registered',lms:'Clear'},
-  {name:'Bruno Costa',id:'638185',overall:80,module:77,reg:'Registered',lms:'Clear'},
-  {name:'Celine Dubois',id:'640957',overall:78,module:74,reg:'Registered',lms:'Clear'},
-  {name:'Darius Petrov',id:'638191',overall:75,module:72,reg:'Registered',lms:'Clear'},
-  {name:'Elena Vasquez',id:'640968',overall:73,module:70,reg:'Registered',lms:'Clear'},
-  {name:'Felix Oduya',id:'638204',overall:70,module:66,reg:'Registered',lms:'Clear'},
-  {name:'Gemma Walsh',id:'640979',overall:68,module:63,reg:'Registered',lms:'Clear'},
-  {name:'Hamza Malik',id:'638217',overall:64,module:60,reg:'Registered',lms:'Clear'},
-];
+// ── Attendance — live data ────────────────────────────────────
+// attStudents is now built from _students filtered by module
 
 function renderAttTable(code){
   const tbody = document.getElementById('att-tbody');
   if(!tbody) return;
-  // Default sort: lowest This Module % on top
-  const sorted = attStudents.slice().sort((a,b)=>a.module-b.module);
+
+  // Get current module context
+  const mod = window._currentModule || {};
+  const liveStudents = _students.filter(s=>s.programme===mod.prog && s.year===mod.year);
+  // Fall back to all students if no context
+  const src = liveStudents.length ? liveStudents : _students;
+
+  // Sort alphabetically
+  const sorted = src.slice().sort((a,b)=>a.name.localeCompare(b.name));
+  // Store for updateAttCounts
+  window._attStudents = sorted;
 
   function regBadge(v){
     if(v==='Registered') return '<span style="font-size:10px;background:var(--green-bg);color:var(--green);border:1px solid var(--green-border);padding:1px 7px;border-radius:4px;font-weight:600;">Registered</span>';
-    return '<span style="font-size:10px;background:var(--red-bg);color:var(--red);border:1px solid var(--red-border);padding:1px 7px;border-radius:4px;font-weight:600;">Unregistered</span>';
-  }
-  function lmsBadge(v){
-    if(v==='Clear') return '<span style="font-size:10px;background:var(--green-bg);color:var(--green);border:1px solid var(--green-border);padding:1px 7px;border-radius:4px;font-weight:600;">Clear</span>';
-    return '<span style="font-size:10px;background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-border);padding:1px 7px;border-radius:4px;font-weight:600;">Please see Accounts!</span>';
+    return '<span style="font-size:10px;background:var(--red-bg);color:var(--red);border:1px solid var(--red-border);padding:1px 7px;border-radius:4px;font-weight:600;">—</span>';
   }
 
   tbody.innerHTML = sorted.map((s,i)=>`
-    <tr id="att-row-${i}" data-name="${s.name.toLowerCase()}">
+    <tr id="att-row-${i}" data-name="${s.name.toLowerCase()}" data-group="${s.group==='Group 1'?'1':s.group==='Group 2'?'2':s.group==='Weekend'?'we':'1'}">
       <td class="att-name">${s.name}</td>
-      <td class="att-id">${s.id}</td>
-      <td style="text-align:center">${regBadge(s.reg)}</td>
-      <td style="text-align:center">${lmsBadge(s.lms)}</td>
-      <td style="text-align:center"><span class="att-pct" style="color:${s.overall>=85?'var(--green)':s.overall>=65?'var(--amber)':'var(--red)'}">${s.overall}%</span></td>
-      <td style="text-align:center"><span class="att-pct" style="color:${s.module>=85?'var(--green)':s.module>=65?'var(--amber)':'var(--red)'}">${s.module}%</span></td>
+      <td class="att-id">${s.bsuId}</td>
+      <td style="text-align:center">${regBadge('Registered')}</td>
+      <td style="text-align:center">—</td>
+      <td style="text-align:center"><span class="att-pct" style="color:var(--text3);">—</span></td>
+      <td style="text-align:center"><span class="att-pct" style="color:var(--text3);">—</span></td>
       <td style="text-align:center">
         <div class="att-toggle">
           <button class="att-btn p-active" id="att-p-${i}" onclick="setAtt(${i},'present')">P</button>
@@ -1933,9 +1964,6 @@ function renderAttTable(code){
         </div>
       </td>
     </tr>`).join('');
-  // Set sort arrow to show This Module % sorted ascending (col 5)
-  const sp = document.getElementById('att-sort-5');
-  if(sp) sp.textContent = '↑';
   updateAttCounts();
 }
 
@@ -1947,8 +1975,9 @@ function setAtt(i, status){
   updateAttCounts();
 }
 function updateAttCounts(){
-  const absent=document.querySelectorAll('.a-active').length,late=document.querySelectorAll('.l-active').length,total=attStudents.length;
-  const eff=(total-absent-late)+(late*0.5),pct=Math.round(eff/total*100);
+  const total=(window._attStudents||[]).length;
+  const absent=document.querySelectorAll('.a-active').length,late=document.querySelectorAll('.l-active').length;
+  const eff=(total-absent-late)+(late*0.5),pct=total?Math.round(eff/total*100):0;
   const pe=document.getElementById('att-present');if(pe)pe.textContent=total-absent-late;
   const le=document.getElementById('att-late');if(le)le.textContent=late;
   const ae=document.getElementById('att-absent');if(ae)ae.textContent=absent;
@@ -1966,20 +1995,54 @@ function setAttGroup(group, btn){
   });
 }
 function markAllPresent(){
-  attStudents.forEach((_,i)=>setAtt(i,'present'));
+  (window._attStudents||[]).forEach((_,i)=>setAtt(i,'present'));
 }
+
 function saveAttendance(){
-  const absent = document.querySelectorAll('.a-active').length;
-  alert('Attendance saved!\n\n'+absent+' absent student(s) have been notified by email.\nParents have also been copied in.');
+  const mod = window._currentModule || {};
+  if(!mod.code){ alert('No module selected.'); return; }
+
+  const rows = document.querySelectorAll('#att-tbody tr');
+  const studs = window._attStudents || [];
+  const records = [];
+  rows.forEach((row, i) => {
+    const s = studs[i]; if(!s) return;
+    let status = 'P';
+    if(row.querySelector('.a-active')) status = 'A';
+    else if(row.querySelector('.l-active')) status = 'L';
+    records.push({ bsuId: s.bsuId, studentName: s.name, status, moduleName: mod.name||mod.code, attendance: '—' });
+  });
+
+  const today = new Date();
+  const dateStr = today.getDate() + ' ' + ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][today.getMonth()] + ' ' + today.getFullYear();
+  const sessionNum = 'Session ' + (SESSIONS.length + 1);
+
+  fetch(API + '?action=ping', {method:'GET'}).then(()=>{}).catch(()=>{});
+
+  const body = { action:'saveAttendanceSession', moduleCode:mod.code, date:dateStr, sessionNum:sessionNum, savedBy:_tutor?_tutor.email:'', records:records };
+  fetch(API, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) })
+    .then(r=>r.json()).then(j=>{
+      if(j.status==='ok'){
+        SESSIONS.push({ date:dateStr, label:sessionNum, day:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][today.getDay()] });
+        activeSession = SESSIONS.length - 1;
+        renderSessionStrip();
+        const absent = records.filter(r=>r.status==='A').length;
+        alert('Attendance saved! ' + absent + ' absent — parent emails sent.');
+      } else { alert('Error: ' + (j.message||'Unknown error')); }
+    }).catch(e=>{ alert('Save failed: ' + e.message); });
 }
+
+
 
 function showAttendance(code, name){
   if(document.getElementById('page-dashboard').classList.contains('active')) savedDashScroll = mc.scrollTop;
   document.getElementById('att-module-name').textContent = name + ' — ' + code;
+  // Store context so renderAttTable can filter students
+  const mod = _modules.find(m=>m.moduleCode===code);
+  if(mod) window._currentModule = {code:mod.moduleCode, name:mod.moduleName, prog:mod.programme, year:mod.year, sem:mod.semester};
   renderAttTable(code);
   showPage('attendance');
 }
-
 function showAssessments(code, name){
   if(document.getElementById('page-dashboard').classList.contains('active')) savedDashScroll = mc.scrollTop;
   document.getElementById('asm-page-title').textContent = 'Assessments — ' + name;
@@ -2060,27 +2123,29 @@ function showAddAssessment(){
   mc.scrollTop=mc.scrollHeight;
 }
 
-// Session scroll strip
-const SESSIONS = [
-  {date:'3 Mar',label:'Session 1',day:'Tue'},
-  {date:'6 Mar',label:'Session 2',day:'Fri'},
-  {date:'10 Mar',label:'Session 3',day:'Tue'},
-  {date:'13 Mar',label:'Session 4',day:'Fri'},
-  {date:'17 Mar',label:'Session 5',day:'Tue'},
-  {date:'20 Mar',label:'Session 6 — Today',day:'Fri',today:true},
-];
-let activeSession = SESSIONS.length - 1;
+// Session scroll strip — starts empty, sessions added when first class is taken
+const SESSIONS = [];
+let activeSession = 0;
 function renderSessionStrip(){
   const strip = document.getElementById('session-strip');
   if(!strip) return;
+  if(!SESSIONS.length){
+    strip.innerHTML = '<span style="font-size:12px;color:var(--text3);padding:5px 12px;">No sessions yet — sessions will appear here after the first class is recorded.</span>';
+    document.getElementById('att-module-sub').textContent = 'No sessions recorded yet';
+    const prevBtn = document.getElementById('btn-sess-prev');
+    const nextBtn = document.getElementById('btn-sess-next');
+    if(prevBtn) prevBtn.disabled = true;
+    if(nextBtn) nextBtn.disabled = true;
+    return;
+  }
   strip.innerHTML = SESSIONS.map((s,i)=>`
     <button onclick="selectSession(${i})" id="sess-btn-${i}" style="flex-shrink:0;padding:5px 12px;border-radius:7px;border:1.5px solid ${i===activeSession?'var(--accent)':'var(--border2)'};background:${i===activeSession?'var(--accent)':'#fff'};color:${i===activeSession?'#fff':'var(--text2)'};font-family:'Sora',sans-serif;font-size:11px;font-weight:${i===activeSession?'700':'500'};cursor:pointer;white-space:nowrap;transition:all 0.15s;">
       <span style="display:block;font-size:9px;opacity:0.7;margin-bottom:1px;">${s.day} ${s.date}</span>${s.label}
     </button>`).join('');
   document.getElementById('att-module-sub').textContent =
     activeSession===SESSIONS.length-1
-      ? 'Today: 20 March 2026 · Session 6 of 6'
-      : SESSIONS[activeSession].day+' '+SESSIONS[activeSession].date+' 2026 · '+SESSIONS[activeSession].label+' — Reviewing past session';
+      ? 'Today · Session '+(activeSession+1)+' of '+SESSIONS.length
+      : SESSIONS[activeSession].day+' '+SESSIONS[activeSession].date+' — '+SESSIONS[activeSession].label+' — Reviewing past session';
   const prevBtn = document.getElementById('btn-sess-prev');
   const nextBtn = document.getElementById('btn-sess-next');
   if(prevBtn) prevBtn.disabled = activeSession===0;
@@ -2089,9 +2154,6 @@ function renderSessionStrip(){
 function selectSession(i){
   activeSession=i;
   renderSessionStrip();
-  if(i < SESSIONS.length-1){
-    // Switch to past session silently — in live build this loads that session's records
-  }
 }
 function sessionNav(dir){
   const next = activeSession + dir;
@@ -2275,7 +2337,6 @@ function togglePolicy(id){
 }
 
 // Initialise
-renderAttTable('CCO5001');
 renderSessionStrip();
 initUCal();
 document.addEventListener('DOMContentLoaded',function(){document.querySelectorAll('.policy-item').forEach(p=>p.classList.add('collapsed'));});
@@ -2317,14 +2378,13 @@ function filterDetailTable(q){
 }
 
 var _noteModalStudent = '';
-function openNoteModal(studentName){
-  _noteModalStudent = studentName;
+function openNoteModal(bsuId, studentName, moduleCode){
+  window._noteModalBsuId = bsuId;
+  window._noteModalStudent = studentName;
+  window._noteModalModule = moduleCode || (window._currentModule ? window._currentModule.code : 'General');
   document.getElementById('note-modal-student').textContent = studentName;
   document.getElementById('modal-note-text').value = '';
-  // Auto-fill module from current detail page title
-  var titleEl = document.getElementById('mod-detail-title');
-  var moduleName = titleEl ? titleEl.textContent.split(' — ')[0] : 'General';
-  document.getElementById('modal-note-module').value = moduleName;
+  document.getElementById('modal-note-module').value = window._noteModalModule;
   var ov = document.getElementById('note-modal-overlay');
   ov.style.display = 'flex';
   setTimeout(function(){ document.getElementById('modal-note-text').focus(); }, 100);
@@ -2335,23 +2395,33 @@ function closeNoteModal(){
 function saveModalNote(){
   var text = document.getElementById('modal-note-text').value.trim();
   if(!text){ alert('Please write a note before posting.'); return; }
-  var module = document.getElementById('modal-note-module').value;
+  var moduleCode = window._noteModalModule || '';
+  var writtenBy  = _tutor ? _tutor.email : document.getElementById('modal-note-tutor').value;
   var today = new Date();
   var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   var dateStr = today.getDate()+' '+months[today.getMonth()]+' '+today.getFullYear();
-  // Also prepend to the student-record notes list if visible
-  var list = document.getElementById('notes-list');
-  if(list){
-    var newNote = document.createElement('div');
-    newNote.style.cssText = 'padding:12px 16px;border-bottom:1px solid var(--border);';
-    newNote.innerHTML = '<div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:4px;">'+module+'</div>'
-      +'<div style="font-size:13px;color:var(--text);line-height:1.6;margin-bottom:6px;">'+text+'</div>'
-      +'<div style="font-size:11px;color:var(--text3);">'+document.getElementById('modal-note-tutor').value+' &nbsp;·&nbsp; '+dateStr+'</div>';
-    list.insertBefore(newNote, list.firstChild);
-  }
-  closeNoteModal();
-  alert('✓ Note posted for '+_noteModalStudent+'. It will appear on their dashboard.');
-  // In live build: POST to Supabase notes table
+
+  // POST to API
+  fetch(API, { method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ action:'saveNote', bsuId:window._noteModalBsuId,
+      studentName:window._noteModalStudent, moduleCode:moduleCode,
+      note:text, writtenBy:writtenBy })
+  }).then(r=>r.json()).then(j=>{
+    if(j.status==='ok'){
+      // Also prepend to notes-list if visible
+      var list = document.getElementById('notes-list');
+      if(list){
+        var newNote = document.createElement('div');
+        newNote.style.cssText = 'padding:12px 16px;border-bottom:1px solid var(--border);';
+        newNote.innerHTML = '<div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:4px;">'+moduleCode+'</div>'
+          +'<div style="font-size:13px;color:var(--text);line-height:1.6;margin-bottom:6px;">'+text+'</div>'
+          +'<div style="font-size:11px;color:var(--text3);">'+(_tutor?_tutor.name:'')+' &nbsp;·&nbsp; '+dateStr+'</div>';
+        list.insertBefore(newNote, list.firstChild);
+      }
+      closeNoteModal();
+      alert('Note saved for '+window._noteModalStudent+'.');
+    } else { alert('Error saving note: '+(j.message||'Unknown')); }
+  }).catch(e=>{ alert('Save failed: '+e.message); });
 }
 // Close modal on overlay click
 document.addEventListener('click', function(e){
@@ -2418,9 +2488,13 @@ function dismissBirthday(){
       <div style="margin-bottom:16px;">
         <label style="display:block;font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:5px;">Note <span style="color:var(--red);">*</span></label>
         <textarea id="modal-note-text" rows="4" placeholder="Write your critical note — this will appear on the student's and parent's dashboard..." style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:'Sora',sans-serif;font-size:13px;outline:none;resize:vertical;line-height:1.6;" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"></textarea>
-        <div style="font-size:11px;color:var(--text3);margin-top:4px;">This note will be visible to the student and their parent · Posted as: <strong>Iftikhar Alam Khan</strong></div>
+        <div style="font-size:11px;color:var(--text3);margin-top:4px;">This note will be visible to the student and their parent · Posted as: <strong id="modal-note-posted-as">—</strong></div>
       </div>
-    </main>
+      <div style="display:flex;gap:10px;justify-content:flex-end;">
+        <button onclick="closeNoteModal()" style="padding:9px 18px;border:1.5px solid var(--border);border-radius:var(--radius);background:#fff;font-family:'Sora',sans-serif;font-size:13px;cursor:pointer;color:var(--text2);">Cancel</button>
+        <button onclick="saveModalNote()" style="padding:9px 18px;border:none;border-radius:var(--radius);background:var(--accent);color:#fff;font-family:'Sora',sans-serif;font-size:13px;font-weight:700;cursor:pointer;">📝 Post Note</button>
+      </div>
+    </div>
   </div>
 </body>
 </html>
