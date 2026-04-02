@@ -895,14 +895,10 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
         </div>
 
 
-        <!-- Group selector -->
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
+        <!-- Group selector — built dynamically from student data -->
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;" id="group-chips-row">
           <span style="font-size:11px;font-weight:700;color:#fff;background:var(--red);padding:4px 10px;border-radius:6px;letter-spacing:0.5px;text-transform:uppercase;">Group</span>
-          <button class="sess-chip active" id="grp-1" onclick="setAttGroup('1',this)">Group 1</button>
-          <button class="sess-chip" id="grp-2" onclick="setAttGroup('2',this)">Group 2</button>
-          <button class="sess-chip" id="grp-we" onclick="setAttGroup('weekend',this)">Weekend</button>
         </div>
-
         <!-- Session scroll navigation -->
         <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:12px 16px;box-shadow:var(--shadow-sm);margin-bottom:16px;display:flex;align-items:center;gap:10px;">
           <button class="btn-sm" onclick="sessionNav(-1)" id="btn-sess-prev">‹ Previous Class</button>
@@ -1279,11 +1275,13 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
 
       <!-- ANNOUNCEMENTS -->
       <div id="page-announcements" class="page">
-        <div class="page-header"><h1>No Announcements</h1></div>
-        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;text-align:center;color:var(--text3);">
-          <div style="font-size:40px;margin-bottom:12px;">📢</div>
-          <div style="font-size:15px;font-weight:600;color:var(--text2);margin-bottom:6px;">No Announcements Yet</div>
-          <div style="font-size:13px;">Announcements will appear here once published by the admin.</div>
+        <div class="page-header"><h1>Announcements</h1><p>University announcements from the admin team</p></div>
+        <div id="ann-list">
+          <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;text-align:center;color:var(--text3);">
+            <div style="font-size:40px;margin-bottom:12px;">📢</div>
+            <div style="font-size:15px;font-weight:600;color:var(--text2);margin-bottom:6px;">No Announcements Yet</div>
+            <div style="font-size:13px;">Announcements will appear here once published by the admin.</div>
+          </div>
         </div>
       </div><!-- /page-announcements -->
 
@@ -1569,11 +1567,12 @@ async function enterPortal(){
   document.getElementById('screen-app').classList.add('active');
   const email = document.getElementById('email-sent-display').textContent.trim() || 'iftikhar@bathspa.ae';
   try {
-    const [staffData, modulesData, studentsData, rkData] = await Promise.all([
+    const [staffData, modulesData, studentsData, rkData, annData] = await Promise.all([
       apiFetch({action:'getStaffMember', email}),
       apiFetch({action:'getTutorModules', email}),
       apiFetch({action:'getStudents'}),
-      apiFetch({action:'getRkData'})
+      apiFetch({action:'getRkData'}),
+      apiFetch({action:'getAnnouncements', audience:'Tutors'})
     ]);
     _tutor    = staffData;
     _modules  = modulesData;
@@ -1583,6 +1582,7 @@ async function enterPortal(){
     (rkData||[]).forEach(r=>{ _rkMap[r.bsuId] = {registration:r.registration, accountsStatus:r.accountsStatus}; });
     populateTutor();
     renderDashboardModules();
+    renderAnnouncements(annData||[]);
   } catch(e){
     console.warn('API error:', e.message);
   }
@@ -1690,6 +1690,37 @@ function populateTutor(){
   if(eidExp){ eidExp.textContent = t.eidExpDisplay||'—'; eidExp.style.color = t.eidColour==='red'||t.eidColour==='expired'?'var(--red)':t.eidColour==='amber'?'var(--amber)':''; }
   const ctExp = document.getElementById('hero-contract-exp');
   if(ctExp){ ctExp.textContent = t.contractExpDisplay||'—'; ctExp.style.color = t.contractColour==='red'||t.contractColour==='expired'?'var(--red)':t.contractColour==='amber'?'var(--amber)':''; }
+}
+
+function renderAnnouncements(anns){
+  const list = document.getElementById('ann-list');
+  if(!list) return;
+  if(!anns || !anns.length){
+    list.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;text-align:center;color:var(--text3);"><div style="font-size:40px;margin-bottom:12px;">📢</div><div style="font-size:15px;font-weight:600;color:var(--text2);margin-bottom:6px;">No Announcements Yet</div><div style="font-size:13px;">Announcements will appear here once published by the admin.</div></div>';
+    return;
+  }
+  // Update nav badge with count of high-priority announcements
+  const highCount = anns.filter(a=>a.priority==='High').length;
+  // (badge removed per earlier request — no nav badge)
+
+  list.innerHTML = anns.map(a => {
+    const pinned  = a.pin === 'Yes';
+    const isHigh  = a.priority === 'High';
+    const borderStyle = pinned ? 'border:1.5px solid var(--accent-border);background:var(--accent-light);' : isHigh ? 'border:1.5px solid var(--red-border);background:var(--red-bg);' : '';
+    const titleColor  = pinned ? 'color:var(--accent);' : isHigh ? 'color:var(--red);' : '';
+    const prefix = pinned ? '📌 ' : isHigh ? '⚠️ ' : '';
+    const metaExtra = pinned ? ' · Pinned' : '';
+    return `<div class="announcement-card" style="${borderStyle}">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px;">
+        <div>
+          <div class="ann-title" style="${titleColor}">${prefix}${a.title}</div>
+          <div class="ann-date">Posted by <strong>${a.postedBy||'Admin'}</strong> · ${a.date||''}${metaExtra}</div>
+        </div>
+        <span style="font-size:10px;background:var(--surface3);color:var(--text2);padding:2px 8px;border-radius:4px;font-weight:600;flex-shrink:0;">${a.audience||'All'}</span>
+      </div>
+      <div class="ann-body">${a.body||''}</div>
+    </div>`;
+  }).join('');
 }
 
 function renderDashboardModules(){
@@ -1943,17 +1974,25 @@ function renderAttTable(code){
   // Store for updateAttCounts
   window._attStudents = sorted;
 
-  function regBadge(v){
+  function mkRegBadge(v){
+    if(!v) return '—';
     if(v==='Registered') return '<span style="font-size:10px;background:var(--green-bg);color:var(--green);border:1px solid var(--green-border);padding:1px 7px;border-radius:4px;font-weight:600;">Registered</span>';
-    return '<span style="font-size:10px;background:var(--red-bg);color:var(--red);border:1px solid var(--red-border);padding:1px 7px;border-radius:4px;font-weight:600;">—</span>';
+    return '<span style="font-size:10px;background:var(--red-bg);color:var(--red);border:1px solid var(--red-border);padding:1px 7px;border-radius:4px;font-weight:600;">'+v+'</span>';
+  }
+  function mkAccBadge(v){
+    if(!v) return '—';
+    if(v.toLowerCase()==='clear') return '<span style="font-size:10px;background:var(--green-bg);color:var(--green);border:1px solid var(--green-border);padding:1px 7px;border-radius:4px;font-weight:600;">Clear</span>';
+    return '<span style="font-size:10px;background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-border);padding:1px 7px;border-radius:4px;font-weight:600;">'+v+'</span>';
   }
 
-  tbody.innerHTML = sorted.map((s,i)=>`
-    <tr id="att-row-${i}" data-name="${s.name.toLowerCase()}" data-group="${s.group==='Group 1'?'1':s.group==='Group 2'?'2':s.group==='Weekend'?'we':'1'}">
+  tbody.innerHTML = sorted.map((s,i)=>{
+    const rk = _rkMap[s.bsuId] || {};
+    return `
+    <tr id="att-row-${i}" data-name="${s.name.toLowerCase()}" data-group="${s.group||''}">
       <td class="att-name">${s.name}</td>
       <td class="att-id">${s.bsuId}</td>
-      <td style="text-align:center">${regBadge('Registered')}</td>
-      <td style="text-align:center">—</td>
+      <td style="text-align:center">${mkRegBadge(rk.registration)}</td>
+      <td style="text-align:center">${mkAccBadge(rk.accountsStatus)}</td>
       <td style="text-align:center"><span class="att-pct" style="color:var(--text3);">—</span></td>
       <td style="text-align:center"><span class="att-pct" style="color:var(--text3);">—</span></td>
       <td style="text-align:center">
@@ -1963,7 +2002,8 @@ function renderAttTable(code){
           <button class="att-btn a-inactive" id="att-a-${i}" onclick="setAtt(${i},'absent')">A</button>
         </div>
       </td>
-    </tr>`).join('');
+    </tr>`;
+  }).join('');
   updateAttCounts();
 }
 
@@ -1986,13 +2026,14 @@ function updateAttCounts(){
   const bar=document.getElementById('att-progress-fill');if(bar){bar.style.width=pct+'%';bar.style.background=pct>=85?'#4ade80':pct>=65?'#fbbf24':'#f87171';}
 }
 function setAttGroup(group, btn){
-  document.querySelectorAll('#grp-1,#grp-2,#grp-we').forEach(function(b){ b.classList.remove('active'); });
+  document.querySelectorAll('#group-chips-row .sess-chip').forEach(function(b){ b.classList.remove('active'); });
   btn.classList.add('active');
   var rows = document.querySelectorAll('#att-tbody tr');
   rows.forEach(function(r){
-    var rg = r.getAttribute('data-group') || '1';
-    r.style.display = rg === group ? '' : 'none';
+    var rg = r.getAttribute('data-group') || '';
+    r.style.display = (group === 'all' || rg === group) ? '' : 'none';
   });
+  updateAttCounts();
 }
 function markAllPresent(){
   (window._attStudents||[]).forEach((_,i)=>setAtt(i,'present'));
@@ -2040,6 +2081,36 @@ function showAttendance(code, name){
   // Store context so renderAttTable can filter students
   const mod = _modules.find(m=>m.moduleCode===code);
   if(mod) window._currentModule = {code:mod.moduleCode, name:mod.moduleName, prog:mod.programme, year:mod.year, sem:mod.semester};
+
+  // Build group chips dynamically from students
+  const studs = mod ? _students.filter(s=>s.programme===mod.programme && s.year===mod.year) : [];
+  const groups = [...new Set(studs.map(s=>s.group||'').filter(g=>g))].sort();
+  const chipsRow = document.getElementById('group-chips-row');
+  if(chipsRow){
+    const span = chipsRow.querySelector('span');
+    // Remove old chips
+    chipsRow.querySelectorAll('.sess-chip').forEach(b=>b.remove());
+    if(groups.length > 1){
+      // Add "All" chip first
+      const allBtn = document.createElement('button');
+      allBtn.className = 'sess-chip active';
+      allBtn.textContent = 'All';
+      allBtn.onclick = function(){ setAttGroup('all', this); };
+      chipsRow.appendChild(allBtn);
+      groups.forEach(g => {
+        const btn = document.createElement('button');
+        btn.className = 'sess-chip';
+        btn.textContent = g;
+        btn.onclick = function(){ setAttGroup(g, this); };
+        chipsRow.appendChild(btn);
+      });
+      chipsRow.style.display = '';
+    } else {
+      // Only one group — hide the row entirely
+      chipsRow.style.display = 'none';
+    }
+  }
+
   renderAttTable(code);
   showPage('attendance');
 }
