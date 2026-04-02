@@ -593,10 +593,10 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
             <div class="hero-chips" id="hero-chips"></div>
           </div>
           <div class="hero-stats">
-            <div class="hero-stat"><div class="hs-label">Date of Birth</div><div class="hs-val muted">13 Mar 1980</div></div>
-            <div class="hero-stat"><div class="hs-label">Passport Expiry</div><div class="hs-val muted" style="color:var(--red);">3 May 2026</div></div>
-            <div class="hero-stat"><div class="hs-label">Emirates ID Expiry</div><div class="hs-val muted">28 Jan 2028</div></div>
-            <div class="hero-stat"><div class="hs-label">Contract Expiry</div><div class="hs-val muted">27 Jan 2028</div></div>
+            <div class="hero-stat"><div class="hs-label">Date of Birth</div><div class="hs-val muted" id="hero-dob">—</div></div>
+            <div class="hero-stat"><div class="hs-label">Passport Expiry</div><div class="hs-val muted" id="hero-pp-exp">—</div></div>
+            <div class="hero-stat"><div class="hs-label">Emirates ID Expiry</div><div class="hs-val muted" id="hero-eid-exp">—</div></div>
+            <div class="hero-stat"><div class="hs-label">Contract Expiry</div><div class="hs-val muted" id="hero-contract-exp">—</div></div>
           </div>
         </div>
 
@@ -1723,6 +1723,15 @@ function populateTutor(){
   sTxt('p-email-big', t.email);
   const pp = document.getElementById('profile-photo');
   if(pp && t.photoUrl) pp.src = driveImgUrl(t.photoUrl);
+
+  // Hero stats box
+  sTxt('hero-dob',          t.dobDisplay||'—');
+  const ppExp = document.getElementById('hero-pp-exp');
+  if(ppExp){ ppExp.textContent = t.passportExpDisplay||'—'; ppExp.style.color = t.passportColour==='red'||t.passportColour==='expired'?'var(--red)':t.passportColour==='amber'?'var(--amber)':''; }
+  const eidExp = document.getElementById('hero-eid-exp');
+  if(eidExp){ eidExp.textContent = t.eidExpDisplay||'—'; eidExp.style.color = t.eidColour==='red'||t.eidColour==='expired'?'var(--red)':t.eidColour==='amber'?'var(--amber)':''; }
+  const ctExp = document.getElementById('hero-contract-exp');
+  if(ctExp){ ctExp.textContent = t.contractExpDisplay||'—'; ctExp.style.color = t.contractColour==='red'||t.contractColour==='expired'?'var(--red)':t.contractColour==='amber'?'var(--amber)':''; }
 }
 
 function renderDashboardModules(){
