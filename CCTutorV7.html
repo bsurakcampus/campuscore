@@ -956,6 +956,8 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
 
         <div id="asm-cards-container"></div>
 
+      </div><!-- /assessments -->
+
 
       <!-- MODULE DETAIL PAGE -->
       <div id="page-module-detail" class="page">
@@ -1986,7 +1988,7 @@ function showAssessments(code, name){
 
   // Find module from _modules using code
   var mod = null;
-  if(window._modules){
+  if(typeof _modules !== "undefined" && _modules.length){
     for(var i=0;i<_modules.length;i++){
       if(_modules[i].moduleCode===code){ mod=_modules[i]; break; }
     }
@@ -2005,16 +2007,13 @@ function showAssessments(code, name){
     if(mod.sa1Title) saArr.push({sa:'SA1', title:mod.sa1Title, weight:w1, deadline:mod.sa1Deadline||'—'});
     if(mod.sa2Title) saArr.push({sa:'SA2', title:mod.sa2Title, weight:w2, deadline:mod.sa2Deadline||'—'});
   } else {
-    console.log('[ASM DEBUG] module NOT found for code:', code, '| _modules:', window._modules ? _modules.length : 'undefined');
+    console.log('[ASM DEBUG] module NOT found for code:', code, '| _modules:', typeof _modules !== 'undefined' ? _modules.length : 'undefined');
   }
 
   // Count enrolled students for this module
-  var enrolled = 0;
-  if(window._students && mod){
-    _students.forEach(function(s){
-      if((s.programme||'')===(mod.programme||'') && (s.currentYear||'')===(mod.year||'')) enrolled++;
-    });
-  }
+  var enrolled = (typeof _students !== "undefined" && _students.length && mod)
+    ? _students.filter(function(s){ return (s.programme||'')===(mod.programme||'') && (s.year||'')===(mod.year||''); }).length
+    : 0;
 
   document.getElementById('asm-page-sub').textContent = code + ' · Semester ' + sem + ' · 2025/2026';
   renderAsmCards(code, name, saArr, enrolled);
@@ -2060,10 +2059,13 @@ function renderAsmCards(code, name, saArr, enrolled){
             '<div class="asc-stat"><div class="av amber" id="asm-avgmark-'+saId+'">—</div><div class="al">Avg Mark</div></div>' +
           '</div>' +
           '<div style="margin-bottom:8px;background:var(--surface2);border-radius:7px;height:8px;overflow:hidden;"><div id="asm-bar-'+saId+'" style="height:100%;width:0%;background:var(--green);border-radius:7px;transition:width 0.4s;"></div></div>' +
-          '<div class="asc-actions">' +
-            '<button class="btn-sm" style="color:var(--amber);border-color:var(--amber-border);" data-notice="2day" data-sakey="'+saId+'">⚠️ Send 2-Day Notice</button>' +
-            '<button class="btn-sm" style="color:var(--red);border-color:var(--red-border);" data-notice="closed" data-sakey="'+saId+'">🔒 Send Assessment Closed Notice</button>' +
-            '<button class="btn-sm" data-openmarks="'+saId+'">📊 Upload Marks &amp; Release Results</button>' +
+          '<div class="asc-actions" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;align-items:center;">' +
+            '<div style="display:flex;flex-wrap:wrap;gap:8px;">' +
+              '<button class="btn-sm" data-opensub="'+saId+'">📤 Upload Submission Report</button>' +
+              '<button class="btn-sm" style="color:var(--amber);border-color:var(--amber-border);" data-notice="2day" data-sakey="'+saId+'" title="Upload submission report first">⚠️ Send 2-Day Notice</button>' +
+              '<button class="btn-sm" style="color:var(--red);border-color:var(--red-border);" data-notice="closed" data-sakey="'+saId+'" title="Upload submission report first">🔒 Send Assessment Closed Notice</button>' +
+            '</div>' +
+            '<button class="btn-sm" data-openmarks="'+saId+'" style="margin-left:auto;">📊 Upload Marks &amp; Release Results</button>' +
           '</div>' +
         '</div>' +
       '</div>' +
@@ -2080,31 +2082,32 @@ function renderAsmCards(code, name, saArr, enrolled){
         '</label>' +
         '<div style="font-size:11px;color:var(--text3);margin-bottom:14px;">Blackboard gc_ export · .xls or .csv · UTF-16 format</div>' +
         '<div id="marks-preview-'+saId+'" style="display:none;"></div>' +
+      '</div>' +
+      // Submission upload panel
+      '<div id="panel-sub-'+saId+'" style="display:none;background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;margin-top:-6px;margin-bottom:12px;box-shadow:var(--shadow);border-top:none;">' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">' +
+          '<div style="font-size:14px;font-weight:700;">Upload Submission Report — '+sa.sa+'</div>' +
+          '<button class="btn-sm" data-closepanel="panel-sub-'+saId+'">✕ Close</button>' +
+        '</div>' +
+        '<div style="background:var(--accent-light);border:1px solid var(--accent-border);border-radius:8px;padding:11px 14px;font-size:12px;color:#1e3a8a;margin-bottom:14px;">ℹ️ Upload the Blackboard submission CSV. Names are matched against CURRENT students. Review before confirming — only non-submitters will receive notices.</div>' +
+        '<label style="display:inline-flex;align-items:center;gap:8px;padding:9px 16px;background:var(--accent-light);border:1.5px solid var(--accent-border);border-radius:var(--radius);color:var(--accent);font-size:13px;font-weight:600;cursor:pointer;margin-bottom:8px;">' +
+          '📤 Choose Submission CSV' +
+          '<input type="file" accept=".csv" style="display:none;" data-parsesub="'+saId+'">' +
+        '</label>' +
+        '<div style="font-size:11px;color:var(--text3);margin-bottom:14px;">Blackboard submission export · CSV · Columns: First Name, Last Name, Submitted</div>' +
+        '<div id="sub-preview-'+saId+'" style="display:none;"></div>' +
       '</div>';
     container.appendChild(card);
   });
 }
 
 // ── Event delegation for assessment card buttons ──────────────────────────
+document.addEventListener('DOMContentLoaded', function(){
 document.addEventListener('click', function(e){
-  var btn = e.target.closest('button[data-notice], button[data-openmarks]');
+  var btn = e.target.closest('button[data-opensub], button[data-openmarks], button[data-notice], button[data-closepanel], button[data-cancelpanel], button[data-confirmsub], button[data-confirm-release]');
   if(!btn) return;
-  // Find parent card with data attrs
-  var card = btn.closest('[data-code]');
-  if(!card) return;
-  var code     = card.dataset.code;
-  var name     = card.dataset.name;
-  var sa       = card.dataset.sa;
-  var title    = card.dataset.title;
-  var weight   = parseFloat(card.dataset.weight)||0;
-  var deadline = card.dataset.deadline;
-  var enrolled = parseInt(card.dataset.enrolled)||0;
-  var saId     = sa.toLowerCase();
 
-  if(btn.dataset.confirmRelease !== undefined){
-    confirmAndRelease(btn.dataset.confirmRelease, e);
-    return;
-  }
+  // ── Panel-only actions (no card lookup needed) ────────────────────────
   if(btn.dataset.closepanel !== undefined){
     var el = document.getElementById(btn.dataset.closepanel);
     if(el) el.style.display='none';
@@ -2116,22 +2119,60 @@ document.addEventListener('click', function(e){
     window._pendingMarks = null;
     return;
   }
-  if(btn.dataset.openmarks !== undefined){
-    var panel = document.getElementById('panel-marks-'+saId);
-    if(!panel) return;
-    var vis = panel.style.display==='block';
-    panel.style.display = vis ? 'none' : 'block';
-    if(!vis) setTimeout(function(){ panel.scrollIntoView({behavior:'smooth',block:'nearest'}); },50);
+  if(btn.dataset.confirmsub !== undefined){
+    confirmSubReport(btn.dataset.confirmsub);
     return;
   }
+  if(btn.dataset.confirmRelease !== undefined){
+    confirmAndRelease(btn.dataset.confirmRelease, e);
+    return;
+  }
+  if(btn.dataset.opensub !== undefined){
+    var saId2 = btn.dataset.opensub;
+    var panelS = document.getElementById('panel-sub-'+saId2);
+    if(!panelS) return;
+    var visS = panelS.style.display==='block';
+    panelS.style.display = visS ? 'none' : 'block';
+    if(!visS) setTimeout(function(){ panelS.scrollIntoView({behavior:'smooth',block:'nearest'}); },50);
+    return;
+  }
+  if(btn.dataset.openmarks !== undefined){
+    var saIdM = btn.dataset.openmarks;
+    var panelM = document.getElementById('panel-marks-'+saIdM);
+    if(!panelM) return;
+    var visM = panelM.style.display==='block';
+    panelM.style.display = visM ? 'none' : 'block';
+    if(!visM) setTimeout(function(){ panelM.scrollIntoView({behavior:'smooth',block:'nearest'}); },50);
+    return;
+  }
+
+  // ── Actions needing card data (notice buttons) ────────────────────────
+  var card = btn.closest('[data-code]');
+  if(!card) return;
+  var code     = card.dataset.code;
+  var name     = card.dataset.name;
+  var sa       = card.dataset.sa;
+  var title    = card.dataset.title;
+  var weight   = parseFloat(card.dataset.weight)||0;
+  var deadline = card.dataset.deadline;
+  var saId     = sa.toLowerCase();
+
   if(btn.dataset.notice){
     sendNotice(code, name, sa, title, weight, deadline, btn.dataset.notice);
   }
 });
+}); // DOMContentLoaded
 
 // Event delegation for file input changes
 document.addEventListener('change', function(e){
   var inp = e.target;
+  // Submission CSV
+  if(inp.dataset.parsesub){
+    var saId3 = inp.dataset.parsesub;
+    var card3 = document.getElementById('asm-card-'+saId3);
+    if(card3) parseSubmissionCSV(inp, saId3, card3.dataset.code, card3.dataset.name, card3.dataset.sa);
+    return;
+  }
   if(!inp.dataset.parsegb) return;
   var saId = inp.dataset.parsegb;
   var card = document.getElementById('asm-card-'+saId);
@@ -2151,6 +2192,119 @@ function openMarksUpload(saId){
   var vis = panel.style.display==='block';
   panel.style.display = vis ? 'none' : 'block';
   if(!vis) setTimeout(function(){ panel.scrollIntoView({behavior:'smooth',block:'nearest'}); },50);
+}
+
+// ── Parse Blackboard submission CSV ────────────────────────────────────────
+// CSV columns: First Name, Last Name, Submitted (Yes/No)
+// Match against _students by combining First+Last
+function parseSubmissionCSV(input, saId, code, name, sa){
+  if(!input.files||!input.files[0]) return;
+  var preview = document.getElementById('sub-preview-'+saId);
+  if(preview){ preview.innerHTML='<div style="font-size:13px;color:var(--text2);padding:8px 0;">⏳ Reading file…</div>'; preview.style.display='block'; }
+
+  var reader = new FileReader();
+  reader.onload = function(e){
+    try{
+      var text = e.target.result;
+      var lines = text.split("\n").filter(function(l){ return l.trim(); });
+      // Skip header
+      var results = [];
+      for(var i=1;i<lines.length;i++){
+        var cols = lines[i].split(',').map(function(c){ return c.replace(/^"|"$/g,'').trim(); });
+        var firstName = (cols[0]||'').toUpperCase();
+        var lastName  = (cols[1]||'').toUpperCase();
+        var submitted = (cols[2]||'').toLowerCase()==='yes';
+        if(!firstName && !lastName) continue; // blank row
+        var fullName  = (firstName+' '+lastName).trim();
+
+        // Match against _students
+        var matched = null;
+        var matchType = 'none';
+        if(typeof _students !== 'undefined'){
+          // Tier 1: exact full name match
+          matched = _students.find(function(s){
+            return (s.name||'').toUpperCase() === fullName;
+          });
+          if(matched){ matchType='exact'; }
+          else {
+            // Tier 2: first word of student name matches firstName AND last word matches lastName
+            matched = _students.find(function(s){
+              var parts = (s.name||'').toUpperCase().split(/\s+/);
+              return parts[0]===firstName && parts[parts.length-1]===lastName;
+            });
+            if(matched){ matchType='likely'; }
+          }
+        }
+        results.push({ firstName:firstName, lastName:lastName, fullName:fullName, submitted:submitted, matched:matched, matchType:matchType });
+      }
+
+      // Store for confirm
+      window._pendingSub = window._pendingSub || {};
+      window._pendingSub[saId] = { code:code, name:name, sa:sa, results:results };
+      renderSubPreview(saId, results);
+    } catch(err){
+      if(preview) preview.innerHTML='<div style="color:var(--red);font-size:13px;padding:8px 0;">⚠️ Error: '+err.message+'</div>';
+    }
+  };
+  reader.readAsText(input.files[0]);
+}
+
+function renderSubPreview(saId, results){
+  var preview = document.getElementById('sub-preview-'+saId);
+  if(!preview) return;
+
+  var matched   = results.filter(function(r){ return r.matchType!=='none'; });
+  var unmatched = results.filter(function(r){ return r.matchType==='none'; });
+  var submitted = results.filter(function(r){ return r.submitted; });
+  var notSub    = results.filter(function(r){ return !r.submitted; });
+
+  var html = '<div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:12px;">';
+  html += '<div style="font-size:12px;color:var(--text2);">📋 <strong>'+results.length+'</strong> in file</div>';
+  html += '<div style="font-size:12px;color:#16a34a;">✅ <strong>'+submitted.length+'</strong> submitted</div>';
+  html += '<div style="font-size:12px;color:#dc2626;">❌ <strong>'+notSub.length+'</strong> not submitted</div>';
+  if(unmatched.length) html += '<div style="font-size:12px;color:#d97706;">⚠️ <strong>'+unmatched.length+'</strong> unmatched</div>';
+  html += '</div>';
+
+  html += '<div style="overflow-x:auto;margin-bottom:14px;border-radius:8px;border:1px solid var(--border);">';
+  html += '<table style="width:100%;border-collapse:collapse;font-size:12px;">';
+  html += '<thead><tr style="background:var(--sb-bg);">';
+  html += '<th style="padding:8px 12px;text-align:left;color:#fff;font-weight:600;">Name in file</th>';
+  html += '<th style="padding:8px 12px;text-align:left;color:#fff;font-weight:600;">BSU ID matched</th>';
+  html += '<th style="padding:8px 12px;text-align:left;color:#fff;font-weight:600;">Student Name</th>';
+  html += '<th style="padding:8px 12px;text-align:center;color:#fff;font-weight:600;">Submitted</th>';
+  html += '<th style="padding:8px 12px;text-align:center;color:#fff;font-weight:600;">Match</th>';
+  html += '</tr></thead><tbody>';
+
+  results.forEach(function(r, idx){
+    var rowBg = r.matchType==='none' ? '#fef3c7' : (idx%2===0?'#fff':'#f9fafb');
+    var bsuId = r.matched ? r.matched.bsuId : '—';
+    var sName = r.matched ? (r.matched.name||'') : '—';
+    var subIcon = r.submitted ? '<span style="color:#16a34a;font-weight:700;">✅ Yes</span>' : '<span style="color:#dc2626;font-weight:700;">❌ No</span>';
+    var matchBadge = r.matchType==='exact' ? '<span style="color:#16a34a;font-size:11px;">✓ Exact</span>'
+                   : r.matchType==='likely' ? '<span style="color:#d97706;font-size:11px;">⚠️ Likely</span>'
+                   : '<span style="color:#dc2626;font-size:11px;">✗ Unmatched</span>';
+    html += '<tr style="background:'+rowBg+';">';
+    html += '<td style="padding:7px 12px;border-bottom:1px solid #f0f0f0;">'+r.fullName+'</td>';
+    html += '<td style="padding:7px 12px;border-bottom:1px solid #f0f0f0;font-family:monospace;">'+bsuId+'</td>';
+    html += '<td style="padding:7px 12px;border-bottom:1px solid #f0f0f0;">'+sName+'</td>';
+    html += '<td style="padding:7px 12px;border-bottom:1px solid #f0f0f0;text-align:center;">'+subIcon+'</td>';
+    html += '<td style="padding:7px 12px;border-bottom:1px solid #f0f0f0;text-align:center;">'+matchBadge+'</td>';
+    html += '</tr>';
+  });
+  html += '</tbody></table></div>';
+
+  if(unmatched.length){
+    html += '<div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:7px;padding:10px 14px;font-size:12px;color:#92400e;margin-bottom:12px;">⚠️ '+unmatched.length+' name(s) could not be matched. They will be excluded from notices. You can still confirm to save the matched records.</div>';
+  }
+
+  html += '<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:7px;padding:10px 14px;font-size:12px;color:#15803d;margin-bottom:14px;">Confirming will save this submission data. 2-Day and Closed notices will only go to parents of <strong>non-submitters</strong>.</div>';
+  html += '<div style="display:flex;gap:8px;">';
+  html += '<button class="btn-sm primary" data-confirmsub="'+saId+'">✅ Confirm Submission Report</button>';
+  html += '<button class="btn-sm" data-cancelpanel="sub-preview-'+saId+'">Cancel</button>';
+  html += '</div>';
+
+  preview.innerHTML = html;
+  preview.style.display = 'block';
 }
 
 // ── Parse Blackboard gradebook (UTF-16 TSV or CSV) ─────────────────────────
@@ -2185,9 +2339,9 @@ function parseGradebook(input, code, name, sa, title, weight){
         var studentName = firstName+' '+lastName;
         if(window._students){
           var found = _students.find(function(s){ return String(s.bsuId)===String(bsuId); });
-          if(found) studentName = found.fullName||studentName;
+          if(found) studentName = found.name||studentName;
         }
-        records.push({ bsuId:bsuId, studentName:studentName, mark:mark, grade:grade, inCurrent: window._students ? !!_students.find(function(s){ return String(s.bsuId)===String(bsuId); }) : true });
+        records.push({ bsuId:bsuId, studentName:studentName, mark:mark, grade:grade, inCurrent: (typeof _students!=='undefined') ? !!_students.find(function(s){ return String(s.bsuId)===String(bsuId); }) : true });
       }
 
       if(!records.length){
@@ -2344,56 +2498,58 @@ function confirmAndRelease(saId, e){
   });
 }
 
+// ── Confirm submission report ───────────────────────────────────────────────
+function confirmSubReport(saId){
+  var pending = window._pendingSub && window._pendingSub[saId];
+  if(!pending){ showToast('No submission data found.','error'); return; }
+  window._nonSubmitters = window._nonSubmitters || {};
+  window._nonSubmitters[saId] = pending.results
+    .filter(function(r){ return !r.submitted && r.matched; })
+    .map(function(r){ return { bsuId: String(r.matched.bsuId), studentName: r.matched.name||'' }; });
+  var submitted = pending.results.filter(function(r){ return r.submitted && r.matched; }).length;
+  var notSub    = window._nonSubmitters[saId].length;
+  var subEl  = document.getElementById('asm-submitted-'+saId);
+  var nsubEl = document.getElementById('asm-notsub-'+saId);
+  var barEl  = document.getElementById('asm-bar-'+saId);
+  var total  = submitted + notSub;
+  if(subEl)  subEl.textContent  = submitted;
+  if(nsubEl) nsubEl.textContent = notSub;
+  if(barEl && total) barEl.style.width = Math.round(submitted/total*100)+'%';
+  var panel = document.getElementById('panel-sub-'+saId);
+  if(panel) panel.style.display = 'none';
+  showToast('✅ Submission report saved. '+notSub+' non-submitters identified.','success');
+}
+
 // ── Send notice emails ──────────────────────────────────────────────────────
 function sendNotice(code, name, sa, title, weight, deadline, type){
+  var saId  = sa.toLowerCase();
   var label = type==='2day' ? '2-Day Extension Notice' : 'Assessment Closed Notice';
-  var msg = 'Send '+label+' for '+sa+' — '+name+'?\n\nThis will email ALL students in this module who have not submitted.';
+  var nonSubs = window._nonSubmitters && window._nonSubmitters[saId];
+  if(!nonSubs){
+    showToast('⚠️ Upload the submission report first to identify non-submitters.','error');
+    return;
+  }
+  if(!nonSubs.length){
+    showToast('All students have submitted — no notices needed.','success');
+    return;
+  }
+  var msg = 'Send '+label+' for '+sa+' — '+name+'?\n\nParents of '+nonSubs.length+' non-submitter(s) will be emailed.';
   if(!confirm(msg)) return;
-
-  var tutor = window._staffMember || {};
+  var tutor = typeof _tutor !== 'undefined' ? _tutor : {};
   var tutorName  = tutor.name  || '';
   var tutorEmail = tutor.email || '';
-
-  // Build recipients from _students filtered by module
-  // For now send to all module students (submission tracking comes later)
-  var mod = null;
-  if(window._modules){
-    for(var i=0;i<_modules.length;i++){
-      if(_modules[i].moduleCode===code){ mod=_modules[i]; break; }
-    }
-  }
-  var recipients = [];
-  if(window._students && mod){
-    _students.forEach(function(s){
-      if(s.programme===mod.programme && s.currentYear===mod.year && s.bsuId){
-        recipients.push({ bsuId: String(s.bsuId), studentName: s.fullName||'' });
-      }
-    });
-  }
-  if(!recipients.length){ showToast('No students found for this module.','error'); return; }
-
-  showToast('⏳ Sending '+label+'…','info');
-
+  showToast('⧐ Sending '+label+'…','info');
   apiPost('sendAssessmentNotice',{
-    type:        type,
-    moduleCode:  code,
-    moduleName:  name,
-    sa:          sa,
-    saTitle:     title,
-    saWeight:    weight,
-    deadline:    deadline,
-    tutorName:   tutorName,
-    tutorEmail:  tutorEmail,
-    sentBy:      tutorEmail,
-    recipients:  recipients
+    type:type, moduleCode:code, moduleName:name, sa:sa, saTitle:title,
+    saWeight:weight, deadline:deadline, tutorName:tutorName, tutorEmail:tutorEmail,
+    sentBy:tutorEmail, recipients:nonSubs
   }).then(function(res){
     if(!res.ok) throw new Error(res.error||'Send failed');
-    showToast('✅ '+label+' sent to '+res.sent+' students.','success');
+    showToast('✅ '+label+' sent to parents of '+res.sent+' non-submitters.','success');
   }).catch(function(err){
     showToast('Error: '+err.message,'error');
   });
 }
-
 function showModuleDetail(code, name, colorClass){
   if(document.getElementById('page-dashboard').classList.contains('active')) savedDashScroll = mc.scrollTop;
   document.getElementById('mod-detail-title').textContent = name + ' — ' + code;
