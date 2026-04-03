@@ -936,7 +936,8 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
         </div>
 
         <div class="att-save-row" style="position:sticky;bottom:0;background:var(--bg);padding:12px 0 16px;border-top:1px solid var(--border);margin-top:10px;">
-          <button class="btn-sm green" onclick="saveAttendance()">💾 Save &amp; Email Absentees</button>
+          <button class="btn-sm" onclick="saveAttendance(false)" style="color:var(--accent);border-color:var(--accent);">💾 Save Attendance</button>
+          <button class="btn-sm green" onclick="saveAttendance(true)">💾 Save &amp; Email Absentees</button>
           <button class="btn-sm" onclick="showPage('dashboard')">Cancel</button>
         </div>
         </div><!-- /scrollable content -->
@@ -1063,7 +1064,7 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
             <div class="info-card">
               <div class="info-card-header" style="justify-content:space-between;">
                 <span>👤 Personal Information</span>
-                <button class="btn-sm" id="btn-personal-t" onclick="toggleSectionT('personal-t')" style="font-size:11px;padding:4px 10px;background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.2);color:#fff;">✏️ Edit</button>
+                
               </div>
               <div id="personal-t-view" class="info-grid">
                 <div class="info-item"><div class="info-label">Full Name</div><div class="info-value">Iftikhar Alam Khan</div></div>
@@ -1101,7 +1102,7 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
             <div class="info-card">
               <div class="info-card-header" style="justify-content:space-between;">
                 <span>🆘 Emergency Contacts</span>
-                <button class="btn-sm" id="btn-emergency-t" onclick="toggleSectionT('emergency-t')" style="font-size:11px;padding:4px 10px;background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.2);color:#fff;">✏️ Edit</button>
+                
               </div>
               <div id="emergency-t-view" class="info-grid">
                 <div class="info-item"><div class="info-label">UAE Contact</div><div class="info-value">Fauzia (Wife)</div></div>
@@ -1122,6 +1123,9 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
 
 
           </div>
+        </div>
+        <div style="margin-top:20px;padding:14px 18px;background:#f8fafc;border:1px solid #e2e8f0;border-left:4px solid var(--accent);border-radius:8px;font-size:13px;color:#374151;line-height:1.6;">
+          ℹ️ <strong>Need to update your details?</strong> For any changes or updates to your contact information, emergency contacts, or personal records, please contact the <strong>Admin Office</strong> directly.
         </div>
       </div><!-- /profile -->
 
@@ -1932,7 +1936,7 @@ function markAllPresent(){
   (window._attStudents||[]).forEach((_,i)=>setAtt(i,'present'));
 }
 
-function saveAttendance(){
+function saveAttendance(sendEmails){
   const mod = window._currentModule || {};
   if(!mod.code){ alert('No module selected.'); return; }
 
@@ -1953,7 +1957,7 @@ function saveAttendance(){
 
   fetch(API + '?action=ping', {method:'GET'}).then(()=>{}).catch(()=>{});
 
-  const body = { action:'saveAttendanceSession', moduleCode:mod.code, date:dateStr, sessionNum:sessionNum, savedBy:_tutor?_tutor.email:'', records:records };
+  const body = { action:'saveAttendanceSession', moduleCode:mod.code, date:dateStr, sessionNum:sessionNum, savedBy:_tutor?_tutor.email:'', sendEmails:sendEmails?true:false, records:records };
   fetch(API, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) })
     .then(r=>r.json()).then(j=>{
       if(j.status==='ok'){
@@ -2044,7 +2048,7 @@ function showAssessments(code, name){
   renderAsmCards(code, name, saArr, enrolled);
   showPage('assessments');
 
-  // Load existing results from sheet to populate avg mark on card
+  // Load existing results from RESULTS sheet to populate card stats
   apiFetch({action:'getResults', moduleCode:code}).then(function(results){
     if(!results || !results.length) return;
     // Group by SA
@@ -2057,21 +2061,43 @@ function showAssessments(code, name){
     Object.keys(bySA).forEach(function(sa){
       var saId = sa.toLowerCase();
       var rows = bySA[sa];
-      // Avg mark — exclude 0 (not submitted)
-      var valid = rows.filter(function(r){ return r.mark!==null && r.mark!==undefined && Number(r.mark) > 0; });
-      if(valid.length){
-        var avg = (valid.reduce(function(s,r){ return s+Number(r.mark); },0)/valid.length).toFixed(1);
-        var avgEl = document.getElementById('asm-avgmark-'+saId);
-        if(avgEl) avgEl.textContent = avg;
-      }
+      // Marks — all rows with a mark (including 0 which = F/not submitted)
+      var withMark  = rows.filter(function(r){ return r.mark!==null && r.mark!==undefined && r.mark!==''; });
+      var submitted = rows.filter(function(r){ return r.mark!==null && r.mark!==undefined && Number(r.mark) > 0; });
+      var notSub    = rows.filter(function(r){ return r.mark===null || r.mark===undefined || r.mark==='' || Number(r.mark)===0; });
+      var gradeA    = rows.filter(function(r){ return r.grade==='A'; });
+      var gradeF    = rows.filter(function(r){ return r.grade==='F' || r.grade==='NS' || Number(r.mark)===0; });
+      // Avg mark — submitted only (mark > 0)
+      var avg = submitted.length ? (submitted.reduce(function(s,r){ return s+Number(r.mark); },0)/submitted.length).toFixed(1) : '—';
+
+      // Update card stats
+      var avgEl = document.getElementById('asm-avgmark-'+saId);
+      if(avgEl) avgEl.textContent = avg;
+      var aEl = document.getElementById('asm-grade-a-'+saId);
+      if(aEl) aEl.textContent = gradeA.length || '—';
+      var fEl = document.getElementById('asm-grade-f-'+saId);
+      if(fEl) fEl.textContent = gradeF.length || '—';
+
+      // Progress bar — submitted vs total
+      var barEl = document.getElementById('asm-bar-'+saId);
+      if(barEl && rows.length) barEl.style.width = Math.round(submitted.length/rows.length*100)+'%';
+
       // Published badge
-      var allPublished = rows.every(function(r){ return r.published==='Yes'; });
-      if(allPublished){
-        var badge = document.getElementById('asm-badge-'+saId);
-        if(badge){ badge.textContent='Result Released'; badge.style.background='#16a34a'; badge.style.color='#fff'; }
-      }
+      var allPublished = rows.length && rows.every(function(r){ return r.published==='Yes'; });
+      if(allPublished) markResultReleased(saId);
     });
-  }).catch(function(){});
+  }).catch(function(e){ console.warn('getResults error:', e); });
+}
+
+// ── Shared badge update helper ────────────────────────────────────────────
+function markResultReleased(saId){
+  var badge = document.getElementById('asm-badge-'+saId);
+  if(badge){
+    badge.textContent = 'Result Released';
+    badge.className = 'ass-badge released';
+    badge.style.fontSize = '11px';
+    badge.style.padding = '3px 10px';
+  }
 }
 
 // ── Render SA cards dynamically ────────────────────────────────────────────
@@ -2108,8 +2134,8 @@ function renderAsmCards(code, name, saArr, enrolled){
         '<div class="asc-body">' +
           '<div class="asc-stats-row">' +
             '<div class="asc-stat"><div class="av blue" id="asm-enrolled-'+saId+'">'+enrolled+'</div><div class="al">Enrolled</div></div>' +
-            '<div class="asc-stat"><div class="av green" id="asm-submitted-'+saId+'">—</div><div class="al">Submitted</div></div>' +
-            '<div class="asc-stat"><div class="av red" id="asm-notsub-'+saId+'">—</div><div class="al">Not Submitted</div></div>' +
+            '<div class="asc-stat"><div class="av" style="color:#16a34a;" id="asm-grade-a-'+saId+'">—</div><div class="al">Grade A</div></div>' +
+            '<div class="asc-stat"><div class="av red" id="asm-grade-f-'+saId+'">—</div><div class="al">Failed</div></div>' +
             '<div class="asc-stat"><div class="av amber" id="asm-avgmark-'+saId+'">—</div><div class="al">Avg Mark</div></div>' +
           '</div>' +
           '<div style="margin-bottom:8px;background:var(--surface2);border-radius:7px;height:8px;overflow:hidden;"><div id="asm-bar-'+saId+'" style="height:100%;width:0%;background:var(--green);border-radius:7px;transition:width 0.4s;"></div></div>' +
@@ -2255,6 +2281,98 @@ function openMarksUpload(saId){
 // ── Parse Blackboard submission CSV ────────────────────────────────────────
 // CSV columns: First Name, Last Name, Submitted (Yes/No)
 // Match against _students by combining First+Last
+// ── Name matching helper ───────────────────────────────────────────────────
+function matchStudentByName(firstName, lastName, moduleStudents){
+  // Normalize: remove hyphens/dots/spaces, uppercase
+  function norm(s){ return (s||'').toUpperCase().replace(/[-.'\s]/g,''); }
+  // Normalize keeping spaces (for last-word check)
+  function normS(s){ return (s||'').toUpperCase().replace(/[-.']/g,'').replace(/\s+/g,' ').trim(); }
+
+  var fn     = norm(firstName);
+  var ln     = norm(lastName);
+  var fnS    = normS(firstName);
+  var lnS    = normS(lastName);
+  var fullS  = normS(firstName+' '+lastName);
+
+  // Tier 1: exact normalized full name (spaces preserved)
+  var m = moduleStudents.find(function(s){
+    return normS(s.name) === fullS;
+  });
+  if(m) return {student:m, type:'exact'};
+
+  // Tier 2: first word matches fn AND last word matches ln (space-normalized)
+  m = moduleStudents.find(function(s){
+    var parts = normS(s.name).split(' ');
+    return parts[0]===fnS && parts[parts.length-1]===lnS;
+  });
+  if(m) return {student:m, type:'likely'};
+
+  // Tier 3: CURRENT name (no spaces/hyphens) contains CSV first name
+  //         AND last word (space-norm) matches CSV last name
+  if(fn.length >= 3) {
+    m = moduleStudents.find(function(s){
+      var normFull  = norm(s.name);       // all hyphens/spaces removed
+      var parts     = normS(s.name).split(' ');
+      var lastWord  = parts[parts.length-1];
+      return normFull.indexOf(fn)!==-1 && (lastWord===lnS || ln===norm(lastWord));
+    });
+    if(m) return {student:m, type:'likely'};
+  }
+
+  // Tier 4: CSV first name starts with or contains first part of CURRENT
+  //         AND last name matches — catches REI-AGUILAR vs REINA-CHARIZ-AGUILAR
+  if(fn.length >= 4) {
+    m = moduleStudents.find(function(s){
+      var normFull = norm(s.name);
+      var parts    = normS(s.name).split(' ');
+      var lastWord = parts[parts.length-1];
+      // CSV fn is a prefix of CURRENT first compound word OR vice versa
+      var curFirst = norm(parts[0]);
+      var fnMatch  = curFirst.indexOf(fn)===0 || fn.indexOf(curFirst)===0 || normFull.indexOf(fn)===0;
+      return fnMatch && (lastWord===lnS || ln===norm(lastWord));
+    });
+    if(m) return {student:m, type:'likely'};
+  }
+
+  // Tier 5: last name exact + first name has any word overlap
+  if(ln.length >= 3) {
+    m = moduleStudents.find(function(s){
+      var parts    = normS(s.name).split(' ');
+      var lastWord = norm(parts[parts.length-1]);
+      if(lastWord !== ln) return false;
+      return norm(s.name).indexOf(fn)!==-1 || fn.indexOf(norm(parts[0]))===0;
+    });
+    if(m) return {student:m, type:'likely'};
+  }
+
+  // Tier 6: last name exact + first 5 chars of CSV fn appear anywhere in CURRENT normalized
+  if(fn.length >= 5 && ln.length >= 3) {
+    var prefix5 = fn.substring(0,5);
+    m = moduleStudents.find(function(s){
+      var parts    = normS(s.name).split(' ');
+      var lastWord = norm(parts[parts.length-1]);
+      return lastWord === ln && norm(s.name).indexOf(prefix5) !== -1;
+    });
+    if(m) return {student:m, type:'likely'};
+  }
+
+  // Tier 7: last name exact + CSV first name is contained in any hyphenated part of CURRENT
+  if(fn.length >= 3 && ln.length >= 3) {
+    m = moduleStudents.find(function(s){
+      var parts    = normS(s.name).split(' ');
+      var lastWord = norm(parts[parts.length-1]);
+      if(lastWord !== ln) return false;
+      // Split CURRENT first part by original hyphens and check each segment
+      var firstPart = (s.name||'').split(' ')[0] || '';
+      var segments  = firstPart.split('-').map(function(x){ return norm(x); });
+      return segments.some(function(seg){ return seg && (fn.indexOf(seg)===0 || seg.indexOf(fn)===0); });
+    });
+    if(m) return {student:m, type:'likely'};
+  }
+
+  return {student:null, type:'none'};
+}
+
 function parseSubmissionCSV(input, saId, code, name, sa){
   if(!input.files||!input.files[0]) return;
   var preview = document.getElementById('sub-preview-'+saId);
@@ -2265,41 +2383,93 @@ function parseSubmissionCSV(input, saId, code, name, sa){
     try{
       var text = e.target.result;
       var lines = text.split("\n").filter(function(l){ return l.trim(); });
-      // Skip header
-      var results = [];
+
+      // Get enrolled students for this module
+      var card = document.getElementById('asm-card-'+saId);
+      var modProg = card ? card.dataset.name : '';
+      var moduleStudents = [];
+      if(typeof _students !== 'undefined' && typeof _modules !== 'undefined'){
+        var mod = _modules.find(function(m){ return m.moduleCode===code; });
+        if(mod){
+          moduleStudents = _students.filter(function(s){
+            return (s.programme||'')===(mod.programme||'') && (s.year||'')===(mod.year||'');
+          });
+        }
+      }
+
+      // Parse CSV — collect submitted BSU IDs
+      var submittedBsuIds = {};  // bsuId → true
+      var csvRows = [];          // all named rows from CSV
+
       for(var i=1;i<lines.length;i++){
         var cols = lines[i].split(',').map(function(c){ return c.replace(/^"|"$/g,'').trim(); });
-        var firstName = (cols[0]||'').toUpperCase();
-        var lastName  = (cols[1]||'').toUpperCase();
+        var firstName = (cols[0]||'').trim();
+        var lastName  = (cols[1]||'').trim();
         var submitted = (cols[2]||'').toLowerCase()==='yes';
-        if(!firstName && !lastName) continue; // blank row
-        var fullName  = (firstName+' '+lastName).trim();
+        if(!firstName && !lastName) continue; // blank name row — skip, will be caught by cross-ref
 
-        // Match against _students
-        var matched = null;
-        var matchType = 'none';
-        if(typeof _students !== 'undefined'){
-          // Tier 1: exact full name match
-          matched = _students.find(function(s){
-            return (s.name||'').toUpperCase() === fullName;
-          });
-          if(matched){ matchType='exact'; }
-          else {
-            // Tier 2: first word of student name matches firstName AND last word matches lastName
-            matched = _students.find(function(s){
-              var parts = (s.name||'').toUpperCase().split(/\s+/);
-              return parts[0]===firstName && parts[parts.length-1]===lastName;
-            });
-            if(matched){ matchType='likely'; }
-          }
+        var matchResult = matchStudentByName(firstName, lastName, moduleStudents);
+        var row = {
+          firstName: firstName.toUpperCase(),
+          lastName:  lastName.toUpperCase(),
+          fullName:  (firstName+' '+lastName).toUpperCase().trim(),
+          submitted: submitted,
+          matched:   matchResult.student,
+          matchType: matchResult.type
+        };
+        csvRows.push(row);
+        if(submitted && matchResult.student){
+          submittedBsuIds[String(matchResult.student.bsuId)] = true;
         }
-        results.push({ firstName:firstName, lastName:lastName, fullName:fullName, submitted:submitted, matched:matched, matchType:matchType });
       }
+
+      // Cross-reference: non-submitters = enrolled students NOT confirmed as submitted
+      // submittedBsuIds only contains students who were MATCHED and have Yes
+      var nonSubmitters = moduleStudents.filter(function(s){
+        return !submittedBsuIds[String(s.bsuId)];
+      });
+
+      // Build results table:
+      // Section 1: All named CSV rows (submitted=Yes matched, and unmatched)
+      // Section 2: Enrolled students confirmed as non-submitted (not in CSV or blank rows)
+      // Key rule: each enrolled student appears ONCE only
+      var results = [];
+      var addedBsuIds = {};
+
+      // Add matched CSV rows first
+      csvRows.forEach(function(r){
+        if(r.matched){
+          addedBsuIds[String(r.matched.bsuId)] = true;
+          results.push(r);
+        } else {
+          // Unmatched CSV row — show it but don't add to enrolled tracking
+          results.push(r);
+        }
+      });
+
+      // Add non-submitters who weren't in CSV (or were blank rows)
+      nonSubmitters.forEach(function(s){
+        if(!addedBsuIds[String(s.bsuId)]){
+          addedBsuIds[String(s.bsuId)] = true;
+          results.push({
+            firstName: '',
+            lastName: '',
+            fullName: '— Not in submission file —',
+            submitted: false,
+            matched: s,
+            matchType: 'enrolled'
+          });
+        }
+      });
 
       // Store for confirm
       window._pendingSub = window._pendingSub || {};
-      window._pendingSub[saId] = { code:code, name:name, sa:sa, results:results };
-      renderSubPreview(saId, results);
+      window._pendingSub[saId] = {
+        code: code, name: name, sa: sa,
+        results: results,
+        nonSubmitters: nonSubmitters.map(function(s){ return {bsuId:String(s.bsuId), studentName:s.name||''}; })
+      };
+      renderSubPreview(saId, results, nonSubmitters, moduleStudents.length);
     } catch(err){
       if(preview) preview.innerHTML='<div style="color:var(--red);font-size:13px;padding:8px 0;">⚠️ Error: '+err.message+'</div>';
     }
@@ -2307,42 +2477,49 @@ function parseSubmissionCSV(input, saId, code, name, sa){
   reader.readAsText(input.files[0]);
 }
 
-function renderSubPreview(saId, results){
+function renderSubPreview(saId, results, nonSubmitters, enrolled){
   var preview = document.getElementById('sub-preview-'+saId);
   if(!preview) return;
 
-  var matched   = results.filter(function(r){ return r.matchType!=='none'; });
-  var unmatched = results.filter(function(r){ return r.matchType==='none'; });
-  var submitted = results.filter(function(r){ return r.submitted; });
-  var notSub    = results.filter(function(r){ return !r.submitted; });
+  var csvSubmitted = results.filter(function(r){ return r.submitted && r.matched && r.matchType!=='none'; });
+  var csvUnmatched = results.filter(function(r){ return r.matchType==='none'; });
+  var notInFile    = results.filter(function(r){ return r.matchType==='enrolled'; });
+  var totalNonSub  = nonSubmitters ? nonSubmitters.length : 0;
 
-  var html = '<div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:12px;">';
-  html += '<div style="font-size:12px;color:var(--text2);">📋 <strong>'+results.length+'</strong> in file</div>';
-  html += '<div style="font-size:12px;color:#16a34a;">✅ <strong>'+submitted.length+'</strong> submitted</div>';
-  html += '<div style="font-size:12px;color:#dc2626;">❌ <strong>'+notSub.length+'</strong> not submitted</div>';
-  if(unmatched.length) html += '<div style="font-size:12px;color:#d97706;">⚠️ <strong>'+unmatched.length+'</strong> unmatched</div>';
+  var html = '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px;padding:12px 14px;background:#f8fafc;border-radius:8px;border:1px solid #e2e8f0;">';
+  html += '<div style="font-size:12px;"><span style="color:var(--text2);">Enrolled</span> <strong>'+enrolled+'</strong></div>';
+  html += '<div style="font-size:12px;color:#16a34a;"><span>✅ Submitted</span> <strong>'+csvSubmitted.length+'</strong></div>';
+  html += '<div style="font-size:12px;color:#dc2626;"><span>❌ Not Submitted</span> <strong>'+totalNonSub+'</strong></div>';
+  if(csvUnmatched.length) html += '<div style="font-size:12px;color:#d97706;"><span>⚠️ Unmatched in file</span> <strong>'+csvUnmatched.length+'</strong></div>';
+  if(notInFile.length) html += '<div style="font-size:12px;color:#dc2626;"><span>🚫 Not in file</span> <strong>'+notInFile.length+'</strong></div>';
   html += '</div>';
 
   html += '<div style="overflow-x:auto;margin-bottom:14px;border-radius:8px;border:1px solid var(--border);">';
   html += '<table style="width:100%;border-collapse:collapse;font-size:12px;">';
   html += '<thead><tr style="background:var(--sb-bg);">';
-  html += '<th style="padding:8px 12px;text-align:left;color:#fff;font-weight:600;">Name in file</th>';
-  html += '<th style="padding:8px 12px;text-align:left;color:#fff;font-weight:600;">BSU ID matched</th>';
-  html += '<th style="padding:8px 12px;text-align:left;color:#fff;font-weight:600;">Student Name</th>';
+  html += '<th style="padding:8px 12px;text-align:left;color:#fff;font-weight:600;">Name in File</th>';
+  html += '<th style="padding:8px 12px;text-align:left;color:#fff;font-weight:600;">BSU ID</th>';
+  html += '<th style="padding:8px 12px;text-align:left;color:#fff;font-weight:600;">CURRENT Name</th>';
   html += '<th style="padding:8px 12px;text-align:center;color:#fff;font-weight:600;">Submitted</th>';
   html += '<th style="padding:8px 12px;text-align:center;color:#fff;font-weight:600;">Match</th>';
   html += '</tr></thead><tbody>';
 
   results.forEach(function(r, idx){
-    var rowBg = r.matchType==='none' ? '#fef3c7' : (idx%2===0?'#fff':'#f9fafb');
+    var isNotSub   = !r.submitted;
+    var isUnmatched = r.matchType==='none';
+    var isNotInFile = r.matchType==='enrolled';
+    var rowBg = isNotInFile ? '#fef2f2' : isUnmatched ? '#fef3c7' : isNotSub ? '#fff7ed' : (idx%2===0?'#fff':'#f9fafb');
     var bsuId = r.matched ? r.matched.bsuId : '—';
     var sName = r.matched ? (r.matched.name||'') : '—';
-    var subIcon = r.submitted ? '<span style="color:#16a34a;font-weight:700;">✅ Yes</span>' : '<span style="color:#dc2626;font-weight:700;">❌ No</span>';
-    var matchBadge = r.matchType==='exact' ? '<span style="color:#16a34a;font-size:11px;">✓ Exact</span>'
-                   : r.matchType==='likely' ? '<span style="color:#d97706;font-size:11px;">⚠️ Likely</span>'
-                   : '<span style="color:#dc2626;font-size:11px;">✗ Unmatched</span>';
+    var subIcon = r.submitted
+      ? '<span style="color:#16a34a;font-weight:700;">✅ Yes</span>'
+      : '<span style="color:#dc2626;font-weight:700;">❌ No</span>';
+    var matchBadge = r.matchType==='exact'    ? '<span style="color:#16a34a;font-size:11px;">✓ Exact</span>'
+                   : r.matchType==='likely'   ? '<span style="color:#d97706;font-size:11px;">⚠️ Likely</span>'
+                   : r.matchType==='enrolled' ? '<span style="color:#dc2626;font-size:11px;">🚫 Not in file</span>'
+                   : '<span style="color:#dc2626;font-size:11px;">✗ No match</span>';
     html += '<tr style="background:'+rowBg+';">';
-    html += '<td style="padding:7px 12px;border-bottom:1px solid #f0f0f0;">'+r.fullName+'</td>';
+    html += '<td style="padding:7px 12px;border-bottom:1px solid #f0f0f0;">'+(r.fullName||'—')+'</td>';
     html += '<td style="padding:7px 12px;border-bottom:1px solid #f0f0f0;font-family:monospace;">'+bsuId+'</td>';
     html += '<td style="padding:7px 12px;border-bottom:1px solid #f0f0f0;">'+sName+'</td>';
     html += '<td style="padding:7px 12px;border-bottom:1px solid #f0f0f0;text-align:center;">'+subIcon+'</td>';
@@ -2351,11 +2528,13 @@ function renderSubPreview(saId, results){
   });
   html += '</tbody></table></div>';
 
-  if(unmatched.length){
-    html += '<div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:7px;padding:10px 14px;font-size:12px;color:#92400e;margin-bottom:12px;">⚠️ '+unmatched.length+' name(s) could not be matched. They will be excluded from notices. You can still confirm to save the matched records.</div>';
+  if(csvUnmatched.length){
+    html += '<div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:7px;padding:10px 14px;font-size:12px;color:#92400e;margin-bottom:10px;">⚠️ '+csvUnmatched.length+' name(s) in file could not be matched to enrolled students — they will be excluded.</div>';
   }
-
-  html += '<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:7px;padding:10px 14px;font-size:12px;color:#15803d;margin-bottom:14px;">Confirming will save this submission data. 2-Day and Closed notices will only go to parents of <strong>non-submitters</strong>.</div>';
+  if(notInFile.length){
+    html += '<div style="background:#fef2f2;border:1px solid #fecaca;border-radius:7px;padding:10px 14px;font-size:12px;color:#dc2626;margin-bottom:10px;">🚫 '+notInFile.length+' enrolled student(s) not in submission file — counted as <strong>Not Submitted</strong>.</div>';
+  }
+  html += '<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:7px;padding:10px 14px;font-size:12px;color:#15803d;margin-bottom:14px;">Notices will go to parents of all <strong>'+totalNonSub+' non-submitters</strong>.</div>';
   html += '<div style="display:flex;gap:8px;">';
   html += '<button class="btn-sm primary" data-confirmsub="'+saId+'">✅ Confirm Submission Report</button>';
   html += '<button class="btn-sm" data-cancelpanel="sub-preview-'+saId+'">Cancel</button>';
@@ -2392,7 +2571,7 @@ function parseGradebook(input, code, name, sa, title, weight){
         var markRaw = cols[6];
         if(!bsuId||!bsuId.match(/^\d+$/)) continue;
         var mark = markRaw===''||markRaw==='—'||markRaw===null ? null : parseFloat(markRaw);
-        if(mark === 0) mark = null; // 0 = not submitted, not a real mark
+        // mark 0 kept as 0 — shown as F in table, NS count tracked separately on card
         var grade = calcGradeJS(mark);
         // Try to find student name in _students
         var studentName = firstName+' '+lastName;
@@ -2435,12 +2614,12 @@ function sortMarksPreview(th){
 }
 
 function calcGradeJS(mark){
-  if(mark===null||mark===undefined||isNaN(mark)) return 'NS';
+  if(mark===null||mark===undefined||isNaN(mark)) return '—';
   if(mark>=70) return 'A';
   if(mark>=60) return 'B';
   if(mark>=50) return 'C';
   if(mark>=40) return 'D';
-  return 'F';
+  return 'F';  // includes 0
 }
 
 // ── Render marks preview table ──────────────────────────────────────────────
@@ -2454,7 +2633,7 @@ function renderMarksPreview(saId, records, weight){
     if(g==='C') return '#d97706';
     if(g==='D') return '#ea580c';
     if(g==='F') return '#dc2626';
-    if(g==='NS') return '#9ca3af';
+
     return 'var(--text2)';
   };
 
@@ -2488,7 +2667,7 @@ function renderMarksPreview(saId, records, weight){
     html += '<tr style="background:'+rowBg+';">';
     html += '<td style="padding:7px 12px;border-bottom:1px solid #f0f0f0;font-family:monospace;">'+r.bsuId+(r.inCurrent?'':' ⚠️')+'</td>';
     html += '<td style="padding:7px 12px;border-bottom:1px solid #f0f0f0;">'+r.studentName+'</td>';
-    html += '<td style="padding:7px 12px;border-bottom:1px solid #f0f0f0;text-align:center;font-weight:700;">'+(r.mark!==null?r.mark:'<span style="color:#9ca3af">NS</span>')+'</td>';
+    html += '<td style="padding:7px 12px;border-bottom:1px solid #f0f0f0;text-align:center;font-weight:700;">'+(r.mark!==null?r.mark:'—')+'</td>';
     html += '<td style="padding:7px 12px;border-bottom:1px solid #f0f0f0;text-align:center;font-weight:700;color:'+gradeColor(r.grade)+';">'+r.grade+'</td>';
 
     html += '</tr>';
@@ -2538,13 +2717,18 @@ function confirmAndRelease(saId, e, saveOnly){
     console.log('[SAVE] saveResultsBatch response:', JSON.stringify(res));
     if(!res || res.status !== 'ok') throw new Error((res&&res.message)||'Save failed');
     if(saveOnly){
-      // Update stats on card even for save-only
-      var validM = pm.records.filter(function(r){ return r.mark!==null&&!isNaN(r.mark); });
-      if(validM.length){
-        var avg2 = (validM.reduce(function(s,r){ return s+r.mark; },0)/validM.length).toFixed(1);
-        var avgEl2 = document.getElementById('asm-avgmark-'+saId);
-        if(avgEl2) avgEl2.textContent = avg2;
-      }
+      // Update card stats from pending marks
+      var submittedM = pm.records.filter(function(r){ return r.mark!==null&&!isNaN(r.mark)&&r.mark>0; });
+      var gradeAM    = pm.records.filter(function(r){ return r.grade==='A'; });
+      var gradeFM    = pm.records.filter(function(r){ return r.grade==='F'; });
+      var avg2 = submittedM.length ? (submittedM.reduce(function(s,r){ return s+r.mark; },0)/submittedM.length).toFixed(1) : '—';
+      var avgEl2 = document.getElementById('asm-avgmark-'+saId);
+      if(avgEl2) avgEl2.textContent = avg2;
+      var aEl2 = document.getElementById('asm-grade-a-'+saId);
+      if(aEl2) aEl2.textContent = gradeAM.length||'—';
+      var fEl2 = document.getElementById('asm-grade-f-'+saId);
+      if(fEl2) fEl2.textContent = gradeFM.length||'—';
+      markResultReleased(saId);
       showToast('💾 Marks saved to RESULTS sheet. No emails sent.','info');
       var panel2 = document.getElementById('panel-marks-'+saId);
       if(panel2) panel2.style.display='none';
@@ -2568,18 +2752,19 @@ function confirmAndRelease(saId, e, saveOnly){
     if(!res || res.status !== 'ok') throw new Error((res&&res.message)||'Publish failed');
     var published = res.data ? res.data.published : '?';
     showToast('✅ '+pm.sa+' results released. '+published+' parent emails sent.','success');
-
-    // Update badge
-    var badge = document.getElementById('asm-badge-'+saId);
-    if(badge){ badge.textContent='Result Released'; badge.className='ass-badge'; badge.style.background='#16a34a'; badge.style.color='#fff'; }
+    markResultReleased(saId);
 
     // Update avg mark stat
-    var validMarks = pm.records.filter(function(r){ return r.mark!==null&&!isNaN(r.mark); });
-    if(validMarks.length){
-      var avg = (validMarks.reduce(function(s,r){ return s+r.mark; },0)/validMarks.length).toFixed(1);
-      var avgEl = document.getElementById('asm-avgmark-'+saId);
-      if(avgEl) avgEl.textContent = avg;
-    }
+    var submittedFinal = pm.records.filter(function(r){ return r.mark!==null&&!isNaN(r.mark)&&r.mark>0; });
+    var gradeAFinal    = pm.records.filter(function(r){ return r.grade==='A'; });
+    var gradeFinal     = pm.records.filter(function(r){ return r.grade==='F'; });
+    var avgFinal = submittedFinal.length ? (submittedFinal.reduce(function(s,r){ return s+r.mark; },0)/submittedFinal.length).toFixed(1) : '—';
+    var avgElF = document.getElementById('asm-avgmark-'+saId);
+    if(avgElF) avgElF.textContent = avgFinal;
+    var aElF = document.getElementById('asm-grade-a-'+saId);
+    if(aElF) aElF.textContent = gradeAFinal.length||'—';
+    var fElF = document.getElementById('asm-grade-f-'+saId);
+    if(fElF) fElF.textContent = gradeFinal.length||'—';
 
     // Close panel
     var panel = document.getElementById('panel-marks-'+saId);
@@ -2597,10 +2782,11 @@ function confirmSubReport(saId){
   var pending = window._pendingSub && window._pendingSub[saId];
   if(!pending){ showToast('No submission data found.','error'); return; }
   window._nonSubmitters = window._nonSubmitters || {};
-  window._nonSubmitters[saId] = pending.results
-    .filter(function(r){ return !r.submitted && r.matched; })
+  // Use the pre-computed nonSubmitters list (enrolled students who didn't submit)
+  window._nonSubmitters[saId] = pending.nonSubmitters || pending.results
+    .filter(function(r){ return !r.submitted && r.matched && r.matchType!=='none'; })
     .map(function(r){ return { bsuId: String(r.matched.bsuId), studentName: r.matched.name||'' }; });
-  var submitted = pending.results.filter(function(r){ return r.submitted && r.matched; }).length;
+  var submitted = pending.results.filter(function(r){ return r.submitted && r.matched && r.matchType!=='none'; }).length;
   var notSub    = window._nonSubmitters[saId].length;
   var subEl  = document.getElementById('asm-submitted-'+saId);
   var nsubEl = document.getElementById('asm-notsub-'+saId);
