@@ -1384,10 +1384,13 @@ async function apiFetch(params){
 }
 
 async function apiPost(action, body){
+  // Must use text/plain to avoid CORS preflight on Google Apps Script
+  const payload = JSON.stringify(Object.assign({ action: action }, body));
   const r = await fetch(API, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(Object.assign({ action: action }, body))
+    headers: { 'Content-Type': 'text/plain' },
+    body: payload,
+    redirect: 'follow'
   });
   const j = await r.json();
   return j;
@@ -2463,7 +2466,7 @@ function confirmAndRelease(saId, e){
   // btn already set from parameter
   if(btn){ btn.disabled=true; btn.textContent='⏳ Saving…'; }
 
-  var tutor = window._staffMember || {};
+  var tutor = (typeof _tutor !== 'undefined' ? _tutor : {});
   var tutorName  = tutor.name  || '';
   var tutorEmail = tutor.email || '';
 
@@ -2483,7 +2486,8 @@ function confirmAndRelease(saId, e){
     uploadedBy:  tutorEmail,
     records:     records
   }).then(function(res){
-    if(!res.ok) throw new Error(res.error||'Save failed');
+    console.log('[SAVE] saveResultsBatch response:', JSON.stringify(res));
+    if(!res || res.status !== 'ok') throw new Error((res&&res.message)||'Save failed');
 
     // Step 2: publishResults (also sends parent emails)
     return apiPost('publishResults',{
@@ -2497,9 +2501,10 @@ function confirmAndRelease(saId, e){
       tutorEmail:   tutorEmail
     });
   }).then(function(res){
-    if(!res.ok) throw new Error(res.error||'Publish failed');
-
-    showToast('✅ '+pm.sa+' results released. '+res.published+' parent emails sent.','success');
+    console.log('[PUBLISH] publishResults response:', JSON.stringify(res));
+    if(!res || res.status !== 'ok') throw new Error((res&&res.message)||'Publish failed');
+    var published = res.data ? res.data.published : '?';
+    showToast('✅ '+pm.sa+' results released. '+published+' parent emails sent.','success');
 
     // Update badge
     var badge = document.getElementById('asm-badge-'+saId);
