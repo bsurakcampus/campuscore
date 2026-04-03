@@ -225,11 +225,11 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
 .att-search{flex:1;padding:9px 14px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:'Sora',sans-serif;font-size:13px;outline:none;}
 .att-search:focus{border-color:var(--accent);}
 .att-table-wrap{background:#fff;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow-sm);}
-.att-table{width:100%;border-collapse:collapse;}
-.att-table thead th{background:var(--sb-bg);color:rgba(255,255,255,0.7);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;padding:10px 14px;text-align:left;}
+.att-table{width:100%;border-collapse:collapse;table-layout:fixed;}
+.att-table thead th{background:var(--sb-bg);color:rgba(255,255,255,0.7);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;padding:10px 14px;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .att-table tbody tr{border-bottom:1px solid var(--border);transition:background 0.1s;}
 .att-table tbody tr:hover{background:var(--surface2);}
-.att-table tbody td{padding:10px 14px;font-size:13px;}
+.att-table tbody td{padding:10px 14px;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .att-name{font-weight:600;}
 .att-id{font-family:'DM Mono',monospace;font-size:13px;color:var(--text2);}
 .att-pct{font-family:'DM Mono',monospace;font-size:13px;font-weight:700;}
@@ -922,13 +922,13 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
           <table class="att-table" id="att-table-main" style="border-collapse:separate;border-spacing:0;">
             <thead>
               <tr>
-                <th onclick="sortAttTable(0)" style="cursor:pointer;position:sticky;top:0;z-index:5;background:var(--sb-bg);">Student Name <span id="att-sort-0">↕</span></th>
-                <th onclick="sortAttTable(1)" style="cursor:pointer;position:sticky;top:0;z-index:5;background:var(--sb-bg);">BSU ID <span id="att-sort-1">↕</span></th>
-                <th onclick="sortAttTable(2)" style="cursor:pointer;text-align:center;position:sticky;top:0;z-index:5;background:var(--sb-bg);">Registration <span id="att-sort-2">↕</span></th>
-                <th onclick="sortAttTable(3)" style="cursor:pointer;text-align:center;position:sticky;top:0;z-index:5;background:var(--sb-bg);">Accounts Status <span id="att-sort-3">↕</span></th>
-                <th onclick="sortAttTable(4)" style="cursor:pointer;text-align:center;position:sticky;top:0;z-index:5;background:var(--sb-bg);">Overall % <span id="att-sort-4">↕</span></th>
-                <th onclick="sortAttTable(5)" style="cursor:pointer;text-align:center;position:sticky;top:0;z-index:5;background:var(--sb-bg);">This Module % <span id="att-sort-5">↕</span></th>
-                <th onclick="sortAttTable(6)" style="cursor:pointer;text-align:center;position:sticky;top:0;z-index:5;background:var(--sb-bg);">Today <span id="att-sort-6">↕</span></th>
+                <th onclick="sortAttTable(0)" style="cursor:pointer;position:sticky;top:0;z-index:5;background:var(--sb-bg);min-width:200px;width:30%;">Student Name <span id="att-sort-0">↕</span></th>
+                <th onclick="sortAttTable(1)" style="cursor:pointer;position:sticky;top:0;z-index:5;background:var(--sb-bg);min-width:90px;width:90px;">BSU ID <span id="att-sort-1">↕</span></th>
+                <th onclick="sortAttTable(2)" style="cursor:pointer;text-align:center;position:sticky;top:0;z-index:5;background:var(--sb-bg);min-width:110px;width:110px;">Registration <span id="att-sort-2">↕</span></th>
+                <th onclick="sortAttTable(3)" style="cursor:pointer;text-align:center;position:sticky;top:0;z-index:5;background:var(--sb-bg);min-width:140px;width:140px;">Accounts Status <span id="att-sort-3">↕</span></th>
+                <th onclick="sortAttTable(4)" style="cursor:pointer;text-align:center;position:sticky;top:0;z-index:5;background:var(--sb-bg);min-width:90px;width:90px;">Overall % <span id="att-sort-4">↕</span></th>
+                <th onclick="sortAttTable(5)" style="cursor:pointer;text-align:center;position:sticky;top:0;z-index:5;background:var(--sb-bg);min-width:110px;width:110px;">This Module % <span id="att-sort-5">↕</span></th>
+                <th onclick="sortAttTable(6)" style="cursor:pointer;text-align:center;position:sticky;top:0;z-index:5;background:var(--sb-bg);min-width:100px;width:100px;">Today <span id="att-sort-6">↕</span></th>
               </tr>
             </thead>
             <tbody id="att-tbody"></tbody>
@@ -954,154 +954,7 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
           </div>
         </div>
 
-        <!-- SA1 Assessment card -->
-        <div class="assessment-card-full">
-          <div class="asc-header">
-            <div>
-              <div class="asc-title">SA1 — Literature Review</div>
-              <div class="asc-meta-row">Weight: 60% · Max: 100 · Deadline: 25 Mar 2026</div>
-            </div>
-            <span class="ass-badge pending" style="font-size:11px;padding:3px 10px;">Open</span>
-          </div>
-          <div class="asc-body">
-            <div class="asc-stats-row">
-              <div class="asc-stat"><div class="av blue">24</div><div class="al">Enrolled</div></div>
-              <div class="asc-stat"><div class="av green">20</div><div class="al">Submitted</div></div>
-              <div class="asc-stat"><div class="av red">4</div><div class="al">Not Submitted</div></div>
-              <div class="asc-stat"><div class="av amber">—</div><div class="al">Avg Mark</div></div>
-            </div>
-            <div style="margin-bottom:8px;background:var(--surface2);border-radius:7px;height:8px;overflow:hidden;"><div style="height:100%;width:83%;background:var(--green);border-radius:7px;"></div></div>
-            <div class="asc-actions">
-              <label class="btn-sm" style="cursor:pointer;display:inline-flex;align-items:center;gap:5px;">📤 Upload Submission Report<input type="file" accept=".csv" style="display:none;" onchange="handleTutorUpload(this,'Submission Report · SA1')"></label>
-              <button class="btn-sm" style="color:var(--amber);border-color:var(--amber-border);">⚠️ Send 2-Day Notice to Non-Submitters</button>
-              <button class="btn-sm" style="color:var(--red);border-color:var(--red-border);">🔒 Send Assessment Closed Notice to Non-Submitters</button>
-              <button class="btn-sm" onclick="confirmMarksUpload('marks-sa1')">📊 Upload Marks, and Release Results</button>
-              <input type="file" id="marks-sa1" accept=".csv,.xls,.xlsx" style="display:none;" onchange="handleTutorUpload(this,'Marks · SA1')">
-            </div>
-            <div class="asc-actions" style="margin-top:8px;padding-top:8px;border-top:1px dashed var(--border);">
-              <button class="btn-sm" style="color:var(--orange,#ea580c);border-color:var(--orange-border,#fed7aa);" onclick="alert('Re-Assessment Notice — message to be defined.')">📨 Send Re-Assessment Notice</button>
-              <label class="btn-sm" style="cursor:pointer;display:inline-flex;align-items:center;gap:5px;color:var(--red);border-color:var(--red-border);">📊 Upload Re-Assessment Marks<input type="file" accept=".csv,.xls,.xlsx" style="display:none;" onchange="handleTutorUpload(this,'Re-Assessment Marks · SA1')"></label>
-            </div>
-          </div>
-        </div>
-        <div id="panel-upload-sub-sa1" style="display:none;background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;margin-top:-6px;margin-bottom:12px;box-shadow:var(--shadow);border-top:none;">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-            <div style="font-size:14px;font-weight:700;">Upload Submission Report — SA1</div>
-            <button class="btn-sm" onclick="document.getElementById('panel-upload-sub-sa1').style.display='none'">✕ Close</button>
-          </div>
-          <p style="font-size:13px;color:var(--text2);margin-bottom:14px;">Upload the Blackboard submission CSV. The system matches First Name + Last Name to BSU IDs. Review matches before confirming.</p>
-          <label style="display:inline-flex;align-items:center;gap:8px;padding:9px 16px;background:var(--accent-light);border:1.5px solid var(--accent-border);border-radius:var(--radius);color:var(--accent);font-size:13px;font-weight:600;cursor:pointer;">
-            📤 Choose Submission CSV
-            <input type="file" accept=".csv" style="display:none;" onchange="handleTutorUpload(this,'Submission Report · SA1')">
-          </label>
-          <div style="font-size:11px;color:var(--text3);margin-top:6px;margin-bottom:14px;">Blackboard export · CSV format</div>
-          <div id="match-preview-sa1" style="display:none;margin-top:16px;">
-            <div style="font-size:13px;font-weight:700;margin-bottom:8px;">Match Preview — 5 of 24 shown</div>
-            <table class="match-table">
-              <thead><tr><th>Name in file</th><th>BSU ID matched</th><th>Status</th></tr></thead>
-              <tbody>
-                <tr><td>Tagana, Eana Mae</td><td>638149</td><td class="match-ok">✓ Matched · Submitted</td></tr>
-                <tr><td>Saqib, Rabia</td><td>480554</td><td class="match-ok">✓ Matched · Submitted</td></tr>
-                <tr><td>Boc, Leanne</td><td>521708</td><td class="match-warn">Matched · Not submitted</td></tr>
-                <tr><td>Francisco, Elisangela</td><td>638020</td><td class="match-ok">✓ Matched · Submitted</td></tr>
-                <tr><td>Rahman, Md</td><td>—</td><td class="match-err">✗ No match — assign manually</td></tr>
-              </tbody>
-            </table>
-            <div style="display:flex;gap:8px;margin-top:12px;">
-              <button class="btn-sm primary" onclick="document.getElementById('panel-upload-sub-sa1').style.display='none';alert('Submission report saved.')">Confirm &amp; Save</button>
-              <button class="btn-sm" onclick="document.getElementById('panel-upload-sub-sa1').style.display='none'">Cancel</button>
-            </div>
-          </div>
-        </div>
-        <div id="panel-upload-marks-sa1" style="display:none;background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;margin-top:-6px;margin-bottom:12px;box-shadow:var(--shadow);border-top:none;">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-            <div style="font-size:14px;font-weight:700;">Upload Marks — SA1 · gc_ Gradebook File</div>
-            <button class="btn-sm" onclick="document.getElementById('panel-upload-marks-sa1').style.display='none'">✕ Close</button>
-          </div>
-          <div style="background:var(--accent-light);border:1px solid var(--accent-border);border-radius:8px;padding:11px 14px;font-size:12px;color:#1e3a8a;margin-bottom:14px;">ℹ️ Marks will be read from <strong>Column G only</strong>. All other columns are ignored.</div>
-          <label style="display:inline-flex;align-items:center;gap:8px;padding:9px 16px;background:var(--accent-light);border:1.5px solid var(--accent-border);border-radius:var(--radius);color:var(--accent);font-size:13px;font-weight:600;cursor:pointer;margin-bottom:14px;">
-            📊 Choose Gradebook File
-            <input type="file" accept=".csv,.xls,.xlsx" style="display:none;" onchange="handleTutorUpload(this,'Marks File · SA1')">
-          </label>
-          <div style="font-size:11px;color:var(--text3);margin-top:-10px;margin-bottom:14px;">Blackboard gradebook export · .xls or .csv · Column G = mark</div>
-          <div style="display:flex;gap:8px;"><button class="btn-sm green" onclick="document.getElementById('panel-upload-marks-sa1').style.display='none';alert('Marks uploaded and results released. Students notified by email.')">Upload Marks, and Release Results</button></div>
-        </div>
-
-        <!-- SA2 Assessment card — Sem 2 comes first -->
-        <div class="assessment-card-full">
-          <div class="asc-header">
-            <div>
-              <div class="asc-title">SA2 — Research Presentation</div>
-              <div class="asc-meta-row">Weight: 40% · Max: 100 · Deadline: 12 May 2026</div>
-            </div>
-            <span class="ass-badge pending" style="font-size:11px;padding:3px 10px;">Upcoming</span>
-          </div>
-          <div class="asc-body">
-            <div class="asc-stats-row">
-              <div class="asc-stat"><div class="av blue">24</div><div class="al">Enrolled</div></div>
-              <div class="asc-stat"><div class="av" style="color:var(--text3);">—</div><div class="al">Submitted</div></div>
-              <div class="asc-stat"><div class="av" style="color:var(--text3);">—</div><div class="al">Not Submitted</div></div>
-              <div class="asc-stat"><div class="av" style="color:var(--text3);">—</div><div class="al">Avg Mark</div></div>
-            </div>
-            <div class="asc-actions">
-              <label class="btn-sm" style="cursor:pointer;display:inline-flex;align-items:center;gap:5px;">📤 Upload Submission Report<input type="file" accept=".csv" style="display:none;" onchange="handleTutorUpload(this,'Submission Report · SA2')"></label>
-              <button class="btn-sm" style="color:var(--amber);border-color:var(--amber-border);">⚠️ Send 2-Day Notice to Non-Submitters</button>
-              <button class="btn-sm" style="color:var(--red);border-color:var(--red-border);">🔒 Send Assessment Closed Notice to Non-Submitters</button>
-              <button class="btn-sm" onclick="confirmMarksUpload('marks-sa2')">📊 Upload Marks, and Release Results</button>
-              <input type="file" id="marks-sa2" accept=".csv,.xls,.xlsx" style="display:none;" onchange="handleTutorUpload(this,'Marks · SA2')">
-            </div>
-            <div class="asc-actions" style="margin-top:8px;padding-top:8px;border-top:1px dashed var(--border);">
-              <button class="btn-sm" style="color:var(--orange,#ea580c);border-color:var(--orange-border,#fed7aa);" onclick="alert('Re-Assessment Notice — message to be defined.')">📨 Send Re-Assessment Notice</button>
-              <label class="btn-sm" style="cursor:pointer;display:inline-flex;align-items:center;gap:5px;color:var(--red);border-color:var(--red-border);">📊 Upload Re-Assessment Marks<input type="file" accept=".csv,.xls,.xlsx" style="display:none;" onchange="handleTutorUpload(this,'Re-Assessment Marks · SA2')"></label>
-            </div>
-          </div>
-        </div>
-        <div id="panel-upload-sub-sa2" style="display:none;background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;margin-top:-6px;margin-bottom:12px;box-shadow:var(--shadow);border-top:none;">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-            <div style="font-size:14px;font-weight:700;">Upload Submission Report — SA2</div>
-            <button class="btn-sm" onclick="document.getElementById('panel-upload-sub-sa2').style.display='none'">✕ Close</button>
-          </div>
-          <p style="font-size:13px;color:var(--text2);margin-bottom:14px;">Upload the Blackboard submission CSV. The system matches First Name + Last Name to BSU IDs. Review matches before confirming.</p>
-          <label style="display:inline-flex;align-items:center;gap:8px;padding:9px 16px;background:var(--accent-light);border:1.5px solid var(--accent-border);border-radius:var(--radius);color:var(--accent);font-size:13px;font-weight:600;cursor:pointer;">
-            📤 Choose Submission CSV
-            <input type="file" accept=".csv" style="display:none;" onchange="handleTutorUpload(this,'Submission Report · SA2')">
-          </label>
-          <div style="font-size:11px;color:var(--text3);margin-top:6px;">Blackboard export · CSV format</div> style="display:none;background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;margin-top:-6px;margin-bottom:12px;box-shadow:var(--shadow);border-top:none;">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-            <div style="font-size:14px;font-weight:700;">Upload Marks — SA2 · gc_ Gradebook File</div>
-            <button class="btn-sm" onclick="document.getElementById('panel-upload-marks-sa2').style.display='none'">✕ Close</button>
-          </div>
-          <div style="background:var(--accent-light);border:1px solid var(--accent-border);border-radius:8px;padding:11px 14px;font-size:12px;color:#1e3a8a;margin-bottom:14px;">ℹ️ Marks will be read from <strong>Column G only</strong>. All other columns are ignored.</div>
-          <label style="display:inline-flex;align-items:center;gap:8px;padding:9px 16px;background:var(--accent-light);border:1.5px solid var(--accent-border);border-radius:var(--radius);color:var(--accent);font-size:13px;font-weight:600;cursor:pointer;margin-bottom:14px;">
-            📊 Choose Gradebook File
-            <input type="file" accept=".csv,.xls,.xlsx" style="display:none;" onchange="handleTutorUpload(this,'Marks File · SA2')">
-          </label>
-          <div style="font-size:11px;color:var(--text3);margin-top:-10px;margin-bottom:14px;">Blackboard gradebook export · .xls or .csv · Column G = mark</div>
-          <div style="display:flex;gap:8px;"><button class="btn-sm green" onclick="document.getElementById('panel-upload-marks-sa2').style.display='none';alert('Marks uploaded and results released. Students notified by email.')">Upload Marks, and Release Results</button></div>
-        </div>
-
-        <!-- Add Assessment panel (hidden) -->
-        <div id="panel-add-assessment" style="display:none;background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;margin-top:14px;box-shadow:var(--shadow);">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-            <div style="font-size:14px;font-weight:700;">Add New Assessment</div>
-            <button class="btn-sm" onclick="document.getElementById('panel-add-assessment').style.display='none'">✕ Close</button>
-          </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
-            <div><label style="display:block;font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;margin-bottom:5px;">Assessment Code</label>
-              <select style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:'Sora',sans-serif;font-size:13px;outline:none;"><option>SA1</option><option>SA2</option></select></div>
-            <div><label style="display:block;font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;margin-bottom:5px;">Title</label>
-              <input type="text" placeholder="e.g. Literature Review" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:'Sora',sans-serif;font-size:13px;outline:none;"></div>
-            <div><label style="display:block;font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;margin-bottom:5px;">Weight %</label>
-              <input type="number" placeholder="e.g. 60" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:'Sora',sans-serif;font-size:13px;outline:none;"></div>
-            <div><label style="display:block;font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;margin-bottom:5px;">Max Score</label>
-              <input type="number" placeholder="e.g. 100" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:'Sora',sans-serif;font-size:13px;outline:none;"></div>
-            <div><label style="display:block;font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;margin-bottom:5px;">Deadline</label>
-              <input type="date" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:'Sora',sans-serif;font-size:13px;outline:none;"></div>
-          </div>
-          <div style="display:flex;gap:8px;"><button class="btn-sm primary" onclick="document.getElementById('panel-add-assessment').style.display='none';alert('Assessment created.')">Create Assessment</button><button class="btn-sm" onclick="document.getElementById('panel-add-assessment').style.display='none'">Cancel</button></div>
-        </div>
-
-      </div><!-- /assessments -->
+        <div id="asm-cards-container"></div>
 
 
       <!-- MODULE DETAIL PAGE -->
@@ -1447,21 +1300,7 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
 
           <!-- Existing notes list -->
           <div id="notes-list" style="display:none;padding:0;">
-            <div style="padding:12px 16px;border-bottom:1px solid var(--border);">
-              <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:4px;">Cybersecurity Fundamentals</div>
-              <div style="font-size:13px;color:var(--text);line-height:1.6;margin-bottom:6px;">Your resubmission for SA1 (Threat Analysis Report) is due <strong>24 Mar 2026</strong>. Please address the feedback on the threat modelling section. Reach out if you need guidance before submission.</div>
-              <div style="font-size:11px;color:var(--text3);">Iftikhar Alam Khan &nbsp;·&nbsp; 18 Mar 2026</div>
-            </div>
-            <div style="padding:12px 16px;border-bottom:1px solid var(--border);">
-              <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:4px;">General</div>
-              <div style="font-size:13px;color:var(--text);line-height:1.6;margin-bottom:6px;">Great improvement in attendance this semester. Make sure all outstanding fees are cleared before SA2 deadlines.</div>
-              <div style="font-size:11px;color:var(--text3);">Iftikhar Alam Khan &nbsp;·&nbsp; 10 Mar 2026</div>
-            </div>
-            <div style="padding:12px 16px;">
-              <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:4px;">Final Year Project</div>
-              <div style="font-size:13px;color:var(--text);line-height:1.6;margin-bottom:6px;">Project Proposal deadline is 28 Mar. Please submit a draft by <strong>21 Mar</strong> for review. Ensure your research question is well-defined.</div>
-              <div style="font-size:11px;color:var(--text3);">Dr. Amara Patel &nbsp;·&nbsp; 5 Mar 2026</div>
-            </div>
+            <div style="padding:16px;color:var(--text3);font-size:13px;text-align:center;">No critical notes yet.</div>
           </div>
         </div>
 
@@ -1831,9 +1670,9 @@ function openModuleDetail(code, name, prog, year, sem){
           : `<span style="font-size:10px;background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-border);padding:1px 7px;border-radius:4px;font-weight:600;">${rk.accountsStatus}</span>`)
         : '—';
       const safeName = s.name.replace(/'/g, "\'");
-      return `<tr onclick="openStudentRecord('${s.bsuId}')" style="cursor:pointer;">
+      return `<tr style="border-bottom:1px solid var(--border);">
         <td class="td-name"><div style="display:flex;align-items:center;gap:7px;">${s.photoUrl?`<img src="${driveImgUrl(s.photoUrl)}" style="width:26px;height:26px;border-radius:50%;object-fit:cover;border:1px solid var(--border);flex-shrink:0;" onerror="this.style.display='none'">`:''}
-        <span style="font-weight:600;color:var(--accent);">${s.name}</span></div></td>
+        <span style="font-weight:600;color:var(--accent);cursor:pointer;" onclick="openStudentRecord('${s.bsuId}')">${s.name}</span></div></td>
         <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text2);">${s.bsuId}</td>
         <td style="text-align:center;">${regBadge}</td>
         <td style="text-align:center;">${accBadge}</td>
@@ -1889,10 +1728,33 @@ function openStudentRecord(bsuId){
       return `<a href="${d.url}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:8px;background:${bg};border:1.5px solid ${brd};text-decoration:none;margin:0 6px 6px 0;"><span style="font-size:16px;">${d.icon}</span><div><div style="font-size:12px;font-weight:700;color:var(--text);">${d.label}</div>${d.exp?`<div style="font-size:10px;font-weight:600;color:${ec};">Exp: ${d.exp}</div>`:''}</div></a>`;
     }).join('');
   }
+  // Load critical notes from sheet
+  const notesList = document.getElementById('notes-list');
+  if(notesList){
+    notesList.innerHTML = '<div style="padding:12px 16px;color:var(--text3);font-size:12px;">Loading notes...</div>';
+    apiFetch({action:'getNotes', bsuId}).then(notes => {
+      renderNotesList(notes, notesList);
+    }).catch(() => {
+      notesList.innerHTML = '<div style="padding:12px 16px;color:var(--text3);font-size:12px;">Could not load notes.</div>';
+    });
+  }
   showPage('student-record');
 }
 
-let savedDashScroll = 0;
+function renderNotesList(notes, list){
+  if(!list) return;
+  if(!notes || !notes.length){
+    list.innerHTML = '<div style="padding:16px;color:var(--text3);font-size:13px;text-align:center;">No critical notes yet.</div>';
+    return;
+  }
+  list.innerHTML = notes.map((n,i) =>
+    `<div style="padding:12px 16px;${i<notes.length-1?'border-bottom:1px solid var(--border);':''}">
+      <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:4px;">${n.moduleCode||'General'}</div>
+      <div style="font-size:13px;color:var(--text);line-height:1.6;margin-bottom:6px;">${n.note||''}</div>
+      <div style="font-size:11px;color:var(--text3);">${n.writtenBy||''} &nbsp;·&nbsp; ${n.date||''}</div>
+    </div>`
+  ).join('');
+}
 
 
 const _SMOL=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -2016,12 +1878,16 @@ function setAtt(i, status){
 }
 function updateAttCounts(){
   const total=(window._attStudents||[]).length;
-  const absent=document.querySelectorAll('.a-active').length,late=document.querySelectorAll('.l-active').length;
-  const eff=(total-absent-late)+(late*0.5),pct=total?Math.round(eff/total*100):0;
-  const pe=document.getElementById('att-present');if(pe)pe.textContent=total-absent-late;
+  // Count only visible rows
+  const visibleRows = Array.from(document.querySelectorAll('#att-tbody tr')).filter(r=>r.style.display!=='none');
+  const absent = visibleRows.filter(r=>r.querySelector('.a-active')).length;
+  const late   = visibleRows.filter(r=>r.querySelector('.l-active')).length;
+  const vis    = visibleRows.length;
+  const eff=(vis-absent-late)+(late*0.5), pct=vis?Math.round(eff/vis*100):0;
+  const pe=document.getElementById('att-present');if(pe)pe.textContent=vis-absent-late;
   const le=document.getElementById('att-late');if(le)le.textContent=late;
   const ae=document.getElementById('att-absent');if(ae)ae.textContent=absent;
-  const te=document.getElementById('att-total');if(te)te.textContent=total;
+  const te=document.getElementById('att-total');if(te)te.textContent=vis;
   const pp=document.getElementById('att-today-pct');if(pp){pp.textContent=pct+'%';pp.className='s-val '+(pct>=85?'green':pct>=65?'amber':'red');}
   const bar=document.getElementById('att-progress-fill');if(bar){bar.style.width=pct+'%';bar.style.background=pct>=85?'#4ade80':pct>=65?'#fbbf24':'#f87171';}
 }
@@ -2117,11 +1983,415 @@ function showAttendance(code, name){
 function showAssessments(code, name){
   if(document.getElementById('page-dashboard').classList.contains('active')) savedDashScroll = mc.scrollTop;
   document.getElementById('asm-page-title').textContent = 'Assessments — ' + name;
-  document.getElementById('asm-page-sub').textContent = code + ' · Semester 2 · 2025/2026';
-  ['panel-upload-sub-sa1','panel-upload-sub-sa2','panel-upload-marks-sa1','panel-upload-marks-sa2','panel-add-assessment','match-preview-sa1'].forEach(id=>{
-    const el=document.getElementById(id); if(el) el.style.display='none';
-  });
+
+  // Find module from _modules using code
+  var mod = null;
+  if(window._modules){
+    for(var i=0;i<_modules.length;i++){
+      if(_modules[i].moduleCode===code){ mod=_modules[i]; break; }
+    }
+  }
+
+  var sem = mod ? (mod.semester==='Sem 1' ? 1 : 2) : 1;
+
+  // Build SA data from module — fields: sa1Title, sa1Weight, sa1Deadline, sa2Title, sa2Weight, sa2Deadline
+  var saArr = [];
+  if(mod){
+    console.log('[ASM DEBUG] module object:', JSON.stringify(mod));
+    // sa1Weight comes as string e.g. "0.6" or "60%" — normalise to 0-1 float
+    var w1 = parseFloat(String(mod.sa1Weight||'0').replace('%',''));
+    var w2 = parseFloat(String(mod.sa2Weight||'0').replace('%',''));
+    if(w1>1) w1=w1/100; if(w2>1) w2=w2/100;
+    if(mod.sa1Title) saArr.push({sa:'SA1', title:mod.sa1Title, weight:w1, deadline:mod.sa1Deadline||'—'});
+    if(mod.sa2Title) saArr.push({sa:'SA2', title:mod.sa2Title, weight:w2, deadline:mod.sa2Deadline||'—'});
+  } else {
+    console.log('[ASM DEBUG] module NOT found for code:', code, '| _modules:', window._modules ? _modules.length : 'undefined');
+  }
+
+  // Count enrolled students for this module
+  var enrolled = 0;
+  if(window._students && mod){
+    _students.forEach(function(s){
+      if((s.programme||'')===(mod.programme||'') && (s.currentYear||'')===(mod.year||'')) enrolled++;
+    });
+  }
+
+  document.getElementById('asm-page-sub').textContent = code + ' · Semester ' + sem + ' · 2025/2026';
+  renderAsmCards(code, name, saArr, enrolled);
   showPage('assessments');
+}
+
+// ── Render SA cards dynamically ────────────────────────────────────────────
+function renderAsmCards(code, name, saArr, enrolled){
+  var container = document.getElementById('asm-cards-container');
+  if(!container) return;
+  container.innerHTML = '';
+  if(!saArr.length){
+    container.innerHTML = '<div style="padding:32px;text-align:center;color:var(--text3);font-size:13px;">No assessments found for this module.</div>';
+    return;
+  }
+  saArr.forEach(function(sa){
+    var saId = sa.sa.toLowerCase().replace(' ','');
+    var weightPct = sa.weight ? Math.round(sa.weight*100)+'%' : '—';
+    var card = document.createElement('div');
+    card.id = 'asm-card-'+saId;
+    // Store SA config as data attributes for event delegation
+    card.dataset.code     = code;
+    card.dataset.name     = name;
+    card.dataset.sa       = sa.sa;
+    card.dataset.title    = sa.title;
+    card.dataset.weight   = sa.weight||0;
+    card.dataset.deadline = sa.deadline||'';
+    card.dataset.enrolled = enrolled;
+    card.innerHTML =
+      '<div class="assessment-card-full">' +
+        '<div class="asc-header">' +
+          '<div>' +
+            '<div class="asc-title">'+sa.sa+' — '+sa.title+'</div>' +
+            '<div class="asc-meta-row">Weight: '+weightPct+' · Max: 100 · Deadline: '+(sa.deadline||'—')+'</div>' +
+          '</div>' +
+          '<span class="ass-badge pending" id="asm-badge-'+saId+'" style="font-size:11px;padding:3px 10px;">Open</span>' +
+        '</div>' +
+        '<div class="asc-body">' +
+          '<div class="asc-stats-row">' +
+            '<div class="asc-stat"><div class="av blue" id="asm-enrolled-'+saId+'">'+enrolled+'</div><div class="al">Enrolled</div></div>' +
+            '<div class="asc-stat"><div class="av green" id="asm-submitted-'+saId+'">—</div><div class="al">Submitted</div></div>' +
+            '<div class="asc-stat"><div class="av red" id="asm-notsub-'+saId+'">—</div><div class="al">Not Submitted</div></div>' +
+            '<div class="asc-stat"><div class="av amber" id="asm-avgmark-'+saId+'">—</div><div class="al">Avg Mark</div></div>' +
+          '</div>' +
+          '<div style="margin-bottom:8px;background:var(--surface2);border-radius:7px;height:8px;overflow:hidden;"><div id="asm-bar-'+saId+'" style="height:100%;width:0%;background:var(--green);border-radius:7px;transition:width 0.4s;"></div></div>' +
+          '<div class="asc-actions">' +
+            '<button class="btn-sm" style="color:var(--amber);border-color:var(--amber-border);" data-notice="2day" data-sakey="'+saId+'">⚠️ Send 2-Day Notice</button>' +
+            '<button class="btn-sm" style="color:var(--red);border-color:var(--red-border);" data-notice="closed" data-sakey="'+saId+'">🔒 Send Assessment Closed Notice</button>' +
+            '<button class="btn-sm" data-openmarks="'+saId+'">📊 Upload Marks &amp; Release Results</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+      // Marks upload panel
+      '<div id="panel-marks-'+saId+'" style="display:none;background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;margin-top:-6px;margin-bottom:12px;box-shadow:var(--shadow);border-top:none;">' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">' +
+          '<div style="font-size:14px;font-weight:700;" id="marks-panel-title-'+saId+'">Upload Marks — '+sa.sa+'</div>' +
+          '<button class="btn-sm" data-closepanel="panel-marks-'+saId+'">✕ Close</button>' +
+        '</div>' +
+        '<div style="background:var(--accent-light);border:1px solid var(--accent-border);border-radius:8px;padding:11px 14px;font-size:12px;color:#1e3a8a;margin-bottom:14px;">ℹ️ Upload the Blackboard gradebook file. Marks are read from <strong>Column G</strong>. BSU ID matched from <strong>Username column</strong>.</div>' +
+        '<label style="display:inline-flex;align-items:center;gap:8px;padding:9px 16px;background:var(--accent-light);border:1.5px solid var(--accent-border);border-radius:var(--radius);color:var(--accent);font-size:13px;font-weight:600;cursor:pointer;margin-bottom:8px;">' +
+          '📊 Choose Gradebook File' +
+          '<input type="file" id="gb-input-'+saId+'" accept=".xls,.csv" style="display:none;" data-parsegb="'+saId+'">' +
+        '</label>' +
+        '<div style="font-size:11px;color:var(--text3);margin-bottom:14px;">Blackboard gc_ export · .xls or .csv · UTF-16 format</div>' +
+        '<div id="marks-preview-'+saId+'" style="display:none;"></div>' +
+      '</div>';
+    container.appendChild(card);
+  });
+}
+
+// ── Event delegation for assessment card buttons ──────────────────────────
+document.addEventListener('click', function(e){
+  var btn = e.target.closest('button[data-notice], button[data-openmarks]');
+  if(!btn) return;
+  // Find parent card with data attrs
+  var card = btn.closest('[data-code]');
+  if(!card) return;
+  var code     = card.dataset.code;
+  var name     = card.dataset.name;
+  var sa       = card.dataset.sa;
+  var title    = card.dataset.title;
+  var weight   = parseFloat(card.dataset.weight)||0;
+  var deadline = card.dataset.deadline;
+  var enrolled = parseInt(card.dataset.enrolled)||0;
+  var saId     = sa.toLowerCase();
+
+  if(btn.dataset.confirmRelease !== undefined){
+    confirmAndRelease(btn.dataset.confirmRelease, e);
+    return;
+  }
+  if(btn.dataset.closepanel !== undefined){
+    var el = document.getElementById(btn.dataset.closepanel);
+    if(el) el.style.display='none';
+    return;
+  }
+  if(btn.dataset.cancelpanel !== undefined){
+    var el2 = document.getElementById(btn.dataset.cancelpanel);
+    if(el2) el2.style.display='none';
+    window._pendingMarks = null;
+    return;
+  }
+  if(btn.dataset.openmarks !== undefined){
+    var panel = document.getElementById('panel-marks-'+saId);
+    if(!panel) return;
+    var vis = panel.style.display==='block';
+    panel.style.display = vis ? 'none' : 'block';
+    if(!vis) setTimeout(function(){ panel.scrollIntoView({behavior:'smooth',block:'nearest'}); },50);
+    return;
+  }
+  if(btn.dataset.notice){
+    sendNotice(code, name, sa, title, weight, deadline, btn.dataset.notice);
+  }
+});
+
+// Event delegation for file input changes
+document.addEventListener('change', function(e){
+  var inp = e.target;
+  if(!inp.dataset.parsegb) return;
+  var saId = inp.dataset.parsegb;
+  var card = document.getElementById('asm-card-'+saId);
+  if(!card) return;
+  var code   = card.dataset.code;
+  var name   = card.dataset.name;
+  var sa     = card.dataset.sa;
+  var title  = card.dataset.title;
+  var weight = parseFloat(card.dataset.weight)||0;
+  parseGradebook(inp, code, name, sa, title, weight);
+});
+
+// ── Open marks upload panel ─────────────────────────────────────────────────
+function openMarksUpload(saId){
+  var panel = document.getElementById('panel-marks-'+saId);
+  if(!panel) return;
+  var vis = panel.style.display==='block';
+  panel.style.display = vis ? 'none' : 'block';
+  if(!vis) setTimeout(function(){ panel.scrollIntoView({behavior:'smooth',block:'nearest'}); },50);
+}
+
+// ── Parse Blackboard gradebook (UTF-16 TSV or CSV) ─────────────────────────
+function parseGradebook(input, code, name, sa, title, weight){
+  if(!input.files||!input.files[0]) return;
+  var saId = sa.toLowerCase();
+  var preview = document.getElementById('marks-preview-'+saId);
+  if(preview){ preview.innerHTML='<div style="font-size:13px;color:var(--text2);padding:8px 0;">⏳ Reading file…</div>'; preview.style.display='block'; }
+
+  var reader = new FileReader();
+  reader.onload = function(e){
+    try{
+      // Decode UTF-16 LE
+      var bytes = new Uint8Array(e.target.result);
+      var text = new TextDecoder('utf-16le').decode(bytes);
+
+      // Parse TSV
+      var lines = text.split('\n').filter(function(l){ return l.trim(); });
+      var records = [];
+      for(var i=1;i<lines.length;i++){
+        // Remove BOM and quotes
+        var cols = lines[i].replace(/^\uFEFF/,'').split('\t').map(function(c){ return c.replace(/^"|"$/g,'').trim(); });
+        if(cols.length<7) continue;
+        var bsuId = cols[2]; // Username column
+        var lastName = cols[0];
+        var firstName = cols[1];
+        var markRaw = cols[6];
+        if(!bsuId||!bsuId.match(/^\d+$/)) continue;
+        var mark = markRaw===''||markRaw==='—'||markRaw===null ? null : parseFloat(markRaw);
+        var grade = calcGradeJS(mark);
+        // Try to find student name in _students
+        var studentName = firstName+' '+lastName;
+        if(window._students){
+          var found = _students.find(function(s){ return String(s.bsuId)===String(bsuId); });
+          if(found) studentName = found.fullName||studentName;
+        }
+        records.push({ bsuId:bsuId, studentName:studentName, mark:mark, grade:grade, inCurrent: window._students ? !!_students.find(function(s){ return String(s.bsuId)===String(bsuId); }) : true });
+      }
+
+      if(!records.length){
+        if(preview) preview.innerHTML='<div style="color:var(--red);font-size:13px;padding:8px 0;">⚠️ No valid records found. Please check the file format.</div>';
+        return;
+      }
+
+      // Store for confirm
+      window._pendingMarks = { code:code, name:name, sa:sa, title:title, weight:weight, records:records };
+      renderMarksPreview(saId, records, weight);
+    } catch(err){
+      if(preview) preview.innerHTML='<div style="color:var(--red);font-size:13px;padding:8px 0;">⚠️ Error reading file: '+err.message+'</div>';
+    }
+  };
+  reader.readAsArrayBuffer(input.files[0]);
+}
+
+function calcGradeJS(mark){
+  if(mark===null||mark===undefined||isNaN(mark)) return '—';
+  if(mark>=70) return '1st';
+  if(mark>=60) return '2:1';
+  if(mark>=50) return '2:2';
+  if(mark>=40) return '3rd';
+  return 'Fail';
+}
+
+// ── Render marks preview table ──────────────────────────────────────────────
+function renderMarksPreview(saId, records, weight){
+  var preview = document.getElementById('marks-preview-'+saId);
+  if(!preview) return;
+
+  var gradeColor = function(g){
+    if(g==='1st') return '#16a34a';
+    if(g==='2:1'||g==='2:2') return '#d97706';
+    if(g==='3rd') return '#ea580c';
+    if(g==='Fail') return '#dc2626';
+    return 'var(--text2)';
+  };
+
+  var warnings = records.filter(function(r){ return !r.inCurrent; });
+  var validMarks = records.filter(function(r){ return r.mark!==null && !isNaN(r.mark); });
+  var avg = validMarks.length ? (validMarks.reduce(function(s,r){ return s+r.mark; },0)/validMarks.length).toFixed(1) : '—';
+
+  var html = '';
+  if(warnings.length){
+    html += '<div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:7px;padding:10px 14px;font-size:12px;color:#92400e;margin-bottom:12px;">⚠️ '+warnings.length+' BSU ID(s) not found in CURRENT sheet — shown in amber below. Review before releasing.</div>';
+  }
+
+  html += '<div style="display:flex;gap:16px;margin-bottom:12px;">';
+  html += '<div style="font-size:12px;color:var(--text2);">📋 <strong>'+records.length+'</strong> students</div>';
+  html += '<div style="font-size:12px;color:var(--text2);">📊 Avg Mark: <strong>'+avg+'</strong></div>';
+  html += '</div>';
+
+  html += '<div style="overflow-x:auto;margin-bottom:14px;border-radius:8px;border:1px solid var(--border);">';
+  html += '<table style="width:100%;border-collapse:collapse;font-size:12px;">';
+  html += '<thead><tr style="background:var(--sb-bg);">';
+  html += '<th style="padding:8px 12px;text-align:left;color:#fff;font-weight:600;">BSU ID</th>';
+  html += '<th style="padding:8px 12px;text-align:left;color:#fff;font-weight:600;">Student Name</th>';
+  html += '<th style="padding:8px 12px;text-align:center;color:#fff;font-weight:600;">Mark /100</th>';
+  html += '<th style="padding:8px 12px;text-align:center;color:#fff;font-weight:600;">Grade</th>';
+  html += '<th style="padding:8px 12px;text-align:center;color:#fff;font-weight:600;">Weighted</th>';
+  html += '</tr></thead><tbody>';
+
+  records.forEach(function(r, idx){
+    var rowBg = !r.inCurrent ? '#fef3c7' : (idx%2===0?'#fff':'#f9fafb');
+    var weighted = (r.mark!==null&&!isNaN(r.mark)) ? (r.mark * weight).toFixed(1) : '—';
+    html += '<tr style="background:'+rowBg+';">';
+    html += '<td style="padding:7px 12px;border-bottom:1px solid #f0f0f0;font-family:monospace;">'+r.bsuId+(r.inCurrent?'':' ⚠️')+'</td>';
+    html += '<td style="padding:7px 12px;border-bottom:1px solid #f0f0f0;">'+r.studentName+'</td>';
+    html += '<td style="padding:7px 12px;border-bottom:1px solid #f0f0f0;text-align:center;font-weight:700;">'+(r.mark!==null?r.mark:'—')+'</td>';
+    html += '<td style="padding:7px 12px;border-bottom:1px solid #f0f0f0;text-align:center;font-weight:700;color:'+gradeColor(r.grade)+';">'+r.grade+'</td>';
+    html += '<td style="padding:7px 12px;border-bottom:1px solid #f0f0f0;text-align:center;">'+weighted+'</td>';
+    html += '</tr>';
+  });
+  html += '</tbody></table></div>';
+
+  html += '<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:7px;padding:10px 14px;font-size:12px;color:#15803d;margin-bottom:14px;">✅ Confirming will save marks to RESULTS sheet, set Published = Yes, and email all parents.</div>';
+  html += '<div style="display:flex;gap:8px;">';
+  html += '<button class="btn-sm primary" data-confirm-release="'+saId+'">✅ Confirm &amp; Release Results</button>';
+  html += '<button class="btn-sm" data-cancelpanel="marks-preview-'+saId+'">Cancel</button>';
+  html += '</div>';
+
+  preview.innerHTML = html;
+  preview.style.display = 'block';
+}
+
+// ── Confirm & release results ───────────────────────────────────────────────
+function confirmAndRelease(saId, e){
+  var btn = e && e.target ? e.target : null;
+  var pm = window._pendingMarks;
+  if(!pm){ showToast('No marks data found. Please re-upload.','error'); return; }
+
+  // btn already set from parameter
+  if(btn){ btn.disabled=true; btn.textContent='⏳ Saving…'; }
+
+  var tutor = window._staffMember || {};
+  var tutorName  = tutor.name  || '';
+  var tutorEmail = tutor.email || '';
+
+  // Build records array for API
+  var records = pm.records.map(function(r){
+    return { bsuId: r.bsuId, studentName: r.studentName, mark: r.mark!==null?r.mark:'' };
+  });
+
+  // Step 1: saveResultsBatch
+  apiPost('saveResultsBatch',{
+    moduleCode:  pm.code,
+    moduleName:  pm.name,
+    sa:          pm.sa,
+    saTitle:     pm.title,
+    saWeight:    pm.weight,
+    maxScore:    100,
+    uploadedBy:  tutorEmail,
+    records:     records
+  }).then(function(res){
+    if(!res.ok) throw new Error(res.error||'Save failed');
+
+    // Step 2: publishResults (also sends parent emails)
+    return apiPost('publishResults',{
+      moduleCode:   pm.code,
+      moduleName:   pm.name,
+      sa:           pm.sa,
+      saTitle:      pm.title,
+      saWeight:     pm.weight,
+      publishedBy:  tutorName,
+      tutorName:    tutorName,
+      tutorEmail:   tutorEmail
+    });
+  }).then(function(res){
+    if(!res.ok) throw new Error(res.error||'Publish failed');
+
+    showToast('✅ '+pm.sa+' results released. '+res.published+' parent emails sent.','success');
+
+    // Update badge
+    var badge = document.getElementById('asm-badge-'+saId);
+    if(badge){ badge.textContent='Result Released'; badge.className='ass-badge'; badge.style.background='#16a34a'; badge.style.color='#fff'; }
+
+    // Update avg mark stat
+    var validMarks = pm.records.filter(function(r){ return r.mark!==null&&!isNaN(r.mark); });
+    if(validMarks.length){
+      var avg = (validMarks.reduce(function(s,r){ return s+r.mark; },0)/validMarks.length).toFixed(1);
+      var avgEl = document.getElementById('asm-avgmark-'+saId);
+      if(avgEl) avgEl.textContent = avg;
+    }
+
+    // Close panel
+    var panel = document.getElementById('panel-marks-'+saId);
+    if(panel) panel.style.display='none';
+    window._pendingMarks = null;
+
+  }).catch(function(err){
+    showToast('Error: '+err.message,'error');
+    if(btn){ btn.disabled=false; btn.textContent='✅ Confirm & Release Results'; }
+  });
+}
+
+// ── Send notice emails ──────────────────────────────────────────────────────
+function sendNotice(code, name, sa, title, weight, deadline, type){
+  var label = type==='2day' ? '2-Day Extension Notice' : 'Assessment Closed Notice';
+  var msg = 'Send '+label+' for '+sa+' — '+name+'?\n\nThis will email ALL students in this module who have not submitted.';
+  if(!confirm(msg)) return;
+
+  var tutor = window._staffMember || {};
+  var tutorName  = tutor.name  || '';
+  var tutorEmail = tutor.email || '';
+
+  // Build recipients from _students filtered by module
+  // For now send to all module students (submission tracking comes later)
+  var mod = null;
+  if(window._modules){
+    for(var i=0;i<_modules.length;i++){
+      if(_modules[i].moduleCode===code){ mod=_modules[i]; break; }
+    }
+  }
+  var recipients = [];
+  if(window._students && mod){
+    _students.forEach(function(s){
+      if(s.programme===mod.programme && s.currentYear===mod.year && s.bsuId){
+        recipients.push({ bsuId: String(s.bsuId), studentName: s.fullName||'' });
+      }
+    });
+  }
+  if(!recipients.length){ showToast('No students found for this module.','error'); return; }
+
+  showToast('⏳ Sending '+label+'…','info');
+
+  apiPost('sendAssessmentNotice',{
+    type:        type,
+    moduleCode:  code,
+    moduleName:  name,
+    sa:          sa,
+    saTitle:     title,
+    saWeight:    weight,
+    deadline:    deadline,
+    tutorName:   tutorName,
+    tutorEmail:  tutorEmail,
+    sentBy:      tutorEmail,
+    recipients:  recipients
+  }).then(function(res){
+    if(!res.ok) throw new Error(res.error||'Send failed');
+    showToast('✅ '+label+' sent to '+res.sent+' students.','success');
+  }).catch(function(err){
+    showToast('Error: '+err.message,'error');
+  });
 }
 
 function showModuleDetail(code, name, colorClass){
@@ -2132,27 +2402,7 @@ function showModuleDetail(code, name, colorClass){
   showPage('module-detail');
 }
 
-function showUploadSubmission(sa){
-  const id='panel-upload-sub-'+(sa||'sa1');
-  const el=document.getElementById(id);
-  if(el){const vis=el.style.display==='block';el.style.display=vis?'none':'block';if(!vis)setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'nearest'}),50);}
-}
-function showUploadMarks(sa){
-  const id='panel-upload-marks-'+(sa||'sa1');
-  const el=document.getElementById(id);
-  if(el){const vis=el.style.display==='block';el.style.display=vis?'none':'block';if(!vis)setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'nearest'}),50);}
-}
-
-function handleTutorUpload(input, label){
-  if(input.files && input.files[0]){
-    alert('✓ '+label+'\nFile "'+input.files[0].name+'" selected.\nIn the live build this will be processed and matched against student records.');
-  }
-}
-
-function confirmMarksUpload(inputId){
-  var el = document.getElementById(inputId);
-  if(el) el.click();
-}
+// showUploadSubmission and showUploadMarks removed — replaced by openMarksUpload
 
 const _attSortStates={};
 function sortAttTable(col){
@@ -2453,6 +2703,7 @@ function openNoteModal(bsuId, studentName, moduleCode){
   window._noteModalBsuId = bsuId;
   window._noteModalStudent = studentName;
   window._noteModalModule = moduleCode || (window._currentModule ? window._currentModule.code : 'General');
+  window._noteModalModuleName = window._currentModule ? (window._currentModule.name || window._noteModalModule) : window._noteModalModule;
   document.getElementById('note-modal-student').textContent = studentName;
   document.getElementById('modal-note-text').value = '';
   document.getElementById('modal-note-module').value = window._noteModalModule;
@@ -2476,21 +2727,19 @@ function saveModalNote(){
   fetch(API, { method:'POST', headers:{'Content-Type':'application/json'},
     body: JSON.stringify({ action:'saveNote', bsuId:window._noteModalBsuId,
       studentName:window._noteModalStudent, moduleCode:moduleCode,
+      moduleName:window._noteModalModuleName||moduleCode,
       note:text, writtenBy:writtenBy })
   }).then(r=>r.json()).then(j=>{
     if(j.status==='ok'){
-      // Also prepend to notes-list if visible
-      var list = document.getElementById('notes-list');
+      // Refresh notes list from sheet
+      const list = document.getElementById('notes-list');
       if(list){
-        var newNote = document.createElement('div');
-        newNote.style.cssText = 'padding:12px 16px;border-bottom:1px solid var(--border);';
-        newNote.innerHTML = '<div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:4px;">'+moduleCode+'</div>'
-          +'<div style="font-size:13px;color:var(--text);line-height:1.6;margin-bottom:6px;">'+text+'</div>'
-          +'<div style="font-size:11px;color:var(--text3);">'+(_tutor?_tutor.name:'')+' &nbsp;·&nbsp; '+dateStr+'</div>';
-        list.insertBefore(newNote, list.firstChild);
+        apiFetch({action:'getNotes', bsuId:window._noteModalBsuId}).then(notes => {
+          renderNotesList(notes, list);
+        });
       }
       closeNoteModal();
-      alert('Note saved for '+window._noteModalStudent+'.');
+      alert('Note saved for '+window._noteModalStudent+'. Email sent to student and parent.');
     } else { alert('Error saving note: '+(j.message||'Unknown')); }
   }).catch(e=>{ alert('Save failed: '+e.message); });
 }
