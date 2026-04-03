@@ -2043,6 +2043,35 @@ function showAssessments(code, name){
   document.getElementById('asm-page-sub').textContent = code + ' · Semester ' + sem + ' · 2025/2026';
   renderAsmCards(code, name, saArr, enrolled);
   showPage('assessments');
+
+  // Load existing results from sheet to populate avg mark on card
+  apiFetch({action:'getResults', moduleCode:code}).then(function(results){
+    if(!results || !results.length) return;
+    // Group by SA
+    var bySA = {};
+    results.forEach(function(r){
+      var sa = r.sa || r.saNum || '';
+      if(!bySA[sa]) bySA[sa] = [];
+      bySA[sa].push(r);
+    });
+    Object.keys(bySA).forEach(function(sa){
+      var saId = sa.toLowerCase();
+      var rows = bySA[sa];
+      // Avg mark — exclude 0 (not submitted)
+      var valid = rows.filter(function(r){ return r.mark!==null && r.mark!==undefined && Number(r.mark) > 0; });
+      if(valid.length){
+        var avg = (valid.reduce(function(s,r){ return s+Number(r.mark); },0)/valid.length).toFixed(1);
+        var avgEl = document.getElementById('asm-avgmark-'+saId);
+        if(avgEl) avgEl.textContent = avg;
+      }
+      // Published badge
+      var allPublished = rows.every(function(r){ return r.published==='Yes'; });
+      if(allPublished){
+        var badge = document.getElementById('asm-badge-'+saId);
+        if(badge){ badge.textContent='Result Released'; badge.style.background='#16a34a'; badge.style.color='#fff'; }
+      }
+    });
+  }).catch(function(){});
 }
 
 // ── Render SA cards dynamically ────────────────────────────────────────────
@@ -2363,6 +2392,7 @@ function parseGradebook(input, code, name, sa, title, weight){
         var markRaw = cols[6];
         if(!bsuId||!bsuId.match(/^\d+$/)) continue;
         var mark = markRaw===''||markRaw==='—'||markRaw===null ? null : parseFloat(markRaw);
+        if(mark === 0) mark = null; // 0 = not submitted, not a real mark
         var grade = calcGradeJS(mark);
         // Try to find student name in _students
         var studentName = firstName+' '+lastName;
@@ -2405,7 +2435,7 @@ function sortMarksPreview(th){
 }
 
 function calcGradeJS(mark){
-  if(mark===null||mark===undefined||isNaN(mark)) return '—';
+  if(mark===null||mark===undefined||isNaN(mark)) return 'NS';
   if(mark>=70) return 'A';
   if(mark>=60) return 'B';
   if(mark>=50) return 'C';
@@ -2424,6 +2454,7 @@ function renderMarksPreview(saId, records, weight){
     if(g==='C') return '#d97706';
     if(g==='D') return '#ea580c';
     if(g==='F') return '#dc2626';
+    if(g==='NS') return '#9ca3af';
     return 'var(--text2)';
   };
 
@@ -2457,7 +2488,7 @@ function renderMarksPreview(saId, records, weight){
     html += '<tr style="background:'+rowBg+';">';
     html += '<td style="padding:7px 12px;border-bottom:1px solid #f0f0f0;font-family:monospace;">'+r.bsuId+(r.inCurrent?'':' ⚠️')+'</td>';
     html += '<td style="padding:7px 12px;border-bottom:1px solid #f0f0f0;">'+r.studentName+'</td>';
-    html += '<td style="padding:7px 12px;border-bottom:1px solid #f0f0f0;text-align:center;font-weight:700;">'+(r.mark!==null?r.mark:'—')+'</td>';
+    html += '<td style="padding:7px 12px;border-bottom:1px solid #f0f0f0;text-align:center;font-weight:700;">'+(r.mark!==null?r.mark:'<span style="color:#9ca3af">NS</span>')+'</td>';
     html += '<td style="padding:7px 12px;border-bottom:1px solid #f0f0f0;text-align:center;font-weight:700;color:'+gradeColor(r.grade)+';">'+r.grade+'</td>';
 
     html += '</tr>';
@@ -2507,6 +2538,13 @@ function confirmAndRelease(saId, e, saveOnly){
     console.log('[SAVE] saveResultsBatch response:', JSON.stringify(res));
     if(!res || res.status !== 'ok') throw new Error((res&&res.message)||'Save failed');
     if(saveOnly){
+      // Update stats on card even for save-only
+      var validM = pm.records.filter(function(r){ return r.mark!==null&&!isNaN(r.mark); });
+      if(validM.length){
+        var avg2 = (validM.reduce(function(s,r){ return s+r.mark; },0)/validM.length).toFixed(1);
+        var avgEl2 = document.getElementById('asm-avgmark-'+saId);
+        if(avgEl2) avgEl2.textContent = avg2;
+      }
       showToast('💾 Marks saved to RESULTS sheet. No emails sent.','info');
       var panel2 = document.getElementById('panel-marks-'+saId);
       if(panel2) panel2.style.display='none';
