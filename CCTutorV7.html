@@ -1383,6 +1383,16 @@ async function apiFetch(params){
   return j.data;
 }
 
+async function apiPost(action, body){
+  const r = await fetch(API, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(Object.assign({ action: action }, body))
+  });
+  const j = await r.json();
+  return j;
+}
+
 function driveImgUrl(url){
   if(!url) return '';
   if(url.includes('lh3.googleusercontent')||url.includes('thumbnail')) return url;
@@ -2359,6 +2369,22 @@ function parseGradebook(input, code, name, sa, title, weight){
   reader.readAsArrayBuffer(input.files[0]);
 }
 
+function sortMarksPreview(th){
+  var table = th.closest('table');
+  if(!table) return;
+  var tbody = table.querySelector('tbody');
+  var rows = Array.from(tbody.querySelectorAll('tr'));
+  var asc = th.dataset.sort !== 'asc';
+  th.dataset.sort = asc ? 'asc' : 'desc';
+  th.textContent = 'Mark /100 ' + (asc ? '↑' : '↓');
+  rows.sort(function(a, b){
+    var ma = parseFloat(a.cells[2] && a.cells[2].textContent) || 0;
+    var mb = parseFloat(b.cells[2] && b.cells[2].textContent) || 0;
+    return asc ? ma - mb : mb - ma;
+  });
+  rows.forEach(function(r){ tbody.appendChild(r); });
+}
+
 function calcGradeJS(mark){
   if(mark===null||mark===undefined||isNaN(mark)) return '—';
   if(mark>=70) return '1st';
@@ -2400,20 +2426,20 @@ function renderMarksPreview(saId, records, weight){
   html += '<thead><tr style="background:var(--sb-bg);">';
   html += '<th style="padding:8px 12px;text-align:left;color:#fff;font-weight:600;">BSU ID</th>';
   html += '<th style="padding:8px 12px;text-align:left;color:#fff;font-weight:600;">Student Name</th>';
-  html += '<th style="padding:8px 12px;text-align:center;color:#fff;font-weight:600;">Mark /100</th>';
+  html += '<th style="padding:8px 12px;text-align:center;color:#fff;font-weight:600;cursor:pointer;user-select:none;" onclick="sortMarksPreview(this)">Mark /100 ↕</th>';
   html += '<th style="padding:8px 12px;text-align:center;color:#fff;font-weight:600;">Grade</th>';
-  html += '<th style="padding:8px 12px;text-align:center;color:#fff;font-weight:600;">Weighted</th>';
+
   html += '</tr></thead><tbody>';
 
   records.forEach(function(r, idx){
     var rowBg = !r.inCurrent ? '#fef3c7' : (idx%2===0?'#fff':'#f9fafb');
-    var weighted = (r.mark!==null&&!isNaN(r.mark)) ? (r.mark * weight).toFixed(1) : '—';
+
     html += '<tr style="background:'+rowBg+';">';
     html += '<td style="padding:7px 12px;border-bottom:1px solid #f0f0f0;font-family:monospace;">'+r.bsuId+(r.inCurrent?'':' ⚠️')+'</td>';
     html += '<td style="padding:7px 12px;border-bottom:1px solid #f0f0f0;">'+r.studentName+'</td>';
     html += '<td style="padding:7px 12px;border-bottom:1px solid #f0f0f0;text-align:center;font-weight:700;">'+(r.mark!==null?r.mark:'—')+'</td>';
     html += '<td style="padding:7px 12px;border-bottom:1px solid #f0f0f0;text-align:center;font-weight:700;color:'+gradeColor(r.grade)+';">'+r.grade+'</td>';
-    html += '<td style="padding:7px 12px;border-bottom:1px solid #f0f0f0;text-align:center;">'+weighted+'</td>';
+
     html += '</tr>';
   });
   html += '</tbody></table></div>';
