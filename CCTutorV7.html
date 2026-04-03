@@ -1406,6 +1406,18 @@ function driveImgUrl(url){
 
 function sTxt(id,val){ const el=document.getElementById(id); if(el) el.textContent=val||'—'; }
 
+function showToast(msg, type){
+  var existing = document.getElementById('cc-toast');
+  if(existing) existing.remove();
+  var t = document.createElement('div');
+  t.id = 'cc-toast';
+  var bg = type==='error' ? '#dc2626' : type==='info' ? '#2563eb' : '#16a34a';
+  t.style.cssText = 'position:fixed;bottom:24px;right:24px;z-index:9999;padding:12px 20px;border-radius:8px;color:#fff;font-size:13px;font-weight:600;background:'+bg+';box-shadow:0 4px 12px rgba(0,0,0,0.25);max-width:360px;line-height:1.4;transition:opacity 0.3s;';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(function(){ t.style.opacity='0'; setTimeout(function(){ t.remove(); },300); }, type==='error'?5000:3500);
+}
+
 function doLogin(){
   const email = document.getElementById('email-input').value.trim() || 'iftikhar@bathspa.ae';
   document.getElementById('email-sent-display').textContent = email;
@@ -2117,7 +2129,7 @@ function renderAsmCards(code, name, saArr, enrolled){
 // ── Event delegation for assessment card buttons ──────────────────────────
 document.addEventListener('DOMContentLoaded', function(){
 document.addEventListener('click', function(e){
-  var btn = e.target.closest('button[data-opensub], button[data-openmarks], button[data-notice], button[data-closepanel], button[data-cancelpanel], button[data-confirmsub], button[data-confirm-release]');
+  var btn = e.target.closest('button[data-opensub], button[data-openmarks], button[data-notice], button[data-closepanel], button[data-cancelpanel], button[data-confirmsub], button[data-confirm-release], button[data-saveonly]');
   if(!btn) return;
 
   // ── Panel-only actions (no card lookup needed) ────────────────────────
@@ -2137,7 +2149,11 @@ document.addEventListener('click', function(e){
     return;
   }
   if(btn.dataset.confirmRelease !== undefined){
-    confirmAndRelease(btn.dataset.confirmRelease, e);
+    confirmAndRelease(btn.dataset.confirmRelease, e, false);
+    return;
+  }
+  if(btn.dataset.saveonly !== undefined){
+    confirmAndRelease(btn.dataset.saveonly, e, true);
     return;
   }
   if(btn.dataset.opensub !== undefined){
@@ -2390,11 +2406,11 @@ function sortMarksPreview(th){
 
 function calcGradeJS(mark){
   if(mark===null||mark===undefined||isNaN(mark)) return '—';
-  if(mark>=70) return '1st';
-  if(mark>=60) return '2:1';
-  if(mark>=50) return '2:2';
-  if(mark>=40) return '3rd';
-  return 'Fail';
+  if(mark>=70) return 'A';
+  if(mark>=60) return 'B';
+  if(mark>=50) return 'C';
+  if(mark>=40) return 'D';
+  return 'F';
 }
 
 // ── Render marks preview table ──────────────────────────────────────────────
@@ -2403,10 +2419,11 @@ function renderMarksPreview(saId, records, weight){
   if(!preview) return;
 
   var gradeColor = function(g){
-    if(g==='1st') return '#16a34a';
-    if(g==='2:1'||g==='2:2') return '#d97706';
-    if(g==='3rd') return '#ea580c';
-    if(g==='Fail') return '#dc2626';
+    if(g==='A') return '#16a34a';
+    if(g==='B') return '#2563eb';
+    if(g==='C') return '#d97706';
+    if(g==='D') return '#ea580c';
+    if(g==='F') return '#dc2626';
     return 'var(--text2)';
   };
 
@@ -2449,7 +2466,8 @@ function renderMarksPreview(saId, records, weight){
 
   html += '<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:7px;padding:10px 14px;font-size:12px;color:#15803d;margin-bottom:14px;">✅ Confirming will save marks to RESULTS sheet, set Published = Yes, and email all parents.</div>';
   html += '<div style="display:flex;gap:8px;">';
-  html += '<button class="btn-sm primary" data-confirm-release="'+saId+'">✅ Confirm &amp; Release Results</button>';
+  html += '<button class="btn-sm primary" data-confirm-release="'+saId+'">✅ Confirm &amp; Release Results + Email Parents</button>';
+  html += '<button class="btn-sm" data-saveonly="'+saId+'" style="color:var(--accent);border-color:var(--accent);">💾 Save Only (No Emails)</button>';
   html += '<button class="btn-sm" data-cancelpanel="marks-preview-'+saId+'">Cancel</button>';
   html += '</div>';
 
@@ -2458,7 +2476,7 @@ function renderMarksPreview(saId, records, weight){
 }
 
 // ── Confirm & release results ───────────────────────────────────────────────
-function confirmAndRelease(saId, e){
+function confirmAndRelease(saId, e, saveOnly){
   var btn = e && e.target ? e.target : null;
   var pm = window._pendingMarks;
   if(!pm){ showToast('No marks data found. Please re-upload.','error'); return; }
@@ -2488,7 +2506,13 @@ function confirmAndRelease(saId, e){
   }).then(function(res){
     console.log('[SAVE] saveResultsBatch response:', JSON.stringify(res));
     if(!res || res.status !== 'ok') throw new Error((res&&res.message)||'Save failed');
-
+    if(saveOnly){
+      showToast('💾 Marks saved to RESULTS sheet. No emails sent.','info');
+      var panel2 = document.getElementById('panel-marks-'+saId);
+      if(panel2) panel2.style.display='none';
+      window._pendingMarks = null;
+      return null;
+    }
     // Step 2: publishResults (also sends parent emails)
     return apiPost('publishResults',{
       moduleCode:   pm.code,
@@ -2501,6 +2525,7 @@ function confirmAndRelease(saId, e){
       tutorEmail:   tutorEmail
     });
   }).then(function(res){
+    if(!res) return; // saveOnly path — already handled
     console.log('[PUBLISH] publishResults response:', JSON.stringify(res));
     if(!res || res.status !== 'ok') throw new Error((res&&res.message)||'Publish failed');
     var published = res.data ? res.data.published : '?';
