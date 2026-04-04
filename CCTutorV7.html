@@ -260,7 +260,7 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
 .asc-title{font-size:14px;font-weight:700;color:#fff;}
 .asc-meta-row{font-size:11px;color:rgba(255,255,255,0.5);margin-top:2px;}
 .asc-body{padding:14px 16px;}
-.asc-stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;}
+.asc-stats-row{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;margin-bottom:14px;}
 .asc-stat{background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:8px 10px;text-align:center;}
 .asc-stat .av{font-size:18px;font-weight:800;font-family:'DM Mono',monospace;}
 .asc-stat .al{font-size:9px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.4px;}
@@ -519,7 +519,7 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
         <p>Enter your BSU staff email to receive your sign-in link</p>
         <div class="form-group"><label>BSU Email Address</label><input type="email" id="email-input" placeholder="yourname@bathspa.ae"></div>
         <button class="btn-primary" onclick="doLogin()">Send Sign-in Link →</button>
-        <div class="login-help">&#x26A0;&#xFE0F; Not receiving the sign-in email? Write to <strong><a href="/cdn-cgi/l/email-protection#0766646663626a6e6474476566736f747766296662" style="color:#92400e;"><span class="__cf_email__" data-cfemail="2e4f4d4f4a4b43474d5d6e4c4f5a465d5e4f004f4b">[email&#160;protected]</span></a></strong> to verify your bathspa.ae account is registered.</div>
+        <div class="login-help">&#x26A0;&#xFE0F; Not receiving the sign-in email? Write to <strong><a href="mailto:admin@bathspa.ae" style="color:#92400e;">admin@bathspa.ae</a></strong> to verify your bathspa.ae account is registered.</div>
       </div>
     </div>
   </div>
@@ -532,7 +532,7 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
       <div class="email-icon">📬</div>
       <h2>Check your email</h2>
       <p>We've sent a sign-in link to:</p>
-      <div class="email-sent-email" id="email-sent-display"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d0b9b6a4b9bbb8b1a290b2b1a4b8a3a0b1feb1b5">[email&#160;protected]</a></div>
+      <div class="email-sent-email" id="email-sent-display"><span style="color:var(--text3);">—</span></div>
       <p>The link expires in <strong>15 minutes</strong>. Check your spam folder if you don't see it.</p>
       <div style="display:flex;gap:10px;justify-content:center;margin-top:20px">
         <button class="btn-ghost" onclick="showLogin()">← Back</button>
@@ -582,7 +582,7 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
 
       <!-- DASHBOARD -->
       <div id="page-dashboard" class="page active">
-        <div class="page-header"><h1>Dashboard</h1><p>Academic Year 2025–2026 · Semester 2</p></div>
+        <div class="page-header"><h1>Dashboard</h1><p id="dash-header-sub">Academic Year 2025–2026</p></div>
 
         <!-- Profile hero -->
         <div class="profile-hero">
@@ -593,10 +593,10 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
             <div class="hero-chips" id="hero-chips"></div>
           </div>
           <div class="hero-stats">
-            <div class="hero-stat"><div class="hs-label">Date of Birth</div><div class="hs-val muted" id="hero-dob">—</div></div>
+            <div class="hero-stat"><div class="hs-label">Nationality</div><div class="hs-val muted" id="hero-nationality">—</div></div>
+            <div class="hero-stat"><div class="hs-label">Designation</div><div class="hs-val muted" id="hero-designation">—</div></div>
             <div class="hero-stat"><div class="hs-label">Passport Expiry</div><div class="hs-val muted" id="hero-pp-exp">—</div></div>
             <div class="hero-stat"><div class="hs-label">Emirates ID Expiry</div><div class="hs-val muted" id="hero-eid-exp">—</div></div>
-            <div class="hero-stat"><div class="hs-label">Contract Expiry</div><div class="hs-val muted" id="hero-contract-exp">—</div></div>
           </div>
         </div>
 
@@ -607,11 +607,11 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
           <div class="tutor-sem-header" onclick="toggleTutorSem('tsem1-block')">
             <div class="tutor-sem-left"><div class="tutor-sem-bar" style="background:var(--text3);"></div><div><div class="tutor-sem-title">Semester 1</div><div class="tutor-sem-sub">Sep 2025 – Jan 2026 · Completed</div></div></div>
             <div class="tutor-sem-right">
-              <div class="tutor-sem-stat"><div class="ts-label">Teaching Hrs / Week</div><div class="ts-val">10</div><div class="ts-sub">6 sessions · 4 days</div></div>
+              <div class="tutor-sem-stat"><div class="ts-label">Teaching Hrs / Week</div><div class="ts-val" id="tsem1-hrs">—</div><div class="ts-sub" id="tsem1-hrs-sub"></div></div>
               <div class="tutor-sem-sep"></div>
-              <div class="tutor-sem-stat"><div class="ts-label">Modules</div><div class="ts-val">4</div></div>
+              <div class="tutor-sem-stat"><div class="ts-label">Modules</div><div class="ts-val" id="tsem1-mods">—</div></div>
               <div class="tutor-sem-sep"></div>
-              <div class="tutor-sem-stat"><div class="ts-label">Students</div><div class="ts-val">96</div></div>
+              <div class="tutor-sem-stat"><div class="ts-label">Students</div><div class="ts-val" id="tsem1-studs">—</div></div>
               <div class="tutor-sem-sep"></div>
               <div class="tutor-sem-chevron"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 4.5L7 9.5L12 4.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
             </div>
@@ -626,19 +626,19 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
             </div>
             <div class="module-body">
               <div class="mod-stat-row">
-                <div class="mod-stat-box"><div class="msb-val blue">24</div><div class="msb-label">Students</div></div>
-                <div class="mod-stat-box"><div class="msb-val" style="color:var(--text2);">14M/10F</div><div class="msb-label">M / F</div></div>
+                <div class="mod-stat-box"><div class="msb-val blue">—</div><div class="msb-label">Students</div></div>
+                <div class="mod-stat-box"><div class="msb-val" style="color:var(--text2);">—</div><div class="msb-label">M / F</div></div>
               </div>
               <div class="assessments-stack">
                 <div class="assessment-item">
                   <div class="ass-top"><span class="ass-code">SA1 · 45%</span><div class="ass-badge-wrap"><span class="ass-badge released">Result Released</span></div></div>
                   <div class="ass-title">Algorithm Analysis</div>
-                  <div class="ass-deadline">Deadline: <strong>20 Nov 2025</strong> · Avg: <strong style="color:var(--green);">71.2</strong></div>
+                  <div class="ass-deadline">Deadline: <strong>20 Nov 2025</strong></div>
                 </div>
                 <div class="assessment-item">
                   <div class="ass-top"><span class="ass-code">SA2 · 55%</span><div class="ass-badge-wrap"><span class="ass-badge released">Result Released</span></div></div>
                   <div class="ass-title">Implementation Project</div>
-                  <div class="ass-deadline">Deadline: <strong>15 Jan 2026</strong> · Avg: <strong style="color:var(--green);">73.8</strong></div>
+                  <div class="ass-deadline">Deadline: <strong>15 Jan 2026</strong></div>
                 </div>
               </div>
               <div class="mod-actions">
@@ -656,19 +656,19 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
             </div>
             <div class="module-body">
               <div class="mod-stat-row">
-                <div class="mod-stat-box"><div class="msb-val blue">24</div><div class="msb-label">Students</div></div>
-                <div class="mod-stat-box"><div class="msb-val" style="color:var(--text2);">14M/10F</div><div class="msb-label">M / F</div></div>
+                <div class="mod-stat-box"><div class="msb-val blue">—</div><div class="msb-label">Students</div></div>
+                <div class="mod-stat-box"><div class="msb-val" style="color:var(--text2);">—</div><div class="msb-label">M / F</div></div>
               </div>
               <div class="assessments-stack">
                 <div class="assessment-item">
                   <div class="ass-top"><span class="ass-code">SA1 · 40%</span><div class="ass-badge-wrap"><span class="ass-badge released">Result Released</span></div></div>
                   <div class="ass-title">Requirements Document</div>
-                  <div class="ass-deadline">Deadline: <strong>5 Nov 2025</strong> · Avg: <strong style="color:var(--amber);">62.4</strong></div>
+                  <div class="ass-deadline">Deadline: <strong>5 Nov 2025</strong></div>
                 </div>
                 <div class="assessment-item">
                   <div class="ass-top"><span class="ass-code">SA2 · 60%</span><div class="ass-badge-wrap"><span class="ass-badge released">Result Released</span></div></div>
                   <div class="ass-title">System Implementation</div>
-                  <div class="ass-deadline">Deadline: <strong>12 Jan 2026</strong> · Avg: <strong style="color:var(--green);">69.1</strong></div>
+                  <div class="ass-deadline">Deadline: <strong>12 Jan 2026</strong></div>
                 </div>
               </div>
               <div class="mod-actions">
@@ -686,8 +686,8 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
             </div>
             <div class="module-body">
               <div class="mod-stat-row">
-                <div class="mod-stat-box"><div class="msb-val blue">24</div><div class="msb-label">Students</div></div>
-                <div class="mod-stat-box"><div class="msb-val" style="color:var(--text2);">13M/11F</div><div class="msb-label">M / F</div></div>
+                <div class="mod-stat-box"><div class="msb-val blue">—</div><div class="msb-label">Students</div></div>
+                <div class="mod-stat-box"><div class="msb-val" style="color:var(--text2);">—</div><div class="msb-label">M / F</div></div>
               </div>
               <div class="assessments-stack">
                 <div class="assessment-item fail">
@@ -698,7 +698,7 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
                 <div class="assessment-item">
                   <div class="ass-top"><span class="ass-code">SA2 · 50%</span><div class="ass-badge-wrap"><span class="ass-badge released">Result Released</span></div></div>
                   <div class="ass-title">Security Audit</div>
-                  <div class="ass-deadline">Deadline: <strong>16 Jan 2026</strong> · Avg: <strong style="color:var(--green);">64.1</strong></div>
+                  <div class="ass-deadline">Deadline: <strong>16 Jan 2026</strong></div>
                 </div>
               </div>
               <div class="mod-actions">
@@ -716,19 +716,19 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
             </div>
             <div class="module-body">
               <div class="mod-stat-row">
-                <div class="mod-stat-box"><div class="msb-val blue">24</div><div class="msb-label">Students</div></div>
-                <div class="mod-stat-box"><div class="msb-val" style="color:var(--text2);">14M/10F</div><div class="msb-label">M / F</div></div>
+                <div class="mod-stat-box"><div class="msb-val blue">—</div><div class="msb-label">Students</div></div>
+                <div class="mod-stat-box"><div class="msb-val" style="color:var(--text2);">—</div><div class="msb-label">M / F</div></div>
               </div>
               <div class="assessments-stack">
                 <div class="assessment-item">
                   <div class="ass-top"><span class="ass-code">SA1 · 35%</span><div class="ass-badge-wrap"><span class="ass-badge released">Result Released</span></div></div>
                   <div class="ass-title">UI Prototype</div>
-                  <div class="ass-deadline">Deadline: <strong>10 Nov 2025</strong> · Avg: <strong style="color:var(--green);">76.3</strong></div>
+                  <div class="ass-deadline">Deadline: <strong>10 Nov 2025</strong></div>
                 </div>
                 <div class="assessment-item">
                   <div class="ass-top"><span class="ass-code">SA2 · 65%</span><div class="ass-badge-wrap"><span class="ass-badge released">Result Released</span></div></div>
                   <div class="ass-title">Final App Submission</div>
-                  <div class="ass-deadline">Deadline: <strong>14 Jan 2026</strong> · Avg: <strong style="color:var(--green);">74.5</strong></div>
+                  <div class="ass-deadline">Deadline: <strong>14 Jan 2026</strong></div>
                 </div>
               </div>
               <div class="mod-actions">
@@ -744,11 +744,11 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
           <div class="tutor-sem-header" onclick="toggleTutorSem('tsem2-block')">
             <div class="tutor-sem-left"><div class="tutor-sem-bar" style="background:var(--accent);"></div><div><div class="tutor-sem-title">Semester 2</div><div class="tutor-sem-sub">Feb – May 2026 · Active teaching period</div></div></div>
             <div class="tutor-sem-right">
-              <div class="tutor-sem-stat"><div class="ts-label">Teaching Hrs / Week</div><div class="ts-val">7.5</div><div class="ts-sub">5 sessions · 3 days</div></div>
+              <div class="tutor-sem-stat"><div class="ts-label">Teaching Hrs / Week</div><div class="ts-val" id="tsem2-hrs">—</div><div class="ts-sub" id="tsem2-hrs-sub"></div></div>
               <div class="tutor-sem-sep"></div>
-              <div class="tutor-sem-stat"><div class="ts-label">Modules</div><div class="ts-val">4</div></div>
+              <div class="tutor-sem-stat"><div class="ts-label">Modules</div><div class="ts-val" id="tsem2-mods">—</div></div>
               <div class="tutor-sem-sep"></div>
-              <div class="tutor-sem-stat"><div class="ts-label">Students</div><div class="ts-val">97</div></div>
+              <div class="tutor-sem-stat"><div class="ts-label">Students</div><div class="ts-val" id="tsem2-studs">—</div></div>
               <div class="tutor-sem-sep"></div>
               <div class="tutor-sem-chevron"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 4.5L7 9.5L12 4.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
             </div>
@@ -763,8 +763,8 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
             </div>
             <div class="module-body">
               <div class="mod-stat-row">
-                <div class="mod-stat-box"><div class="msb-val blue">24</div><div class="msb-label">Students</div></div>
-                <div class="mod-stat-box"><div class="msb-val" style="color:var(--text2);">14M/10F</div><div class="msb-label">M / F</div></div>
+                <div class="mod-stat-box"><div class="msb-val blue">—</div><div class="msb-label">Students</div></div>
+                <div class="mod-stat-box"><div class="msb-val" style="color:var(--text2);">—</div><div class="msb-label">M / F</div></div>
               </div>
               <div class="assessments-stack">
                 <div class="assessment-item">
@@ -793,8 +793,8 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
             </div>
             <div class="module-body">
               <div class="mod-stat-row">
-                <div class="mod-stat-box"><div class="msb-val blue">24</div><div class="msb-label">Students</div></div>
-                <div class="mod-stat-box"><div class="msb-val" style="color:var(--text2);">14M/10F</div><div class="msb-label">M / F</div></div>
+                <div class="mod-stat-box"><div class="msb-val blue">—</div><div class="msb-label">Students</div></div>
+                <div class="mod-stat-box"><div class="msb-val" style="color:var(--text2);">—</div><div class="msb-label">M / F</div></div>
               </div>
               <div class="assessments-stack">
                 <div class="assessment-item">
@@ -823,19 +823,19 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
             </div>
             <div class="module-body">
               <div class="mod-stat-row">
-                <div class="mod-stat-box"><div class="msb-val blue">25</div><div class="msb-label">Students</div></div>
-                <div class="mod-stat-box"><div class="msb-val" style="color:var(--text2);">15M/10F</div><div class="msb-label">M / F</div></div>
+                <div class="mod-stat-box"><div class="msb-val blue">—</div><div class="msb-label">Students</div></div>
+                <div class="mod-stat-box"><div class="msb-val" style="color:var(--text2);">—</div><div class="msb-label">M / F</div></div>
               </div>
               <div class="assessments-stack">
                 <div class="assessment-item">
                   <div class="ass-top"><span class="ass-code">SA1 · 40%</span><div class="ass-badge-wrap"><span class="ass-badge released">Result Released</span></div></div>
                   <div class="ass-title">Visual Design Portfolio</div>
-                  <div class="ass-deadline">Deadline: <strong>15 Nov 2024</strong> · Avg: <strong style="color:var(--green)">68.4</strong></div>
+                  <div class="ass-deadline">Deadline: <strong>—</strong></div>
                 </div>
                 <div class="assessment-item">
                   <div class="ass-top"><span class="ass-code">SA2 · 60%</span><div class="ass-badge-wrap"><span class="ass-badge not-released">Not Released</span></div></div>
                   <div class="ass-title">Full-Stack Project</div>
-                  <div class="ass-deadline">Deadline: <strong>10 Jan 2025</strong></div>
+                  <div class="ass-deadline">Deadline: <strong>—</strong></div>
                 </div>
               </div>
               <div class="mod-actions">
@@ -853,8 +853,8 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
             </div>
             <div class="module-body">
               <div class="mod-stat-row">
-                <div class="mod-stat-box"><div class="msb-val blue">24</div><div class="msb-label">Students</div></div>
-                <div class="mod-stat-box"><div class="msb-val" style="color:var(--text2);">13M/11F</div><div class="msb-label">M / F</div></div>
+                <div class="mod-stat-box"><div class="msb-val blue">—</div><div class="msb-label">Students</div></div>
+                <div class="mod-stat-box"><div class="msb-val" style="color:var(--text2);">—</div><div class="msb-label">M / F</div></div>
               </div>
               <div class="assessments-stack">
                 <div class="assessment-item fail">
@@ -865,7 +865,7 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
                 <div class="assessment-item">
                   <div class="ass-top"><span class="ass-code">SA2 · 50%</span><div class="ass-badge-wrap"><span class="ass-badge released">Result Released</span></div></div>
                   <div class="ass-title">Security Audit</div>
-                  <div class="ass-deadline">Deadline: <strong>16 Jan 2026</strong> · Avg: <strong style="color:var(--green)">64.1</strong></div>
+                  <div class="ass-deadline">Deadline: <strong>16 Jan 2026</strong></div>
                 </div>
               </div>
               <div class="mod-actions">
@@ -877,6 +877,16 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
           </div></div>
         </div>
 
+
+      <div style="margin-top:32px;padding:14px 18px;border-top:1px solid var(--border);font-size:11px;color:var(--text3);line-height:1.7;">
+        <strong style="color:var(--text2);">Disclaimer</strong> &nbsp;·&nbsp;
+        This portal aspires to provide important indicative data on key academic aspects for our students and parents at Bath Spa University – RAK Campus.
+        All information displayed — including Outstanding Fees, Accounts Status, LMS Access, Attendance, and Assessment Marks — is for reference and follow-up purposes only.
+        All data may be subject to manual delays or errors, and should be cross-checked and confirmed with the relevant department and staff members in person.
+        Official Assessment Submissions are managed exclusively on <a href="https://ultra.bathspa.ac.uk/" target="_blank" style="color:var(--accent);">Blackboard Ultra</a>,
+        and Official Marks &amp; Results are emailed by the Home Campus (BSU UK) directly to students.
+        This portal does not override or replace any official data from the Home Campus.
+      </div>
       </div><!-- /dashboard -->
 
 
@@ -957,6 +967,15 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
 
         <div id="asm-cards-container"></div>
 
+      <div style="margin-top:32px;padding:14px 18px;border-top:1px solid var(--border);font-size:11px;color:var(--text3);line-height:1.7;">
+        <strong style="color:var(--text2);">Disclaimer</strong> &nbsp;·&nbsp;
+        This portal aspires to provide important indicative data on key academic aspects for our students and parents at Bath Spa University – RAK Campus.
+        All information displayed — including Outstanding Fees, Accounts Status, LMS Access, Attendance, and Assessment Marks — is for reference and follow-up purposes only.
+        All data may be subject to manual delays or errors, and should be cross-checked and confirmed with the relevant department and staff members in person.
+        Official Assessment Submissions are managed exclusively on <a href="https://ultra.bathspa.ac.uk/" target="_blank" style="color:var(--accent);">Blackboard Ultra</a>,
+        and Official Marks &amp; Results are emailed by the Home Campus (BSU UK) directly to students.
+        This portal does not override or replace any official data from the Home Campus.
+      </div>
       </div><!-- /assessments -->
 
 
@@ -1068,8 +1087,8 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
               </div>
               <div id="personal-t-view" class="info-grid">
                 <div class="info-item"><div class="info-label">Full Name</div><div class="info-value">Iftikhar Alam Khan</div></div>
-                <div class="info-item"><div class="info-label">Email</div><div class="info-value"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4f26293b2624272e3d0f2d2e3b273c3f2e612e2a">[email&#160;protected]</a></div></div>
-                <div class="info-item"><div class="info-label">Personal Email</div><div class="info-value"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="234a4545574a484b42510d420d4863444e424a4f0d404c4e">[email&#160;protected]</a></div></div>
+                <div class="info-item"><div class="info-label">Email</div><div class="info-value"><span style="color:var(--text3);">—</span></div></div>
+                <div class="info-item"><div class="info-label">Personal Email</div><div class="info-value"><span style="color:var(--text3);">—</span></div></div>
                 <div class="info-item"><div class="info-label">UAE Phone</div><div class="info-value">+971 50 866 1786</div></div>
                 <div class="info-item"><div class="info-label">Nationality</div><div class="info-value">Indian</div></div>
                 <div class="info-item"><div class="info-label">Date of Birth</div><div class="info-value">13 Mar 1980</div></div>
@@ -1087,14 +1106,14 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
             <div class="info-card">
               <div class="info-card-header"><span>🏢 Employment Details</span></div>
               <div class="info-grid">
-                <div class="info-item"><div class="info-label">Title / Role</div><div class="info-value">Lecturer</div></div>
-                <div class="info-item"><div class="info-label">Department</div><div class="info-value">Computing</div></div>
-                <div class="info-item"><div class="info-label">Visa Provider</div><div class="info-value">RAKEZ Future Education World FZ-LLC</div></div>
-                <div class="info-item"><div class="info-label">Contract Start</div><div class="info-value">27 Jan 2026</div></div>
-                <div class="info-item"><div class="info-label">Contract Expiry</div><div class="info-value" style="color:var(--green);font-weight:600;">27 Jan 2028</div></div>
-                <div class="info-item"><div class="info-label">Contract Type</div><div class="info-value">Limited Contract</div></div>
-                <div class="info-item"><div class="info-label">Work Permit Expiry</div><div class="info-value" style="color:var(--green);font-weight:600;">28 Jan 2028</div></div>
-                <div class="info-item"><div class="info-label">RAKEZ Card</div><div class="info-value" style="color:var(--green);">✓ Yes</div></div>
+                <div class="info-item"><div class="info-label">Title / Role</div><div class="info-value">—</div></div>
+                <div class="info-item"><div class="info-label">Department</div><div class="info-value">—</div></div>
+                <div class="info-item"><div class="info-label">Visa Provider</div><div class="info-value">—</div></div>
+                <div class="info-item"><div class="info-label">Contract Start</div><div class="info-value">—</div></div>
+                <div class="info-item"><div class="info-label">Passport #</div><div class="info-value">—</div></div>
+                <div class="info-item"><div class="info-label">Passport Expiry</div><div class="info-value">—</div></div>
+                <div class="info-item"><div class="info-label">Emirates ID #</div><div class="info-value">—</div></div>
+                <div class="info-item"><div class="info-label">Emirates ID Expiry</div><div class="info-value">—</div></div>
               </div>
             </div>
 
@@ -1156,11 +1175,11 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
 
       <!-- ACADEMIC CALENDAR -->
       <div id="page-acadcalendar" class="page">
-        <div class="page-header"><h1>Academic Calendar</h1></div>
-        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;text-align:center;color:var(--text3);">
-          <div style="font-size:40px;margin-bottom:12px;">🗓️</div>
-          <div style="font-size:15px;font-weight:600;color:var(--text2);margin-bottom:6px;">Academic Calendar Coming Soon</div>
-          <div style="font-size:13px;">Key academic dates and milestones will appear here.</div>
+        <div class="page-header"><h1>Academic Calendar</h1><p>Key academic dates and milestones · 2025–2026</p></div>
+        <div id="acad-cal-container">
+          <div style="display:flex;align-items:center;justify-content:center;padding:60px 20px;color:var(--text3);">
+            <span style="font-size:13px;">⏳ Loading calendar…</span>
+          </div>
         </div>
       </div><!-- /page-acadcalendar -->
 
@@ -1369,7 +1388,7 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
   </div>
 </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 const mc = document.getElementById('main-content');
 
 // ── CampusCore API ────────────────────────────────────────────
@@ -1528,13 +1547,14 @@ function populateTutor(){
   if(empItems.length>=8){
     empItems[0].querySelector('.info-value').textContent = t.designation||'—';
     empItems[1].querySelector('.info-value').textContent = t.department||'—';
-    empItems[2].querySelector('.info-value').textContent = t.passportNo||'—';  // Visa Provider
+    empItems[2].querySelector('.info-value').textContent = t.visaProvider||'—';
     empItems[3].querySelector('.info-value').textContent = t.contractStart||'—';
-    const ceEl = empItems[4].querySelector('.info-value');
-    if(ceEl){ ceEl.textContent = t.contractExpDisplay||'—'; ceEl.style.color = t.contractColour==='green'?'var(--green)':t.contractColour==='amber'?'var(--amber)':'var(--red)'; }
-    empItems[5].querySelector('.info-value').textContent = t.contractStatus||'—';
-    const wpEl = empItems[6].querySelector('.info-value');
-    if(wpEl){ wpEl.textContent = t.workPermitExpDisplay||'—'; wpEl.style.color = t.workPermitColour==='green'?'var(--green)':t.workPermitColour==='amber'?'var(--amber)':'var(--red)'; }
+    empItems[4].querySelector('.info-value').textContent = t.passportNo||'—';
+    const ppEl = empItems[5].querySelector('.info-value');
+    if(ppEl){ ppEl.textContent = t.passportExpDisplay||'—'; ppEl.style.color = t.passportColour==='green'?'var(--green)':t.passportColour==='amber'?'var(--amber)':t.passportColour==='red'||t.passportColour==='expired'?'var(--red)':''; }
+    empItems[6].querySelector('.info-value').textContent = t.eidNo||'—';
+    const eidEl = empItems[7].querySelector('.info-value');
+    if(eidEl){ eidEl.textContent = t.eidExpDisplay||'—'; eidEl.style.color = t.eidColour==='green'?'var(--green)':t.eidColour==='amber'?'var(--amber)':t.eidColour==='red'||t.eidColour==='expired'?'var(--red)':''; }
   }
 
   // Emergency contacts
@@ -1553,13 +1573,12 @@ function populateTutor(){
   if(notePostedAs) notePostedAs.textContent = t.name||'—';
 
   // Hero stats box
-  sTxt('hero-dob',          t.dobDisplay||'—');
+  sTxt('hero-nationality',  t.nationality||'—');
+  sTxt('hero-designation',  t.designation||'—');
   const ppExp = document.getElementById('hero-pp-exp');
   if(ppExp){ ppExp.textContent = t.passportExpDisplay||'—'; ppExp.style.color = t.passportColour==='red'||t.passportColour==='expired'?'var(--red)':t.passportColour==='amber'?'var(--amber)':''; }
   const eidExp = document.getElementById('hero-eid-exp');
   if(eidExp){ eidExp.textContent = t.eidExpDisplay||'—'; eidExp.style.color = t.eidColour==='red'||t.eidColour==='expired'?'var(--red)':t.eidColour==='amber'?'var(--amber)':''; }
-  const ctExp = document.getElementById('hero-contract-exp');
-  if(ctExp){ ctExp.textContent = t.contractExpDisplay||'—'; ctExp.style.color = t.contractColour==='red'||t.contractColour==='expired'?'var(--red)':t.contractColour==='amber'?'var(--amber)':''; }
 }
 
 function renderAnnouncements(anns){
@@ -1660,16 +1679,23 @@ function renderDashboardModules(){
       if(asmBtn) asmBtn.onclick = (function(m){ return function(e){ e.stopPropagation(); showAssessments(m.moduleCode, m.moduleName); }; })(mod);
     });
 
-    // Update block header counts
-    const tsVals = block.querySelectorAll('.tutor-sem-stat .ts-val');
-    if(tsVals[1]) tsVals[1].textContent = mods.length;
-    const totalStudents = mods.reduce((sum,m)=>sum+_students.filter(s=>s.programme===m.programme&&s.year===m.year).length,0);
-    if(tsVals[2]) tsVals[2].textContent = totalStudents;
+    // Update block header counts via IDs
+    var semKey = blockId === 'tsem1-block' ? 'tsem1' : 'tsem2';
+    var modsEl = document.getElementById(semKey+'-mods');
+    var studsEl = document.getElementById(semKey+'-studs');
+    var totalStudents = mods.reduce((sum,m)=>sum+_students.filter(s=>s.programme===m.programme&&s.year===m.year).length,0);
+    if(modsEl)  modsEl.textContent  = mods.length || '—';
+    if(studsEl) studsEl.textContent = totalStudents || '—';
     if(!mods.length) block.style.display='none';
   }
 
   fillBlock('tsem2-block', sem2Mods);
   fillBlock('tsem1-block', sem1Mods);
+
+  // Update dashboard header with active semester info
+  var activeSem = sem2Mods.length ? 'Semester 2' : sem1Mods.length ? 'Semester 1' : '';
+  var subEl = document.getElementById('dash-header-sub');
+  if(subEl && activeSem) subEl.textContent = 'Academic Year 2025–2026 · '+activeSem;
 }
 
 function openModuleDetail(code, name, prog, year, sem){
@@ -1823,6 +1849,7 @@ function showPage(id, btn){
   // Restore scroll if returning to dashboard, else reset
   if(id === 'dashboard') mc.scrollTop = savedDashScroll;
   else mc.scrollTop = 0;
+  if(id === 'acadcalendar') loadAcadCalendar();
   if(id === 'profile'){
     // Re-run formatter for any unwrapped rk-date-input fields
     document.querySelectorAll('#page-profile .rk-date-input:not([data-fmt-done])').forEach(function(inp){
@@ -1972,6 +1999,90 @@ function saveAttendance(sendEmails){
 
 
 
+// ── Academic Calendar ─────────────────────────────────────────────────────
+var _acadCalLoaded = false;
+function loadAcadCalendar(){
+  if(_acadCalLoaded) return;
+  var container = document.getElementById('acad-cal-container');
+  apiFetch({action:'getAcadCalendar'}).then(function(events){
+    _acadCalLoaded = true;
+    renderAcadCalendar(events||[]);
+  }).catch(function(err){
+    if(container) container.innerHTML='<div style="padding:40px;text-align:center;color:var(--red);font-size:13px;">⚠️ Could not load calendar: '+err.message+'</div>';
+  });
+}
+
+function renderAcadCalendar(events){
+  var container = document.getElementById('acad-cal-container');
+  if(!container) return;
+
+  if(!events.length){
+    container.innerHTML='<div style="padding:60px 20px;text-align:center;color:var(--text3);font-size:13px;">No academic calendar events found.</div>';
+    return;
+  }
+
+  // Group by semester, then sort by date
+  var groups = {};
+  events.forEach(function(e){
+    var key = e.semester || 'General';
+    if(!groups[key]) groups[key] = [];
+    groups[key].push(e);
+  });
+
+  // Sort events within each group by startISO
+  Object.keys(groups).forEach(function(k){
+    groups[k].sort(function(a,b){ return (a.startISO||a.dateISO||'').localeCompare(b.startISO||b.dateISO||''); });
+  });
+
+  // Order: Sem 1 first, Sem 2 second, others after
+  var keyOrder = Object.keys(groups).sort(function(a,b){
+    if(a==='Sem 1') return -1; if(b==='Sem 1') return 1;
+    if(a==='Sem 2') return -1; if(b==='Sem 2') return 1;
+    return a.localeCompare(b);
+  });
+
+  var typeColour = {
+    'Teaching':'#2563eb', 'Holiday':'#16a34a', 'Exam':'#dc2626',
+    'Break':'#d97706', 'Result':'#7c3aed', 'Admin':'#0891b2', 'Other':'#6b7280'
+  };
+
+  var html = '';
+  keyOrder.forEach(function(key){
+    var evts = groups[key];
+    html += '<div style="margin-bottom:24px;">';
+    html += '<div style="background:var(--sb-bg);color:#fff;font-size:13px;font-weight:700;padding:10px 16px;border-radius:8px 8px 0 0;">🗓️ '+key+'</div>';
+    html += '<div style="border:1px solid var(--border);border-top:none;border-radius:0 0 8px 8px;overflow:hidden;">';
+    html += '<table style="width:100%;border-collapse:collapse;font-size:12px;">';
+    html += '<thead><tr style="background:#f8fafc;">';
+    html += '<th style="padding:9px 14px;text-align:left;color:var(--text2);font-weight:600;width:22%;">Date</th>';
+    html += '<th style="padding:9px 14px;text-align:left;color:var(--text2);font-weight:600;width:45%;">Event</th>';
+    html += '<th style="padding:9px 14px;text-align:left;color:var(--text2);font-weight:600;width:15%;">Type</th>';
+    html += '<th style="padding:9px 14px;text-align:left;color:var(--text2);font-weight:600;width:18%;">Notes</th>';
+    html += '</tr></thead><tbody>';
+
+    evts.forEach(function(e, i){
+      var rowBg = i%2===0 ? '#fff' : '#f9fafb';
+      var dateStr = e.startDate && e.endDate && e.startDate!==e.endDate
+        ? e.startDate+' – '+e.endDate
+        : (e.startDate || e.date || '—');
+      var typeCol = typeColour[e.type] || '#6b7280';
+      var typeBadge = e.type
+        ? '<span style="background:'+typeCol+'18;color:'+typeCol+';font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;">'+e.type+'</span>'
+        : '—';
+      html += '<tr style="background:'+rowBg+';">';
+      html += '<td style="padding:8px 14px;border-bottom:1px solid #f0f0f0;font-family:DM Mono,monospace;font-size:11px;">'+dateStr+'</td>';
+      html += '<td style="padding:8px 14px;border-bottom:1px solid #f0f0f0;font-weight:500;">'+( e.event||'—')+'</td>';
+      html += '<td style="padding:8px 14px;border-bottom:1px solid #f0f0f0;">'+typeBadge+'</td>';
+      html += '<td style="padding:8px 14px;border-bottom:1px solid #f0f0f0;color:var(--text3);font-size:11px;">'+(e.notes||'')+'</td>';
+      html += '</tr>';
+    });
+
+    html += '</tbody></table></div></div>';
+  });
+
+  container.innerHTML = html;
+}
+
 function showAttendance(code, name){
   if(document.getElementById('page-dashboard').classList.contains('active')) savedDashScroll = mc.scrollTop;
   document.getElementById('att-module-name').textContent = name + ' — ' + code;
@@ -2065,22 +2176,26 @@ function showAssessments(code, name){
       var withMark  = rows.filter(function(r){ return r.mark!==null && r.mark!==undefined && r.mark!==''; });
       var submitted = rows.filter(function(r){ return r.mark!==null && r.mark!==undefined && Number(r.mark) > 0; });
       var notSub    = rows.filter(function(r){ return r.mark===null || r.mark===undefined || r.mark==='' || Number(r.mark)===0; });
-      var gradeA    = rows.filter(function(r){ return r.grade==='A'; });
-      var gradeF    = rows.filter(function(r){ return r.grade==='F' || r.grade==='NS' || Number(r.mark)===0; });
-      // Avg mark — submitted only (mark > 0)
+      var gradeA  = rows.filter(function(r){ return r.grade==='A'; });
+      var gradeB  = rows.filter(function(r){ return r.grade==='B'; });
+      var gradeC  = rows.filter(function(r){ return r.grade==='C'; });
+      var gradeD  = rows.filter(function(r){ return r.grade==='D'; });
+      var gradeF  = rows.filter(function(r){ return r.grade==='F' || Number(r.mark)===0; });
+      var gradeNS = rows.filter(function(r){ return r.grade==='NS' || r.mark===null || r.mark===undefined || r.mark===''; });
       var avg = submitted.length ? (submitted.reduce(function(s,r){ return s+Number(r.mark); },0)/submitted.length).toFixed(1) : '—';
 
       // Update card stats
       var avgEl = document.getElementById('asm-avgmark-'+saId);
       if(avgEl) avgEl.textContent = avg;
-      var aEl = document.getElementById('asm-grade-a-'+saId);
-      if(aEl) aEl.textContent = gradeA.length || '—';
-      var fEl = document.getElementById('asm-grade-f-'+saId);
-      if(fEl) fEl.textContent = gradeF.length || '—';
+      var aEl = document.getElementById('asm-grade-a-'+saId);   if(aEl) aEl.textContent = gradeA.length  || '—';
+      var bEl = document.getElementById('asm-grade-b-'+saId);   if(bEl) bEl.textContent = gradeB.length  || '—';
+      var cEl = document.getElementById('asm-grade-c-'+saId);   if(cEl) cEl.textContent = gradeC.length  || '—';
+      var dEl = document.getElementById('asm-grade-d-'+saId);   if(dEl) dEl.textContent = gradeD.length  || '—';
+      var fEl = document.getElementById('asm-grade-f-'+saId);   if(fEl) fEl.textContent = gradeF.length  || '—';
+      var nsEl= document.getElementById('asm-grade-ns-'+saId);  if(nsEl) nsEl.textContent = gradeNS.length || '—';
 
       // Progress bar — submitted vs total
-      var barEl = document.getElementById('asm-bar-'+saId);
-      if(barEl && rows.length) barEl.style.width = Math.round(submitted.length/rows.length*100)+'%';
+
 
       // Published badge
       var allPublished = rows.length && rows.every(function(r){ return r.published==='Yes'; });
@@ -2097,12 +2212,25 @@ function renderMarksTable(saId, rows){
   var el = document.getElementById('marks-table-'+saId);
   if(!el || !rows || !rows.length) return;
 
+  // Disable submission button as soon as marks exist (saved or published)
+  var subBtn = document.querySelector('button[data-opensub="'+saId+'"]');
+  if(subBtn){
+    subBtn.disabled = true;
+    subBtn.title = 'Marks have been uploaded — submission tracking disabled';
+    subBtn.style.opacity = '0.4';
+    subBtn.style.cursor = 'not-allowed';
+    subBtn.style.pointerEvents = 'none';
+  }
+  // Close submission panel if open
+  var subPanel = document.getElementById('panel-sub-'+saId);
+  if(subPanel) subPanel.style.display = 'none';
+
   // Sort by mark descending by default
   var sorted = rows.slice().sort(function(a,b){ return (Number(b.mark)||0) - (Number(a.mark)||0); });
   var published = rows.every(function(r){ return r.published==='Yes'; });
   var statusLabel = published
-    ? '<span style="color:#16a34a;font-size:11px;font-weight:700;">✅ Result Released</span>'
-    : '<span style="color:#d97706;font-size:11px;font-weight:700;">💾 Saved — Not Released</span>';
+    ? '<span style="background:#dcfce7;color:#16a34a;font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;">✅ Result Released</span>'
+    : '';
 
   var gradeColour = function(g){
     return g==='A'?'#16a34a':g==='B'?'#2563eb':g==='C'?'#d97706':g==='D'?'#ea580c':'#dc2626';
@@ -2210,16 +2338,19 @@ function renderAsmCards(code, name, saArr, enrolled){
         '<div class="asc-body">' +
           '<div class="asc-stats-row">' +
             '<div class="asc-stat"><div class="av blue" id="asm-enrolled-'+saId+'">'+enrolled+'</div><div class="al">Enrolled</div></div>' +
-            '<div class="asc-stat"><div class="av" style="color:#16a34a;" id="asm-grade-a-'+saId+'">—</div><div class="al">Grade A</div></div>' +
-            '<div class="asc-stat"><div class="av red" id="asm-grade-f-'+saId+'">—</div><div class="al">Failed</div></div>' +
+            '<div class="asc-stat"><div class="av" style="color:#16a34a;" id="asm-grade-a-'+saId+'">—</div><div class="al">A &nbsp;70+</div></div>' +
+            '<div class="asc-stat"><div class="av" style="color:#2563eb;" id="asm-grade-b-'+saId+'">—</div><div class="al">B &nbsp;60-69</div></div>' +
+            '<div class="asc-stat"><div class="av" style="color:#d97706;" id="asm-grade-c-'+saId+'">—</div><div class="al">C &nbsp;50-59</div></div>' +
+            '<div class="asc-stat"><div class="av" style="color:#ea580c;" id="asm-grade-d-'+saId+'">—</div><div class="al">D &nbsp;40-49</div></div>' +
+            '<div class="asc-stat"><div class="av red" id="asm-grade-f-'+saId+'">—</div><div class="al">F &nbsp;0-39</div></div>' +
+            '<div class="asc-stat"><div class="av" style="color:#9ca3af;" id="asm-grade-ns-'+saId+'">—</div><div class="al">Not Sub</div></div>' +
             '<div class="asc-stat"><div class="av amber" id="asm-avgmark-'+saId+'">—</div><div class="al">Avg Mark</div></div>' +
           '</div>' +
-          '<div style="margin-bottom:8px;background:var(--surface2);border-radius:7px;height:8px;overflow:hidden;"><div id="asm-bar-'+saId+'" style="height:100%;width:0%;background:var(--green);border-radius:7px;transition:width 0.4s;"></div></div>' +
           '<div class="asc-actions" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;align-items:center;">' +
-            '<div style="display:flex;flex-wrap:wrap;gap:8px;">' +
-              '<button class="btn-sm" data-opensub="'+saId+'">📤 Upload Submission Report</button>' +
-            '</div>' +
-            '<button class="btn-sm" data-openmarks="'+saId+'" style="margin-left:auto;">📊 Upload Marks &amp; Release Results</button>' +
+            '<button class="btn-sm" data-opensub="'+saId+'">📤 Upload Assessment Submission Report</button>' +
+            '<button class="btn-sm" data-openmarks="'+saId+'">📊 Upload Assessment Marks &amp; Release Results</button>' +
+            '<button class="btn-sm" style="color:#7c3aed;border-color:#c4b5fd;" data-openreassess="'+saId+'">🔄 Upload Re-Assessment Submission Report</button>' +
+            '<button class="btn-sm" style="color:#7c3aed;border-color:#c4b5fd;" data-openreassessmarks="'+saId+'">📋 Upload Re-Assessment Marks</button>' +
           '</div>' +
         '</div>' +
       '</div>' +
@@ -2236,6 +2367,40 @@ function renderAsmCards(code, name, saArr, enrolled){
         '</label>' +
         '<div style="font-size:11px;color:var(--text3);margin-bottom:14px;">Blackboard gc_ export · .xls or .csv · UTF-16 format</div>' +
         '<div id="marks-preview-'+saId+'" style="display:none;"></div>' +
+      '</div>' +
+      // Re-assessment upload panel
+      '<div id="panel-reassess-'+saId+'" style="display:none;background:#fff;border:1px solid #c4b5fd;border-radius:var(--radius-lg);padding:20px;margin-top:-6px;margin-bottom:12px;box-shadow:var(--shadow);border-top:none;">' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">' +
+          '<div style="font-size:14px;font-weight:700;color:#7c3aed;">🔄 Upload Re-Assessment Submission Report — '+sa.sa+'</div>' +
+          '<button class="btn-sm" data-closepanel="panel-reassess-'+saId+'">✕ Close</button>' +
+        '</div>' +
+        '<div style="background:#f5f3ff;border:1px solid #c4b5fd;border-radius:8px;padding:11px 14px;font-size:12px;color:#5b21b6;margin-bottom:14px;">' +
+          'ℹ️ Upload the Blackboard re-assessment submission CSV. The system will check only students who <strong>originally failed or did not submit</strong>. ' +
+          'Students who submitted → marked <strong>40</strong> automatically (re-assessment cap). Students who have not submitted → receive a <strong>2-Day Re-Assessment Notice</strong> email.' +
+        '</div>' +
+        '<label style="display:inline-flex;align-items:center;gap:8px;padding:9px 16px;background:#f5f3ff;border:1.5px solid #c4b5fd;border-radius:var(--radius);color:#7c3aed;font-size:13px;font-weight:600;cursor:pointer;margin-bottom:8px;">' +
+          '🔄 Choose Re-Assessment Submission CSV' +
+          '<input type="file" id="ra-input-'+saId+'" accept=".csv" style="display:none;" data-parsera="'+saId+'">' +
+        '</label>' +
+        '<div style="font-size:11px;color:var(--text3);margin-bottom:14px;">Blackboard submission export · CSV · Columns: First Name, Last Name, Submitted · Only re-assessment candidates checked</div>' +
+        '<div id="ra-preview-'+saId+'" style="display:none;"></div>' +
+      '</div>' +
+      // Re-assessment MARKS upload panel (silent save, no emails, no publish)
+      '<div id="panel-reassess-marks-'+saId+'" style="display:none;background:#fff;border:1px solid #c4b5fd;border-radius:var(--radius-lg);padding:20px;margin-top:-6px;margin-bottom:12px;box-shadow:var(--shadow);border-top:none;">' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">' +
+          '<div style="font-size:14px;font-weight:700;color:#7c3aed;">📋 Upload Re-Assessment Marks — '+sa.sa+'</div>' +
+          '<button class="btn-sm" data-closepanel="panel-reassess-marks-'+saId+'">✕ Close</button>' +
+        '</div>' +
+        '<div style="background:#f5f3ff;border:1px solid #c4b5fd;border-radius:8px;padding:11px 14px;font-size:12px;color:#5b21b6;margin-bottom:14px;">' +
+          'ℹ️ Upload the Blackboard re-assessment gradebook. Only students who <strong>originally failed or did not submit</strong> will be updated. ' +
+          'All marks are <strong>capped at 40</strong> per university policy. No emails will be sent.' +
+        '</div>' +
+        '<label style="display:inline-flex;align-items:center;gap:8px;padding:9px 16px;background:#f5f3ff;border:1.5px solid #c4b5fd;border-radius:var(--radius);color:#7c3aed;font-size:13px;font-weight:600;cursor:pointer;margin-bottom:8px;">' +
+          '📋 Choose Re-Assessment Gradebook' +
+          '<input type="file" id="ram-input-'+saId+'" accept=".xls,.csv" style="display:none;" data-parseram="'+saId+'">' +
+        '</label>' +
+        '<div style="font-size:11px;color:var(--text3);margin-bottom:14px;">Same Blackboard gradebook format · UTF-16 · Only re-assessment candidates updated · Marks capped at 40 · No emails</div>' +
+        '<div id="ram-preview-'+saId+'" style="display:none;"></div>' +
       '</div>' +
       // Persistent marks table (populated from RESULTS sheet on load / after confirm)
       '<div id="marks-table-'+saId+'" style="display:none;margin-top:4px;margin-bottom:12px;"></div>' +
@@ -2260,7 +2425,7 @@ function renderAsmCards(code, name, saArr, enrolled){
 // ── Event delegation for assessment card buttons ──────────────────────────
 document.addEventListener('DOMContentLoaded', function(){
 document.addEventListener('click', function(e){
-  var btn = e.target.closest('button[data-opensub], button[data-openmarks], button[data-notice], button[data-closepanel], button[data-cancelpanel], button[data-confirmsub], button[data-confirm-release], button[data-saveonly]');
+  var btn = e.target.closest('button[data-opensub], button[data-openmarks], button[data-openreassess], button[data-openreassessmarks], button[data-notice], button[data-renotice], button[data-closepanel], button[data-cancelpanel], button[data-confirmsub], button[data-confirm-release], button[data-saveonly], button[data-savera], button[data-saveram]');
   if(!btn) return;
 
   // ── Panel-only actions (no card lookup needed) ────────────────────────
@@ -2287,11 +2452,30 @@ document.addEventListener('click', function(e){
     confirmAndRelease(btn.dataset.saveonly, e, true);
     return;
   }
+  if(btn.dataset.savera !== undefined){
+    saveReassessMarks(btn.dataset.savera, btn);
+    return;
+  }
+  if(btn.dataset.saveram !== undefined){
+    saveReassessGradebook(btn.dataset.saveram, btn);
+    return;
+  }
+  if(btn.dataset.renotice !== undefined){
+    var reSaId  = btn.dataset.sakey;
+    var reType  = btn.dataset.renotice;
+    var reCard  = document.getElementById('asm-card-'+reSaId);
+    if(!reCard) return;
+    sendReassessNoticeEmail(reCard.dataset.code, reCard.dataset.name, reCard.dataset.sa,
+      reCard.dataset.title, parseFloat(reCard.dataset.weight)||0, reCard.dataset.deadline, reType);
+    return;
+  }
   if(btn.dataset.opensub !== undefined){
     var saId2 = btn.dataset.opensub;
-    // Block if results already published
+    // Block if results published OR marks already uploaded
     var badge2 = document.getElementById('asm-badge-'+saId2);
     if(badge2 && badge2.classList.contains('released')) return;
+    var marksTable2 = document.getElementById('marks-table-'+saId2);
+    if(marksTable2 && marksTable2.style.display !== 'none' && marksTable2.innerHTML.trim()) return;
     var panelS = document.getElementById('panel-sub-'+saId2);
     if(!panelS) return;
     var visS = panelS.style.display==='block';
@@ -2306,6 +2490,24 @@ document.addEventListener('click', function(e){
     var visM = panelM.style.display==='block';
     panelM.style.display = visM ? 'none' : 'block';
     if(!visM) setTimeout(function(){ panelM.scrollIntoView({behavior:'smooth',block:'nearest'}); },50);
+    return;
+  }
+  if(btn.dataset.openreassess !== undefined){
+    var saIdR = btn.dataset.openreassess;
+    var panelR = document.getElementById('panel-reassess-'+saIdR);
+    if(!panelR) return;
+    var visR = panelR.style.display==='block';
+    panelR.style.display = visR ? 'none' : 'block';
+    if(!visR) setTimeout(function(){ panelR.scrollIntoView({behavior:'smooth',block:'nearest'}); },50);
+    return;
+  }
+  if(btn.dataset.openreassessmarks !== undefined){
+    var saIdRM = btn.dataset.openreassessmarks;
+    var panelRM = document.getElementById('panel-reassess-marks-'+saIdRM);
+    if(!panelRM) return;
+    var visRM = panelRM.style.display==='block';
+    panelRM.style.display = visRM ? 'none' : 'block';
+    if(!visRM) setTimeout(function(){ panelRM.scrollIntoView({behavior:'smooth',block:'nearest'}); },50);
     return;
   }
 
@@ -2340,6 +2542,18 @@ document.addEventListener('change', function(e){
     var saId3 = inp.dataset.parsesub;
     var card3 = document.getElementById('asm-card-'+saId3);
     if(card3) parseSubmissionCSV(inp, saId3, card3.dataset.code, card3.dataset.name, card3.dataset.sa);
+    return;
+  }
+  if(inp.dataset.parsera){
+    var saIdRA = inp.dataset.parsera;
+    var cardRA = document.getElementById('asm-card-'+saIdRA);
+    if(cardRA) parseReassessSubmission(inp, saIdRA, cardRA.dataset.code, cardRA.dataset.name, cardRA.dataset.sa, cardRA.dataset.title, parseFloat(cardRA.dataset.weight)||0);
+    return;
+  }
+  if(inp.dataset.parseram){
+    var saIdRAM = inp.dataset.parseram;
+    var cardRAM = document.getElementById('asm-card-'+saIdRAM);
+    if(cardRAM) parseReassessGradebook(inp, saIdRAM, cardRAM.dataset.code, cardRAM.dataset.name, cardRAM.dataset.sa, cardRAM.dataset.title, parseFloat(cardRAM.dataset.weight)||0);
     return;
   }
   if(!inp.dataset.parsegb) return;
@@ -2578,7 +2792,7 @@ function parseSubmissionCSV(input, saId, code, name, sa){
         results: results,
         nonSubmitters: nonSubmitters.map(function(s){ return {bsuId:String(s.bsuId), studentName:s.name||''}; })
       };
-      renderSubPreview(saId, results, nonSubmitters, moduleStudents.length);
+      renderSubPreview(saId, results, nonSubmitters, moduleStudents.length, moduleStudents);
     } catch(err){
       if(preview) preview.innerHTML='<div style="color:var(--red);font-size:13px;padding:8px 0;">⚠️ Error: '+err.message+'</div>';
     }
@@ -2586,7 +2800,7 @@ function parseSubmissionCSV(input, saId, code, name, sa){
   reader.readAsText(input.files[0]);
 }
 
-function renderSubPreview(saId, results, nonSubmitters, enrolled){
+function renderSubPreview(saId, results, nonSubmitters, enrolled, moduleStudents){
   var preview = document.getElementById('sub-preview-'+saId);
   if(!preview) return;
 
@@ -2719,6 +2933,402 @@ function sortMarksTable(th, colIdx){
   rows.forEach(function(r,i){ if(r.cells[0]) r.cells[0].textContent = i+1; tbody.appendChild(r); });
 }
 // ── Parse Blackboard gradebook (UTF-16 TSV or CSV) ─────────────────────────
+// ── Parse Re-Assessment Submission CSV ─────────────────────────────────────
+// Upload Blackboard submission CSV (First Name, Last Name, Submitted Yes/No)
+// Only re-assessment candidates (original mark < 40 or NS) are checked.
+// Submitted = Yes  → mark set to 40 (re-assessment cap)
+// Submitted = No / Not in file → 2-Day Re-Assessment Notice email sent
+function parseReassessSubmission(input, saId, code, name, sa, title, weight){
+  if(!input.files||!input.files[0]) return;
+  var preview = document.getElementById('ra-preview-'+saId);
+  if(preview){ preview.innerHTML='<div style="font-size:13px;color:var(--text2);padding:8px 0;">⏳ Reading file…</div>'; preview.style.display='block'; }
+
+  // Step 1: get existing results to identify re-assessment candidates
+  apiFetch({action:'getResults', moduleCode:code, sa:sa}).then(function(existingResults){
+    var failedMap = {};
+    (existingResults||[]).forEach(function(r){
+      var m = (r.mark!==null && r.mark!==undefined && r.mark!=='') ? Number(r.mark) : null;
+      if(m===null || m < 40) failedMap[String(r.bsuId)] = r;
+    });
+
+    if(!Object.keys(failedMap).length){
+      if(preview) preview.innerHTML='<div style="color:var(--amber);font-size:13px;padding:8px 0;">⚠️ No failed or NS students found for this assessment.</div>';
+      return;
+    }
+
+    // Step 2: parse submission CSV
+    var reader = new FileReader();
+    reader.onload = function(e){
+      try{
+        var text  = e.target.result;
+        var lines = text.split('\n').filter(function(l){ return l.trim(); });
+
+        // Build submitted name set from CSV using same 9-tier matching
+        var candidateStudents = Object.keys(failedMap).map(function(id){ return { bsuId:id, name: failedMap[id].studentName||'' }; });
+        var submittedBsuIds = {};
+
+        for(var i=1; i<lines.length; i++){
+          var cols = lines[i].split(',').map(function(c){ return c.replace(/^"|"$/g,'').trim(); });
+          var firstName = (cols[0]||'').trim();
+          var lastName  = (cols[1]||'').trim();
+          var submitted = (cols[2]||'').toLowerCase()==='yes';
+          if(!firstName && !lastName) continue;
+          if(!submitted) continue; // only care about Yes
+          var match = matchStudentByName(firstName, lastName, candidateStudents);
+          if(match.student) submittedBsuIds[String(match.student.bsuId)] = true;
+        }
+
+        // Step 3: classify candidates
+        var toMark40  = []; // submitted — will get mark 40
+        var toEmail   = []; // not submitted — will get 2-day notice
+
+        Object.keys(failedMap).forEach(function(bsuId){
+          var r = failedMap[bsuId];
+          if(submittedBsuIds[bsuId]){
+            toMark40.push({ bsuId:bsuId, studentName:r.studentName||'' });
+          } else {
+            toEmail.push({ bsuId:bsuId, studentName:r.studentName||'' });
+          }
+        });
+
+        // Store for confirm
+        window._pendingRA = window._pendingRA || {};
+        window._pendingRA[saId] = {
+          code:code, name:name, sa:sa, title:title, weight:weight,
+          toMark40:toMark40, toEmail:toEmail
+        };
+
+        renderReassessPreview(saId, toMark40, toEmail);
+      } catch(err){
+        if(preview) preview.innerHTML='<div style="color:var(--red);font-size:13px;padding:8px 0;">⚠️ Error: '+err.message+'</div>';
+      }
+    };
+    reader.readAsText(input.files[0]);
+  }).catch(function(err){
+    if(preview) preview.innerHTML='<div style="color:var(--red);font-size:13px;padding:8px 0;">⚠️ Could not load existing results: '+err.message+'</div>';
+  });
+}
+
+function renderReassessPreview(saId, toMark40, toEmail){
+  var preview = document.getElementById('ra-preview-'+saId);
+  if(!preview) return;
+
+  var html = '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px;padding:12px 14px;background:#f5f3ff;border-radius:8px;border:1px solid #c4b5fd;">';
+  html += '<div style="font-size:12px;color:#7c3aed;font-weight:700;">🔄 Re-Assessment Report</div>';
+  html += '<div style="font-size:12px;"><span style="color:#16a34a;">✅ Submitted</span> → <strong>Mark 40</strong> &nbsp;'+toMark40.length+' student(s)</div>';
+  html += '<div style="font-size:12px;"><span style="color:#dc2626;">❌ Not Submitted</span> → <strong>2-Day Notice email</strong> &nbsp;'+toEmail.length+' student(s)</div>';
+  html += '</div>';
+
+  if(toMark40.length){
+    html += '<div style="font-size:12px;font-weight:700;color:#16a34a;margin-bottom:6px;">✅ Will be marked 40 (submitted):</div>';
+    html += '<div style="overflow-x:auto;margin-bottom:14px;border-radius:8px;border:1px solid #bbf7d0;">';
+    html += '<table style="table-layout:fixed;width:100%;border-collapse:collapse;font-size:12px;">';
+    html += '<thead><tr style="background:#16a34a;">';
+    html += '<th style="padding:7px 12px;color:#fff;text-align:left;width:5%;">#</th>';
+    html += '<th style="padding:7px 12px;color:#fff;text-align:left;width:20%;">BSU ID</th>';
+    html += '<th style="padding:7px 12px;color:#fff;text-align:left;width:55%;">Name</th>';
+    html += '<th style="padding:7px 12px;color:#fff;text-align:center;width:20%;">Mark</th>';
+    html += '</tr></thead><tbody>';
+    toMark40.forEach(function(r,i){
+      html += '<tr style="background:'+(i%2===0?'#fff':'#f0fdf4')+';">';
+      html += '<td style="padding:6px 12px;border-bottom:1px solid #f0f0f0;">'+( i+1)+'</td>';
+      html += '<td style="padding:6px 12px;border-bottom:1px solid #f0f0f0;font-family:monospace;">'+r.bsuId+'</td>';
+      html += '<td style="padding:6px 12px;border-bottom:1px solid #f0f0f0;">'+r.studentName+'</td>';
+      html += '<td style="padding:6px 12px;border-bottom:1px solid #f0f0f0;text-align:center;font-weight:700;color:#16a34a;">40</td>';
+      html += '</tr>';
+    });
+    html += '</tbody></table></div>';
+  }
+
+  if(toEmail.length){
+    html += '<div style="font-size:12px;font-weight:700;color:#dc2626;margin-bottom:6px;">❌ Will receive 2-Day Re-Assessment Notice:</div>';
+    html += '<div style="overflow-x:auto;margin-bottom:14px;border-radius:8px;border:1px solid #fecaca;">';
+    html += '<table style="table-layout:fixed;width:100%;border-collapse:collapse;font-size:12px;">';
+    html += '<thead><tr style="background:#dc2626;">';
+    html += '<th style="padding:7px 12px;color:#fff;text-align:left;width:5%;">#</th>';
+    html += '<th style="padding:7px 12px;color:#fff;text-align:left;width:20%;">BSU ID</th>';
+    html += '<th style="padding:7px 12px;color:#fff;text-align:left;width:55%;">Name</th>';
+    html += '<th style="padding:7px 12px;color:#fff;text-align:center;width:20%;">Status</th>';
+    html += '</tr></thead><tbody>';
+    toEmail.forEach(function(r,i){
+      html += '<tr style="background:'+(i%2===0?'#fff':'#fef2f2')+';">';
+      html += '<td style="padding:6px 12px;border-bottom:1px solid #f0f0f0;">'+(i+1)+'</td>';
+      html += '<td style="padding:6px 12px;border-bottom:1px solid #f0f0f0;font-family:monospace;">'+r.bsuId+'</td>';
+      html += '<td style="padding:6px 12px;border-bottom:1px solid #f0f0f0;">'+r.studentName+'</td>';
+      html += '<td style="padding:6px 12px;border-bottom:1px solid #f0f0f0;text-align:center;color:#dc2626;font-weight:700;">Not Submitted</td>';
+      html += '</tr>';
+    });
+    html += '</tbody></table></div>';
+  }
+
+  html += '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">';
+  html += '<button class="btn-sm" style="color:#7c3aed;border-color:#c4b5fd;" data-renotice="2day" data-sakey="'+saId+'">';
+  html += '⚠️ Send 2-Day Re-Assessment Extension Notice to '+toEmail.length+' Non-Submitters</button>';
+  html += '<button class="btn-sm" style="color:#dc2626;border-color:#fecaca;" data-renotice="closed" data-sakey="'+saId+'">';
+  html += '🔒 Send Re-Assessment Closed Notice to '+toEmail.length+' Non-Submitters</button>';
+  html += '</div>';
+
+  preview.innerHTML = html;
+  preview.style.display = 'block';
+}
+
+// ── Save re-assessment marks + email non-submitters ──────────────────────────
+function saveReassessMarks(saId, btn){
+  var pending = window._pendingRA && window._pendingRA[saId];
+  if(!pending){ showToast('No re-assessment data found.','error'); return; }
+  if(btn){ btn.disabled=true; btn.textContent='⏳ Saving…'; }
+
+  var tutor     = (typeof _tutor !== 'undefined' ? _tutor : {});
+  var by        = tutor.email || '';
+  var tutorName = tutor.name  || '';
+
+  // Records to save — submitted students get mark 40
+  var records = pending.toMark40.map(function(r){
+    return { bsuId: r.bsuId, studentName: r.studentName, mark: 40 };
+  });
+
+  // Step 1: Save marks (only if any submitted)
+  var savePromise = records.length
+    ? apiPost('saveResultsBatch',{
+        moduleCode:  pending.code,
+        moduleName:  pending.name,
+        sa:          pending.sa,
+        saTitle:     pending.title,
+        saWeight:    pending.weight,
+        maxScore:    100,
+        uploadedBy:  by,
+        reAssess:    true,
+        records:     records
+      })
+    : Promise.resolve({ status:'ok' });
+
+  savePromise.then(function(res){
+    if(!res || res.status !== 'ok') throw new Error((res&&res.message)||'Save failed');
+
+    // Step 2: Email non-submitters (re-assessment candidates only)
+    if(!pending.toEmail.length){
+      showToast('✅ Re-assessment marks saved for '+records.length+' student(s). All re-assessment students have submitted.','success');
+      finishReassess(saId, pending);
+      return null;
+    }
+    return apiPost('sendReassessNotice',{
+      moduleCode:  pending.code,
+      moduleName:  pending.name,
+      sa:          pending.sa,
+      saTitle:     pending.title,
+      saWeight:    pending.weight,
+      tutorName:   tutorName,
+      tutorEmail:  by,
+      sentBy:      by,
+      recipients:  pending.toEmail
+    });
+  }).then(function(res){
+    if(!res) return;
+    if(res.status !== 'ok') throw new Error((res.message)||'Email failed');
+    var sent = res.data ? res.data.sent : '?';
+    showToast('✅ '+records.length+' mark(s) saved at 40. 2-Day Re-Assessment Notice sent to '+sent+' non-submitter(s).','success');
+    finishReassess(saId, pending);
+  }).catch(function(err){
+    showToast('Error: '+err.message,'error');
+    if(btn){ btn.disabled=false; btn.textContent='💾 Save Re-Assessment Marks + Email Non-Submitters'; }
+  });
+}
+
+function finishReassess(saId, pending){
+  var panel = document.getElementById('panel-reassess-'+saId);
+  if(panel) panel.style.display='none';
+  window._pendingRA[saId] = null;
+  apiFetch({action:'getResults', moduleCode:pending.code, sa:pending.sa}).then(function(rows){
+    if(rows && rows.length) renderMarksTable(saId, rows);
+  });
+}
+
+
+// ── Send re-assessment notice email (2-day or closed) ────────────────────────
+function sendReassessNoticeEmail(code, name, sa, title, weight, deadline, type){
+  var saId    = sa.toLowerCase();
+  var label   = type==='2day' ? '2-Day Re-Assessment Extension Notice' : 'Re-Assessment Closed Notice';
+  var pending = window._pendingRA && window._pendingRA[saId];
+
+  // Auto-confirm pending re-assessment sub report if not yet done
+  if(pending && pending.toEmail){
+    // already have non-submitters list
+  } else {
+    showToast('⚠️ Upload the re-assessment submission report first.','error');
+    return;
+  }
+
+  var nonSubs = pending.toEmail;
+  if(!nonSubs || !nonSubs.length){
+    showToast('All re-assessment students have submitted — no notices needed.','success');
+    return;
+  }
+
+  var msg = 'Send '+label+' for '+sa+' - '+name+'?\n\n'+nonSubs.length+' re-assessment non-submitter(s) will be emailed (students TO, parents CC).';
+  if(!confirm(msg)) return;
+
+  var tutor      = (typeof _tutor !== 'undefined' ? _tutor : {});
+  var tutorName  = tutor.name  || '';
+  var tutorEmail = tutor.email || '';
+
+  showToast('⧐ Sending '+label+'…','info');
+  apiPost('sendReassessNotice',{
+    type:        type,
+    moduleCode:  code,
+    moduleName:  name,
+    sa:          sa,
+    saTitle:     title,
+    saWeight:    weight,
+    deadline:    deadline,
+    tutorName:   tutorName,
+    tutorEmail:  tutorEmail,
+    sentBy:      tutorEmail,
+    recipients:  nonSubs
+  }).then(function(res){
+    if(!res || res.status !== 'ok') throw new Error((res&&res.message)||'Send failed');
+    var sent = res.data ? res.data.sent : '?';
+    showToast('✅ '+label+' sent to '+sent+' re-assessment non-submitter(s).','success');
+  }).catch(function(err){
+    showToast('Error: '+err.message,'error');
+  });
+}
+
+// ── Parse Re-Assessment Gradebook (silent marks save, no emails) ─────────────
+// Same Blackboard UTF-16 TSV format. Only updates re-assessment candidates (mark < 40 or NS).
+// Marks capped at 40. No emails sent.
+function parseReassessGradebook(input, saId, code, name, sa, title, weight){
+  if(!input.files||!input.files[0]) return;
+  var preview = document.getElementById('ram-preview-'+saId);
+  if(preview){ preview.innerHTML='<div style="font-size:13px;color:var(--text2);padding:8px 0;">⏳ Reading file…</div>'; preview.style.display='block'; }
+
+  apiFetch({action:'getResults', moduleCode:code, sa:sa}).then(function(existingResults){
+    var failedMap = {};
+    (existingResults||[]).forEach(function(r){
+      var m = (r.mark!==null && r.mark!==undefined && r.mark!=='') ? Number(r.mark) : null;
+      if(m===null || m < 40) failedMap[String(r.bsuId)] = r;
+    });
+
+    if(!Object.keys(failedMap).length){
+      if(preview) preview.innerHTML='<div style="color:var(--amber);font-size:13px;padding:8px 0;">⚠️ No failed or NS students found for this assessment.</div>';
+      return;
+    }
+
+    var reader = new FileReader();
+    reader.onload = function(e){
+      try{
+        var bytes = new Uint8Array(e.target.result);
+        var text  = new TextDecoder('utf-16le').decode(bytes);
+        var lines = text.split('\n').filter(function(l){ return l.trim(); });
+        var gradebookMap = {};
+        for(var i=1; i<lines.length; i++){
+          var cols = lines[i].replace(/^\uFEFF/,'').split('\t').map(function(c){ return c.replace(/^"|"$/g,'').trim(); });
+          if(cols.length<7) continue;
+          var bsuId   = cols[2];
+          var markRaw = cols[6];
+          if(!bsuId||!bsuId.match(/^\d+$/)) continue;
+          if(markRaw===''||markRaw===null||markRaw==='—') continue;
+          var mark = parseFloat(markRaw);
+          if(isNaN(mark)) continue;
+          gradebookMap[String(bsuId)] = mark;
+        }
+
+        var toUpdate = [];
+        var skipped  = [];
+        Object.keys(failedMap).forEach(function(bsuId){
+          var existing = failedMap[bsuId];
+          if(gradebookMap[bsuId] !== undefined){
+            var rawMark = gradebookMap[bsuId];
+            var capped  = Math.min(rawMark, 40);
+            toUpdate.push({ bsuId:bsuId, studentName:existing.studentName||'', markRaw:rawMark, mark:capped, wasCapped:rawMark>40 });
+          } else {
+            skipped.push(existing);
+          }
+        });
+
+        window._pendingRAM = window._pendingRAM || {};
+        window._pendingRAM[saId] = { code:code, name:name, sa:sa, title:title, weight:weight, toUpdate:toUpdate, skipped:skipped };
+        renderReassessGradebookPreview(saId, toUpdate, skipped);
+      } catch(err){
+        if(preview) preview.innerHTML='<div style="color:var(--red);font-size:13px;padding:8px 0;">⚠️ Error: '+err.message+'</div>';
+      }
+    };
+    reader.readAsArrayBuffer(input.files[0]);
+  });
+}
+
+function renderReassessGradebookPreview(saId, toUpdate, skipped){
+  var preview = document.getElementById('ram-preview-'+saId);
+  if(!preview) return;
+  var cappedCount = toUpdate.filter(function(r){ return r.wasCapped; }).length;
+
+  var html = '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px;padding:12px 14px;background:#f5f3ff;border-radius:8px;border:1px solid #c4b5fd;">';
+  html += '<div style="font-size:12px;color:#7c3aed;font-weight:700;">📋 Re-Assessment Marks Preview</div>';
+  html += '<div style="font-size:12px;">Will update <strong>'+toUpdate.length+'</strong> · Unchanged <strong>'+skipped.length+'</strong></div>';
+  if(cappedCount) html += '<div style="font-size:12px;color:#dc2626;">⚠️ '+cappedCount+' mark(s) capped to 40</div>';
+  html += '</div>';
+
+  if(toUpdate.length){
+    html += '<div style="overflow-x:auto;margin-bottom:14px;border-radius:8px;border:1px solid #c4b5fd;">';
+    html += '<table style="width:100%;border-collapse:collapse;font-size:12px;">';
+    html += '<thead><tr style="background:#7c3aed;"><th style="padding:7px 12px;color:#fff;text-align:left;">#</th><th style="padding:7px 12px;color:#fff;text-align:left;">BSU ID</th><th style="padding:7px 12px;color:#fff;text-align:left;">Name</th><th style="padding:7px 12px;color:#fff;text-align:center;">Raw</th><th style="padding:7px 12px;color:#fff;text-align:center;">Saved As</th><th style="padding:7px 12px;color:#fff;text-align:center;">Grade</th></tr></thead><tbody>';
+    toUpdate.forEach(function(r,i){
+      var saved = r.wasCapped ? '<span style="color:#dc2626;font-weight:700;">40</span> <span style="font-size:10px;color:#dc2626;">(capped)</span>' : '<strong>'+r.mark+'</strong>';
+      var grade = calcGradeJS(r.mark);
+      html += '<tr style="background:'+(i%2===0?'#fff':'#faf5ff')+'">';
+      html += '<td style="padding:6px 12px;border-bottom:1px solid #f0f0f0;">'+(i+1)+'</td>';
+      html += '<td style="padding:6px 12px;border-bottom:1px solid #f0f0f0;font-family:monospace;">'+r.bsuId+'</td>';
+      html += '<td style="padding:6px 12px;border-bottom:1px solid #f0f0f0;">'+r.studentName+'</td>';
+      html += '<td style="padding:6px 12px;border-bottom:1px solid #f0f0f0;text-align:center;">'+r.markRaw+'</td>';
+      html += '<td style="padding:6px 12px;border-bottom:1px solid #f0f0f0;text-align:center;">'+saved+'</td>';
+      html += '<td style="padding:6px 12px;border-bottom:1px solid #f0f0f0;text-align:center;font-weight:700;color:'+(grade==='D'?'#ea580c':'#dc2626')+';">'+grade+'</td>';
+      html += '</tr>';
+    });
+    html += '</tbody></table></div>';
+  }
+
+  if(cappedCount) html += '<div style="background:#fef2f2;border:1px solid #fecaca;border-radius:7px;padding:10px 14px;font-size:12px;color:#dc2626;margin-bottom:10px;">⚠️ '+cappedCount+' mark(s) above 40 have been capped per university re-assessment policy.</div>';
+
+  html += '<div style="display:flex;gap:8px;">';
+  html += '<button class="btn-sm" style="background:#7c3aed;color:#fff;border-color:#7c3aed;" data-saveram="'+saId+'">💾 Save Re-Assessment Marks (No Emails)</button>';
+  html += '<button class="btn-sm" data-cancelpanel="ram-preview-'+saId+'">Cancel</button>';
+  html += '</div>';
+
+  preview.innerHTML = html;
+  preview.style.display = 'block';
+}
+
+// ── Save re-assessment gradebook marks (silent, no emails) ───────────────────
+function saveReassessGradebook(saId, btn){
+  var pending = window._pendingRAM && window._pendingRAM[saId];
+  if(!pending){ showToast('No re-assessment marks data found.','error'); return; }
+  if(btn){ btn.disabled=true; btn.textContent='⏳ Saving…'; }
+
+  var tutor = (typeof _tutor !== 'undefined' ? _tutor : {});
+  var by    = tutor.email || '';
+
+  var records = pending.toUpdate.map(function(r){
+    return { bsuId:r.bsuId, studentName:r.studentName, mark:r.mark };
+  });
+
+  apiPost('saveResultsBatch',{
+    moduleCode: pending.code, moduleName: pending.name,
+    sa: pending.sa, saTitle: pending.title, saWeight: pending.weight,
+    maxScore: 100, uploadedBy: by, reAssess: true, records: records
+  }).then(function(res){
+    if(!res || res.status !== 'ok') throw new Error((res&&res.message)||'Save failed');
+    showToast('✅ Re-assessment marks saved for '+records.length+' student(s). No emails sent.','success');
+    var panel = document.getElementById('panel-reassess-marks-'+saId);
+    if(panel) panel.style.display='none';
+    window._pendingRAM[saId] = null;
+    apiFetch({action:'getResults', moduleCode:pending.code, sa:pending.sa}).then(function(rows){
+      if(rows && rows.length) renderMarksTable(saId, rows);
+    });
+  }).catch(function(err){
+    showToast('Error: '+err.message,'error');
+    if(btn){ btn.disabled=false; btn.textContent='💾 Save Re-Assessment Marks (No Emails)'; }
+  });
+}
+
 function parseGradebook(input, code, name, sa, title, weight){
   if(!input.files||!input.files[0]) return;
   var saId = sa.toLowerCase();
@@ -2893,15 +3503,20 @@ function confirmAndRelease(saId, e, saveOnly){
     if(saveOnly){
       // Update card stats from pending marks
       var submittedM = pm.records.filter(function(r){ return r.mark!==null&&!isNaN(r.mark)&&r.mark>0; });
-      var gradeAM    = pm.records.filter(function(r){ return r.grade==='A'; });
-      var gradeFM    = pm.records.filter(function(r){ return r.grade==='F'; });
+      var gradeAM  = pm.records.filter(function(r){ return r.grade==='A'; });
+      var gradeBM  = pm.records.filter(function(r){ return r.grade==='B'; });
+      var gradeCM  = pm.records.filter(function(r){ return r.grade==='C'; });
+      var gradeDM  = pm.records.filter(function(r){ return r.grade==='D'; });
+      var gradeFM  = pm.records.filter(function(r){ return r.grade==='F'; });
+      var gradeNSM = pm.records.filter(function(r){ return r.mark===null||r.mark===undefined||r.mark===''; });
       var avg2 = submittedM.length ? (submittedM.reduce(function(s,r){ return s+r.mark; },0)/submittedM.length).toFixed(1) : '—';
-      var avgEl2 = document.getElementById('asm-avgmark-'+saId);
-      if(avgEl2) avgEl2.textContent = avg2;
-      var aEl2 = document.getElementById('asm-grade-a-'+saId);
-      if(aEl2) aEl2.textContent = gradeAM.length||'—';
-      var fEl2 = document.getElementById('asm-grade-f-'+saId);
-      if(fEl2) fEl2.textContent = gradeFM.length||'—';
+      var avgEl2 = document.getElementById('asm-avgmark-'+saId); if(avgEl2) avgEl2.textContent = avg2;
+      var aEl2  = document.getElementById('asm-grade-a-'+saId);  if(aEl2)  aEl2.textContent  = gradeAM.length  ||'—';
+      var bEl2  = document.getElementById('asm-grade-b-'+saId);  if(bEl2)  bEl2.textContent  = gradeBM.length  ||'—';
+      var cEl2  = document.getElementById('asm-grade-c-'+saId);  if(cEl2)  cEl2.textContent  = gradeCM.length  ||'—';
+      var dEl2  = document.getElementById('asm-grade-d-'+saId);  if(dEl2)  dEl2.textContent  = gradeDM.length  ||'—';
+      var fEl2  = document.getElementById('asm-grade-f-'+saId);  if(fEl2)  fEl2.textContent  = gradeFM.length  ||'—';
+      var nsEl2 = document.getElementById('asm-grade-ns-'+saId); if(nsEl2) nsEl2.textContent = gradeNSM.length ||'—';
       markResultReleased(saId);
       showToast('💾 Marks saved to RESULTS sheet. No emails sent.','info');
       var panel2 = document.getElementById('panel-marks-'+saId);
@@ -2933,15 +3548,20 @@ function confirmAndRelease(saId, e, saveOnly){
 
     // Update avg mark stat
     var submittedFinal = pm.records.filter(function(r){ return r.mark!==null&&!isNaN(r.mark)&&r.mark>0; });
-    var gradeAFinal    = pm.records.filter(function(r){ return r.grade==='A'; });
-    var gradeFinal     = pm.records.filter(function(r){ return r.grade==='F'; });
+    var gradeAFinal  = pm.records.filter(function(r){ return r.grade==='A'; });
+    var gradeBFinal  = pm.records.filter(function(r){ return r.grade==='B'; });
+    var gradeCFinal  = pm.records.filter(function(r){ return r.grade==='C'; });
+    var gradeDFinal  = pm.records.filter(function(r){ return r.grade==='D'; });
+    var gradeFinal   = pm.records.filter(function(r){ return r.grade==='F'; });
+    var gradeNSFinal = pm.records.filter(function(r){ return r.mark===null||r.mark===undefined||r.mark===''; });
     var avgFinal = submittedFinal.length ? (submittedFinal.reduce(function(s,r){ return s+r.mark; },0)/submittedFinal.length).toFixed(1) : '—';
-    var avgElF = document.getElementById('asm-avgmark-'+saId);
-    if(avgElF) avgElF.textContent = avgFinal;
-    var aElF = document.getElementById('asm-grade-a-'+saId);
-    if(aElF) aElF.textContent = gradeAFinal.length||'—';
-    var fElF = document.getElementById('asm-grade-f-'+saId);
-    if(fElF) fElF.textContent = gradeFinal.length||'—';
+    var avgElF  = document.getElementById('asm-avgmark-'+saId);  if(avgElF)  avgElF.textContent  = avgFinal;
+    var aElF    = document.getElementById('asm-grade-a-'+saId);  if(aElF)    aElF.textContent    = gradeAFinal.length  ||'—';
+    var bElF    = document.getElementById('asm-grade-b-'+saId);  if(bElF)    bElF.textContent    = gradeBFinal.length  ||'—';
+    var cElF    = document.getElementById('asm-grade-c-'+saId);  if(cElF)    cElF.textContent    = gradeCFinal.length  ||'—';
+    var dElF    = document.getElementById('asm-grade-d-'+saId);  if(dElF)    dElF.textContent    = gradeDFinal.length  ||'—';
+    var fElF    = document.getElementById('asm-grade-f-'+saId);  if(fElF)    fElF.textContent    = gradeFinal.length   ||'—';
+    var nsElF   = document.getElementById('asm-grade-ns-'+saId); if(nsElF)   nsElF.textContent   = gradeNSFinal.length ||'—';
 
     // Close panel and render persistent marks table
     var panel = document.getElementById('panel-marks-'+saId);
@@ -3066,8 +3686,9 @@ function sendNotice(code, name, sa, title, weight, deadline, type){
     saWeight:weight, deadline:deadline, tutorName:tutorName, tutorEmail:tutorEmail,
     sentBy:tutorEmail, recipients:nonSubs
   }).then(function(res){
-    if(!res.ok) throw new Error(res.error||'Send failed');
-    showToast('✅ '+label+' sent to '+res.sent+' non-submitter(s) — students emailed, parents CC\'d.','success');
+    if(!res || res.status!=='ok') throw new Error((res&&res.message)||'Send failed');
+    var sentCount = res.data ? res.data.sent : res.sent || '?';
+    showToast('✅ '+label+' sent to '+sentCount+' non-submitter(s) — students emailed, parents CC\'d.','success');
   }).catch(function(err){
     showToast('Error: '+err.message,'error');
   });
