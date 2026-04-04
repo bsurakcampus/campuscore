@@ -2289,6 +2289,9 @@ document.addEventListener('click', function(e){
   }
   if(btn.dataset.opensub !== undefined){
     var saId2 = btn.dataset.opensub;
+    // Block if results already published
+    var badge2 = document.getElementById('asm-badge-'+saId2);
+    if(badge2 && badge2.classList.contains('released')) return;
     var panelS = document.getElementById('panel-sub-'+saId2);
     if(!panelS) return;
     var visS = panelS.style.display==='block';
@@ -2307,6 +2310,12 @@ document.addEventListener('click', function(e){
   }
 
   // ── Actions needing card data (notice buttons) ────────────────────────
+  // Block notice buttons if results already published
+  if(btn.dataset.notice !== undefined){
+    var noticeSaId = btn.dataset.sakey;
+    var noticeBadge = document.getElementById('asm-badge-'+noticeSaId);
+    if(noticeBadge && noticeBadge.classList.contains('released')) return;
+  }
   var card = btn.closest('[data-code]');
   if(!card) return;
   var code     = card.dataset.code;
