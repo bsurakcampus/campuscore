@@ -1,6 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>
+(function(){
+  try{
+    var s=JSON.parse(localStorage.getItem('cc_session')||sessionStorage.getItem('cc_session')||'null');
+    if(s&&s.credential&&["parent", "manager"].indexOf(s.role)>-1){
+      document.documentElement.classList.add('cc-has-session');
+    }
+  }catch(e){}
+})();
+</script>
+<style>
+.cc-has-session #screen-login{display:none!important;}
+.cc-has-session #screen-emailsent{display:none!important;}
+</style>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>CampusCore · Parent Portal</title>
@@ -932,7 +946,7 @@ document.getElementById('bsuid-input').addEventListener('keydown', function(e){ 
 <script>
 (function(){
   try {
-    var s = JSON.parse(localStorage.getItem('cc_session') || sessionStorage.getItem('cc_session') || 'null');
+    var s = JSON.parse(localStorage.getItem('cc_session') || 'null');
     if(s && s.role === 'parent' && s.credential){
       // credential = "email||bsuId"
       var parts = s.credential.split('||');
@@ -948,7 +962,6 @@ document.getElementById('bsuid-input').addEventListener('keydown', function(e){ 
 })();
 function ccSignOut(){
   localStorage.removeItem('cc_session');
-  sessionStorage.removeItem('cc_session');
   window.location.href = 'index.html';
 }
 </script>

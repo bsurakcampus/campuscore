@@ -1,6 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>
+(function(){
+  try{
+    var s=JSON.parse(localStorage.getItem('cc_session')||sessionStorage.getItem('cc_session')||'null');
+    if(s&&s.credential&&["student", "manager"].indexOf(s.role)>-1){
+      document.documentElement.classList.add('cc-has-session');
+    }
+  }catch(e){}
+})();
+</script>
+<style>
+.cc-has-session #screen-login{display:none!important;}
+.cc-has-session #screen-emailsent{display:none!important;}
+</style>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CampusCore — Student Portal</title>
@@ -989,7 +1003,7 @@ function doLogin(){
   // Hide demo button immediately — only re-show after valid student loads
   if(demoBtn) demoBtn.style.display = 'none';
   document.getElementById('screen-login').classList.remove('active');
-  document.getElementById('screen-emailsent').classList.add('active');
+  if(!window._sessionRestore) if(!window._sessionRestore) document.getElementById('screen-emailsent').classList.add('active');
   loadStudentData(id);
 }
 
@@ -3109,7 +3123,7 @@ function dismissBirthday(){
 <script>
 (function(){
   try {
-    var s = JSON.parse(localStorage.getItem('cc_session') || sessionStorage.getItem('cc_session') || 'null');
+    var s = JSON.parse(localStorage.getItem('cc_session') || 'null');
     if(s && s.role === 'student' && s.credential){
       if(typeof loadStudentData === 'function') { loadStudentData(s.credential); return; }
     }
@@ -3117,7 +3131,6 @@ function dismissBirthday(){
 })();
 function ccSignOut(){
   localStorage.removeItem('cc_session');
-  sessionStorage.removeItem('cc_session');
   window.location.href = 'index.html';
 }
 </script>

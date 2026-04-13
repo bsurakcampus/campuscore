@@ -1,6 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>
+(function(){
+  try{
+    var s=JSON.parse(localStorage.getItem('cc_session')||sessionStorage.getItem('cc_session')||'null');
+    if(s&&s.credential&&["admin", "manager"].indexOf(s.role)>-1){
+      document.documentElement.classList.add('cc-has-session');
+    }
+  }catch(e){}
+})();
+</script>
+<style>
+.cc-has-session #screen-login{display:none!important;}
+.cc-has-session #screen-emailsent{display:none!important;}
+</style>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CampusCore — Admin Portal</title>
@@ -2615,7 +2629,7 @@ function doLogin(){
   if(demoBtn) demoBtn.style.display = 'none';
   document.getElementById('email-sent-display').textContent = email;
   document.getElementById('screen-login').classList.remove('active');
-  document.getElementById('screen-emailsent').classList.add('active');
+  if(!window._sessionRestore) document.getElementById('screen-emailsent').classList.add('active');
   enterPortal();
 }
 function showLogin(){
@@ -6719,18 +6733,18 @@ function loadMsStats(){
 <script>
 (function(){
   try {
-    var s = JSON.parse(localStorage.getItem('cc_session') || sessionStorage.getItem('cc_session') || 'null');
+    var s = JSON.parse(localStorage.getItem('cc_session') || 'null');
     if(s && s.role === 'admin' && s.credential){
       var disp = document.getElementById('email-sent-display');
       if(disp) disp.textContent = s.credential;
-      if(typeof enterPortal === 'function') { enterPortal(); return; }
+      if(typeof enterPortal === 'function') { window._sessionRestore = true;
+      if(typeof enterPortal === 'function') { enterPortal(); return; } }
     }
   } catch(e){}
   // No valid session — no redirect, portal shows its own login screen
 })();
 function ccSignOut(){
   localStorage.removeItem('cc_session');
-  sessionStorage.removeItem('cc_session');
   window.location.href = 'index.html';
 }
 </script>

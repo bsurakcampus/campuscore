@@ -205,13 +205,11 @@ var _maskedEmail = '';
 })();
 
 function getSession(){
-  try { return JSON.parse(localStorage.getItem('cc_session') || sessionStorage.getItem('cc_session') || 'null'); }
+  try { return JSON.parse(localStorage.getItem('cc_session') || 'null'); }
   catch(e){ return null; }
 }
 function saveSession(obj){
-  var json = JSON.stringify(obj);
-  if(obj.remember){ localStorage.setItem('cc_session', json); }
-  else { sessionStorage.setItem('cc_session', json); }
+  localStorage.setItem('cc_session', JSON.stringify(obj));
 }
 
 // ── Role selection ──
