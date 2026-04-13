@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CampusCore · Manager Access</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;font-family:'Sora',sans-serif;background:#0f1e3d;}
+body{display:flex;align-items:center;justify-content:center;min-height:100vh;overflow:hidden;}
+.orb{position:fixed;border-radius:50%;pointer-events:none;z-index:0;}
+.orb1{width:520px;height:520px;top:-160px;left:-160px;background:rgba(220,38,38,0.15);}
+.orb2{width:380px;height:380px;bottom:-120px;right:-80px;background:rgba(220,38,38,0.08);}
+.orb3{width:280px;height:280px;top:30%;right:-60px;background:rgba(239,68,68,0.06);}
+.wrap{position:relative;z-index:1;width:100%;max-width:480px;padding:40px 20px;display:flex;flex-direction:column;align-items:center;}
+.logo-row{display:flex;align-items:center;gap:14px;margin-bottom:8px;}
+.logo-mark{width:48px;height:48px;background:#dc2626;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:800;color:#fff;box-shadow:0 0 28px rgba(220,38,38,0.4);}
+.logo-text{font-size:26px;font-weight:700;color:#fff;letter-spacing:-0.5px;}
+.logo-text span{color:#fca5a5;}
+.logo-sub{font-size:11px;color:rgba(255,255,255,0.25);margin-bottom:10px;letter-spacing:0.3px;text-align:center;}
+.mgr-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(220,38,38,0.2);border:1px solid rgba(220,38,38,0.3);border-radius:20px;padding:4px 14px;font-size:11px;font-weight:700;color:#fca5a5;margin-bottom:32px;}
+.section-label{font-size:10px;font-weight:700;color:rgba(255,255,255,0.25);text-transform:uppercase;letter-spacing:1px;align-self:flex-start;margin-bottom:10px;width:100%;}
+.role-list{display:flex;flex-direction:column;gap:8px;width:100%;margin-bottom:24px;}
+.role-btn{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:16px 18px;cursor:pointer;display:flex;align-items:center;gap:14px;width:100%;text-align:left;font-family:'Sora',sans-serif;transition:background 0.15s,border-color 0.15s,transform 0.1s;}
+.role-btn:hover{background:rgba(255,255,255,0.12);border-color:rgba(255,255,255,0.2);}
+.role-btn:active{transform:scale(0.99);}
+.role-icon{font-size:20px;width:28px;text-align:center;flex-shrink:0;}
+.role-name{color:#fff;font-size:14px;font-weight:600;flex:1;}
+.role-desc{font-size:11px;color:rgba(255,255,255,0.3);margin-top:2px;}
+.role-arrow{color:rgba(255,255,255,0.2);font-size:18px;}
+/* Load panel */
+.load-panel{width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:20px;display:none;margin-bottom:16px;}
+.load-panel.active{display:block;}
+.load-title{font-size:13px;font-weight:700;color:#fff;margin-bottom:4px;}
+.load-sub{font-size:11px;color:rgba(255,255,255,0.35);margin-bottom:14px;line-height:1.6;}
+.load-input{width:100%;padding:11px 14px;background:rgba(255,255,255,0.07);border:1.5px solid rgba(255,255,255,0.12);border-radius:9px;font-size:14px;color:#fff;font-family:'Sora',sans-serif;outline:none;margin-bottom:10px;transition:border-color 0.2s;}
+.load-input::placeholder{color:rgba(255,255,255,0.25);}
+.load-input:focus{border-color:#f87171;}
+.load-btn{width:100%;background:#dc2626;color:#fff;border:none;border-radius:9px;padding:12px;font-size:13px;font-weight:700;font-family:'Sora',sans-serif;cursor:pointer;transition:background 0.15s;}
+.load-btn:hover{background:#b91c1c;}
+.load-cancel{width:100%;background:none;border:1px solid rgba(255,255,255,0.12);border-radius:9px;padding:10px;font-size:12px;font-weight:600;color:rgba(255,255,255,0.4);font-family:'Sora',sans-serif;cursor:pointer;margin-top:8px;}
+.err-msg{background:rgba(220,38,38,0.15);border:1px solid rgba(220,38,38,0.3);border-radius:8px;padding:9px 12px;font-size:12px;color:#fca5a5;margin-bottom:10px;display:none;}
+.sign-out-btn{background:none;border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:8px 16px;font-size:12px;font-weight:600;color:rgba(255,255,255,0.3);font-family:'Sora',sans-serif;cursor:pointer;transition:all 0.15s;}
+.sign-out-btn:hover{border-color:rgba(248,113,113,0.4);color:#f87171;}
+.footer{font-size:11px;color:rgba(255,255,255,0.12);text-align:center;margin-top:16px;line-height:1.8;}
+</style>
+</head>
+<body>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+<div class="orb orb3"></div>
+
+<div class="wrap">
+  <div class="logo-row">
+    <div class="logo-mark">⚙️</div>
+    <div class="logo-text">Campus<span>Core</span></div>
+  </div>
+  <p class="logo-sub">Bath Spa University · RAK Campus</p>
+  <div class="mgr-badge">⚙️ Manager Access</div>
+
+  <p class="section-label">Load Portal As</p>
+  <div class="role-list">
+    <button class="role-btn" onclick="selectRole('admin','Admin Portal','BSU staff email','yourname@bathspa.ae')">
+      <span class="role-icon">🛡️</span>
+      <div style="flex:1"><div class="role-name">Admin Portal</div><div class="role-desc">Full admin access — enter staff email</div></div>
+      <span class="role-arrow">›</span>
+    </button>
+    <button class="role-btn" onclick="selectRole('tutor','Tutor Portal','BSU staff email','yourname@bathspa.ae')">
+      <span class="role-icon">👨‍🏫</span>
+      <div style="flex:1"><div class="role-name">Tutor Portal</div><div class="role-desc">Load any tutor's modules — enter staff email</div></div>
+      <span class="role-arrow">›</span>
+    </button>
+    <button class="role-btn" onclick="selectRole('student','Student Portal','BSU Student ID','e.g. 638149')">
+      <span class="role-icon">🎓</span>
+      <div style="flex:1"><div class="role-name">Student Portal</div><div class="role-desc">View any student's record — enter BSU ID</div></div>
+      <span class="role-arrow">›</span>
+    </button>
+    <button class="role-btn" onclick="selectRole('parent','Parent Portal','Parent email + BSU ID','email||bsuId')">
+      <span class="role-icon">👨‍👩‍👧</span>
+      <div style="flex:1"><div class="role-name">Parent Portal</div><div class="role-desc">View as parent — enter parent email||BSU ID</div></div>
+      <span class="role-arrow">›</span>
+    </button>
+  </div>
+
+  <div class="load-panel" id="load-panel">
+    <div class="load-title" id="panel-title">Load Admin Portal</div>
+    <div class="load-sub" id="panel-sub">Enter BSU staff email</div>
+    <div class="err-msg" id="panel-err"></div>
+    <input class="load-input" type="text" id="panel-input" placeholder="">
+    <button class="load-btn" onclick="loadPortal()">Open Portal →</button>
+    <button class="load-cancel" onclick="closePanel()">Cancel</button>
+  </div>
+
+  <button class="sign-out-btn" onclick="ccSignOut()">⎋ &nbsp;Sign Out</button>
+  <p class="footer">Manager session · academics@bathspa.ae<br>© 2025–2026 Bath Spa University RAK Campus</p>
+</div>
+
+<script>
+var PORTALS = { admin:'CCAdminV9.html', tutor:'CCTutorV7.html', student:'CCStudentsV7.html', parent:'CCParentV1.html' };
+var _selectedRole = null;
+
+// Verify manager session
+(function(){
+  try {
+    var s = JSON.parse(localStorage.getItem('cc_session') || sessionStorage.getItem('cc_session') || 'null');
+    if(!s || s.role !== 'manager'){ window.location.href = 'index.html'; }
+  } catch(e){ window.location.href = 'index.html'; }
+})();
+
+function selectRole(role, title, inputLabel, ph){
+  _selectedRole = role;
+  document.getElementById('panel-title').textContent = 'Load ' + title;
+  document.getElementById('panel-sub').textContent   = inputLabel;
+  document.getElementById('panel-input').placeholder = ph;
+  document.getElementById('panel-input').value       = '';
+  document.getElementById('panel-err').style.display = 'none';
+  document.getElementById('load-panel').classList.add('active');
+  setTimeout(function(){ document.getElementById('panel-input').focus(); }, 100);
+}
+
+function closePanel(){
+  document.getElementById('load-panel').classList.remove('active');
+  _selectedRole = null;
+}
+
+function loadPortal(){
+  var val = document.getElementById('panel-input').value.trim();
+  var errEl = document.getElementById('panel-err');
+  errEl.style.display = 'none';
+  if(!val){ errEl.textContent='Please enter the required value.'; errEl.style.display='block'; return; }
+  // Save a temporary override session for the target portal
+  var session = { role: _selectedRole, credential: val, remember: true, ts: Date.now(), managerOverride: true };
+  localStorage.setItem('cc_session', JSON.stringify(session));
+  window.location.href = PORTALS[_selectedRole];
+}
+
+function ccSignOut(){
+  localStorage.removeItem('cc_session');
+  sessionStorage.removeItem('cc_session');
+  window.location.href = 'index.html';
+}
+
+document.getElementById('panel-input').addEventListener('keydown', function(e){ if(e.key==='Enter') loadPortal(); });
+</script>
+</body>
+</html>

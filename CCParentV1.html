@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>CampusCore · Parent Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+:root{
+  --navy:#0f1e3d;--navy2:#1e3358;--accent:#2563eb;--accent2:#3b82f6;
+  --green:#16a34a;--green-bg:#f0fdf4;--green-border:#bbf7d0;
+  --red:#dc2626;--red-bg:#fef2f2;--red-border:#fecaca;
+  --amber:#d97706;--amber-bg:#fffbeb;--amber-border:#fde68a;
+  --text:#0f172a;--text2:#475569;--text3:#94a3b8;
+  --border:#e2e8f0;--border2:#cbd5e1;
+  --surface:#f8fafc;--surface2:#f1f5f9;
+  --shadow:0 2px 12px rgba(0,0,0,0.08);
+  --radius:10px;--radius-lg:14px;
+  --nav-h:68px;
+}
+html,body{height:100%;background:var(--navy);overflow:hidden;}
+body{font-family:'Sora',sans-serif;color:var(--text);display:flex;flex-direction:column;align-items:center;justify-content:center;}
+
+/* ── APP SHELL ── */
+#app-shell{
+  width:100%;max-width:430px;height:100dvh;
+  background:#fff;display:flex;flex-direction:column;
+  position:relative;overflow:hidden;
+}
+
+/* ── SCREENS ── */
+.screen{display:none;flex-direction:column;flex:1;overflow:hidden;}
+.screen.active{display:flex;}
+
+/* ── LOGIN SCREENS ── */
+#screen-login,#screen-otp,#screen-bsuid{
+  background:var(--navy);
+  align-items:center;justify-content:center;
+  padding:32px 24px;gap:0;
+  position:relative;overflow:hidden;
+}
+.login-logo{display:flex;align-items:center;gap:12px;margin-bottom:32px;position:relative;z-index:1;}
+.login-logo-mark{width:44px;height:44px;background:var(--accent);border-radius:11px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;color:#fff;letter-spacing:-0.5px;}
+.login-logo-text{font-size:20px;font-weight:700;color:#fff;letter-spacing:-0.3px;}
+.login-logo-text span{color:#93c5fd;}
+.login-card{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:28px 24px;width:100%;max-width:360px;position:relative;z-index:1;}
+.login-label{font-size:10px;font-weight:700;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px;display:block;}
+.login-title{font-size:20px;font-weight:700;color:#fff;margin-bottom:6px;line-height:1.2;}
+.login-sub{font-size:13px;color:rgba(255,255,255,0.45);margin-bottom:22px;line-height:1.6;}
+.login-input{width:100%;padding:13px 16px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:10px;font-size:15px;color:#fff;font-family:'Sora',sans-serif;outline:none;transition:border-color 0.2s;margin-bottom:12px;}
+.login-input::placeholder{color:rgba(255,255,255,0.3);}
+.login-input:focus{border-color:var(--accent2);}
+.login-btn{width:100%;padding:14px;background:var(--accent);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;font-family:'Sora',sans-serif;cursor:pointer;transition:background 0.2s,transform 0.1s;margin-bottom:10px;}
+.login-btn:hover{background:#1d4ed8;}
+.login-btn:active{transform:scale(0.98);}
+.login-btn.secondary{background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);}
+.login-btn.secondary:hover{background:rgba(255,255,255,0.13);}
+.login-error{font-size:12px;color:#f87171;margin-top:4px;margin-bottom:8px;display:none;line-height:1.5;}
+.login-help{font-size:11px;color:rgba(255,255,255,0.3);text-align:center;margin-top:14px;line-height:1.7;}
+.login-help a{color:#93c5fd;text-decoration:none;}
+.otp-inputs{display:flex;gap:10px;justify-content:center;margin-bottom:14px;}
+.otp-input{width:46px;height:52px;text-align:center;font-size:20px;font-weight:700;font-family:'DM Mono',monospace;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.15);border-radius:10px;color:#fff;outline:none;transition:border-color 0.2s;}
+.otp-input:focus{border-color:var(--accent2);}
+.bsuid-back{font-size:12px;color:rgba(255,255,255,0.4);text-align:center;margin-top:10px;cursor:pointer;}
+.bsuid-back:hover{color:rgba(255,255,255,0.7);}
+
+/* ── TOP BAR ── */
+#top-bar{
+  background:var(--navy);padding:12px 16px;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;
+}
+.top-bar-logo{display:flex;align-items:center;gap:8px;}
+.top-bar-mark{width:30px;height:30px;background:var(--accent);border-radius:7px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:11px;color:#fff;}
+.top-bar-name{font-size:13px;font-weight:700;color:#fff;}
+.top-bar-name span{color:#93c5fd;}
+.top-bar-role{font-size:10px;font-weight:600;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.6px;}
+.top-bar-right{text-align:right;}
+.top-bar-email{font-size:11px;color:rgba(255,255,255,0.4);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+/* ── SCREEN TABS ── */
+#screen-tabs{
+  display:flex;background:var(--surface);border-bottom:1px solid var(--border);
+  overflow-x:auto;scrollbar-width:none;flex-shrink:0;
+}
+#screen-tabs::-webkit-scrollbar{display:none;}
+.tab-btn{flex-shrink:0;padding:10px 16px;font-size:11px;font-weight:600;color:var(--text3);border-bottom:2px solid transparent;background:none;border-top:none;border-left:none;border-right:none;font-family:'Sora',sans-serif;cursor:pointer;transition:color 0.2s,border-color 0.2s;white-space:nowrap;}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);}
+
+/* ── SCROLL BODY ── */
+.screen-body{flex:1;overflow-y:auto;padding:16px;padding-bottom:calc(var(--nav-h) + 16px);-webkit-overflow-scrolling:touch;}
+.screen-body::-webkit-scrollbar{display:none;}
+
+/* ── HERO CARD ── */
+.hero-card{background:var(--navy);border-radius:var(--radius-lg);padding:20px;margin-bottom:14px;position:relative;overflow:hidden;}
+.hero-card::before{content:'';position:absolute;top:-40px;right:-40px;width:150px;height:150px;border-radius:50%;background:rgba(37,99,235,0.15);}
+.hero-photo{width:64px;height:64px;border-radius:50%;border:3px solid rgba(255,255,255,0.2);background:var(--navy2);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:rgba(255,255,255,0.5);object-fit:cover;flex-shrink:0;margin-bottom:12px;}
+.hero-name{font-size:17px;font-weight:800;color:#fff;margin-bottom:3px;line-height:1.2;}
+.hero-bsuid{font-size:11px;color:rgba(255,255,255,0.4);font-family:'DM Mono',monospace;margin-bottom:8px;}
+.hero-prog{font-size:12px;color:rgba(255,255,255,0.6);margin-bottom:10px;line-height:1.5;}
+.hero-chips{display:flex;flex-wrap:wrap;gap:5px;}
+.hero-chip{font-size:10px;font-weight:600;padding:3px 9px;border-radius:20px;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.6);border:1px solid rgba(255,255,255,0.15);}
+.hero-chip.green{background:rgba(74,222,128,0.15);color:#4ade80;border-color:rgba(74,222,128,0.3);}
+.hero-chip.amber{background:rgba(251,191,36,0.15);color:#fbbf24;border-color:rgba(251,191,36,0.3);}
+.hero-chip.red{background:rgba(248,113,113,0.15);color:#f87171;border-color:rgba(248,113,113,0.3);}
+
+/* ── SECTION TITLE ── */
+.sec-title{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px;margin-top:16px;}
+.sec-title:first-child{margin-top:0;}
+
+/* ── INFO GRID ── */
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:4px;}
+.info-cell{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:11px 12px;}
+.info-cell.full{grid-column:1/-1;}
+.info-label{font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;}
+.info-val{font-size:13px;font-weight:600;color:var(--text);}
+.info-val.green{color:var(--green);}
+.info-val.red{color:var(--red);}
+.info-val.amber{color:var(--amber);}
+.info-val.muted{color:var(--text3);font-weight:400;font-size:12px;}
+.info-val.mono{font-family:'DM Mono',monospace;}
+
+/* ── YEAR BLOCK ── */
+.year-hdr{border-radius:var(--radius);padding:12px 14px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;}
+.year-hdr.current{background:#166534;}
+.year-hdr.past{background:var(--navy2);}
+.year-hdr.future{background:var(--surface2);border:1px solid var(--border);}
+.year-hdr-left .yr-label{font-size:12px;font-weight:700;color:#fff;}
+.year-hdr.future .yr-label{color:var(--text2);}
+.year-hdr-left .yr-sub{font-size:10px;color:rgba(255,255,255,0.4);margin-top:2px;}
+.year-hdr.future .yr-sub{color:var(--text3);}
+.year-hdr-right{display:flex;gap:12px;text-align:right;}
+.yr-stat .ys-label{font-size:7px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.4px;}
+.year-hdr.future .ys-label{color:var(--text3);}
+.yr-stat .ys-val{font-size:13px;font-weight:800;font-family:'DM Mono',monospace;color:#fff;}
+.year-hdr.future .ys-val{color:var(--text3);}
+
+/* ── MODULE CARD ── */
+.mod-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px;overflow:hidden;}
+.mod-card-hdr{background:var(--navy);padding:9px 12px;display:flex;align-items:center;justify-content:space-between;}
+.mod-card-name{font-size:12px;font-weight:700;color:#fff;}
+.mod-card-code{font-size:10px;color:rgba(255,255,255,0.4);font-family:'DM Mono',monospace;}
+.mod-sem-label{font-size:9px;font-weight:700;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.5px;background:rgba(255,255,255,0.08);padding:2px 7px;border-radius:20px;}
+.mod-card-body{padding:10px 12px;}
+.sa-row{display:flex;align-items:flex-start;gap:10px;padding:7px 0;border-bottom:1px solid var(--surface2);}
+.sa-row:last-child{border-bottom:none;}
+.sa-left{flex:1;}
+.sa-label{font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:2px;}
+.sa-title{font-size:12px;font-weight:600;color:var(--text);margin-bottom:1px;}
+.sa-weight{font-size:10px;color:var(--text3);}
+.sa-mark{font-size:18px;font-weight:800;font-family:'DM Mono',monospace;color:var(--text3);}
+.sa-mark.green{color:var(--green);}
+.sa-mark.amber{color:var(--amber);}
+.sa-mark.red{color:var(--red);}
+.sa-badge{display:inline-block;font-size:9px;font-weight:700;padding:1px 7px;border-radius:20px;margin-top:2px;}
+.sa-badge.pass{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border);}
+.sa-badge.fail{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border);}
+.sa-badge.pending{background:var(--surface2);color:var(--text3);border:1px solid var(--border);}
+.sa-badge.reassess{background:#fef3c7;color:#92400e;border:1px solid #fde68a;}
+.mod-overall{display:flex;align-items:center;justify-content:space-between;padding:8px 0 2px;margin-top:4px;border-top:1px solid var(--surface2);}
+.mod-ov-label{font-size:10px;color:var(--text3);font-weight:500;}
+.mod-ov-val{font-size:15px;font-weight:800;font-family:'DM Mono',monospace;}
+.mod-ov-val.green{color:var(--green);}
+.mod-ov-val.amber{color:var(--amber);}
+.mod-ov-val.red{color:var(--red);}
+.mod-ov-val.muted{color:var(--text3);font-size:11px;font-weight:400;}
+
+/* ── APL / PLACEHOLDER BLOCK ── */
+.apl-block{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center;margin-bottom:10px;}
+.apl-icon{font-size:28px;margin-bottom:8px;}
+.apl-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.apl-sub{font-size:12px;color:var(--text3);line-height:1.6;}
+.apl-badge{display:inline-block;background:#dbeafe;color:#1d4ed8;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;margin-top:8px;}
+
+/* ── SEM SUMMARY ── */
+.sem-summary{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;}
+.ss-label{font-size:10px;font-weight:700;color:var(--text2);}
+.ss-val{font-size:13px;font-weight:800;font-family:'DM Mono',monospace;}
+.ss-val.gold{color:#d97706;}
+.ss-val.green{color:var(--green);}
+.ss-val.red{color:var(--red);}
+.ss-val.muted{color:var(--text3);font-size:11px;font-weight:400;}
+.award-banner{background:linear-gradient(135deg,#fef3c7,#fde68a);border:1px solid #fcd34d;border-radius:var(--radius);padding:10px 14px;display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.award-text{font-size:12px;font-weight:700;color:#92400e;}
+.award-sub{font-size:10px;color:#a16207;margin-top:1px;}
+
+/* ── ACCOUNTS ── */
+.accounts-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.acc-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;text-align:center;}
+.acc-label{font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;}
+.acc-val{font-size:18px;font-weight:800;color:var(--text);}
+.acc-val.green{color:var(--green);}
+.acc-val.red{color:var(--red);}
+.acc-val.amber{color:var(--amber);}
+.acc-val.muted{color:var(--text3);font-size:14px;font-weight:500;}
+
+/* ── CRITICAL NOTES ── */
+.note-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:10px;}
+.note-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.note-author{font-size:11px;font-weight:700;color:var(--accent);}
+.note-date{font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;}
+.note-module{font-size:10px;font-weight:600;color:var(--text2);margin-bottom:6px;background:var(--surface2);display:inline-block;padding:2px 8px;border-radius:20px;}
+.note-text{font-size:13px;color:var(--text);line-height:1.6;}
+.no-notes{text-align:center;padding:40px 20px;color:var(--text3);}
+.no-notes-icon{font-size:32px;margin-bottom:10px;}
+.no-notes-text{font-size:13px;}
+
+/* ── BOTTOM NAV — fixed equal buttons ── */
+#bottom-nav{
+  position:absolute;bottom:0;left:0;right:0;
+  height:var(--nav-h);
+  background:#fff;border-top:1px solid var(--border);
+  display:flex;align-items:stretch;
+  padding-bottom:env(safe-area-inset-bottom);
+  flex-shrink:0;
+  box-shadow:0 -4px 20px rgba(0,0,0,0.06);
+}
+.screen-body{flex:1;overflow-y:auto;padding:16px;padding-bottom:calc(var(--nav-h) + 16px);-webkit-overflow-scrolling:touch;}
+.screen-body::-webkit-scrollbar{display:none;}
+.nav-pill{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:8px 2px;border:none;border-right:1px solid var(--border);background:#fff;cursor:pointer;border-radius:0;transition:background 0.15s;font-family:'Sora',sans-serif;}
+.nav-pill:last-child{border-right:none;}
+.nav-pill:active{background:var(--surface2);}
+.nav-pill .np-line1{font-size:9px;font-weight:600;color:var(--text3);white-space:nowrap;line-height:1.3;}
+.nav-pill .np-line2{font-size:9px;font-weight:700;color:var(--text2);white-space:nowrap;line-height:1.3;}
+.nav-pill.active{background:var(--accent);}
+.nav-pill.active .np-line1{color:rgba(255,255,255,0.75);}
+.nav-pill.active .np-line2{color:#fff;}
+
+/* ── TOP BAR LOG OUT ── */
+.top-bar-logout{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:8px;padding:6px 12px;font-size:11px;font-weight:700;color:#fff;cursor:pointer;font-family:'Sora',sans-serif;transition:background 0.15s;white-space:nowrap;}
+.top-bar-logout:hover{background:rgba(255,255,255,0.18);}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:calc(var(--nav-h) + 12px);left:50%;transform:translateX(-50%) translateY(20px);background:#0f172a;color:#fff;padding:10px 18px;border-radius:20px;font-size:13px;font-weight:600;opacity:0;transition:opacity 0.3s,transform 0.3s;pointer-events:none;z-index:9999;white-space:nowrap;max-width:90vw;}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* ── BACKGROUND ORBS ── */
+.orb1{position:absolute;left:-80px;top:-80px;width:280px;height:280px;border-radius:50%;background:rgba(59,100,210,0.30);pointer-events:none;z-index:0;}
+.orb2{position:absolute;right:-60px;bottom:-80px;width:220px;height:220px;border-radius:50%;background:rgba(59,100,210,0.18);pointer-events:none;z-index:0;}
+.orb3{position:absolute;right:-30px;top:20%;width:160px;height:160px;border-radius:50%;background:rgba(59,100,210,0.12);pointer-events:none;z-index:0;}
+.loading-pulse{display:flex;gap:6px;justify-content:center;padding:40px;}
+.loading-pulse span{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:pulse 1.2s ease infinite;}
+.loading-pulse span:nth-child(2){animation-delay:0.2s;}
+.loading-pulse span:nth-child(3){animation-delay:0.4s;}
+@keyframes pulse{0%,80%,100%{opacity:0.2;transform:scale(0.8);}40%{opacity:1;transform:scale(1);}}
+</style>
+</head>
+<body>
+<div id="app-shell">
+
+  <!-- ══ SCREEN: LOGIN ══ -->
+  <div class="screen active" id="screen-login">
+    <div class="orb1"></div><div class="orb2"></div><div class="orb3"></div>
+    <div class="login-logo">
+      <div class="login-logo-mark">CC</div>
+      <div class="login-logo-text">Campus<span>Core</span></div>
+    </div>
+    <div style="font-size:11px;color:rgba(255,255,255,0.35);margin-top:-24px;margin-bottom:28px;letter-spacing:0.3px;">Bath Spa University · RAK Campus</div>
+    <div class="login-card">
+      <span class="login-label">Parent Portal</span>
+      <div class="login-title">Welcome</div>
+      <div class="login-sub">Enter your registered email to receive a sign-in code.</div>
+      <input class="login-input" type="email" id="login-email" placeholder="your@email.com" autocomplete="email">
+      <div class="login-error" id="login-error"></div>
+      <button class="login-btn" onclick="sendOtp()">Continue →</button>
+    </div>
+    <div class="login-help">Not registered? Write to <a href="mailto:records@bathspa.ae">records@bathspa.ae</a></div>
+  </div>
+
+  <!-- ══ SCREEN: OTP ══ -->
+  <div class="screen" id="screen-otp">
+    <div class="orb1"></div><div class="orb2"></div><div class="orb3"></div>
+    <div class="login-logo">
+      <div class="login-logo-mark">CC</div>
+      <div class="login-logo-text">Campus<span>Core</span></div>
+    </div>
+    <div style="font-size:11px;color:rgba(255,255,255,0.35);margin-top:-24px;margin-bottom:28px;letter-spacing:0.3px;">Bath Spa University · RAK Campus</div>
+    <div class="login-card">
+      <span class="login-label">Verification</span>
+      <div class="login-title">Check your email</div>
+      <div class="login-sub" id="otp-sub">Enter the 6-digit code sent to your email.</div>
+      <div class="otp-inputs">
+        <input class="otp-input" type="tel" maxlength="1" id="otp0">
+        <input class="otp-input" type="tel" maxlength="1" id="otp1">
+        <input class="otp-input" type="tel" maxlength="1" id="otp2">
+        <input class="otp-input" type="tel" maxlength="1" id="otp3">
+        <input class="otp-input" type="tel" maxlength="1" id="otp4">
+        <input class="otp-input" type="tel" maxlength="1" id="otp5">
+      </div>
+      <div class="login-error" id="otp-error"></div>
+      <button class="login-btn" onclick="verifyOtp()">Verify →</button>
+      <button class="login-btn secondary" onclick="showScreen('screen-login')">← Back</button>
+    </div>
+    <div class="login-help">Didn't receive it? <a href="#" onclick="sendOtp();return false;">Resend code</a></div>
+  </div>
+
+  <!-- ══ SCREEN: BSU ID ══ -->
+  <div class="screen" id="screen-bsuid">
+    <div class="orb1"></div><div class="orb2"></div><div class="orb3"></div>
+    <div class="login-logo">
+      <div class="login-logo-mark">CC</div>
+      <div class="login-logo-text">Campus<span>Core</span></div>
+    </div>
+    <div style="font-size:11px;color:rgba(255,255,255,0.35);margin-top:-24px;margin-bottom:28px;letter-spacing:0.3px;">Bath Spa University · RAK Campus</div>
+    <div class="login-card">
+      <span class="login-label">Student Lookup</span>
+      <div class="login-title">Enter BSU ID</div>
+      <div class="login-sub">Enter your child's BSU Student ID to view their record.</div>
+      <input class="login-input" type="tel" id="bsuid-input" placeholder="e.g. 638149" maxlength="10" autocomplete="off">
+      <div class="login-error" id="bsuid-error"></div>
+      <button class="login-btn" onclick="loadStudent()">View Record →</button>
+    </div>
+    <div class="bsuid-back" onclick="ccSignOut()">← Sign out</div>
+  </div>
+
+  <!-- ══ PORTAL SCREENS ══ -->
+  <div class="screen" id="screen-portal">
+
+    <!-- Top bar -->
+    <div id="top-bar">
+      <div class="top-bar-logo">
+        <div class="top-bar-mark">CC</div>
+        <div>
+          <div class="top-bar-name">Campus<span>Core</span></div>
+          <div class="top-bar-role">Bath Spa University · RAK Campus</div>
+        </div>
+      </div>
+      <button class="top-bar-logout" onclick="ccSignOut()">🚪 Log Out</button>
+    </div>
+
+    <!-- Content panels -->
+    <div id="panel-student" class="screen-body" style="display:none;">
+      <!-- Filled by JS -->
+    </div>
+    <div id="panel-year1" class="screen-body" style="display:none;"></div>
+    <div id="panel-year2" class="screen-body" style="display:none;"></div>
+    <div id="panel-year3" class="screen-body" style="display:none;"></div>
+    <div id="panel-accounts" class="screen-body" style="display:none;"></div>
+    <div id="panel-ann" class="screen-body" style="display:none;"></div>
+
+    <!-- Bottom nav -->
+    <div id="bottom-nav"></div>
+  </div>
+
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════════
+// CONFIG
+// ══════════════════════════════════════════════════
+var API_URL = 'https://script.google.com/macros/s/AKfycbycKFnbEm2aXY6JJ8QS-x-vUQMAcqp800afJhejux9UofP1YfK49AxoTG8cXMORzZby/exec';
+
+// ══════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════
+var _parentEmail  = '';
+var _bundle       = null;
+var _student      = null;
+var _curPanel     = 0; // 0=student,1=year1,2=year2,3=year3,4=accounts,5=notes
+var _otpGenerated = '';
+
+var PANELS = [
+  {id:'panel-student',  line1:'Student', line2:'Info'},
+  {id:'panel-year1',   line1:'Year',    line2:'1'},
+  {id:'panel-year2',   line1:'Year',    line2:'2'},
+  {id:'panel-year3',   line1:'Year',    line2:'3'},
+  {id:'panel-accounts',line1:'Fee',     line2:'Details'},
+  {id:'panel-ann',     line1:'Announce',line2:'ments'},
+];
+
+// ══════════════════════════════════════════════════
+// UTILITY
+// ══════════════════════════════════════════════════
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+  var el = document.getElementById(id);
+  if(el) el.classList.add('active');
+}
+
+function showToast(msg, duration){
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, duration||2500);
+}
+
+function apiFetch(params){
+  var url = API_URL + '?' + new URLSearchParams(params).toString();
+  return fetch(url)
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if(d.status && d.status !== 'ok') throw new Error(d.message || 'API error');
+      return d.data !== undefined ? d.data : d;
+    });
+}
+
+function driveImgUrl(url){
+  if(!url) return '';
+  var m = url.match(/[-\w]{25,}/);
+  return m ? 'https://drive.google.com/thumbnail?id='+m[0]+'&sz=w200' : url;
+}
+
+function fmtAED(v){
+  if(!v || v === '0' || v === 0) return '—';
+  return 'AED ' + Number(v).toLocaleString();
+}
+
+// ══════════════════════════════════════════════════
+// OTP FLOW
+// ══════════════════════════════════════════════════
+function sendOtp(){
+  var email = document.getElementById('login-email').value.trim();
+  var errEl = document.getElementById('login-error');
+  errEl.style.display = 'none';
+  if(!email || !email.includes('@')){ errEl.textContent = 'Please enter a valid email address.'; errEl.style.display = 'block'; return; }
+  // Check session first
+  var s = null;
+  try{ s = JSON.parse(localStorage.getItem('cc_session')||sessionStorage.getItem('cc_session')||'null'); }catch(e){}
+  if(s && s.role==='parent' && s.credential && s.credential.startsWith(email)){ _parentEmail=email; showScreen('screen-bsuid'); return; }
+  _parentEmail = email;
+  // Not from index OTP — but session may already be set by index
+  showScreen('screen-bsuid');
+}
+
+// OTP input — auto-advance
+document.querySelectorAll('.otp-input').forEach(function(inp, i){
+  inp.addEventListener('input', function(){
+    this.value = this.value.replace(/[^0-9]/g,'').slice(-1);
+    if(this.value && i < 5) document.getElementById('otp'+(i+1)).focus();
+  });
+  inp.addEventListener('keydown', function(e){
+    if(e.key === 'Backspace' && !this.value && i > 0) document.getElementById('otp'+(i-1)).focus();
+  });
+});
+
+function verifyOtp(){
+  var entered = [0,1,2,3,4,5].map(function(i){ return document.getElementById('otp'+i).value; }).join('');
+  var errEl = document.getElementById('otp-error');
+  errEl.style.display = 'none';
+  if(entered.length < 6){ errEl.textContent = 'Please enter all 6 digits.'; errEl.style.display = 'block'; return; }
+  if(entered !== _otpGenerated){ errEl.textContent = 'Incorrect code. Please try again or write to records@bathspa.ae for help.'; errEl.style.display = 'block'; return; }
+  // OTP verified — go to BSU ID screen
+  document.getElementById('top-bar-email').textContent = _parentEmail;
+  showScreen('screen-bsuid');
+}
+
+// ══════════════════════════════════════════════════
+// LOAD STUDENT
+// ══════════════════════════════════════════════════
+function loadStudent(){
+  var bsuId = document.getElementById('bsuid-input').value.trim();
+  var errEl = document.getElementById('bsuid-error');
+  errEl.style.display = 'none';
+  if(!bsuId){ errEl.textContent = 'Please enter a BSU ID.'; errEl.style.display = 'block'; return; }
+
+  errEl.textContent = '⏳ Loading…'; errEl.style.display = 'block'; errEl.style.color = '#93c5fd';
+
+  apiFetch({action:'getParentBundle', parentEmail:_parentEmail, bsuId:bsuId})
+    .then(function(bundle){
+      errEl.style.color = '#f87171';
+      if(!bundle || bundle.error){
+        errEl.textContent = bundle && bundle.error ? bundle.error : 'Student not found or access denied.';
+        errEl.style.display = 'block'; return;
+      }
+      _bundle  = bundle;
+      _student = bundle.student;
+      buildPortal();
+      _curPanel = 0;
+      switchPanel(0);
+      showScreen('screen-portal');
+    })
+    .catch(function(e){
+      errEl.textContent = (e && e.message ? e.message : 'Could not load data. Please write to records@bathspa.ae for help.');
+      errEl.style.color = '#f87171'; errEl.style.display = 'block';
+    });
+}
+
+function doLogout(){
+  _parentEmail = ''; _bundle = null; _student = null; _otpGenerated = '';
+  document.getElementById('login-email').value = '';
+  document.getElementById('bsuid-input').value = '';
+  [0,1,2,3,4,5].forEach(function(i){ document.getElementById('otp'+i).value = ''; });
+  showScreen('screen-login');
+}
+
+// ══════════════════════════════════════════════════
+// BUILD PORTAL
+// ══════════════════════════════════════════════════
+function buildPortal(){
+  buildNav(0);
+  buildStudentPanel();
+  buildYearPanel(1);
+  buildYearPanel(2);
+  buildYearPanel(3);
+  buildAccountsPanel();
+  buildAnnPanel();
+}
+
+// ── PANEL SWITCH ──
+function switchPanel(idx){
+  _curPanel = idx;
+  PANELS.forEach(function(p, i){
+    var el = document.getElementById(p.id);
+    if(el) el.style.display = i===idx ? 'block' : 'none';
+  });
+  buildNav(idx);
+}
+
+// ── BOTTOM NAV — scrollable pills, active centred ──
+function buildNav(cur){
+  var nav = document.getElementById('bottom-nav');
+  nav.innerHTML = PANELS.map(function(p, i){
+    var cls = i===cur ? ' active' : '';
+    return '<button class="nav-pill'+cls+'" onclick="switchPanel('+i+')" id="nav-pill-'+i+'">'
+      +'<span class="np-line1">'+p.line1+'</span>'
+      +'<span class="np-line2">'+p.line2+'</span>'
+      +'</button>';
+  }).join('');
+  // No scroll needed — all buttons fit
+}
+
+function goBackToBsuId(){
+  _bundle = null; _student = null;
+  document.getElementById('bsuid-input').value = '';
+  document.getElementById('bsuid-error').style.display = 'none';
+  showScreen('screen-bsuid');
+}
+
+// ══════════════════════════════════════════════════
+// PANEL: STUDENT
+// ══════════════════════════════════════════════════
+function buildStudentPanel(){
+  var s = _student || {};
+  var el = document.getElementById('panel-student');
+
+  // Photo
+  var photoHtml = '';
+  if(s.photoUrl){
+    photoHtml = '<img src="'+driveImgUrl(s.photoUrl)+'" class="hero-photo" onerror="this.style.display=\'none\'">';
+  } else {
+    var initials = (s.name||'?').split(' ').map(function(w){return w[0]||'';}).slice(0,2).join('').toUpperCase();
+    photoHtml = '<div class="hero-photo">'+initials+'</div>';
+  }
+
+  // Status chip
+  var stLow = (s.status||'').toLowerCase();
+  var stCls = stLow==='current'||stLow==='active'?'green':stLow==='study break'?'amber':'red';
+  var stLabel = stLow==='current'?'Active':s.status||'—';
+
+  // Compute overall attendance across all modules
+  var allAttBunPresent=0, allAttBunTotal=0;
+  ((_bundle&&_bundle.attendance)||[]).forEach(function(r){
+    allAttBunTotal++;
+    var st=String(r.status||'').toUpperCase();
+    if(st==='P'||st==='PRESENT') allAttBunPresent++;
+  });
+  var overallAtt = allAttBunTotal>0 ? Math.round(allAttBunPresent/allAttBunTotal*100) : null;
+  var attChipCls = overallAtt===null?'':overallAtt>=75?'green':overallAtt>=60?'amber':'red';
+  var attChipTxt = overallAtt!==null ? 'Overall Attendance: '+overallAtt+'%' : 'Overall Attendance: —';
+
+  var html = '<div class="hero-card">'
+    + photoHtml
+    + '<div class="hero-name">'+(s.name||'—')+'</div>'
+    + '<div class="hero-bsuid">BSU ID# '+(s.bsuId||'—')+'</div>'
+    + '<div class="hero-prog">'+(s.programme||'—')+' · '+(s.year||'—')+' · '+(s.levelEntry?'Level Entry: '+s.levelEntry:'')+'</div>'
+    + '<div class="hero-chips">'
+    + '<span class="hero-chip '+stCls+'">● '+stLabel+'</span>'
+    + (s.dobDisplay?'<span class="hero-chip">DOB: '+s.dobDisplay+'</span>':'')
+    + (s.nationality?'<span class="hero-chip">'+s.nationality+'</span>':'')
+    + (s.gender?'<span class="hero-chip">'+s.gender+'</span>':'')
+    + '<span class="hero-chip '+attChipCls+'">'+attChipTxt+'</span>'
+    + '</div>'
+    + '</div>';
+
+  // Student contact
+  html += '<div class="sec-title">Student Contact</div>'
+    + '<div class="info-grid">'
+    + '<div class="info-cell"><div class="info-label">Phone</div><div class="info-val mono">'+(s.phone||'—')+'</div></div>'
+    + '<div class="info-cell"><div class="info-label">Email</div><div class="info-val" style="font-size:11px;">'+(s.email||'—')+'</div></div>'
+    + '</div>';
+
+  // Parent contact
+  html += '<div class="sec-title">Parent / Guardian</div>'
+    + '<div class="info-grid">'
+    + '<div class="info-cell"><div class="info-label">Parent Phone</div><div class="info-val mono">'+(s.parentPhone||'—')+'</div></div>'
+    + '<div class="info-cell"><div class="info-label">Parent Email</div><div class="info-val" style="font-size:11px;">'+(s.parentEmail||'—')+'</div></div>'
+    + (s.parentName?'<div class="info-cell full"><div class="info-label">Parent Name</div><div class="info-val">'+(s.parentName||'—')+'</div></div>':'')
+    + '</div>';
+
+  // Academic info
+  html += '<div class="sec-title">Academic</div>'
+    + '<div class="info-grid">'
+    + '<div class="info-cell"><div class="info-label">Semester</div><div class="info-val">'+(s.semester||'—')+'</div></div>'
+    + '<div class="info-cell"><div class="info-label">Year of Entry</div><div class="info-val">'+(s.yearEntry||'—')+'</div></div>'
+    + '<div class="info-cell"><div class="info-label">Level Entry</div><div class="info-val">'+(s.levelEntry||'—')+'</div></div>'
+    + '<div class="info-cell"><div class="info-label">Nationality</div><div class="info-val">'+(s.nationality||'—')+'</div></div>'
+    + '</div>';
+
+  // Critical Notes — above disclaimer
+  var notes = (_bundle && _bundle.criticalNotes) || [];
+  html += '<div class="sec-title" style="margin-top:20px;">Critical Notes</div>';
+  if(!notes.length){
+    html += '<div class="no-notes"><div class="no-notes-icon">📋</div><div class="no-notes-text">No critical notes for this student.</div></div>';
+  } else {
+    notes.forEach(function(n){
+      html += '<div class="note-card">'
+        +'<div class="note-meta">'
+        +'<span class="note-author">'+(n.author||n.tutor||'Staff')+'</span>'
+        +'<span class="note-date">'+(n.date||'')+'</span>'
+        +'</div>'
+        +(n.module?'<div class="note-module">'+n.module+'</div>':'')
+        +'<div class="note-text">'+(n.note||n.text||'')+'</div>'
+        +'</div>';
+    });
+  }
+
+  html += '<div style="margin-top:20px;padding:14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);font-size:10px;color:var(--text3);line-height:1.8;">'
+    +'<strong style="color:var(--red);font-size:10px;">Disclaimer</strong> &nbsp;·&nbsp; '
+    +'This portal aspires to provide important indicative data on key academic aspects for our students and parents at Bath Spa University – RAK Campus. All information displayed — including Attendance, Assessments and Marks, Outstanding Fees, Accounts Status, and Assessment Link Access — is for reference and follow-up purposes only. All data is subject to technical and manual delays or errors, and should be cross-checked, and confirmed with the relevant department, and staff members in person. Official Assessment Submissions are managed exclusively on Blackboard Ultra, and Official Marks &amp; Results emailed by the Home Campus (BSU UK) directly to students. This portal does not override or replace any official academic data from the Home Campus, and Accounts data from RAK Campus.'
+    +'</div>';
+
+  el.innerHTML = html;
+}
+
+// ══════════════════════════════════════════════════
+// PANEL: YEAR (1, 2, 3)
+// ══════════════════════════════════════════════════
+function buildYearPanel(yn){
+  var s       = _student || {};
+  var progs   = (_bundle && _bundle.programs)  || [];
+  var res     = (_bundle && _bundle.results)   || [];
+  var att     = (_bundle && _bundle.attendance)|| [];
+  var panelId = 'panel-year'+yn;
+  var el      = document.getElementById(panelId);
+  var yrLabel = 'Year '+yn;
+
+  var curYN   = parseInt((s.year||'1').replace(/[^0-9]/g,''))||1;
+  var level   = parseInt((s.levelEntry||'4').replace(/[^0-9]/g,''))||4;
+  var acYear  = ((_bundle && _bundle.config && _bundle.config.academic_year)||'2025/2026');
+
+
+  // Determine state
+  var isCurrent = yn === curYN;
+  var isFuture  = yn > curYN;
+  var isApl     = (level >= 6 && yn < curYN) || (level === 5 && yn === 1 && curYN > 1);
+
+  var hdrCls = isCurrent ? 'current' : isFuture ? 'future' : 'past';
+  var levelMap = {1:'Level 4',2:'Level 5',3:'Level 6'};
+  var lvlLabel = levelMap[yn]||'';
+
+  // ── Future year ──
+  if(isFuture){
+    el.innerHTML = '<div class="year-hdr future">'
+      +'<div class="year-hdr-left"><div class="yr-label">'+yrLabel+'</div>'
+      +'<div class="yr-sub">'+lvlLabel+'</div></div>'
+      +'<div class="year-hdr-right"><div class="yr-stat"><div class="ys-label">Status</div><div class="ys-val" style="color:var(--text3);font-size:11px;">Not started</div></div></div>'
+      +'</div>'
+      +'<div class="apl-block"><div class="apl-icon">📅</div>'
+      +'<div class="apl-title">Year not yet started</div>'
+      +'<div class="apl-sub">Academic data will appear here once this year begins.</div></div>';
+    return;
+  }
+
+  // ── APL year ──
+  if(isApl){
+    el.innerHTML = '<div class="year-hdr past">'
+      +'<div class="year-hdr-left"><div class="yr-label">'+yrLabel+'</div>'
+      +'<div class="yr-sub">'+lvlLabel+'</div></div>'
+      +'<div class="year-hdr-right"><div class="yr-stat"><div class="ys-label">Status</div><div class="ys-val" style="color:#93c5fd;font-size:10px;">APL</div></div></div>'
+      +'</div>'
+      +'<div class="apl-block"><div class="apl-icon">🎓</div>'
+      +'<div class="apl-title">Accreditation of Prior Learning</div>'
+      +'<div class="apl-sub">This year was credited based on the student\'s prior qualifications and experience.</div>'
+      +'<span class="apl-badge">APL 120 Credits</span></div>';
+    return;
+  }
+
+  // ── Normal year — build module data ──
+  var mods = progs.filter(function(p){ return p.programme===s.programme && p.year===yrLabel; });
+  var sem1 = mods.filter(function(m){ return (m.semester||'').indexOf('1')>-1; });
+  var sem2 = mods.filter(function(m){ return (m.semester||'').indexOf('2')>-1; });
+
+  // Result map: moduleCode → {sa1, sa2}
+  var resMap = {};
+  res.forEach(function(r){
+    var c = r.moduleCode||''; if(!c) return;
+    if(!resMap[c]) resMap[c] = {};
+    var sa = String(r.sa||'').replace(/[^0-9]/g,'');
+    if(sa==='1') resMap[c].sa1 = r;
+    if(sa==='2') resMap[c].sa2 = r;
+  });
+
+  // Attendance map
+  var attMap = {};
+  att.forEach(function(r){
+    var c = r.moduleCode||''; if(!c) return;
+    if(!attMap[c]) attMap[c]={present:0,total:0};
+    attMap[c].total++;
+    var st = String(r.status||'').toUpperCase();
+    if(st==='P'||st==='PRESENT') attMap[c].present++;
+  });
+
+  // Overall attendance for this year
+  var allP=[]; var allR=[];
+  mods.forEach(function(m){
+    var a=attMap[m.moduleCode||m.code||''];
+    if(a&&a.total) allP.push(Math.round(a.present/a.total*100));
+  });
+  var avgAtt = allP.length ? Math.round(allP.reduce(function(a,b){return a+b;},0)/allP.length) : null;
+  var attCol = avgAtt!==null ? (avgAtt>=75?'#4ade80':avgAtt>=60?'#fbbf24':'#f87171') : 'rgba(255,255,255,0.25)';
+
+  function calcOv(code){
+    var r=resMap[code]||{}, m=mods.find(function(p){return p.moduleCode===code;})||{};
+    var m1=r.sa1?parseFloat(r.sa1.mark||''):NaN;
+    var m2=r.sa2?parseFloat(r.sa2.mark||''):NaN;
+    var raw1=(r.sa1&&r.sa1.saWeight!=null)?r.sa1.saWeight:(m.sa1Weight||0.5);
+    var raw2=(r.sa2&&r.sa2.saWeight!=null)?r.sa2.saWeight:(m.sa2Weight||0.5);
+    var w1=parseFloat(raw1); if(w1<=1) w1=w1*100;
+    var w2=parseFloat(raw2); if(w2<=1) w2=w2*100;
+    if(!isNaN(m1)&&!isNaN(m2)) return Math.round((m1*w1/100+m2*w2/100)*10)/10;
+    if(!isNaN(m1)&&!m.sa2Weight&&!m.sa2Title) return m1; // single SA
+    return null;
+  }
+
+  // Semester averages
+  function semAvg(smods){
+    var ovs=[]; smods.forEach(function(m){ var o=calcOv(m.moduleCode||m.code||''); if(o!==null) ovs.push(o); });
+    return ovs.length ? Math.round(ovs.reduce(function(a,b){return a+b;},0)/ovs.length*10)/10 : null;
+  }
+  var s1Avg = semAvg(sem1), s2Avg = semAvg(sem2);
+  var semDisplay = (s1Avg!==null?s1Avg+(s1Avg>=70?' 🥇':''):'—')+' / '+(s2Avg!==null?s2Avg+(s2Avg>=70?' 🥇':''):isCurrent?'In prog':'—');
+
+  var html = '<div class="year-hdr '+hdrCls+'">'
+    +'<div class="year-hdr-left">'
+    +'<div class="yr-label">'+yrLabel+(isCurrent?' · Current Year':'')+'</div>'
+    +'<div class="yr-sub">'+lvlLabel+'</div>'
+    +'</div>'
+    +'<div class="year-hdr-right">'
+    +'<div class="yr-stat"><div class="ys-label">Sem 1 / Sem 2</div><div class="ys-val" style="font-size:11px;">'+semDisplay+'</div></div>'
+    +'</div></div>';
+
+  // Excellence / Re-assessment banners
+  var allOvs=[]; mods.forEach(function(m){ var o=calcOv(m.moduleCode||m.code||''); if(o!==null) allOvs.push(o); });
+  var yearAvg = allOvs.length ? Math.round(allOvs.reduce(function(a,b){return a+b;},0)/allOvs.length*10)/10 : null;
+  var reAssessCount = 0;
+  res.forEach(function(r){ if(r.moduleCode && mods.find(function(m){return m.moduleCode===r.moduleCode;})) { if(parseFloat(r.mark||'')<40) reAssessCount++; } });
+  if(yearAvg!==null && yearAvg>=70){
+    html += '<div class="award-banner"><span style="font-size:24px;">🏆</span><div><div class="award-text">Excellence Award</div><div class="award-sub">Year average: '+yearAvg+'% — Distinction level</div></div></div>';
+  }
+  if(reAssessCount>0){
+    html += '<div class="apl-block" style="background:var(--red-bg);border-color:var(--red-border);text-align:left;padding:12px 14px;">'
+      +'<div style="font-size:12px;font-weight:700;color:var(--red);">⚠️ '+reAssessCount+' Re-Assessment'+(reAssessCount>1?'s':'')+'</div>'
+      +'<div style="font-size:11px;color:#991b1b;margin-top:3px;">One or more assessments require re-submission. Please contact the relevant tutor.</div>'
+      +'</div>';
+  }
+
+  // LMS map
+  var lmsMap = {};
+  ((_bundle&&_bundle.lmsAccess)||[]).forEach(function(r){ if(r.moduleCode) lmsMap[r.moduleCode]=r; });
+
+  // Determine active semester
+  var activeSem = (s.semester||'').indexOf('2')>-1 ? '2' : '1';
+
+  // Module cards
+  [[sem1,'Semester 1','1'],[sem2,'Semester 2','2']].forEach(function(pair){
+    var smods=pair[0], slabel=pair[1], semNum=pair[2];
+    if(!smods.length) return;
+
+    var isActiveSem = isCurrent && semNum===activeSem;
+    var semHdrStyle = isActiveSem
+      ? 'color:#166534;font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px;margin-top:16px;display:flex;align-items:center;gap:6px;'
+      : 'color:var(--text3);font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px;margin-top:16px;';
+    var activeBadge = isActiveSem
+      ? '<span style="background:#dcfce7;color:#166534;font-size:9px;font-weight:700;padding:1px 8px;border-radius:20px;border:1px solid #bbf7d0;">Active</span>'
+      : '';
+    html += '<div style="'+semHdrStyle+'">'+slabel+activeBadge+'</div>';
+
+    smods.forEach(function(m){
+      var code = m.moduleCode||m.code||'';
+      var r    = resMap[code]||{};
+      var ov   = calcOv(code);
+      var hasSA2 = !!(m.sa2Weight||m.sa2Title);
+      var a    = attMap[code];
+      var pct  = a&&a.total ? Math.round(a.present/a.total*100) : null;
+      var pctCol = pct!==null?(pct>=75?'#16a34a':pct>=60?'#d97706':'#dc2626'):'#94a3b8';
+      var pctBarW = pct!==null?pct:0;
+      var pctBarCol = pct!==null?(pct>=75?'#4ade80':pct>=60?'#fbbf24':'#f87171'):'rgba(255,255,255,0.15)';
+      // Track colour adapts to header background
+      var trackCol = 'rgba(255,255,255,0.2)';
+      var pctTxtCol = pct!==null?(pct>=75?'#4ade80':pct>=60?'#fbbf24':'#f87171'):'rgba(255,255,255,0.4)';
+
+      // LMS access for current semester modules only
+      var lms = isActiveSem ? (lmsMap[code]||null) : null;
+      var lmsHtml = '';
+      if(isActiveSem){
+        if(lms){
+          var lmsGranted = lms.status==='Granted';
+          lmsHtml = '<div style="display:flex;align-items:center;gap:5px;padding:5px 0;border-top:1px solid var(--surface2);margin-top:4px;">'
+            +'<span style="font-size:10px;">'+(lmsGranted?'✅':'⚠️')+'</span>'
+            +'<span style="font-size:10px;font-weight:600;color:'+(lmsGranted?'var(--green)':'var(--amber)')+';">Assessment Link Access: '+(lmsGranted?'Granted':'Blocked')+'</span>'
+            +'</div>';
+        } else {
+          lmsHtml = '<div style="display:flex;align-items:center;gap:5px;padding:5px 0;border-top:1px solid var(--surface2);margin-top:4px;">'
+            +'<span style="font-size:10px;">🖥️</span>'
+            +'<span style="font-size:10px;font-weight:600;color:var(--text3);">Assessment Link Access: —</span>'
+            +'</div>';
+        }
+      }
+
+      function rawW(w){ var n=parseFloat(w); if(!n) return null; return n<=1?Math.round(n*100):Math.round(n); }
+      function saMarkHtml(mark){
+        if(mark===null||mark===undefined) return '<div class="sa-mark">—</div>';
+        var cls = mark>=70?'green':mark>=40?'amber':'red';
+        var badge = mark<40?'<span class="sa-badge reassess">Re-Assess</span>':mark>=40?'<span class="sa-badge pass">Pass</span>':'';
+        return '<div><div class="sa-mark '+cls+'">'+mark+'</div>'+badge+'</div>';
+      }
+
+      var sa1r = r.sa1, sa2r = r.sa2;
+      var sa1Mark = sa1r&&sa1r.mark!==null&&sa1r.mark!==undefined ? parseFloat(sa1r.mark) : null;
+      var sa2Mark = sa2r&&sa2r.mark!==null&&sa2r.mark!==undefined ? parseFloat(sa2r.mark) : null;
+      var t1 = (sa1r&&sa1r.saTitle) ? sa1r.saTitle : (m.sa1Title||'—');
+      var t2 = (sa2r&&sa2r.saTitle) ? sa2r.saTitle : (m.sa2Title||'');
+      var w1 = (sa1r&&sa1r.saWeight!=null) ? sa1r.saWeight : rawW(m.sa1Weight);
+      var w2 = (sa2r&&sa2r.saWeight!=null) ? sa2r.saWeight : rawW(m.sa2Weight);
+      var ovCls = ov!==null?(ov>=70?'green':ov>=40?'amber':'red'):'muted';
+
+      // Attendance bar — show for all modules where data exists
+      var attBar = pct!==null
+        ? '<div style="display:flex;align-items:center;gap:6px;margin-top:4px;">'
+          +'<div style="flex:1;height:3px;background:'+trackCol+';border-radius:2px;overflow:hidden;">'
+          +'<div style="height:100%;width:'+pctBarW+'%;background:'+pctBarCol+';border-radius:2px;"></div>'
+          +'</div>'
+          +'<span style="font-size:9px;font-weight:700;color:'+pctTxtCol+';min-width:28px;text-align:right;">'+pct+'%</span>'
+          +'</div>'
+        : '';
+
+      html += '<div class="mod-card">'
+        +'<div class="mod-card-hdr" style="'+(isActiveSem?'background:#166534;':'')+'">'
+        +'<div>'
+        +'<div class="mod-card-name">'+m.moduleName+'</div>'
+        +'<div class="mod-card-code">'+code+'</div>'
+        +attBar
+        +'</div>'
+        +'</div>'
+        +'<div class="mod-card-body">'
+        +'<div class="sa-row">'
+        +'<div class="sa-left"><div class="sa-label">SA1'+(w1?' · '+w1+'%':'')+'</div><div class="sa-title">'+t1+'</div></div>'
+        +saMarkHtml(sa1Mark)
+        +'</div>'
+        +(hasSA2 ? '<div class="sa-row">'
+        +'<div class="sa-left"><div class="sa-label">SA2'+(w2?' · '+w2+'%':'')+'</div><div class="sa-title">'+t2+'</div></div>'
+        +saMarkHtml(sa2Mark)
+        +'</div>' : '')
+        +'<div class="mod-overall">'
+        +'<span class="mod-ov-label">Weighted Overall</span>'
+        +(ov!==null?'<span class="mod-ov-val '+ovCls+'">'+ov+'</span>':'<span class="mod-ov-val muted">Awaiting results</span>')
+        +'</div>'
+        +lmsHtml
+        +'</div></div>';
+    });
+  });
+
+  el.innerHTML = html;
+}
+
+// ══════════════════════════════════════════════════
+// PANEL: ACCOUNTS
+// ══════════════════════════════════════════════════
+function buildAccountsPanel(){
+  var rk = (_bundle && _bundle.rkRecord) || {};
+  var el = document.getElementById('panel-accounts');
+
+  function accCls(val, goodStr){
+    if(!val||val==='—') return 'muted';
+    return val.toLowerCase().indexOf((goodStr||'').toLowerCase())>-1 ? 'green' : 'red';
+  }
+
+  el.innerHTML = '<div class="sec-title">Accounts &amp; Registration</div>'
+    +'<div class="accounts-grid">'
+    +'<div class="acc-card"><div class="acc-label">Registration</div><div class="acc-val '+accCls(rk.registration,'Registered')+'">'+(rk.registration||'—')+'</div></div>'
+    +'<div class="acc-card"><div class="acc-label">Accounts Status</div><div class="acc-val '+accCls(rk.accountsStatus,'Clear')+'">'+(rk.accountsStatus||'—')+'</div></div>'
+    +'<div class="acc-card"><div class="acc-label">Current Due</div><div class="acc-val '+(rk.currentDue&&rk.currentDue!=='0'?'red':'muted')+'">'+(rk.currentDue&&rk.currentDue!=='0'?fmtAED(rk.currentDue):'Clear')+'</div></div>'
+    +'<div class="acc-card"><div class="acc-label">Total Receivable</div><div class="acc-val '+(rk.totalReceivable&&rk.totalReceivable!=='0'?'amber':'muted')+'">'+(rk.totalReceivable&&rk.totalReceivable!=='0'?fmtAED(rk.totalReceivable):'—')+'</div></div>'
+    +'</div>'
+    +'<div style="margin-top:20px;padding:14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);font-size:11px;color:var(--text3);line-height:1.7;">'
+    +'<strong style="color:var(--text2);">Note:</strong> Fees shown are indicative. For official account statements please contact the Accounts Office directly.'
+    +'</div>';
+}
+
+// ══════════════════════════════════════════════════
+// PANEL: ANNOUNCEMENTS
+// ══════════════════════════════════════════════════
+function buildAnnPanel(){
+  var ann = (_bundle && _bundle.announcements) || [];
+  var el  = document.getElementById('panel-ann');
+
+  var html = '<div class="sec-title">Announcements</div>';
+
+  if(!ann.length){
+    el.innerHTML = html + '<div class="no-notes"><div class="no-notes-icon">📢</div><div class="no-notes-text">No announcements at this time.</div></div>';
+    return;
+  }
+
+  ann.forEach(function(a){
+    var isPinned   = a.pin === 'Yes';
+    var isUrgent   = (a.priority||'').toLowerCase() === 'urgent';
+    var hdrBg      = isUrgent ? '#fef2f2' : isPinned ? '#eff6ff' : 'var(--surface)';
+    var hdrBorder  = isUrgent ? '#fecaca' : isPinned ? '#bfdbfe' : 'var(--border)';
+    var titleColor = isUrgent ? 'var(--red)' : isPinned ? 'var(--accent)' : 'var(--text)';
+    html += '<div class="note-card" style="margin-bottom:10px;">'
+      +'<div style="background:'+hdrBg+';border-bottom:1px solid '+hdrBorder+';padding:10px 14px;margin:-14px -14px 10px;border-radius:var(--radius) var(--radius) 0 0;display:flex;align-items:center;justify-content:space-between;">'
+      +'<span style="font-size:13px;font-weight:700;color:'+titleColor+';">'+(isPinned?'📌 ':'')+(isUrgent?'🔴 ':'')+a.title+'</span>'
+      +'<span style="font-size:10px;color:var(--text3);font-family:\'DM Mono\',monospace;">'+a.date+'</span>'
+      +'</div>'
+      +(a.body?'<div style="font-size:13px;color:var(--text);line-height:1.7;">'+a.body+'</div>':'')
+      +'<div style="margin-top:8px;font-size:10px;color:var(--text3);">'+a.postedBy+'</div>'
+      +'</div>';
+  });
+  el.innerHTML = html;
+}
+
+// ══════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════
+document.getElementById('login-email').addEventListener('keydown', function(e){ if(e.key==='Enter') sendOtp(); });
+document.getElementById('bsuid-input').addEventListener('keydown', function(e){ if(e.key==='Enter') loadStudent(); });
+</script>
+
+<script>
+(function(){
+  try {
+    var s = JSON.parse(localStorage.getItem('cc_session') || sessionStorage.getItem('cc_session') || 'null');
+    if(s && s.role === 'parent' && s.credential){
+      // credential = "email||bsuId"
+      var parts = s.credential.split('||');
+      if(parts.length === 2){
+        window._parentEmail = parts[0];
+        if(typeof loadStudent === 'function'){
+          document.getElementById('bsuid-input').value = parts[1];
+          loadStudent(); return;
+        }
+      }
+    }
+  } catch(e){}
+})();
+function ccSignOut(){
+  localStorage.removeItem('cc_session');
+  sessionStorage.removeItem('cc_session');
+  window.location.href = 'index.html';
+}
+</script>
+</body>
+</html>

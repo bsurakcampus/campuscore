@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CampusCore · Bath Spa University RAK Campus</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{font-family:'Sora',sans-serif;background:#0f1e3d;display:flex;align-items:center;justify-content:center;min-height:100vh;overflow:hidden;transition:background 0.25s;}
+body.login-open{background:#fff;}
+body.login-open .orb{display:none;}
+body.login-open .wrapper{opacity:0;pointer-events:none;}
+.orb{position:fixed;border-radius:50%;pointer-events:none;z-index:0;}
+.orb1{width:520px;height:520px;top:-160px;left:-160px;background:rgba(37,99,235,0.22);}
+.orb2{width:380px;height:380px;bottom:-120px;right:-80px;background:rgba(37,99,235,0.14);}
+.orb3{width:280px;height:280px;top:30%;right:-60px;background:rgba(99,102,241,0.10);}
+.wrapper{position:relative;z-index:1;width:100%;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px 20px;}
+.screen{display:none;flex-direction:column;align-items:center;width:100%;max-width:460px;animation:fadeUp 0.3s ease both;}
+.screen.active{display:flex;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+.logo-row{display:flex;align-items:center;gap:14px;margin-bottom:8px;}
+.logo-mark{width:48px;height:48px;background:#2563eb;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:800;color:#fff;box-shadow:0 0 28px rgba(37,99,235,0.45);}
+.logo-text{font-size:26px;font-weight:700;color:#fff;letter-spacing:-0.5px;}
+.logo-text span{color:#93c5fd;}
+.logo-sub{font-size:12px;color:rgba(255,255,255,0.3);margin-bottom:36px;letter-spacing:0.3px;text-align:center;}
+.portal-label{font-size:10px;font-weight:700;color:rgba(255,255,255,0.28);text-transform:uppercase;letter-spacing:1px;align-self:flex-start;margin-bottom:10px;}
+.role-list{display:flex;flex-direction:column;gap:8px;width:100%;}
+.role-btn{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:12px;padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:14px;width:100%;text-align:left;transition:background 0.15s,border-color 0.15s,transform 0.1s;font-family:'Sora',sans-serif;}
+.role-btn:hover{background:rgba(255,255,255,0.13);border-color:rgba(255,255,255,0.22);}
+.role-btn:active{transform:scale(0.99);}
+.role-icon{font-size:18px;width:26px;text-align:center;flex-shrink:0;}
+.role-name{color:#fff;font-size:14px;font-weight:600;flex:1;}
+.role-desc{font-size:11px;color:rgba(255,255,255,0.3);margin-top:1px;}
+.role-arrow{color:rgba(255,255,255,0.22);font-size:18px;}
+.mgr-divider{display:flex;align-items:center;gap:10px;width:100%;margin:12px 0 8px;}
+.mgr-line{flex:1;height:1px;background:rgba(255,255,255,0.07);}
+.mgr-tag{font-size:9px;color:rgba(255,255,255,0.18);text-transform:uppercase;letter-spacing:0.8px;white-space:nowrap;}
+.mgr-btn{background:rgba(220,38,38,0.07);border:1px solid rgba(220,38,38,0.18);border-radius:12px;padding:12px 18px;cursor:pointer;display:flex;align-items:center;gap:14px;width:100%;text-align:left;font-family:'Sora',sans-serif;transition:background 0.15s;}
+.mgr-btn:hover{background:rgba(220,38,38,0.14);}
+.mgr-name{color:#f87171;font-size:13px;font-weight:600;flex:1;}
+.footer-text{font-size:11px;color:rgba(255,255,255,0.14);margin-top:28px;text-align:center;line-height:1.8;}
+/* LOGIN & OTP SCREENS */
+#screen-login,#screen-otp{position:fixed;inset:0;z-index:10;background:#fff;display:none;align-items:center;justify-content:center;padding:40px 20px;animation:fadeIn 0.2s ease both;}
+#screen-login.active,#screen-otp.active{display:flex;}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+.login-card{width:100%;max-width:480px;}
+.back-btn{background:none;border:none;cursor:pointer;color:#64748b;font-size:13px;font-family:'Sora',sans-serif;display:flex;align-items:center;gap:5px;margin-bottom:28px;padding:0;transition:color 0.15s;}
+.back-btn:hover{color:#1e40af;}
+.login-portal-badge{display:inline-flex;align-items:center;gap:7px;border-radius:20px;padding:4px 12px;font-size:11px;font-weight:700;margin-bottom:18px;}
+.badge-blue{background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8;}
+.badge-red{background:#fef2f2;border:1px solid #fecaca;color:#dc2626;}
+.login-title{font-size:24px;font-weight:700;color:#0f172a;margin-bottom:5px;line-height:1.2;}
+.login-sub{font-size:13px;color:#64748b;margin-bottom:24px;line-height:1.7;}
+.field-label{display:block;font-size:10px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:0.6px;margin-bottom:7px;}
+.login-input{width:100%;padding:12px 14px;background:#fff;border:1.5px solid #d1d5db;border-radius:9px;font-size:14px;color:#0f172a;font-family:'Sora',sans-serif;outline:none;margin-bottom:6px;transition:border-color 0.2s,box-shadow 0.2s;}
+.login-input::placeholder{color:#9ca3af;}
+.login-input:focus{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,0.1);}
+.field-note{font-size:11px;color:#94a3b8;margin-bottom:12px;}
+.field-note a{color:#2563eb;text-decoration:none;}
+.remember-wrap{display:flex;align-items:flex-start;gap:8px;margin-bottom:14px;}
+.remember-wrap input[type=checkbox]{width:15px;height:15px;accent-color:#2563eb;margin-top:1px;flex-shrink:0;cursor:pointer;}
+.remember-label{font-size:11px;color:#64748b;line-height:1.6;cursor:pointer;}
+.send-btn{width:100%;background:#2563eb;color:#fff;border:none;border-radius:9px;padding:13px;font-size:14px;font-weight:700;font-family:'Sora',sans-serif;cursor:pointer;margin-bottom:14px;transition:background 0.15s,transform 0.1s;}
+.send-btn:hover{background:#1d4ed8;}
+.send-btn:active{transform:scale(0.99);}
+.send-btn:disabled{background:#93c5fd;cursor:not-allowed;}
+.security-note{background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:11px 14px;font-size:11px;color:#92400e;line-height:1.7;}
+.security-note strong{color:#92400e;}
+.login-footer{margin-top:16px;font-size:11px;color:#94a3b8;text-align:center;line-height:1.7;}
+.err-msg{background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:10px 14px;font-size:12px;color:#dc2626;margin-bottom:12px;display:none;}
+/* OTP screen */
+.otp-inputs{display:flex;gap:10px;justify-content:flex-start;margin-bottom:14px;}
+.otp-box{width:48px;height:54px;text-align:center;font-size:22px;font-weight:700;font-family:'DM Mono',monospace;border:1.5px solid #d1d5db;border-radius:9px;color:#0f172a;outline:none;transition:border-color 0.2s,box-shadow 0.2s;}
+.otp-box:focus{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,0.1);}
+.otp-sent-to{font-size:13px;color:#64748b;margin-bottom:20px;line-height:1.6;}
+.otp-sent-to strong{color:#0f172a;}
+.resend-link{font-size:12px;color:#2563eb;cursor:pointer;text-decoration:none;background:none;border:none;font-family:'Sora',sans-serif;padding:0;}
+.resend-link:hover{text-decoration:underline;}
+</style>
+</head>
+<body>
+
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+<div class="orb orb3"></div>
+
+<div class="wrapper">
+  <div class="screen active" id="screen-roles">
+    <div class="logo-row">
+      <div class="logo-mark">CC</div>
+      <div class="logo-text">Campus<span>Core</span></div>
+    </div>
+    <p class="logo-sub">Bath Spa University · RAK Campus<br>Select your portal to continue</p>
+    <p class="portal-label">Portal Access</p>
+    <div class="role-list">
+      <button class="role-btn" onclick="openLogin('student')">
+        <span class="role-icon">🎓</span>
+        <div style="flex:1"><div class="role-name">Students</div><div class="role-desc">View results, attendance &amp; announcements</div></div>
+        <span class="role-arrow">›</span>
+      </button>
+      <button class="role-btn" onclick="openLogin('parent')">
+        <span class="role-icon">👨‍👩‍👧</span>
+        <div style="flex:1"><div class="role-name">Parents</div><div class="role-desc">Track your child's academic progress</div></div>
+        <span class="role-arrow">›</span>
+      </button>
+      <button class="role-btn" onclick="openLogin('tutor')">
+        <span class="role-icon">👨‍🏫</span>
+        <div style="flex:1"><div class="role-name">Tutors</div><div class="role-desc">Manage modules, attendance &amp; marks</div></div>
+        <span class="role-arrow">›</span>
+      </button>
+      <button class="role-btn" onclick="openLogin('admin')">
+        <span class="role-icon">🛡️</span>
+        <div style="flex:1"><div class="role-name">Admins</div><div class="role-desc">Full portal access &amp; reports</div></div>
+        <span class="role-arrow">›</span>
+      </button>
+    </div>
+    <div class="mgr-divider">
+      <div class="mgr-line"></div><span class="mgr-tag">University Management</span><div class="mgr-line"></div>
+    </div>
+    <button class="mgr-btn" onclick="openLogin('manager')">
+      <span class="role-icon">⚙️</span>
+      <div style="flex:1"><div class="mgr-name">Manager</div></div>
+      <span class="role-arrow" style="color:rgba(248,113,113,0.25);">›</span>
+    </button>
+    <p class="footer-text">© 2025–2026 Bath Spa University RAK Campus<br>Powered by CampusCore</p>
+  </div>
+</div>
+
+<!-- LOGIN SCREEN -->
+<div id="screen-login">
+  <div class="login-card">
+    <button class="back-btn" onclick="goBack()">‹ Back to Portal Selection</button>
+    <div class="login-portal-badge badge-blue" id="login-badge">🎓 Student Portal</div>
+    <div class="login-title" id="login-title">Student Sign In</div>
+    <p class="login-sub" id="login-sub">Enter your BSU Student ID to receive a sign-in code.</p>
+    <label class="field-label" id="field-label">BSU Student ID</label>
+    <input class="login-input" type="text" id="login-input" placeholder="e.g. 638149" autocomplete="off">
+    <p class="field-note" id="field-note">Not registered? Write to <a href="mailto:records@bathspa.ae">records@bathspa.ae</a></p>
+    <div class="remember-wrap" id="remember-wrap" style="display:none;">
+      <input type="checkbox" id="remember-check">
+      <label class="remember-label" for="remember-check">Remember me on this device</label>
+    </div>
+    <div class="err-msg" id="login-err"></div>
+    <button class="send-btn" id="send-btn" onclick="sendCode()">Send Sign-In Code →</button>
+    <div class="security-note"><strong>🔒 This device will stay signed in</strong> until you manually sign out. If this is a shared or public device, please sign out after each session to protect your account.</div>
+    <p class="login-footer">© 2025–2026 Bath Spa University RAK Campus<br>Powered by CampusCore</p>
+  </div>
+</div>
+
+<!-- OTP SCREEN -->
+<div id="screen-otp">
+  <div class="login-card">
+    <button class="back-btn" onclick="backToLogin()">‹ Back</button>
+    <div class="login-portal-badge badge-blue" id="otp-badge">🎓 Student Portal</div>
+    <div class="login-title">Enter Sign-In Code</div>
+    <p class="otp-sent-to" id="otp-sent-to">A 6-digit code was sent to your registered email.</p>
+    <label class="field-label">6-Digit Code</label>
+    <div class="otp-inputs">
+      <input class="otp-box" type="tel" maxlength="1" id="o0">
+      <input class="otp-box" type="tel" maxlength="1" id="o1">
+      <input class="otp-box" type="tel" maxlength="1" id="o2">
+      <input class="otp-box" type="tel" maxlength="1" id="o3">
+      <input class="otp-box" type="tel" maxlength="1" id="o4">
+      <input class="otp-box" type="tel" maxlength="1" id="o5">
+    </div>
+    <div class="err-msg" id="otp-err"></div>
+    <button class="send-btn" id="verify-btn" onclick="verifyCode()">Verify &amp; Sign In →</button>
+    <p style="font-size:12px;color:#64748b;">Didn't receive it? <button class="resend-link" onclick="sendCode()">Resend code</button></p>
+    <p class="login-footer" style="margin-top:16px;">© 2025–2026 Bath Spa University RAK Campus<br>Powered by CampusCore</p>
+  </div>
+</div>
+
+<script>
+var API = 'https://script.google.com/macros/s/AKfycbycKFnbEm2aXY6JJ8QS-x-vUQMAcqp800afJhejux9UofP1YfK49AxoTG8cXMORzZby/exec';
+var PORTALS = {
+  student: 'CCStudentsV7.html',
+  parent:  'CCParentV1.html',
+  tutor:   'CCTutorV7.html',
+  admin:   'CCAdminV9.html',
+  manager: 'CCManagerV1.html'
+};
+var ROLE_CONFIG = {
+  student: { badge:'🎓 Student Portal',  title:'Student Sign In',  sub:'Enter your BSU Student ID to receive a sign-in code on your registered email.', label:'BSU Student ID', ph:'e.g. 638149',           remember:false, badgeCls:'badge-blue', action:'sendStudentOtp' },
+  parent:  { badge:'👨‍👩‍👧 Parent Portal',  title:'Parent Sign In',   sub:'Enter your registered parent email to receive a sign-in code.',                 label:'Registered Email',ph:'your@email.com',        remember:false, badgeCls:'badge-blue', action:'sendParentOtp'  },
+  tutor:   { badge:'👨‍🏫 Tutor Portal',   title:'Tutor Sign In',    sub:'Enter your BSU staff email address to receive a sign-in code.',                  label:'BSU Staff Email', ph:'yourname@bathspa.ae',  remember:true,  badgeCls:'badge-blue', action:'sendTutorOtp'   },
+  admin:   { badge:'🛡️ Admin Portal',    title:'Admin Sign In',    sub:'Enter your BSU staff email address to receive a sign-in code.',                  label:'BSU Staff Email', ph:'yourname@bathspa.ae',  remember:true,  badgeCls:'badge-blue', action:'sendAdminOtp'   },
+  manager: { badge:'⚙️ Manager Access',  title:'Manager Sign In',  sub:'Restricted access. Enter your management email to receive a sign-in code.',      label:'Management Email',ph:'academics@bathspa.ae', remember:true,  badgeCls:'badge-red',  action:'sendManagerOtp' }
+};
+
+var _role = null;
+var _credential = '';   // email or bsuId
+var _otp = '';
+var _maskedEmail = '';
+
+// ── Check existing session on load ──
+(function(){
+  var s = getSession();
+  if(s && s.role && s.credential){
+    // Valid session — redirect to portal directly
+    saveSession(s); // refresh storage
+    window.location.href = PORTALS[s.role] || 'index.html';
+  }
+})();
+
+function getSession(){
+  try { return JSON.parse(localStorage.getItem('cc_session') || sessionStorage.getItem('cc_session') || 'null'); }
+  catch(e){ return null; }
+}
+function saveSession(obj){
+  var json = JSON.stringify(obj);
+  if(obj.remember){ localStorage.setItem('cc_session', json); }
+  else { sessionStorage.setItem('cc_session', json); }
+}
+
+// ── Role selection ──
+function openLogin(role){
+  _role = role;
+  var cfg = ROLE_CONFIG[role];
+  var badge = document.getElementById('login-badge');
+  badge.textContent = cfg.badge;
+  badge.className   = 'login-portal-badge ' + cfg.badgeCls;
+  document.getElementById('login-title').textContent  = cfg.title;
+  document.getElementById('login-sub').textContent    = cfg.sub;
+  document.getElementById('field-label').textContent  = cfg.label;
+  document.getElementById('login-input').placeholder  = cfg.ph;
+  document.getElementById('login-input').value        = '';
+  document.getElementById('remember-wrap').style.display = cfg.remember ? 'flex' : 'none';
+  document.getElementById('remember-check').checked   = false;
+  document.getElementById('login-err').style.display  = 'none';
+  showWhite('screen-login');
+  setTimeout(function(){ document.getElementById('login-input').focus(); }, 50);
+}
+
+function goBack(){
+  document.body.classList.remove('login-open');
+  document.getElementById('screen-login').classList.remove('active');
+  document.getElementById('screen-otp').classList.remove('active');
+  _role = null; _credential = ''; _otp = '';
+}
+
+function backToLogin(){
+  document.getElementById('screen-otp').classList.remove('active');
+  document.getElementById('screen-login').classList.add('active');
+}
+
+function showWhite(screenId){
+  document.getElementById('screen-login').classList.remove('active');
+  document.getElementById('screen-otp').classList.remove('active');
+  document.getElementById(screenId).classList.add('active');
+  document.body.classList.add('login-open');
+}
+
+// ── Send OTP ──
+function sendCode(){
+  var val = document.getElementById('login-input').value.trim();
+  var errEl = document.getElementById('login-err');
+  errEl.style.display = 'none';
+  if(!val){ errEl.textContent='Please enter your '+ROLE_CONFIG[_role].label.toLowerCase()+'.'; errEl.style.display='block'; return; }
+  _credential = val;
+  _otp = Math.floor(100000 + Math.random() * 900000).toString();
+  var btn = document.getElementById('send-btn');
+  btn.disabled = true; btn.textContent = 'Sending…';
+  var body = { action: ROLE_CONFIG[_role].action, otp: _otp };
+  if(_role === 'student') body.bsuId = val;
+  else body.email = val;
+  fetch(API, { method:'POST', body: JSON.stringify(body) })
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      btn.disabled = false; btn.textContent = 'Send Sign-In Code →';
+      var data = d.data || d;
+      if(d.status === 'error' || data.error){
+        errEl.textContent = data.error || d.message || 'Error sending code.';
+        errEl.style.display = 'block'; return;
+      }
+      _maskedEmail = data.maskedEmail || val;
+      // Switch to OTP screen
+      var cfg = ROLE_CONFIG[_role];
+      var otpBadge = document.getElementById('otp-badge');
+      otpBadge.textContent = cfg.badge;
+      otpBadge.className   = 'login-portal-badge ' + cfg.badgeCls;
+      document.getElementById('otp-sent-to').innerHTML = 'A 6-digit code was sent to <strong>' + _maskedEmail + '</strong>. Enter it below.';
+      [0,1,2,3,4,5].forEach(function(i){ document.getElementById('o'+i).value=''; });
+      document.getElementById('otp-err').style.display = 'none';
+      showWhite('screen-otp');
+      setTimeout(function(){ document.getElementById('o0').focus(); }, 100);
+    })
+    .catch(function(){
+      btn.disabled = false; btn.textContent = 'Send Sign-In Code →';
+      errEl.textContent = 'Could not connect. Please try again.';
+      errEl.style.display = 'block';
+    });
+}
+
+// OTP box auto-advance
+[0,1,2,3,4,5].forEach(function(i){
+  var inp = document.getElementById('o'+i);
+  if(!inp) return;
+  inp.addEventListener('input',function(){
+    this.value = this.value.replace(/[^0-9]/g,'').slice(-1);
+    if(this.value && i < 5) document.getElementById('o'+(i+1)).focus();
+  });
+  inp.addEventListener('keydown',function(e){
+    if(e.key==='Backspace' && !this.value && i > 0) document.getElementById('o'+(i-1)).focus();
+  });
+});
+
+// ── Verify OTP ──
+function verifyCode(){
+  var entered = [0,1,2,3,4,5].map(function(i){ return document.getElementById('o'+i).value; }).join('');
+  var errEl = document.getElementById('otp-err');
+  errEl.style.display = 'none';
+  if(entered.length < 6){ errEl.textContent='Please enter all 6 digits.'; errEl.style.display='block'; return; }
+  if(entered !== _otp){ errEl.textContent='Incorrect code. Please try again.'; errEl.style.display='block'; return; }
+  // OTP correct — save session and redirect
+  var remember = _role === 'student' || _role === 'parent' ? true
+               : document.getElementById('remember-check').checked;
+  saveSession({ role:_role, credential:_credential, remember:remember, ts:Date.now() });
+  var btn = document.getElementById('verify-btn');
+  btn.disabled = true; btn.textContent = 'Signing in…';
+  window.location.href = PORTALS[_role];
+}
+
+document.getElementById('login-input').addEventListener('keydown',function(e){ if(e.key==='Enter') sendCode(); });
+</script>
+</body>
+</html>
