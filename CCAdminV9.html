@@ -14,6 +14,18 @@
 <style>
 .cc-has-session #screen-login{display:none!important;}
 .cc-has-session #screen-emailsent{display:none!important;}
+
+#cc-loading{position:fixed;inset:0;z-index:99999;background:#0f1e3d;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;transition:opacity 0.4s ease;}
+#cc-loading.cc-fade-out{opacity:0;pointer-events:none;}
+#cc-loading .cc-orb1{position:absolute;width:520px;height:520px;border-radius:50%;background:rgba(37,99,235,0.22);top:-160px;left:-160px;pointer-events:none;}
+#cc-loading .cc-orb2{position:absolute;width:380px;height:380px;border-radius:50%;background:rgba(37,99,235,0.14);bottom:-120px;right:-80px;pointer-events:none;}
+#cc-loading .cc-mark{width:52px;height:52px;background:#2563eb;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:#fff;position:relative;z-index:1;box-shadow:0 0 28px rgba(37,99,235,0.4);}
+#cc-loading .cc-name{font-size:24px;font-weight:700;color:#fff;letter-spacing:-0.5px;position:relative;z-index:1;}
+#cc-loading .cc-name span{color:#93c5fd;}
+#cc-loading .cc-bar-wrap{width:200px;height:3px;background:rgba(255,255,255,0.08);border-radius:2px;overflow:hidden;position:relative;z-index:1;}
+#cc-loading .cc-bar{height:100%;background:#3b82f6;border-radius:2px;animation:cc-bar-fill 2s ease-in-out infinite;}
+@keyframes cc-bar-fill{0%{width:0%;opacity:1;}70%{width:85%;opacity:1;}90%{width:85%;opacity:0.5;}100%{width:0%;opacity:0;}}
+#cc-loading .cc-msg{font-size:12px;color:rgba(255,255,255,0.3);letter-spacing:0.3px;position:relative;z-index:1;}
 </style>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -620,6 +632,7 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
 <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
 </head>
 <body>
+<div id="cc-loading"><div class="cc-orb1"></div><div class="cc-orb2"></div><div class="cc-mark">CC</div><div class="cc-name">Campus<span>Core</span></div><div class="cc-bar-wrap"><div class="cc-bar"></div></div><div class="cc-msg" id="cc-loading-msg">Loading your data…</div></div>
 
 <!-- BIRTHDAY OVERLAY -->
 <div id="birthday-overlay" class="hidden">
@@ -1838,7 +1851,7 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
 
       <!-- ANNOUNCEMENTS -->
       <div id="page-announcements" class="page">
-        <div class="page-header"><h1>Announcements</h1><p>Compose and manage announcements — visible to all Students and Tutors</p></div>
+        <div class="page-header"><h1>Announcements</h1><p>Compose and manage announcements — visible across all portals</p></div>
 
         <!-- Compose — collapsed by default -->
         <div class="compose-box" style="margin-bottom:20px;">
@@ -1848,46 +1861,12 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
           </div>
           <div id="compose-body" style="display:none;padding:18px;">
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
-              <div style="display:grid;grid-template-columns:3fr 1fr;gap:12px;grid-column:1/-1;">
-                <div class="form-group">
-                  <label>To</label>
-                  <select id="ann-audience" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:'Sora',sans-serif;font-size:13px;outline:none;" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'">
-                    <option value="all">All Current Students</option>
-                    <option value="cc">BSc (Hons) Creative Computing</option>
-                    <option value="cy">BSc (Hons) Cyber Security</option>
-                    <option value="cm">BSc (Hons) Creative Media</option>
-                    <option value="ba_all">── All BA (Hons) Business</option>
-                    <option value="bm">&nbsp;&nbsp;&nbsp;↳ Marketing</option>
-                    <option value="ba">&nbsp;&nbsp;&nbsp;↳ Accounting</option>
-                    <option value="bhrm">&nbsp;&nbsp;&nbsp;↳ HRM</option>
-                    <option value="psy">BSc (Hons) Psychology</option>
-                    <option value="mba">MBA General</option>
-                    <option value="msc">MSc Cyber Security</option>
-                    <option value="tutors">All Tutors</option>
-                    <option value="all_all">All Students &amp; Tutors</option>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label>Year <span style="font-size:11px;font-weight:400;color:var(--text3);">(optional)</span></label>
-                  <select style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:'Sora',sans-serif;font-size:13px;outline:none;" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'">
-                    <option value="all">All Years</option>
-                    <option value="y1">Year 1</option>
-                    <option value="y2">Year 2</option>
-                    <option value="y3">Year 3</option>
-                    <option value="na">N/A</option>
-                  </select>
-                </div>
-              </div>
               <div class="form-group" style="grid-column:1/-1;"><label>Title</label><input type="text" id="ann-title" placeholder="Announcement title..."></div>
               <div class="form-group"><label>Tag</label><select id="ann-tag"><option>General</option><option>Academic</option><option>Urgent</option></select></div>
               <div class="form-group"><label>Pin this announcement?</label><select id="ann-pin"><option value="No">No</option><option value="Yes">Yes — pin to top</option></select></div>
             </div>
             <div class="form-group"><label>Message</label><textarea id="ann-body" rows="4" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:'Sora',sans-serif;font-size:13px;outline:none;resize:vertical;" placeholder="Write your announcement here..."></textarea></div>
             <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
-              <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:8px 14px;background:#fef2f2;border:1.5px solid #fecaca;border-radius:8px;font-size:13px;font-weight:700;color:var(--red);">
-                <input type="checkbox" id="ann-email-parents" style="width:16px;height:16px;accent-color:var(--red);cursor:pointer;">
-                📧 Email Parents
-              </label>
               <button class="btn-sm primary" onclick="publishAnnouncement()">📢 Publish Announcement</button>
               <button class="btn-sm" onclick="toggleCompose()">Cancel</button>
             </div>
@@ -2144,10 +2123,53 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
             <button onclick="showPage('reports-marksheet')" style="width:100%;padding:9px 18px;border-radius:var(--radius);border:none;background:var(--orange);color:#fff;font-family:'Sora',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">Open Report →</button>
           </div>
 
+          <!-- Student Surveys -->
+          <div style="background:#fff;border:1px solid var(--border);border-top:4px solid #7c3aed;border-radius:var(--radius-lg);padding:24px;box-shadow:var(--shadow-sm);display:flex;flex-direction:column;gap:16px;cursor:pointer;transition:box-shadow 0.2s;" onmouseover="this.style.boxShadow='0 4px 20px rgba(0,0,0,0.1)'" onmouseout="this.style.boxShadow='var(--shadow-sm)'">
+            <div style="font-size:32px;">⭐</div>
+            <div>
+              <div style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:6px;">Student Surveys</div>
+              <div style="font-size:12px;color:var(--text2);line-height:1.6;">View module evaluation and satisfaction survey results. Filter by survey, programme, year and semester.</div>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:auto;">
+              <span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:var(--surface3);color:var(--text2);border:1px solid var(--border);">📥 Excel Export</span>
+              <span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:var(--surface3);color:var(--text2);border:1px solid var(--border);">⭐ Evaluations</span>
+            </div>
+            <button onclick="showPage('reports-surveys');initSurveyReport();" style="width:100%;padding:9px 18px;border-radius:var(--radius);border:none;background:#7c3aed;color:#fff;font-family:'Sora',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">Open Report →</button>
+          </div>
+
         </div>
       </div><!-- /admin-reports hub -->
 
-      <!-- MARKSHEET REPORT -->
+      <!-- SURVEY REPORT -->
+      <div id="page-reports-surveys" class="page">
+        <button onclick="showPage('admin-reports')" style="display:inline-flex;align-items:center;gap:6px;margin-bottom:14px;padding:6px 14px;background:none;border:1.5px solid var(--border2);border-radius:var(--radius);font-family:'Sora',sans-serif;font-size:12px;font-weight:600;color:var(--text2);cursor:pointer;">← Admin Reports</button>
+        <div class="page-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+          <div><h1>⭐ Student Surveys</h1><p>Module evaluations and satisfaction survey results</p></div>
+          <button class="btn-sm" id="sv-export-btn" onclick="exportSurveyResults()" style="background:#7c3aed;border-color:#7c3aed;color:#fff;" disabled>📥 Export Excel</button>
+        </div>
+        <!-- Stat cards -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;">
+          <div class="stat-card" style="border-top:3px solid #7c3aed;"><div class="stat-label">Responses</div><div class="stat-value" style="color:#7c3aed;" id="sv-count">—</div><div class="stat-sub">total submissions</div></div>
+          <div class="stat-card" style="border-top:3px solid #7c3aed;"><div class="stat-label">Avg Score</div><div class="stat-value" style="color:#7c3aed;" id="sv-avg">—</div><div class="stat-sub">overall average</div></div>
+          <div class="stat-card" style="border-top:3px solid #7c3aed;"><div class="stat-label">Programmes</div><div class="stat-value" style="color:#7c3aed;" id="sv-progs">—</div><div class="stat-sub">represented</div></div>
+          <div class="stat-card" style="border-top:3px solid #7c3aed;"><div class="stat-label">Type</div><div class="stat-value" style="color:#7c3aed;font-size:13px;font-weight:600;" id="sv-type">—</div><div class="stat-sub" id="sv-qcount-sub">questions per response</div></div>
+        </div>
+        <!-- Filters -->
+        <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:16px;box-shadow:var(--shadow-sm);">
+          <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Select Survey</div>
+          <div id="sv-survey-chips" style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px;"><span style="font-size:12px;color:var(--text3);">Loading surveys…</span></div>
+          <div id="sv-prog-chips" style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px;"></div>
+          <div style="display:flex;gap:5px;flex-wrap:wrap;" id="sv-year-row" style="display:none;">
+            <button class="filter-pill active" onclick="setSvYear(this,'')">All Years</button>
+            <button class="filter-pill" onclick="setSvYear(this,'Year 1')">Year 1</button>
+            <button class="filter-pill" onclick="setSvYear(this,'Year 2')">Year 2</button>
+            <button class="filter-pill" onclick="setSvYear(this,'Year 3')">Year 3</button>
+          </div>
+        </div>
+        <!-- Results area — rendered dynamically by type -->
+        <div id="sv-results-area"><div style="padding:40px;text-align:center;color:var(--text3);font-size:13px;background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);">Select a survey above to load results.</div></div>
+      </div><!-- /reports-surveys -->
+
       <div id="page-reports-marksheet" class="page">
         <button onclick="showPage('admin-reports')" style="display:inline-flex;align-items:center;gap:6px;margin-bottom:14px;padding:6px 14px;background:none;border:1.5px solid var(--border2);border-radius:var(--radius);font-family:'Sora',sans-serif;font-size:12px;font-weight:600;color:var(--text2);cursor:pointer;">← Admin Reports</button>
         <div class="page-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
@@ -5207,21 +5229,16 @@ function buildAnnCard(a, pinned){
 function publishAnnouncement(){
   var title    = (document.getElementById('ann-title')?.value||'').trim();
   var body     = (document.getElementById('ann-body')?.value||'').trim();
-  var audience = document.getElementById('ann-audience')?.value||'All';
   var priority = document.getElementById('ann-tag')?.value||'General';
   var pin      = document.getElementById('ann-pin')?.value||'No';
-  var emailParents = document.getElementById('ann-email-parents')?.checked || false;
   if(!title||!body){ alert('Please enter a title and message.'); return; }
   var today = new Date().toISOString().split('T')[0];
-  apiPost({action:'saveAnnouncement', title:title, body:body, audience:audience,
+  apiPost({action:'saveAnnouncement', title:title, body:body, audience:'All',
     priority:priority, pin:pin, active:'Yes', dateISO:today,
-    emailParents: emailParents,
-    postedBy:(_adminUser?.name||'Admin')}).then(function(res){
-    var emailMsg = emailParents ? ' · Parent emails sent: ' + ((res&&res.data&&res.data.emailsSent)||0) : '';
-    showToast('✅ Announcement published.' + emailMsg,'success');
+    postedBy:(_adminUser?.name||'Admin')}).then(function(){
+    showToast('✅ Announcement published.','success');
     document.getElementById('ann-title').value='';
     document.getElementById('ann-body').value='';
-    document.getElementById('ann-email-parents').checked = false;
     toggleCompose();
     loadAnnouncements(true);
   }).catch(function(e){ showToast('Error: '+e.message,'error'); });
@@ -5234,7 +5251,6 @@ function editAnnouncement(row){
   document.getElementById('ann-body').value  = a.body||'';
   document.getElementById('ann-tag').value   = a.priority||'General';
   document.getElementById('ann-pin').value   = a.pin||'No';
-  document.getElementById('ann-audience').value = a.audience||'All';
   // Open compose, store row for update
   var body = document.getElementById('compose-body');
   if(body) body.style.display='block';
@@ -5248,12 +5264,11 @@ function editAnnouncement(row){
 function updateAnnouncement(row){
   var title    = (document.getElementById('ann-title')?.value||'').trim();
   var body     = (document.getElementById('ann-body')?.value||'').trim();
-  var audience = document.getElementById('ann-audience')?.value||'All';
   var priority = document.getElementById('ann-tag')?.value||'General';
   var pin      = document.getElementById('ann-pin')?.value||'No';
   var today    = new Date().toISOString().split('T')[0];
   apiPost({action:'saveAnnouncement', __row:row, title:title, body:body,
-    audience:audience, priority:priority, pin:pin, active:'Yes', dateISO:today,
+    audience:'All', priority:priority, pin:pin, active:'Yes', dateISO:today,
     postedBy:(_adminUser?.name||'Admin')}).then(function(){
     showToast('✅ Announcement updated.','success');
     toggleCompose();
@@ -6349,6 +6364,321 @@ function exportFeeDefaulters(){
     showToast('✅ Fee Defaulters report downloaded.','success');
   }).catch(function(e){ showToast('Export failed: '+e.message,'error'); });
 }
+
+// ── Survey Report ─────────────────────────────────────────────
+var _svConfigs=[], _svConfigId='', _svType='', _svQCount=0, _svQuestions=[];
+var _svRows=[], _svFiltered=[], _svProg='', _svYear='';
+
+function initSurveyReport(){
+  if(_svConfigs.length){ _renderSvChips(); return; }
+  apiFetch({action:'getSurveyConfigs'}).then(function(d){
+    _svConfigs=d||[]; _renderSvChips();
+  }).catch(function(){ showToast('Could not load surveys.','error'); });
+}
+
+function _renderSvChips(){
+  var c=document.getElementById('sv-survey-chips'); if(!c) return;
+  if(!_svConfigs.length){ c.innerHTML='<span style="font-size:12px;color:var(--text3);">No surveys found in EVALUATIONS_CONFIG.</span>'; return; }
+  c.innerHTML=_svConfigs.map(function(x){
+    var active=x.configId===_svConfigId;
+    return '<button class="filter-pill'+(active?' active':'')+'" style="'+(active?'background:#7c3aed;color:#fff;':'')+'" onclick="setSvConfig(this,\''+x.configId+'\')">'+x.title+'&nbsp;<span style="font-size:10px;opacity:0.6;">('+x.type+' · '+x.status+')</span></button>';
+  }).join('');
+}
+
+function setSvConfig(btn,cid){
+  _svConfigId=cid;
+  document.querySelectorAll('#sv-survey-chips .filter-pill').forEach(function(b){b.classList.remove('active');b.style.background='';b.style.color='';});
+  btn.classList.add('active'); btn.style.background='#7c3aed'; btn.style.color='#fff';
+  var cfg=_svConfigs.find(function(c){return c.configId===cid;})||{};
+  _svType=cfg.type||''; _svQCount=cfg.qCount||0; _svQuestions=cfg.questions||[];
+  document.getElementById('sv-type').textContent=_svType||'—';
+  document.getElementById('sv-qcount-sub').textContent=(_svQCount||'?')+' questions per response';
+  _loadSvResults();
+}
+
+function setSvProg(btn,val){ _svProg=val; var c=document.getElementById('sv-prog-chips'); if(c) c.querySelectorAll('.filter-pill').forEach(function(b){b.classList.remove('active');}); if(btn)btn.classList.add('active'); _renderSvResults(); }
+function setSvYear(btn,val){ _svYear=val; var p=btn.parentElement; if(p) p.querySelectorAll('.filter-pill').forEach(function(b){b.classList.remove('active');}); btn.classList.add('active'); _renderSvResults(); }
+
+function _loadSvResults(){
+  var area=document.getElementById('sv-results-area');
+  if(area) area.innerHTML='<div style="padding:40px;text-align:center;color:var(--text3);font-size:13px;background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);">⏳ Loading results…</div>';
+  apiFetch({action:'getSurveyResults',configId:_svConfigId}).then(function(res){
+    _svType   = res.type    || _svType;
+    _svQCount = res.qCount  || _svQCount;
+    _svRows   = res.rows    || [];
+    _svProg=''; _svYear='';
+    // Build programme chips
+    var progs=[...new Set(_svRows.map(function(r){return r.programme;}).filter(Boolean))].sort();
+    var pc=document.getElementById('sv-prog-chips');
+    if(pc){
+      pc.innerHTML=progs.length
+        ? '<button class="filter-pill active" onclick="setSvProg(this,\'\')">All Programmes</button>'+progs.map(function(p){return '<button class="filter-pill" onclick="setSvProg(this,\''+p.replace(/'/g,"\\'")+'\')">'+p+'</button>';}).join('')
+        : '';
+    }
+    // Year row: hide for StudentSatisfaction (everyone), show for others
+    var yr=document.getElementById('sv-year-row');
+    if(yr) yr.style.display=(_svType==='StudentSatisfaction'?'none':'flex');
+    // reset year pills
+    if(yr) yr.querySelectorAll('.filter-pill').forEach(function(b,i){b.classList.toggle('active',i===0);});
+    _renderSvResults();
+    var eb=document.getElementById('sv-export-btn'); if(eb) eb.disabled=false;
+  }).catch(function(e){ showToast('Error: '+e.message,'error'); });
+}
+
+function _svFilter(){
+  return _svRows.filter(function(r){
+    if(_svProg && r.programme!==_svProg) return false;
+    if(_svYear && r.year!==_svYear) return false;
+    return true;
+  });
+}
+
+function _sc(v){
+  if(v===null||v===undefined) return '<td style="text-align:center;color:var(--text3);padding:7px 8px;font-size:12px;">—</td>';
+  var n=Number(v),col=n>=8?'#16a34a':n>=6?'#d97706':'#dc2626',bg=n>=8?'#f0fdf4':n>=6?'#fffbeb':'#fef2f2';
+  return '<td style="text-align:center;padding:7px 8px;"><span style="display:inline-block;min-width:24px;padding:1px 5px;border-radius:4px;font-size:12px;font-weight:700;color:'+col+';background:'+bg+';">'+n+'</span></td>';
+}
+function _avgCell(v){
+  if(v===null) return '<td style="text-align:center;color:var(--text3);padding:7px 8px;">—</td>';
+  var n=Number(v).toFixed(1),col=n>=8?'#7c3aed':'#7c3aed';
+  return '<td style="text-align:center;padding:7px 8px;"><span style="display:inline-block;min-width:32px;padding:2px 6px;border-radius:4px;font-size:12px;font-weight:700;color:#fff;background:#7c3aed;">'+n+'</span></td>';
+}
+function _thStyle(){ return 'color:#fff;padding:7px 10px;font-size:11px;font-weight:600;white-space:nowrap;'; }
+function _tdBase(){ return 'padding:7px 10px;font-size:12px;'; }
+
+function _renderSvResults(){
+  _svFiltered=_svFilter();
+  var area=document.getElementById('sv-results-area'); if(!area) return;
+  _updateSvStats(_svFiltered);
+  if(!_svFiltered.length){
+    area.innerHTML='<div style="padding:40px;text-align:center;color:var(--text3);font-size:13px;background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);">No responses match the selected filters.</div>';
+    return;
+  }
+  if(_svType==='ModuleEval')           area.innerHTML=_renderModuleEval(_svFiltered);
+  else if(_svType==='StudentSatisfaction') area.innerHTML=_renderSatisfaction(_svFiltered);
+  else if(_svType==='ProgramReview')   area.innerHTML=_renderProgReview(_svFiltered);
+  else area.innerHTML='<div style="padding:20px;color:var(--text3);">Unknown survey type.</div>';
+}
+
+function _qHeaders(count){
+  var h=''; for(var i=1;i<=count;i++) h+='<th style="'+_thStyle()+'text-align:center;min-width:42px;" title="'+((_svQuestions[i-1]||{}).text||'Q'+i)+'">Q'+i+'</th>';
+  return h;
+}
+
+// ── Module Eval: grouped by Programme → Year → Module ──
+function _renderModuleEval(rows){
+  // Group: prog → year → moduleCode
+  var groups={};
+  rows.forEach(function(r){
+    var k=r.programme+'|||'+r.year+'|||'+r.moduleCode+'|||'+r.moduleName;
+    if(!groups[k]) groups[k]={prog:r.programme,year:r.year,module:r.moduleName,rows:[]};
+    groups[k].rows.push(r);
+  });
+  var html='';
+  Object.keys(groups).sort().forEach(function(k){
+    var g=groups[k], gRows=g.rows;
+    html+='<div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);margin-bottom:16px;">';
+    html+='<div style="background:#0f1e3d;padding:10px 16px;display:flex;align-items:center;gap:16px;">';
+    html+='<span style="color:#fff;font-size:13px;font-weight:700;">'+g.module+'</span>';
+    html+='<span style="color:rgba(255,255,255,0.5);font-size:11px;">'+g.prog+' · '+g.year+'</span>';
+    html+='<span style="margin-left:auto;color:rgba(255,255,255,0.4);font-size:11px;">'+gRows.length+' response'+(gRows.length!==1?'s':'')+'</span>';
+    html+='</div>';
+    html+='<div style="overflow-x:auto;"><table class="data-table" style="table-layout:auto;">';
+    html+='<thead><tr style="background:#1e293b;">'+
+      '<th style="'+_thStyle()+'min-width:90px;">BSU ID</th>'+
+      '<th style="'+_thStyle()+'min-width:160px;">Name</th>'+
+      _qHeaders(4)+
+      '<th style="'+_thStyle()+'text-align:center;min-width:50px;">Avg</th>'+
+      '<th style="'+_thStyle()+'min-width:200px;">Comments</th>'+
+      '</tr></thead><tbody>';
+    gRows.forEach(function(r,i){
+      var bg=i%2===0?'#fff':'var(--surface2)';
+      html+='<tr style="background:'+bg+';">'+
+        '<td style="'+_tdBase()+'font-family:monospace;font-size:11px;">'+r.bsuId+'</td>'+
+        '<td style="'+_tdBase()+'">'+r.studentName+'</td>';
+      for(var q=0;q<4;q++) html+=_sc(r.qs[q]);
+      html+=_avgCell(r.avg);
+      html+='<td style="'+_tdBase()+'color:var(--text2);max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="'+(r.comments||'').replace(/"/g,"'")+'">'+( r.comments||'—')+'</td></tr>';
+    });
+    // Module average row
+    var qAvgs=[]; for(var qi=0;qi<4;qi++){ var vals=gRows.map(function(r){return r.qs[qi];}).filter(function(v){return v!==null;}); qAvgs.push(vals.length?(vals.reduce(function(a,b){return a+b;},0)/vals.length).toFixed(1):null); }
+    var allVals=[].concat.apply([],gRows.map(function(r){return r.qs.slice(0,4).filter(function(v){return v!==null;});}));
+    var modAvg=allVals.length?(allVals.reduce(function(a,b){return a+b;},0)/allVals.length).toFixed(1):null;
+    html+='<tr style="background:#ede9fe;"><td colspan="2" style="padding:7px 10px;font-size:12px;font-weight:700;color:#5b21b6;">Module Average</td>';
+    qAvgs.forEach(function(a){ html+='<td style="text-align:center;padding:7px 8px;font-size:12px;font-weight:700;color:#5b21b6;">'+(a||'—')+'</td>'; });
+    html+='<td style="text-align:center;padding:7px 8px;"><span style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:700;color:#fff;background:#5b21b6;">'+(modAvg||'—')+'</span></td><td></td></tr>';
+    html+='</tbody></table></div></div>';
+  });
+  html+=_qLegend(4);
+  return html;
+}
+
+// ── Student Satisfaction: flat, section headers ──
+function _renderSatisfaction(rows){
+  // Group questions by section
+  var sections={}, sectionOrder=[];
+  _svQuestions.forEach(function(q){
+    var sec=q.section||'General';
+    if(!sections[sec]){ sections[sec]=[]; sectionOrder.push(sec); }
+    sections[sec].push(q);
+  });
+  var html='<div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);">';
+  html+='<div style="overflow-x:auto;"><table class="data-table" style="table-layout:auto;">';
+  html+='<thead><tr style="background:#0f1e3d;">';
+  html+='<th style="'+_thStyle()+'min-width:90px;">BSU ID</th>';
+  html+='<th style="'+_thStyle()+'min-width:160px;">Name</th>';
+  html+='<th style="'+_thStyle()+'min-width:160px;">Programme</th>';
+  html+='<th style="'+_thStyle()+'min-width:60px;">Year</th>';
+  _svQuestions.forEach(function(q){ html+='<th style="'+_thStyle()+'text-align:center;min-width:42px;" title="'+q.text+'">Q'+q.qnum+'</th>'; });
+  html+='<th style="'+_thStyle()+'text-align:center;min-width:50px;">Avg</th>';
+  html+='<th style="'+_thStyle()+'min-width:200px;">Comments</th>';
+  html+='</tr></thead><tbody>';
+  rows.forEach(function(r,i){
+    var bg=i%2===0?'#fff':'var(--surface2)';
+    html+='<tr style="background:'+bg+';">'+
+      '<td style="'+_tdBase()+'font-family:monospace;font-size:11px;">'+r.bsuId+'</td>'+
+      '<td style="'+_tdBase()+'">'+r.studentName+'</td>'+
+      '<td style="'+_tdBase()+'font-size:11px;">'+r.programme+'</td>'+
+      '<td style="'+_tdBase()+'">'+r.year+'</td>';
+    for(var q=0;q<21;q++) html+=_sc(r.qs[q]);
+    html+=_avgCell(r.avg);
+    html+='<td style="'+_tdBase()+'color:var(--text2);max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="'+(r.comments||'').replace(/"/g,"'")+'">'+( r.comments||'—')+'</td></tr>';
+  });
+  html+='</tbody></table></div>';
+  // Section legend
+  html+='<div style="padding:12px 16px;background:var(--surface2);border-top:1px solid var(--border);font-size:11px;color:var(--text2);">';
+  html+='<div style="font-weight:700;margin-bottom:6px;color:var(--text);">Question Sections</div>';
+  var qIdx=1;
+  sectionOrder.forEach(function(sec){
+    var qs=sections[sec]; var from=qIdx, to=qIdx+qs.length-1;
+    html+='<span style="margin-right:16px;"><b>Q'+from+(from!==to?'–Q'+to:'')+':</b> '+sec+'</span>';
+    qIdx+=qs.length;
+  });
+  html+='<span style="margin-left:16px;color:#16a34a;">● 8–10 good</span> <span style="color:#d97706;">● 5–7 average</span> <span style="color:#dc2626;">● 1–4 poor</span>';
+  html+='</div></div>';
+  return html;
+}
+
+// ── Programme Review: grouped by Programme ──
+function _renderProgReview(rows){
+  var groups={};
+  rows.forEach(function(r){
+    if(!groups[r.programme]) groups[r.programme]=[];
+    groups[r.programme].push(r);
+  });
+  var html='';
+  Object.keys(groups).sort().forEach(function(prog){
+    var gRows=groups[prog];
+    html+='<div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);margin-bottom:16px;">';
+    html+='<div style="background:#0f1e3d;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;">';
+    html+='<span style="color:#fff;font-size:13px;font-weight:700;">'+prog+'</span>';
+    html+='<span style="color:rgba(255,255,255,0.4);font-size:11px;">'+gRows.length+' response'+(gRows.length!==1?'s':'')+'</span>';
+    html+='</div>';
+    html+='<div style="overflow-x:auto;"><table class="data-table" style="table-layout:auto;">';
+    html+='<thead><tr style="background:#1e293b;">'+
+      '<th style="'+_thStyle()+'min-width:90px;">BSU ID</th>'+
+      '<th style="'+_thStyle()+'min-width:160px;">Name</th>'+
+      _qHeaders(7)+
+      '<th style="'+_thStyle()+'text-align:center;min-width:50px;">Avg</th>'+
+      '<th style="'+_thStyle()+'min-width:200px;">Comments</th>'+
+      '</tr></thead><tbody>';
+    gRows.forEach(function(r,i){
+      var bg=i%2===0?'#fff':'var(--surface2)';
+      html+='<tr style="background:'+bg+';">'+
+        '<td style="'+_tdBase()+'font-family:monospace;font-size:11px;">'+r.bsuId+'</td>'+
+        '<td style="'+_tdBase()+'">'+r.studentName+'</td>';
+      for(var q=0;q<7;q++) html+=_sc(r.qs[q]);
+      html+=_avgCell(r.avg);
+      html+='<td style="'+_tdBase()+'color:var(--text2);max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="'+(r.comments||'').replace(/"/g,"'")+'">'+( r.comments||'—')+'</td></tr>';
+    });
+    // Group average row
+    var qAvgs=[]; for(var qi=0;qi<7;qi++){ var vals=gRows.map(function(r){return r.qs[qi];}).filter(function(v){return v!==null;}); qAvgs.push(vals.length?(vals.reduce(function(a,b){return a+b;},0)/vals.length).toFixed(1):null); }
+    var allVals=[].concat.apply([],gRows.map(function(r){return r.qs.slice(0,7).filter(function(v){return v!==null;});}));
+    var grpAvg=allVals.length?(allVals.reduce(function(a,b){return a+b;},0)/allVals.length).toFixed(1):null;
+    html+='<tr style="background:#ede9fe;"><td colspan="2" style="padding:7px 10px;font-size:12px;font-weight:700;color:#5b21b6;">Programme Average</td>';
+    qAvgs.forEach(function(a){ html+='<td style="text-align:center;padding:7px 8px;font-size:12px;font-weight:700;color:#5b21b6;">'+(a||'—')+'</td>'; });
+    html+='<td style="text-align:center;padding:7px 8px;"><span style="display:inline-block;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:700;color:#fff;background:#5b21b6;">'+(grpAvg||'—')+'</span></td><td></td></tr>';
+    html+='</tbody></table></div></div>';
+  });
+  html+=_qLegend(7);
+  return html;
+}
+
+function _qLegend(count){
+  var qs=_svQuestions.slice(0,count);
+  if(!qs.length) return '';
+  var html='<div style="background:#f8fafc;border:1px solid var(--border);border-radius:var(--radius-lg);padding:12px 16px;margin-top:8px;font-size:11px;color:var(--text2);">';
+  html+='<div style="font-weight:700;margin-bottom:6px;color:var(--text);">Questions</div>';
+  qs.forEach(function(q){ html+='<div style="margin-bottom:3px;"><b>Q'+q.qnum+':</b> '+q.text+'</div>'; });
+  html+='<div style="margin-top:8px;"><span style="color:#16a34a;">● 8–10 good</span> <span style="margin-left:12px;color:#d97706;">● 5–7 average</span> <span style="margin-left:12px;color:#dc2626;">● 1–4 poor</span></div>';
+  html+='</div>';
+  return html;
+}
+
+function _updateSvStats(rows){
+  document.getElementById('sv-count').textContent=rows.length||'—';
+  var allScores=[].concat.apply([],rows.map(function(r){return (r.qs||[]).filter(function(v){return v!==null;});}));
+  document.getElementById('sv-avg').textContent=allScores.length?(allScores.reduce(function(a,b){return a+b;},0)/allScores.length).toFixed(1):' —';
+  var progs=new Set(rows.map(function(r){return r.programme;}).filter(Boolean));
+  document.getElementById('sv-progs').textContent=progs.size||'—';
+}
+
+function exportSurveyResults(){
+  _svFiltered=_svFilter();
+  if(!_svFiltered.length){ showToast('No data to export.','error'); return; }
+  var cfg=_svConfigs.find(function(c){return c.configId===_svConfigId;})||{};
+  var title=cfg.title||'SurveyResults';
+  var today=new Date().toLocaleDateString('en-GB').replace(/\//g,'-');
+  var wb=new ExcelJS.Workbook(), ws=wb.addWorksheet('Survey Results');
+  var PURPLE='7C3AED', WHITE='FFFFFF';
+  var brd={top:{style:'thin',color:{argb:'FFE2E8F0'}},bottom:{style:'thin',color:{argb:'FFE2E8F0'}},left:{style:'thin',color:{argb:'FFE2E8F0'}},right:{style:'thin',color:{argb:'FFE2E8F0'}}};
+  var qCount=_svQCount||4;
+  var totalCols=4+qCount+2; // id,name,prog,year + Qs + avg + comments
+  if(_svType==='StudentSatisfaction') totalCols=2+qCount+2;
+  // Title row
+  ws.mergeCells(1,1,1,totalCols); ws.getCell('A1').value=title+' — Results Export';
+  ws.getCell('A1').font={name:'Calibri',bold:true,size:14,color:{argb:'FF'+PURPLE}}; ws.getRow(1).height=22;
+  // Sub
+  ws.mergeCells(2,1,2,totalCols); ws.getCell('A2').value='Generated: '+today+' · '+_svFiltered.length+' responses · CampusCore';
+  ws.getCell('A2').font={name:'Calibri',size:9,color:{argb:'FF94A3B8'}}; ws.getRow(2).height=14;
+  // Headers
+  var hdrs=['BSU ID','Name'];
+  if(_svType!=='StudentSatisfaction') hdrs=hdrs.concat(['Programme','Year']);
+  if(_svType==='ModuleEval') hdrs=hdrs.concat(['Module']);
+  _svQuestions.slice(0,qCount).forEach(function(q,i){ hdrs.push('Q'+(i+1)+': '+q.text.substring(0,40)); });
+  hdrs.push('Avg','Comments');
+  var hr=ws.getRow(3); hr.height=18;
+  hdrs.forEach(function(h,i){ var c=hr.getCell(i+1); c.value=h; c.font={name:'Calibri',bold:true,size:10,color:{argb:'FF'+WHITE}}; c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FF'+PURPLE}}; c.border=brd; c.alignment={horizontal:'center',wrapText:true}; });
+  // Data
+  _svFiltered.forEach(function(r,ri){
+    var vals=[r.bsuId,r.studentName];
+    if(_svType!=='StudentSatisfaction') vals=vals.concat([r.programme,r.year]);
+    if(_svType==='ModuleEval') vals=vals.concat([r.moduleName]);
+    r.qs.slice(0,qCount).forEach(function(v){ vals.push(v!==null?v:''); });
+    vals.push(r.avg!==null?r.avg:''); vals.push(r.comments||'');
+    var dr=ws.getRow(ri+4);
+    vals.forEach(function(v,ci){
+      var c=dr.getCell(ci+1); c.value=v; c.border=brd;
+      c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FF'+(ri%2===0?'FFFFFF':'F8FAFC')}};
+      // Colour score cells
+      var isScore=ci>=(hdrs.length-2-qCount) && ci<(hdrs.length-2);
+      if(isScore && v!==''){var n=Number(v);c.font={name:'Calibri',bold:true,color:{argb:'FF'+(n>=8?'16A34A':n>=6?'D97706':'DC2626')}};}
+    });
+  });
+  // Widths
+  ws.getColumn(1).width=12; ws.getColumn(2).width=22;
+  if(_svType!=='StudentSatisfaction'){ws.getColumn(3).width=28;ws.getColumn(4).width=8;}
+  ws.getColumn(hdrs.length-1).width=8; ws.getColumn(hdrs.length).width=30;
+  ws.getColumn(1).numFmt='@';
+  ws.views=[{state:'frozen',ySplit:3}];
+  wb.xlsx.writeBuffer().then(function(buf){
+    var blob=new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+    var url=URL.createObjectURL(blob),a=document.createElement('a');
+    a.href=url; a.download=title.replace(/[^a-zA-Z0-9]/g,'_')+'_'+today+'.xlsx';
+    a.click(); URL.revokeObjectURL(url); showToast('✅ Exported.','success');
+  }).catch(function(e){showToast('Export failed: '+e.message,'error');});
+}
+
 // ── Marksheet Report ──────────────────────────────────────────
 var _msProg='', _msYear='', _msSem='', _msResults=[], _msLoading=false;
 
@@ -6743,6 +7073,18 @@ function loadMsStats(){
   } catch(e){}
   // No valid session — no redirect, portal shows its own login screen
 })();
+var sessionTimeout = true;
+
+  // Safety net: if portal hasn't loaded within 8 seconds, redirect to index
+  if(window._sessionRestore){
+    setTimeout(function(){
+      var app = document.getElementById('screen-app');
+      if(!app || !app.classList.contains('active')){
+        localStorage.removeItem('cc_session');
+        window.location.href = 'index.html';
+      }
+    }, 8000);
+  }
 function ccSignOut(){
   localStorage.removeItem('cc_session');
   window.location.href = 'index.html';

@@ -14,6 +14,19 @@
 <style>
 .cc-has-session #screen-login{display:none!important;}
 .cc-has-session #screen-emailsent{display:none!important;}
+
+/* ── CampusCore Loading Overlay ── */
+#cc-loading{position:fixed;inset:0;z-index:99999;background:#0f1e3d;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;transition:opacity 0.4s ease;}
+#cc-loading.cc-fade-out{opacity:0;pointer-events:none;}
+#cc-loading .cc-orb1{position:absolute;width:520px;height:520px;border-radius:50%;background:rgba(37,99,235,0.22);top:-160px;left:-160px;pointer-events:none;}
+#cc-loading .cc-orb2{position:absolute;width:380px;height:380px;border-radius:50%;background:rgba(37,99,235,0.14);bottom:-120px;right:-80px;pointer-events:none;}
+#cc-loading .cc-mark{width:52px;height:52px;background:#2563eb;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:#fff;position:relative;z-index:1;box-shadow:0 0 28px rgba(37,99,235,0.4);}
+#cc-loading .cc-name{font-size:24px;font-weight:700;color:#fff;letter-spacing:-0.5px;position:relative;z-index:1;}
+#cc-loading .cc-name span{color:#93c5fd;}
+#cc-loading .cc-bar-wrap{width:200px;height:3px;background:rgba(255,255,255,0.08);border-radius:2px;overflow:hidden;position:relative;z-index:1;}
+#cc-loading .cc-bar{height:100%;background:#3b82f6;border-radius:2px;animation:cc-bar-fill 2s ease-in-out infinite;}
+@keyframes cc-bar-fill{0%{width:0%;opacity:1;}70%{width:85%;opacity:1;}90%{width:85%;opacity:0.5;}100%{width:0%;opacity:0;}}
+#cc-loading .cc-msg{font-size:12px;color:rgba(255,255,255,0.3);letter-spacing:0.3px;position:relative;z-index:1;}
 </style>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -577,6 +590,7 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
 </style>
 </head>
 <body>
+<div id="cc-loading"><div class="cc-orb1"></div><div class="cc-orb2"></div><div class="cc-mark">CC</div><div class="cc-name">Campus<span>Core</span></div><div class="cc-bar-wrap"><div class="cc-bar"></div></div><div class="cc-msg" id="cc-loading-msg">Loading your data…</div></div>
 
 <!-- BIRTHDAY OVERLAY -->
 <div id="birthday-overlay" class="hidden">
@@ -1777,6 +1791,7 @@ async function enterPortal(){
     // Now switch to app — data is ready
     document.getElementById('screen-emailsent').classList.remove('active');
     document.getElementById('screen-app').classList.add('active');
+  ccHideLoading();
     populateTutor();
     renderDashboardModules();
     renderAnnouncements(annData||[]);
@@ -5798,6 +5813,28 @@ function spsSendEmail(){
     }
   } catch(e){}
 })();
+var sessionTimeout = true;
+
+  // Safety net: if portal hasn't loaded within 8 seconds, redirect to index
+  if(window._sessionRestore){
+    setTimeout(function(){
+      var app = document.getElementById('screen-app');
+      if(!app || !app.classList.contains('active')){
+        localStorage.removeItem('cc_session');
+        window.location.href = 'index.html';
+      }
+    }, 8000);
+  }
+
+function ccHideLoading(){
+  var el=document.getElementById('cc-loading');
+  if(!el||el.style.display==='none') return;
+  el.classList.add('cc-fade-out');
+  setTimeout(function(){el.style.display='none';},450);
+}
+
+setTimeout(ccHideLoading, 10000);
+
 function ccSignOut(){
   localStorage.removeItem('cc_session');
   window.location.href = 'index.html';
