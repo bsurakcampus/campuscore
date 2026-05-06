@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>
+(function(){
+  try{
+    var s=JSON.parse(localStorage.getItem('cc_session')||sessionStorage.getItem('cc_session')||'null');
+    if(s&&s.credential&&s.role==='tutor'){
+      document.documentElement.classList.add('cc-has-session');
+    }
+  }catch(e){}
+})();
+</script>
 
 <style>
 .cc-has-session #screen-login{display:none!important;}
@@ -6785,7 +6795,18 @@ function ecEmailSelected(){
 
 <script>
 
-
+  // ── Session restore from index.html ──
+  (function(){
+    try {
+      var s = JSON.parse(localStorage.getItem('cc_session') || sessionStorage.getItem('cc_session') || 'null');
+      if(s && s.role === 'tutor' && s.credential){
+        window._sessionRestore = true;
+        var input = document.getElementById('email-input');
+        if(input) input.value = s.credential;
+        if(typeof doLogin === 'function'){ doLogin(); }
+      }
+    } catch(e){}
+  })();
 
   // Safety net: if portal hasn't loaded within 8 seconds, redirect to index
   if(window._sessionRestore){
