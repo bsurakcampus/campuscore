@@ -6538,8 +6538,11 @@ function ecGetActiveCohort(){
 function ecMaskEmail(e){
   if(!e) return '';
   var p = String(e).split('@');
-  if(p.length !== 2 || p[0].length < 1) return e;
-  return p[0].charAt(0) + '…@' + p[1];
+  if(p.length !== 2 || !p[0] || !p[1]) return e;
+  var l = p[0]; var stars = '';
+  if (l.length >= 6) { for(var i=0;i<l.length-4;i++) stars+='*'; return l.substr(0,2)+stars+l.substr(l.length-2)+'@'+p[1]; }
+  if (l.length >= 4) { for(var j=0;j<l.length-2;j++) stars+='*'; return l.charAt(0)+stars+l.charAt(l.length-1)+'@'+p[1]; }
+  return l.charAt(0)+'***@'+p[1];
 }
 
 function renderEcStudentList(cohort){
