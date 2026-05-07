@@ -2279,7 +2279,34 @@ function renderAnnouncements(anns){
 }
 
 function renderDashboardModules(){
-  if(!_modules.length) return;
+  // ── Empty-state handling: when tutor has no modules, hide placeholder cards ──
+  if(!_modules.length){
+    var b1 = document.getElementById('tsem1-block');
+    var b2 = document.getElementById('tsem2-block');
+    if(b1) b1.style.display = 'none';
+    if(b2) b2.style.display = 'none';
+    // Show empty-state message in modules section
+    var emptyEl = document.getElementById('tutor-modules-empty');
+    if(!emptyEl){
+      var parent = (b1 && b1.parentNode) || (b2 && b2.parentNode);
+      if(parent){
+        emptyEl = document.createElement('div');
+        emptyEl.id = 'tutor-modules-empty';
+        emptyEl.style.cssText = 'background:#fff;border:1px dashed var(--border2);border-radius:var(--radius);padding:32px;text-align:center;color:var(--text2);font-size:14px;margin:16px 0;';
+        emptyEl.innerHTML = '<div style="font-size:32px;margin-bottom:8px;">📭</div><div style="font-weight:600;margin-bottom:4px;color:var(--text);">No modules assigned this semester</div><div style="font-size:12.5px;">If this is a mistake, contact <a href="mailto:records@bathspa.ae" style="color:var(--accent);font-weight:600;">records@bathspa.ae</a> to update your module assignments in the PROGRAMS sheet.</div>';
+        parent.insertBefore(emptyEl, b1 || b2);
+      }
+    } else {
+      emptyEl.style.display = 'block';
+    }
+    // Update dashboard header to indicate no active semester
+    var subEl0 = document.getElementById('dash-header-sub');
+    if(subEl0) subEl0.textContent = (_config.academic_year||'2025–2026')+' · No modules assigned';
+    return;
+  }
+  // Hide empty-state if it was previously shown
+  var prevEmpty = document.getElementById('tutor-modules-empty');
+  if(prevEmpty) prevEmpty.style.display = 'none';
 
   const sem1Mods = _modules.filter(m=>m.semester==='Sem 1');
   const sem2Mods = _modules.filter(m=>m.semester==='Sem 2');
