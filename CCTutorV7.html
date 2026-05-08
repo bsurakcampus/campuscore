@@ -182,6 +182,8 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
 .module-header.c1{background:var(--mod1);}.module-header.c2{background:var(--mod2);}.module-header.c3{background:var(--mod3);}.module-header.c4{background:var(--mod4);}.module-header.c5{background:var(--mod5);}.module-header.c6{background:var(--mod6);}.module-header.c7{background:var(--mod7);}.module-header.c8{background:var(--mod8);}
 .mh-top{display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:2px;}
 .mh-name{font-size:12px;font-weight:700;color:#fff;line-height:1.3;flex:1;}
+.mh-name-link{display:inline-block;text-decoration:underline;text-decoration-color:rgba(255,255,255,0.5);text-underline-offset:3px;cursor:pointer;color:#fff;}
+.mh-name-link:hover{text-decoration-color:#fff;}
 .mh-code{font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,0.55);flex-shrink:0;}
 .mh-sub{font-size:11px;color:rgba(255,255,255,0.55);}
 .module-body{padding:11px 12px;flex:1;display:flex;flex-direction:column;gap:8px;}
@@ -1343,7 +1345,7 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
 
       <!-- UNIVERSITY CALENDAR -->
       <div id="page-ucalendar" class="page">
-        <div class="page-header"><h1>Annual Calendar</h1><p>University-wide events and holidays · 2025–2026</p></div>
+        <div class="page-header"><h1>Annual Calendar</h1><p id="ucal-tutor-sub">University-wide events and holidays · 2025–2026</p></div>
         <div id="ucal-tutor-container">
           <div style="display:flex;align-items:center;justify-content:center;padding:60px 20px;color:var(--text3);">
             <span style="font-size:13px;">⏳ Loading calendar…</span>
@@ -1720,6 +1722,11 @@ let _tutor    = null;
 let _modules  = [];
 let _students = [];
 var _config   = {};
+// UKCOUNT name lookup — built at login. Used as Tier 0 in submission-CSV matching.
+// _ukByName: normalized full name → bsuId (for unique matches)
+// _ukAmbiguous: Set of normalized names that occur on >1 row (collisions, surface as no-match)
+var _ukByName    = {};
+var _ukAmbiguous = {};
 
 // ── Safe mark extraction — handles mark=0 correctly ─────────────────────────
 // `obj.mark || obj.finalMark || ''` would coerce mark=0 (NS students) into ''
@@ -1822,13 +1829,14 @@ async function enterPortal(){
   // Keep emailsent screen visible while loading — switch to app only after data arrives
   const email = document.getElementById('email-sent-display').textContent.trim() || '';
   try {
-    const [staffData, modulesData, studentsData, rkData, annData, configData] = await Promise.all([
+    const [staffData, modulesData, studentsData, rkData, annData, configData, ukCountData] = await Promise.all([
       apiFetch({action:'getStaffMember', email}),
       apiFetch({action:'getTutorModules', email}),
       apiFetch({action:'getStudents'}),
       apiFetch({action:'getRkData'}),
       apiFetch({action:'getAnnouncements'}),
-      apiFetch({action:'getConfig'})
+      apiFetch({action:'getConfig'}),
+      apiFetch({action:'getUkCount'})
     ]);
 
     // Block if staff not found
@@ -1876,6 +1884,23 @@ async function enterPortal(){
     // Build RK map
     _rkMap = {};
     (rkData||[]).forEach(r=>{ _rkMap[r.bsuId] = {registration:r.registration, accountsStatus:r.accountsStatus}; });
+    // Build UKCOUNT name index for submission-CSV Tier 0 matching
+    _ukByName    = {};
+    _ukAmbiguous = {};
+    (ukCountData||[]).forEach(function(rec){
+      if(!rec || !rec.name || !rec.bsuId) return;
+      var key = ukNormName(rec.name);
+      if(!key) return;
+      if(_ukByName[key] && String(_ukByName[key]) !== String(rec.bsuId)){
+        // Collision — two students with same normalized name. Mark ambiguous, drop unique mapping.
+        _ukAmbiguous[key] = true;
+        delete _ukByName[key];
+      } else if(!_ukAmbiguous[key]){
+        _ukByName[key] = String(rec.bsuId);
+      }
+    });
+    // Diagnostic — visible in browser console (F12). If size is 0, UKCOUNT did not load.
+    console.log('[CampusCore] UKCOUNT loaded: '+Object.keys(_ukByName).length+' unique names, '+Object.keys(_ukAmbiguous).length+' ambiguous, raw='+((ukCountData||[]).length));
     // Now switch to app — data is ready
     document.getElementById('screen-emailsent').classList.remove('active');
     document.getElementById('screen-app').classList.add('active');
@@ -1891,7 +1916,7 @@ async function enterPortal(){
     setTimeout(function(){
       if(!_timetableLoaded)  loadTimetable();
       if(!_acadCalLoaded)    loadAcadCalendar();
-      if(!_tutorUCalLoaded)  loadTutorUCal();
+      loadTutorUCal();
       if(!_tutorPolLoaded)  loadTutorPolicies();
     }, 1500);
   } catch(e){
@@ -2327,7 +2352,20 @@ function renderDashboardModules(){
       const studs  = _students.filter(s=>s.programme===mod.programme && s.year===mod.year);
       const male   = studs.filter(s=>s.gender==='Male').length;
       const female = studs.filter(s=>s.gender==='Female').length;
-      if(nameEl) nameEl.textContent = mod.moduleName;
+      if(nameEl){
+        if(mod.moduleLog){
+          var modLink = document.createElement('a');
+          modLink.href = mod.moduleLog;
+          modLink.target = '_blank';
+          modLink.rel = 'noopener';
+          modLink.className = 'mh-name mh-name-link';
+          modLink.title = 'Open Module Log';
+          modLink.textContent = mod.moduleName + ' \u2197';
+          nameEl.replaceWith(modLink);
+        } else {
+          nameEl.textContent = mod.moduleName;
+        }
+      }
       if(codeEl) codeEl.textContent = mod.moduleCode;
       if(subEl)  subEl.textContent  = mod.programme+' · '+mod.year+' · '+studs.length+' students';
       if(cntEl)  cntEl.textContent  = studs.length;
@@ -2357,7 +2395,39 @@ function renderDashboardModules(){
           if(sa.deadline) dlEl.innerHTML = 'Deadline: <strong>'+sa.deadline+'</strong>';
           else dlEl.textContent = '';
         }
+        // Reset badge to Pending — strips any stale demo state (released / fail / not-released).
+        // Async getResults call below upgrades to "Result Released" when rows exist for this SA.
+        item.classList.remove('fail');
+        const badge = item.querySelector('.ass-badge');
+        if(badge){
+          badge.textContent = 'Pending';
+          badge.className = 'ass-badge pending';
+          badge.removeAttribute('style');
+          badge.setAttribute('data-mod-sa', mod.moduleCode+':'+(j+1));
+        }
       });
+
+      // Async upgrade: fetch RESULTS for this module → if any row has an actual mark
+      // for an SA, promote that SA's badge to "Result Released". User rule: any
+      // uploaded marks count as released (most tutors upload + release in one go).
+      // CRITICAL: must check r.mark is a real number — submission-status-only rows
+      // (uploaded via saveSubmissionStatus) have mark=null and don't count as graded.
+      apiFetch({action:'getResults', moduleCode:mod.moduleCode}).then(function(rows){
+        if(!Array.isArray(rows) || !rows.length) return; // No rows → keep Pending
+        // sa field is stored as "SA1"/"SA2" in the RESULTS sheet. Normalize: strip leading "SA".
+        ['1','2'].forEach(function(saNum){
+          var hasGradedRow = rows.some(function(r){
+            if(String(r.sa||'').toUpperCase().replace(/^SA/,'').trim() !== saNum) return false;
+            return r.mark !== null && r.mark !== '' && !isNaN(Number(r.mark));
+          });
+          if(!hasGradedRow) return;
+          var b = card.querySelector('.ass-badge[data-mod-sa="'+mod.moduleCode+':'+saNum+'"]');
+          if(b){
+            b.textContent = 'Result Released';
+            b.className = 'ass-badge released';
+          }
+        });
+      }).catch(function(){ /* network error → safely keep Pending */ });
 
       // Only student count opens module detail — whole card click removed
       card.style.cursor = 'default';
@@ -2390,24 +2460,6 @@ function renderDashboardModules(){
       // Attendance button — untouched
       const attBtn = card.querySelector('.btn-mod.green');
       if(attBtn) attBtn.onclick = (function(m){ return function(e){ e.stopPropagation(); showAttendance(m.moduleCode, m.moduleName); }; })(mod);
-
-      // Module Log button — insert before Attendance
-      var actionsDiv = card.querySelector('.mod-actions');
-      var existingLogBtn = card.querySelector('.btn-mod-log');
-      if(actionsDiv && !existingLogBtn){
-        var logBtn = document.createElement('button');
-        logBtn.className = 'btn-mod btn-mod-log';
-        logBtn.style.cssText = 'background:var(--accent);color:#fff;border:none;';
-        if(mod.moduleLog){
-          logBtn.innerHTML = '📋 Module Log';
-          logBtn.onclick = (function(url){ return function(e){ e.stopPropagation(); window.open(url,'_blank'); }; })(mod.moduleLog);
-        } else {
-          logBtn.innerHTML = '📋 —';
-          logBtn.disabled = true;
-          logBtn.style.cssText += 'opacity:0.4;cursor:default;';
-        }
-        actionsDiv.insertBefore(logBtn, attBtn);
-      }
 
       // Export Marksheet button (was Assessments)
       const asmBtn = card.querySelector('.btn-mod.red');
@@ -3254,8 +3306,8 @@ function renderAcadCalendar(events){
       var yearStr = yr ? yr[0] : '';
       if(!yearStr){
         var moIdx = mos.indexOf(moName);
-        if(e.semester==='Sem 1') yearStr = (moIdx>=8)?'2025':'2026';
-        else yearStr = '2026';
+        if(e.semester==='Sem 1') yearStr = (moIdx>=8)?String(yrS):String(yrS+1);
+        else yearStr = String(yrS+1);
       }
       var key = moName+(yearStr?' '+yearStr:'');
       if(!months[key]){ months[key]=[]; monthOrder.push(key); }
@@ -3297,17 +3349,15 @@ function renderAcadCalendar(events){
 
 
 // ── Annual Calendar (tutor — read only) ──────────────────────────────────
-var _tutorUCalLoaded = false;
 function tutorPolToggle(id){
   var el = document.getElementById(id);
   if(el) el.style.display = el.style.display==='block' ? 'none' : 'block';
 }
 
 function loadTutorUCal(){
-  if(_tutorUCalLoaded) return;
+  // Always fetch fresh — admin updates should appear immediately
   var container = document.getElementById('ucal-tutor-container');
   apiFetch({action:'getAnnualCalendar'}).then(function(events){
-    _tutorUCalLoaded = true;
     renderTutorUCal(events||[]);
   }).catch(function(e){
     if(container) container.innerHTML = '<div style="padding:40px;text-align:center;color:var(--red);font-size:13px;">Error loading calendar: '+e.message+'</div>';
@@ -3315,65 +3365,122 @@ function loadTutorUCal(){
 }
 
 function renderTutorUCal(events){
-  var y = getAcadYear();
-  var sub = document.getElementById('ucal-subtitle');
-  if(sub) sub.textContent = 'University-wide events and holidays · '+y+'–'+(y+1);
-  var container = document.getElementById('ucal-tutor-container');
-  if(!container) return;
+  var container=document.getElementById('ucal-tutor-container'); if(!container) return;
+  var now=new Date(),baseYr=now.getMonth()>=8?now.getFullYear():now.getFullYear()-1;
+  var sub=document.getElementById('ucal-tutor-sub');
+  if(sub) sub.textContent='University-wide events and holidays · '+baseYr+'–'+(baseYr+1);
+  var MONTHS=buildUCalMonths(),mNames=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var mosShort=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var tColors={Holiday:'var(--green)',Event:'var(--accent)',Break:'var(--amber)',Deadline:'var(--red)',Milestone:'var(--accent)',Admin:'var(--text2)',Other:'var(--text2)'};
+  var tColorsHex={Holiday:'#16a34a',Event:'#2563eb',Break:'#d97706',Deadline:'#dc2626',Milestone:'#7c3aed',Admin:'#64748b',Other:'#64748b'};
 
-  var now = new Date();
-  var MONTHS = buildUCalMonths();
-  var monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-  var mos = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  var typeColors = {Holiday:'var(--green)',Event:'var(--accent)',Break:'var(--amber)',Deadline:'var(--red)',Milestone:'var(--accent)',Admin:'var(--text2)',Other:'var(--text2)'};
+  // ── Helpers ──
+  function parseIso(s){
+    if(!s) return null;
+    var m = String(s).match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if(!m) return null;
+    return new Date(parseInt(m[1]), parseInt(m[2])-1, parseInt(m[3]));
+  }
+  function fmtDay(d){ return d.getDate()+' '+mosShort[d.getMonth()]; }
 
-  // Group events by month+year
-  var grouped = {};
+  // ── Group events by month, tracking each event's slice within that month ──
+  // An event spanning Dec 22 → Jan 4 appears in BOTH the Dec card and Jan card,
+  // each with its own [sliceStart, sliceEnd] for accurate day-cell shading.
+  var grouped={};
   (events||[]).forEach(function(e){
-    var dateStr = e.startDate||e.date||'';
-    var mo = -1;
-    mos.forEach(function(m,idx){ if(dateStr.indexOf(m)>-1) mo=idx; });
-    var yrMatch = dateStr.match(/20\d\d/);
-    var yr = yrMatch ? parseInt(yrMatch[0]) : 0;
-    if(mo===-1||!yr) return;
-    var key = yr+'-'+mo;
-    if(!grouped[key]) grouped[key]=[];
-    grouped[key].push(e);
+    var s = parseIso(e.startDate || e.date);
+    var en = parseIso(e.endDate || e.startDate || e.date);
+    if(!s) return;
+    if(!en || en < s) en = s;
+    var cursor = new Date(s.getFullYear(), s.getMonth(), 1);
+    while(cursor <= en){
+      var yr = cursor.getFullYear(), mo = cursor.getMonth();
+      var key = yr + '-' + mo;
+      var monthStart = new Date(yr, mo, 1);
+      var monthEnd   = new Date(yr, mo+1, 0);
+      var sliceStart = s > monthStart ? s : monthStart;
+      var sliceEnd   = en < monthEnd ? en : monthEnd;
+      if(!grouped[key]) grouped[key] = [];
+      grouped[key].push({event:e, sliceStart:sliceStart, sliceEnd:sliceEnd, fullStart:s, fullEnd:en});
+      cursor.setMonth(cursor.getMonth()+1);
+    }
   });
 
-  var html = '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;">';
-  MONTHS.forEach(function(m, i){
-    var isCurrent = (m.y===now.getFullYear()&&m.m===now.getMonth());
-    var key = m.y+'-'+m.m;
-    var evts = grouped[key]||[];
-    var hdrBg  = isCurrent ? 'background:var(--accent);' : 'background:var(--sb-bg);';
-    var border = isCurrent ? 'border:2px solid var(--accent);' : 'border:1px solid var(--border);';
-    var nowBadge = isCurrent ? '<span style="font-size:10px;font-weight:700;background:rgba(255,255,255,0.25);color:#fff;padding:1px 8px;border-radius:10px;margin-left:auto;">Now</span>' : '';
-    html += '<div style="background:#fff;'+border+'border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow-sm);">';
-    html += '<div style="'+hdrBg+'padding:10px 14px;display:flex;align-items:center;gap:8px;">';
-    html += '<div style="font-size:13px;font-weight:700;color:#fff;">'+monthNames[m.m]+' '+m.y+'</div>'+nowBadge;
-    html += '</div>';
-    html += '<div style="padding:12px;" id="tucal-'+i+'"></div>';
-    html += '<div style="border-top:1px solid var(--border);padding:8px 12px;display:flex;flex-direction:column;gap:5px;min-height:32px;">';
-    if(evts.length){
-      evts.forEach(function(e){
-        var col = typeColors[e.type]||'var(--accent)';
-        html += '<div style="display:flex;align-items:center;gap:7px;font-size:11px;">';
-        html += '<div style="width:7px;height:7px;border-radius:50%;background:'+col+';flex-shrink:0;"></div>';
-        html += '<span><strong>'+(e.startDate||e.date||'')+'</strong> &mdash; '+e.event+'</span>';
-        html += '</div>';
+  // ── Build month-card HTML ──
+  var html='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;">';
+  MONTHS.forEach(function(m,i){
+    var isCur=(m.y===now.getFullYear()&&m.m===now.getMonth()),k=m.y+'-'+m.m,entries=grouped[k]||[];
+    var hBg=isCur?'background:var(--accent);':'background:var(--sb-bg);';
+    var bdr=isCur?'border:2px solid var(--accent);':'border:1px solid var(--border);';
+    var nowB=isCur?'<span style="font-size:10px;font-weight:700;background:rgba(255,255,255,0.25);color:#fff;padding:1px 8px;border-radius:10px;margin-left:auto;">Now</span>':'';
+    html+='<div style="background:#fff;'+bdr+'border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow-sm);"><div style="'+hBg+'padding:10px 14px;display:flex;align-items:center;gap:8px;"><div style="font-size:13px;font-weight:700;color:#fff;">'+mNames[m.m]+' '+m.y+'</div>'+nowB+'</div><div style="padding:12px;" id="tucal-'+i+'"></div><div style="border-top:1px solid var(--border);padding:8px 12px;display:flex;flex-direction:column;gap:5px;min-height:32px;">';
+    if(entries.length){
+      // Sort by slice start
+      entries.sort(function(a,b){ return a.sliceStart - b.sliceStart; });
+      entries.forEach(function(en){
+        var e = en.event;
+        var col=tColors[e.type]||'var(--accent)';
+        // Display label: use the FULL range (start→end across months) so a parent
+        // sees the full picture even when looking at the month in the middle.
+        var label = en.fullStart.getTime() === en.fullEnd.getTime()
+          ? fmtDay(en.fullStart)
+          : fmtDay(en.fullStart) + ' – ' + fmtDay(en.fullEnd);
+        html+='<div style="display:flex;align-items:center;gap:7px;font-size:11px;"><div style="width:7px;height:7px;border-radius:50%;background:'+col+';flex-shrink:0;"></div><span><strong>'+label+'</strong> &mdash; '+e.event+'</span></div>';
       });
     } else {
-      html += '<div style="font-size:11px;color:var(--text3);font-style:italic;">No events</div>';
+      html+='<div style="font-size:11px;color:var(--text3);font-style:italic;">No events</div>';
     }
-    html += '</div></div>';
+    html+='</div></div>';
   });
-  html += '</div>';
-  container.innerHTML = html;
+  html+='</div>';
+  container.innerHTML=html;
 
-  // Render mini calendars
-  MONTHS.forEach(function(m, i){
-    renderTutorMiniCal(m.y, m.m, 'tucal-'+i);
+  // ── Render mini calendar grids with day-cell shading ──
+  MONTHS.forEach(function(m,i){
+    var el=document.getElementById('tucal-'+i); if(!el) return;
+    var isCM=(m.y===now.getFullYear()&&m.m===now.getMonth()),today=isCM?now.getDate():-1;
+    var fd=new Date(m.y,m.m,1).getDay(),dim=new Date(m.y,m.m+1,0).getDate();
+    var days=['Su','Mo','Tu','We','Th','Fr','Sa'],h='<table style="width:100%;border-collapse:collapse;font-size:10px;"><tr>';
+    days.forEach(function(d){h+='<th style="text-align:center;padding:1px;color:var(--text3);font-weight:600;">'+d+'</th>';});
+    h+='</tr><tr>';
+    // Build day-shading map for this month: covers every day in any event's slice
+    var dayColours={};   // dayNum → hex colour
+    var dayTitles={};    // dayNum → tooltip text
+    (grouped[m.y+'-'+m.m]||[]).forEach(function(en){
+      var col = tColorsHex[en.event.type] || '#2563eb';
+      for(var dd=en.sliceStart.getDate(); dd<=en.sliceEnd.getDate(); dd++){
+        // Highest-priority colour wins (Deadline > Holiday > Break > Event > Admin)
+        var prio = {Deadline:5, Holiday:4, Break:3, Event:2, Milestone:2, Admin:1, Other:1};
+        var existingPrio = dayColours[dd] ? (prio[dayColours[dd+'_type']]||0) : -1;
+        var newPrio = prio[en.event.type] || 0;
+        if(newPrio >= existingPrio){
+          dayColours[dd] = col;
+          dayColours[dd+'_type'] = en.event.type;
+        }
+        dayTitles[dd] = (dayTitles[dd] ? dayTitles[dd]+' • ' : '') + en.event.event;
+      }
+    });
+
+    for(var j=0;j<fd;j++) h+='<td></td>';
+    var col=fd;
+    for(var d2=1;d2<=dim;d2++){
+      if(col===7){h+='</tr><tr>';col=0;}
+      var isT=(d2===today);
+      var bg=dayColours[d2];
+      var tip=dayTitles[d2]?' title="'+String(dayTitles[d2]).replace(/"/g,'&quot;')+'"':'';
+      var style;
+      if(isT){
+        style='text-align:center;padding:2px;background:var(--accent);color:#fff;border-radius:4px;font-weight:700;';
+      } else if(bg){
+        style='text-align:center;padding:2px;background:'+bg+';color:#fff;border-radius:4px;font-weight:600;cursor:default;';
+      } else {
+        style='text-align:center;padding:2px;color:var(--text);';
+      }
+      h+='<td style="'+style+'"'+tip+'>'+d2+'</td>';
+      col++;
+    }
+    h+='</tr></table>';
+    el.innerHTML=h;
   });
 }
 
@@ -4034,6 +4141,32 @@ function openMarksUpload(saId){
 // CSV columns: First Name, Last Name, Submitted (Yes/No)
 // Match against _students by combining First+Last
 // ── Name matching helper ───────────────────────────────────────────────────
+// ── UKCOUNT name normalization ─────────────────────────────────────────────
+// Strip accents, hyphens, dots, commas, apostrophes, underscores, spaces; uppercase.
+// Used to build the UKCOUNT lookup index AND to match incoming Blackboard CSV rows.
+function ukNormName(s){
+  if(!s) return '';
+  var t = String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  return t.toUpperCase().replace(/[-.,'_\s]/g,'');
+}
+
+// ── Tier 0: UKCOUNT exact-normalized match ─────────────────────────────────
+// CSV firstName + lastName → normalized → look up _ukByName → BSU ID
+// → verify the BSU is in this module's student roster → return CURRENT record.
+// Returns null if no match, or if the normalized name is ambiguous (collision).
+function matchViaUkCount(firstName, lastName, moduleStudents){
+  var key = ukNormName((firstName||'') + (lastName||''));
+  if(!key) return null;
+  if(_ukAmbiguous[key]) return null;        // collision — fall through to fuzzy
+  var bsu = _ukByName[key];
+  if(!bsu) return null;                     // no UKCOUNT row matches
+  // Confirm this BSU is enrolled in the current module — otherwise ignore
+  var s = moduleStudents.find(function(stu){ return String(stu.bsuId) === String(bsu); });
+  if(!s) return null;
+  return {student:s, type:'ukcount'};
+}
+
+
 function matchStudentByName(firstName, lastName, moduleStudents, noSwap){
   // Normalize: strip accents, remove hyphens/dots/spaces, uppercase
   function norm(s){ return (s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/[-.'\s]/g,''); }
@@ -4046,14 +4179,22 @@ function matchStudentByName(firstName, lastName, moduleStudents, noSwap){
   var lnS    = normS(lastName);
   var fullS  = normS(firstName+' '+lastName);
 
+  // Helper: filter moduleStudents with predicate. Returns the single match if exactly
+  // ONE student satisfies the predicate; null if 0 matches OR if 2+ tied (ambiguous —
+  // tutor must pick manually rather than us silently picking the first).
+  function unique(predicate){
+    var matches = moduleStudents.filter(predicate);
+    return matches.length === 1 ? matches[0] : null;
+  }
+
   // Tier 1: exact normalized full name (spaces preserved)
-  var m = moduleStudents.find(function(s){
+  var m = unique(function(s){
     return normS(s.name) === fullS;
   });
   if(m) return {student:m, type:'exact'};
 
   // Tier 2: first word matches fn AND last word matches ln (space-normalized)
-  m = moduleStudents.find(function(s){
+  m = unique(function(s){
     var parts = normS(s.name).split(' ');
     return parts[0]===fnS && parts[parts.length-1]===lnS;
   });
@@ -4062,7 +4203,7 @@ function matchStudentByName(firstName, lastName, moduleStudents, noSwap){
   // Tier 3: CURRENT name (no spaces/hyphens) contains CSV first name
   //         AND last word (space-norm) matches CSV last name
   if(fn.length >= 3) {
-    m = moduleStudents.find(function(s){
+    m = unique(function(s){
       var normFull  = norm(s.name);       // all hyphens/spaces removed
       var parts     = normS(s.name).split(' ');
       var lastWord  = parts[parts.length-1];
@@ -4074,7 +4215,7 @@ function matchStudentByName(firstName, lastName, moduleStudents, noSwap){
   // Tier 4: CSV first name starts with or contains first part of CURRENT
   //         AND last name matches — catches REI-AGUILAR vs REINA-CHARIZ-AGUILAR
   if(fn.length >= 4) {
-    m = moduleStudents.find(function(s){
+    m = unique(function(s){
       var normFull = norm(s.name);
       var parts    = normS(s.name).split(' ');
       var lastWord = parts[parts.length-1];
@@ -4088,7 +4229,7 @@ function matchStudentByName(firstName, lastName, moduleStudents, noSwap){
 
   // Tier 5: last name exact + first name has any word overlap
   if(ln.length >= 3) {
-    m = moduleStudents.find(function(s){
+    m = unique(function(s){
       var parts    = normS(s.name).split(' ');
       var lastWord = norm(parts[parts.length-1]);
       if(lastWord !== ln) return false;
@@ -4100,7 +4241,7 @@ function matchStudentByName(firstName, lastName, moduleStudents, noSwap){
   // Tier 6: last name exact + first 5 chars of CSV fn appear anywhere in CURRENT normalized
   if(fn.length >= 5 && ln.length >= 3) {
     var prefix5 = fn.substring(0,5);
-    m = moduleStudents.find(function(s){
+    m = unique(function(s){
       var parts    = normS(s.name).split(' ');
       var lastWord = norm(parts[parts.length-1]);
       return lastWord === ln && norm(s.name).indexOf(prefix5) !== -1;
@@ -4110,7 +4251,7 @@ function matchStudentByName(firstName, lastName, moduleStudents, noSwap){
 
   // Tier 7: last name exact + CSV first name is contained in any hyphenated part of CURRENT
   if(fn.length >= 3 && ln.length >= 3) {
-    m = moduleStudents.find(function(s){
+    m = unique(function(s){
       var parts    = normS(s.name).split(' ');
       var lastWord = norm(parts[parts.length-1]);
       if(lastWord !== ln) return false;
@@ -4132,7 +4273,7 @@ function matchStudentByName(firstName, lastName, moduleStudents, noSwap){
   // Catches: "REI-AGUILAR RAMESH" → CURRENT "REINA CHARIZ AGUILAR RAMESH"
   // CSV last = RAMESH matches CURRENT last word; CSV first "REIAGUILAR" segments checked against all CURRENT words
   if(ln.length >= 3 && fn.length >= 3) {
-    m = moduleStudents.find(function(s){
+    m = unique(function(s){
       var parts    = normS(s.name).split(' ');
       var lastWord = norm(parts[parts.length-1]);
       if(lastWord !== ln) return false;
@@ -4184,7 +4325,8 @@ function parseSubmissionCSV(input, saId, code, name, sa){
         var submitted = (cols[2]||'').toLowerCase()==='yes';
         if(!firstName && !lastName) continue; // blank name row — skip, will be caught by cross-ref
 
-        var matchResult = matchStudentByName(firstName, lastName, moduleStudents);
+        var matchResult = matchViaUkCount(firstName, lastName, moduleStudents)
+                       || matchStudentByName(firstName, lastName, moduleStudents);
         var row = {
           firstName: firstName.toUpperCase(),
           lastName:  lastName.toUpperCase(),
@@ -4262,11 +4404,13 @@ function renderSubPreview(saId, results, nonSubmitters, enrolled, moduleStudents
   var totalNonSub  = nonSubmitters ? nonSubmitters.length : 0;
 
   // ── Summary bar ─────────────────────────────────────────────────────────
+  var ukCount = Object.keys(_ukByName||{}).length;
   var html = '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px;padding:12px 14px;background:#f8fafc;border-radius:8px;border:1px solid #e2e8f0;">';
   html += '<div style="font-size:12px;"><span style="color:var(--text2);">Enrolled</span> <strong>'+enrolled+'</strong></div>';
   html += '<div style="font-size:12px;color:#16a34a;"><span>✅ Submitted</span> <strong data-subcount>'+csvSubmitted.length+'</strong></div>';
   html += '<div style="font-size:12px;color:#dc2626;"><span>❌ Not Submitted</span> <strong data-nonsubcount>'+totalNonSub+'</strong></div>';
   if(csvUnmatched.length) html += '<div style="font-size:12px;color:#d97706;"><span>⚠️ Unmatched in file</span> <strong>'+csvUnmatched.length+'</strong></div>';
+  html += '<div style="font-size:11px;color:'+(ukCount?'var(--text3)':'#dc2626')+';margin-left:auto;">UKCOUNT: '+(ukCount?ukCount+' names':'NOT LOADED')+'</div>';
   html += '</div>';
 
   // ── Save & Send buttons (single-click: persists status to col M, then emails non-submitters) ──
@@ -4307,6 +4451,7 @@ function renderSubPreview(saId, results, nonSubmitters, enrolled, moduleStudents
     var sName = r.matched ? (r.matched.name||'') : '—';
     var subIcon  = r.submitted ? '<span style="color:#16a34a;font-weight:700;">✅ Yes</span>' : '<span style="color:#dc2626;font-weight:700;">❌ No</span>';
     var matchBadge = r.matchType==='exact'    ? '<span style="color:#16a34a;font-size:11px;">✓ Exact</span>'
+                   : r.matchType==='ukcount'  ? '<span style="color:#16a34a;font-size:11px;">✓ UKCOUNT</span>'
                    : r.matchType==='likely'   ? '<span style="color:#d97706;font-size:11px;">⚠️ Likely</span>'
                    : r.matchType==='enrolled' ? '<span style="color:#dc2626;font-size:11px;">🚫 Not in file</span>'
                    : '<span style="color:#dc2626;font-size:11px;">✗ No match</span>';
@@ -4318,7 +4463,7 @@ function renderSubPreview(saId, results, nonSubmitters, enrolled, moduleStudents
     if(isUnmatched){
       var opts = '<option value="">— Select student —</option>';
       moduleStudents.forEach(function(s){
-        if(!matchedBsuIds[String(s.bsuId)]) opts += '<option value="'+s.bsuId+'">'+s.name+'</option>';
+        if(!matchedBsuIds[String(s.bsuId)]) opts += '<option value="'+s.bsuId+'">'+s.name+' · BSU '+s.bsuId+'</option>';
       });
       bsuIdCell = '<td style="padding:7px 12px;border-bottom:1px solid #f0f0f0;font-family:monospace;" id="mbsu-'+saId+'-'+idx+'">—</td>';
       sNameCell = '<td style="padding:5px 12px;border-bottom:1px solid #f0f0f0;">'
@@ -4430,8 +4575,9 @@ function parseReassessSubmission(input, saId, code, name, sa, title, weight){
           var submitted = (cols[2]||'').toLowerCase()==='yes';
           if(!firstName && !lastName) continue;
           if(!submitted) continue; // only care about Yes
-          var match = matchStudentByName(firstName, lastName, candidateStudents);
-          if(match.student) submittedBsuIds[String(match.student.bsuId)] = true;
+          var match = matchViaUkCount(firstName, lastName, candidateStudents)
+                   || matchStudentByName(firstName, lastName, candidateStudents);
+          if(match && match.student) submittedBsuIds[String(match.student.bsuId)] = true;
         }
 
         // Step 3: classify candidates
@@ -4500,7 +4646,7 @@ function renderReassessPreview(saId, toMark40, toEmail){
   }
 
   if(toEmail.length){
-    html += '<div style="font-size:12px;font-weight:700;color:#dc2626;margin-bottom:6px;">❌ Will receive 2-Day Re-Assessment Notice:</div>';
+    html += '<div style="font-size:12px;font-weight:700;color:#dc2626;margin-bottom:6px;">⚠️ '+toEmail.length+' non-submitters — choose an action below:</div>';
     html += '<div style="overflow-x:auto;margin-bottom:14px;border-radius:8px;border:1px solid #fecaca;">';
     html += '<table style="table-layout:fixed;width:100%;border-collapse:collapse;font-size:12px;">';
     html += '<thead><tr style="background:#dc2626;">';
