@@ -261,6 +261,8 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
 .module-header.c1{background:var(--mod1);}.module-header.c2{background:var(--mod2);}.module-header.c3{background:var(--mod3);}.module-header.c4{background:var(--mod4);}.module-header.c5{background:var(--mod5);}.module-header.c6{background:var(--mod6);}.module-header.c7{background:var(--mod7);}.module-header.c8{background:var(--mod8);}.module-header.c9{background:var(--mod9);}
 .mh-top{display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:2px;}
 .mh-name{font-size:12px;font-weight:700;color:#fff;line-height:1.3;flex:1;}
+.mh-name-link{display:inline-block;text-decoration:underline;text-decoration-color:rgba(255,255,255,0.5);text-underline-offset:3px;cursor:pointer;}
+.mh-name-link:hover{text-decoration-color:#fff;}
 .mh-code{font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,0.55);flex-shrink:0;}
 .mh-tutor{font-size:11px;color:rgba(255,255,255,0.55);}
 .module-body{padding:11px 12px;flex:1;display:flex;flex-direction:column;gap:8px;}
@@ -561,8 +563,8 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
         <button class="nav-item" onclick="showPage('stusat',this)"><span class="icon">📊</span> Student Satisfaction</button>
         <button class="nav-item" onclick="showPage('progrev',this)"><span class="icon">🎓</span> Program Review</button>
         <div class="nav-section-label">University</div>
-        <button class="nav-item" onclick="showPage('acadcalendar',this)"><span class="icon">🗓️</span> Academic Calendar</button>
         <button class="nav-item" onclick="showPage('timetable',this)"><span class="icon">🕐</span> My Timetable</button>
+        <button class="nav-item" onclick="showPage('acadcalendar',this)"><span class="icon">🗓️</span> Academic Calendar</button>
         <button class="nav-item" onclick="showPage('ucalendar',this)"><span class="icon">📅</span> Annual Calendar</button>
         <button class="nav-item" onclick="showPage('policies',this)"><span class="icon">📋</span> Essential Policies</button>
         <button class="nav-item" onclick="showPage('guidance',this)"><span class="icon">🧭</span> Guidance &amp; Troubleshooting</button>
@@ -1488,11 +1490,19 @@ function populateDashboard(){
   var reg = rk.registration||'—';
   var acc = rk.accountsStatus||'—';
   var regColor = reg==='Registered'?'var(--green)':'var(--amber)';
-  var accColor = (acc.toLowerCase()==='clear')?'var(--green)':'var(--red)';
   var regEl = document.getElementById('dash-reg');
   var accEl = document.getElementById('dash-acc');
   if(regEl){ regEl.textContent=reg; regEl.style.color=regColor; }
-  if(accEl){ accEl.textContent=acc; accEl.style.color=accColor; }
+  if(accEl){
+    accEl.textContent = acc;
+    if(!acc || acc === '—'){
+      accEl.style.color = ''; accEl.style.fontWeight = '';
+    } else if(/^clear\.?$/i.test(String(acc).trim())){
+      accEl.style.color = 'var(--green)'; accEl.style.fontWeight = '800';
+    } else {
+      accEl.style.color = 'var(--red)'; accEl.style.fontWeight = '800';
+    }
+  }
 
   // ── Upcoming Assessments & Re-Assessments ──────────────────
   buildAssessmentCards(s);
@@ -1514,7 +1524,7 @@ function populateDashboard(){
   setTimeout(function(){
     if(!_studTTLoaded)    loadStudTimetable();
     if(!_studAcalLoaded)  loadStudAcadCalendar();
-    if(!_studUCalLoaded)  loadStudUCal();
+    loadStudUCal();
   }, 1500);
 
   // Check birthday
@@ -1998,9 +2008,12 @@ function renderYearBlockModules(s, body, yearLabel, isCurrent, allPrograms, attR
         var r   = resMap[code]||{};
         var tutorName = isCurrent ? (m.tutor || (m.tutorEmail && _staffMap[m.tutorEmail.toLowerCase()]) || (m.email && _staffMap[m.email.toLowerCase()]) || '') : '';
         var modName = m.moduleName||m.module||'';
+        var nameHtml = (isCurrent && m.moduleLog)
+          ? '<a href="'+String(m.moduleLog).replace(/"/g,'&quot;')+'" target="_blank" rel="noopener" class="mh-name mh-name-link" title="Open Module Log">'+modName+' \u2197</a>'
+          : '<span class="mh-name">'+modName+'</span>';
         html += '<div class="module-card">'
           +'<div class="module-header '+col+'"><div class="mh-top">'
-          +'<span class="mh-name">'+modName+'</span>'
+          +nameHtml
           +'<span class="mh-code">'+code+'</span>'
           +'</div>'
           +(tutorName?'<div class="mh-tutor">'+tutorName+'</div>':'')
@@ -2058,13 +2071,16 @@ function renderYearBlockModules(s, body, yearLabel, isCurrent, allPrograms, attR
         else if(!isNaN(m1)&&!isNaN(m2)) totals.push(Math.round(m1*w1/100 + m2*w2/100));
       });
       if(!totals.length) return null;
-      return Math.round(totals.reduce(function(a,b){return a+b;},0)/totals.length);
+      return {
+        avg: Math.round(totals.reduce(function(a,b){return a+b;},0)/totals.length),
+        complete: totals.length === mods.length
+      };
     }
-    function semAvgHtml(avg){
-      if(avg===null) return null;
-      var cls = avg>=40?'':'red';
-      var medal = avg>=70?' <span class="gold-medal">\uD83E\uDD47</span>':'';
-      return '<span class="ys-val '+cls+'" style="color:#fff;font-weight:800;">'+avg+'%'+medal+'</span>';
+    function semAvgHtml(r){
+      if(!r) return null;
+      var cls = r.avg>=40?'':'red';
+      var medal = (r.complete && r.avg>=70)?' <span class="gold-medal">\uD83E\uDD47</span>':'';
+      return '<span class="ys-val '+cls+'" style="color:#fff;font-weight:800;">'+r.avg+'%'+medal+'</span>';
     }
     var s1Avg = calcSemAvg(sem1);
     var s2Avg = calcSemAvg(sem2);
@@ -2073,8 +2089,8 @@ function renderYearBlockModules(s, body, yearLabel, isCurrent, allPrograms, attR
     var s1El = _yearDiv.querySelector ? _yearDiv.querySelector('#yr-sem1-'+blockYearNum) : document.getElementById('yr-sem1-'+blockYearNum);
     var s2El = _yearDiv.querySelector ? _yearDiv.querySelector('#yr-sem2-'+blockYearNum) : document.getElementById('yr-sem2-'+blockYearNum);
     var attEl = _yearDiv.querySelector ? _yearDiv.querySelector('#yr-att-'+blockYearNum) : document.getElementById('yr-att-'+blockYearNum);
-    if(s1El && s1Avg!==null) s1El.outerHTML = semAvgHtml(s1Avg);
-    if(s2El && s2Avg!==null) s2El.outerHTML = semAvgHtml(s2Avg);
+    if(s1El && s1Avg) s1El.outerHTML = semAvgHtml(s1Avg);
+    if(s2El && s2Avg) s2El.outerHTML = semAvgHtml(s2Avg);
     else if(s2El && isCurrent && sem2.length){ s2El.textContent = 'In progress'; s2El.style.color='rgba(255,255,255,0.6)'; }
 
     // ── Excellence Award banners (per semester, avg ≥ 70) ─────
@@ -2091,10 +2107,10 @@ function renderYearBlockModules(s, body, yearLabel, isCurrent, allPrograms, attR
       return '<a href="excellence_certificate.html?'+qs+'" target="_blank" style="flex-shrink:0;background:#2563eb;color:#fff;border-radius:8px;width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2v9m0 0l-3-3m3 3l3-3M3 13v2a1 1 0 001 1h10a1 1 0 001-1v-2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>';
     }
     var awardHtml = '';
-    if(s1Avg!==null && s1Avg>=70)
-      awardHtml += '<div class="award-banner"><div style="flex:1;display:flex;align-items:center;gap:10px;"><span style="font-size:22px;">&#127942;</span><div><div class="award-text">Excellence Award &#8212; Semester 1</div><div class="award-sub">Distinction level &#8212; well done, keep it up!</div></div></div>'+mkCertBtn('1',s1Avg)+'</div>';
-    if(s2Avg!==null && s2Avg>=70)
-      awardHtml += '<div class="award-banner"><div style="flex:1;display:flex;align-items:center;gap:10px;"><span style="font-size:22px;">&#127942;</span><div><div class="award-text">Excellence Award &#8212; Semester 2</div><div class="award-sub">Distinction level &#8212; well done, keep it up!</div></div></div>'+mkCertBtn('2',s2Avg)+'</div>';
+    if(s1Avg && s1Avg.complete && s1Avg.avg>=70)
+      awardHtml += '<div class="award-banner"><div style="flex:1;display:flex;align-items:center;gap:10px;"><span style="font-size:22px;">&#127942;</span><div><div class="award-text">Excellence Award &#8212; Semester 1</div><div class="award-sub">Distinction level &#8212; well done, keep it up!</div></div></div>'+mkCertBtn('1',s1Avg.avg)+'</div>';
+    if(s2Avg && s2Avg.complete && s2Avg.avg>=70)
+      awardHtml += '<div class="award-banner"><div style="flex:1;display:flex;align-items:center;gap:10px;"><span style="font-size:22px;">&#127942;</span><div><div class="award-text">Excellence Award &#8212; Semester 2</div><div class="award-sub">Distinction level &#8212; well done, keep it up!</div></div></div>'+mkCertBtn('2',s2Avg.avg)+'</div>';
     if(awardHtml) body.insertAdjacentHTML('afterbegin', awardHtml);
 
     // Update year header stats + hero overall attendance + last engagement
@@ -2187,6 +2203,13 @@ function renderStudAcal(events){
       d.split(/\s+/).forEach(function(p){if(mos.some(function(m){return p.startsWith(m);})) mo=p.replace(/[0-9]/g,'').trim();});
       if(!mo) mo='Other';
       var yr=(d.match(/20[0-9]{2}/)||[''])[0];
+      if(!yr){
+        var moIdx=mos.indexOf(mo);
+        var _ay=(_config&&_config.academic_year)||'2025-2026';
+        var _yrS=parseInt((_ay.match(/\d{4}/)||['2025'])[0])||2025;
+        if(e.semester==='Sem 1') yr=(moIdx>=8)?String(_yrS):String(_yrS+1);
+        else yr=String(_yrS+1);
+      }
       var key=mo+(yr?' '+yr:'');
       if(!months[key]){months[key]=[];order.push(key);}
       months[key].push(e);
@@ -2210,11 +2233,10 @@ function renderStudAcal(events){
 }
 
 // ── Annual Calendar ────────────────────────────────────────────
-var _studUCalLoaded=false;
 function loadStudUCal(){
-  if(_studUCalLoaded) return;
+  // Always fetch fresh — admin updates should appear immediately
   apiFetch({action:'getAnnualCalendar'}).then(function(events){
-    _studUCalLoaded=true; renderStudUCal(events||[]);
+    renderStudUCal(events||[]);
   }).catch(function(){
     var c=document.getElementById('stud-ucal-container');
     if(c) c.innerHTML='<div style="padding:40px;text-align:center;color:var(--red);font-size:13px;">Error loading.</div>';
@@ -3923,7 +3945,17 @@ function renderFeeData(rk){
   Object.keys(feeEls).forEach(function(id){var el=document.getElementById(id);if(el) el.textContent=fmtAED(feeEls[id]);});
   var regEl=document.getElementById('dash-reg'),accEl=document.getElementById('dash-acc');
   if(regEl){regEl.textContent=rk.registration||'—';regEl.style.color=rk.registration==='Registered'?'var(--green)':'var(--amber)';}
-  if(accEl){accEl.textContent=rk.accountsStatus||'—';accEl.style.color=(rk.accountsStatus||'').toLowerCase()==='clear'?'var(--green)':'var(--red)';}
+  if(accEl){
+    var _acc = rk.accountsStatus||'—';
+    accEl.textContent = _acc;
+    if(!_acc || _acc === '—'){
+      accEl.style.color = ''; accEl.style.fontWeight = '';
+    } else if(/^clear\.?$/i.test(String(_acc).trim())){
+      accEl.style.color = 'var(--green)'; accEl.style.fontWeight = '800';
+    } else {
+      accEl.style.color = 'var(--red)'; accEl.style.fontWeight = '800';
+    }
+  }
 }
 
 function dismissBirthday(){
