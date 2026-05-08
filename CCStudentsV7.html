@@ -750,7 +750,7 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
 
         <!-- Disclaimer -->
         <div style="background:#fef3c7;border:1.5px solid #f59e0b;border-radius:var(--radius);padding:14px 18px;margin-bottom:24px;font-size:13px;color:#78350f;line-height:1.7;">
-          <strong style="color:#b45309;">⚠️ &nbsp;CAUTION!</strong>&nbsp; This Help Desk is meant only for serious and unresolved academic and campus related matters you may need special support with. It is not for trivial issues that must be addressed on campus, and in person with the most relevant department and staff for best resolutions.
+          <strong style="color:#b45309;">⚠️ &nbsp;CAUTION!</strong>&nbsp; All day-to-day academic matters should first be addressed directly, in person, with the relevant department or staff members on campus for the most appropriate and timely resolution. This Help Desk is strictly intended for critical and unresolved academic matters requiring special support or intervention.
         </div>
 
         <!-- Submission form -->
@@ -2753,17 +2753,24 @@ function renderHelpDeskSubmissions(tickets){
     return;
   }
 
+  // HTML escape helper — used for every sheet-sourced string before render
+  function esc(s){
+    return String(s||'').replace(/[<>&"']/g, function(ch){
+      return {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[ch];
+    });
+  }
+
   // Build table
   var html = '<div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);">';
   html += '<table style="width:100%;border-collapse:collapse;font-size:12.5px;">';
   html += '<thead><tr style="background:#f1f5f9;">'
+       + '<th style="padding:11px 14px;text-align:left;font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.4px;border-bottom:1.5px solid var(--border);width:30px;"></th>'
        + '<th style="padding:11px 14px;text-align:left;font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.4px;border-bottom:1.5px solid var(--border);">Ticket #</th>'
        + '<th style="padding:11px 14px;text-align:left;font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.4px;border-bottom:1.5px solid var(--border);">Date</th>'
        + '<th style="padding:11px 14px;text-align:left;font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.4px;border-bottom:1.5px solid var(--border);">Category</th>'
        + '<th style="padding:11px 14px;text-align:left;font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.4px;border-bottom:1.5px solid var(--border);">Subject</th>'
        + '<th style="padding:11px 14px;text-align:left;font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.4px;border-bottom:1.5px solid var(--border);">Status</th>'
-       + '<th style="padding:11px 14px;text-align:left;font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.4px;border-bottom:1.5px solid var(--border);">Resolved By</th>'
-       + '<th style="padding:11px 14px;text-align:left;font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.4px;border-bottom:1.5px solid var(--border);">Date Resolved</th>'
+       + '<th style="padding:11px 14px;text-align:left;font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.4px;border-bottom:1.5px solid var(--border);">Response</th>'
        + '</tr></thead><tbody>';
 
   tickets.forEach(function(t, i){
@@ -2772,25 +2779,74 @@ function renderHelpDeskSubmissions(tickets){
     var pillFg = isPending ? '#92400e' : '#166534';
     var pillBd = isPending ? '#fde68a' : '#bbf7d0';
     var rowBg = i % 2 === 0 ? '#fff' : '#fafbfc';
-    var safeSubject = String(t.subject||'').replace(/[<>&"']/g, function(c){
-      return {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c];
-    });
-    var safeDetail = String(t.detail||'').replace(/[<>&"']/g, function(c){
-      return {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c];
-    });
-    html += '<tr style="background:'+rowBg+';border-bottom:1px solid var(--border);">'
-         + '<td style="padding:11px 14px;font-family:monospace;font-size:11.5px;color:var(--text);">'+t.ticketNo+'</td>'
-         + '<td style="padding:11px 14px;color:var(--text2);">'+t.date+'</td>'
-         + '<td style="padding:11px 14px;color:var(--text);">'+(t.category||'—')+'</td>'
-         + '<td style="padding:11px 14px;color:var(--text);" title="'+safeDetail+'">'+safeSubject+'</td>'
-         + '<td style="padding:11px 14px;"><span style="display:inline-block;padding:3px 10px;border-radius:999px;background:'+pillBg+';color:'+pillFg+';border:1px solid '+pillBd+';font-size:11px;font-weight:600;">'+t.status+'</span></td>'
-         + '<td style="padding:11px 14px;color:var(--text2);font-size:11.5px;">'+(t.resolvedBy||'—')+'</td>'
-         + '<td style="padding:11px 14px;color:var(--text2);font-size:11.5px;">'+(t.dateResolved||'—')+'</td>'
+    var hasResponse = !!(t.adminResponse && t.adminResponse.length);
+
+    // Indicator in Response column — green ✓ if response exists, dash otherwise
+    var responseIndicator = hasResponse
+      ? '<span style="display:inline-block;padding:3px 9px;border-radius:999px;background:#dbeafe;color:#1e40af;border:1px solid #bfdbfe;font-size:11px;font-weight:600;">✉️ Read response</span>'
+      : '<span style="color:var(--text3);font-size:11px;">—</span>';
+
+    // Caret toggle — only shown if there's expandable content (response or full detail)
+    var hasExpandable = hasResponse || (t.detail && t.detail.length);
+    var caret = hasExpandable
+      ? '<span class="hd-row-caret" style="display:inline-block;font-size:11px;color:var(--text2);transition:transform 0.2s;">▶</span>'
+      : '';
+    var rowCursor = hasExpandable ? 'cursor:pointer;' : '';
+    var rowClick = hasExpandable ? 'onclick="toggleHelpDeskRow(this)"' : '';
+
+    html += '<tr class="hd-summary-row" data-row-idx="'+i+'" '+rowClick+' style="background:'+rowBg+';border-bottom:1px solid var(--border);'+rowCursor+'">'
+         + '<td style="padding:11px 14px;text-align:center;">'+caret+'</td>'
+         + '<td style="padding:11px 14px;font-family:monospace;font-size:11.5px;color:var(--text);">'+esc(t.ticketNo)+'</td>'
+         + '<td style="padding:11px 14px;color:var(--text2);">'+esc(t.date)+'</td>'
+         + '<td style="padding:11px 14px;color:var(--text);">'+esc(t.category||'—')+'</td>'
+         + '<td style="padding:11px 14px;color:var(--text);">'+esc(t.subject)+'</td>'
+         + '<td style="padding:11px 14px;"><span style="display:inline-block;padding:3px 10px;border-radius:999px;background:'+pillBg+';color:'+pillFg+';border:1px solid '+pillBd+';font-size:11px;font-weight:600;">'+esc(t.status)+'</span></td>'
+         + '<td style="padding:11px 14px;">'+responseIndicator+'</td>'
          + '</tr>';
+
+    // Expanded detail row (hidden by default)
+    if(hasExpandable){
+      var responseBlock = hasResponse
+        ? '<div style="margin-top:10px;background:#eff6ff;border-left:3px solid #3b82f6;border-radius:6px;padding:12px 14px;">'
+        +   '<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#1e40af;margin-bottom:6px;">✉️ Admin Response'
+        +     (t.responseDate ? ' · '+esc(t.responseDate) : '')
+        +     (t.resolvedBy ? ' · by '+esc(t.resolvedBy) : '')
+        +   '</div>'
+        +   '<div style="font-size:13px;color:var(--text);line-height:1.6;white-space:pre-wrap;">'+esc(t.adminResponse)+'</div>'
+        + '</div>'
+        : '<div style="margin-top:10px;font-size:12px;color:var(--text3);font-style:italic;">No response yet — we will get back to you.</div>';
+
+      var detailBlock = (t.detail && t.detail.length)
+        ? '<div style="background:#fafbfc;border:1px solid var(--border);border-radius:6px;padding:12px 14px;">'
+        +   '<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text2);margin-bottom:6px;">Your Query</div>'
+        +   '<div style="font-size:13px;color:var(--text);line-height:1.6;white-space:pre-wrap;">'+esc(t.detail)+'</div>'
+        + '</div>'
+        : '';
+
+      html += '<tr class="hd-detail-row" data-detail-for="'+i+'" style="display:none;background:'+rowBg+';">'
+           + '<td colspan="7" style="padding:0 14px 14px 50px;">'
+           + detailBlock
+           + responseBlock
+           + '</td>'
+           + '</tr>';
+    }
   });
 
   html += '</tbody></table></div>';
   c.innerHTML = html;
+}
+
+// Toggle expansion of a Help Desk ticket row to reveal full detail + admin response.
+function toggleHelpDeskRow(rowEl){
+  if(!rowEl) return;
+  var idx = rowEl.getAttribute('data-row-idx');
+  if(idx == null) return;
+  var detailRow = document.querySelector('tr.hd-detail-row[data-detail-for="'+idx+'"]');
+  if(!detailRow) return;
+  var caret = rowEl.querySelector('.hd-row-caret');
+  var isOpen = detailRow.style.display !== 'none';
+  detailRow.style.display = isOpen ? 'none' : '';
+  if(caret) caret.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(90deg)';
 }
 
 // ── My Attendance Page ────────────────────────────────────────
