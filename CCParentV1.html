@@ -285,6 +285,10 @@ body{font-family:'Sora',sans-serif;color:var(--text);display:flex;flex-direction
     .acal-month{background:#0f1e3d;color:#fff;padding:10px 8px;display:flex;flex-direction:column;align-items:center;justify-content:center;border-bottom:1px solid rgba(255,255,255,0.08);}
     .acal-month.sem1{border-left:4px solid #9a3412;}
     .acal-month.sem2{border-left:4px solid var(--accent,#2563eb);}
+    .acal-month.current{background:var(--accent,#2563eb)!important;border-left-color:#1d4ed8!important;}
+    .acal-month.current .acal-month-name{color:#fff;}
+    .acal-month.current .acal-month-year{color:rgba(255,255,255,0.7);}
+    .acal-month.current::after{content:'Now';display:block;margin-top:6px;font-size:9px;font-weight:700;background:rgba(255,255,255,0.25);color:#fff;padding:1px 7px;border-radius:8px;letter-spacing:0.3px;text-align:center;}
     .acal-month-name{font-size:12px;font-weight:700;text-align:center;}
     .acal-month-year{font-size:10px;color:rgba(255,255,255,0.5);margin-top:2px;}
     .acal-events{border-bottom:1px solid var(--border,#e2e8f0);padding:0;}
@@ -815,6 +819,13 @@ function buildUCalPanel(){
         d.split(/\s+/).forEach(function(p){if(mos.some(function(m){return p.startsWith(m);})) mo=p.replace(/[0-9]/g,'').trim();});
         if(!mo) mo='Other';
         var yr=(d.match(/20[0-9]{2}/)||[''])[0];
+        if(!yr){
+          var moIdx=mos.indexOf(mo);
+          var _ay=(_bundle&&_bundle.config&&_bundle.config.academic_year)||'2025-2026';
+          var _yrS=parseInt((_ay.match(/\d{4}/)||['2025'])[0])||2025;
+          if(e.semester==='Sem 1') yr=(moIdx>=8)?String(_yrS):String(_yrS+1);
+          else yr=String(_yrS+1);
+        }
         var key=mo+(yr?' '+yr:'');
         if(!months[key]){months[key]=[];order.push(key);}
         months[key].push(e);
@@ -836,6 +847,19 @@ function buildUCalPanel(){
     el.innerHTML = rSem('Fall 2025-26','Semester 1','sem1',sem1)
       + rSem('Spring 2025-26','Semester 2','sem2',sem2)
       + (other.length?rSem('General','','sem2',other):'');
+    // Highlight current month (mirrors Tutor/Student/Admin behaviour)
+    setTimeout(function(){
+      var now=new Date();
+      var mosArr=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      var curMo=mosArr[now.getMonth()], curYr=String(now.getFullYear());
+      el.querySelectorAll('.acal-month').forEach(function(elm){
+        var nmEl=elm.querySelector('.acal-month-name');
+        var yrEl=elm.querySelector('.acal-month-year');
+        var nm=(nmEl?nmEl.textContent:'').trim();
+        var yr=(yrEl?yrEl.textContent:'').trim();
+        if(nm===curMo && yr===curYr) elm.classList.add('current');
+      });
+    },50);
   }).catch(function(){ el.innerHTML='<div style="text-align:center;padding:40px;color:var(--text3);font-size:13px;">Could not load calendar.</div>'; });
 }
 
