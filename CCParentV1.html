@@ -291,15 +291,28 @@ body{font-family:'Sora',sans-serif;color:var(--text);display:flex;flex-direction
     .acal-month.current::after{content:'Now';display:block;margin-top:6px;font-size:9px;font-weight:700;background:rgba(255,255,255,0.25);color:#fff;padding:1px 7px;border-radius:8px;letter-spacing:0.3px;text-align:center;}
     .acal-month-name{font-size:12px;font-weight:700;text-align:center;}
     .acal-month-year{font-size:10px;color:rgba(255,255,255,0.5);margin-top:2px;}
-    .acal-events{border-bottom:1px solid var(--border,#e2e8f0);padding:0;}
-    .acal-chip{display:flex;align-items:flex-start;gap:8px;padding:8px 10px;border-bottom:1px solid var(--border,#f1f5f9);}
-    .acal-chip:last-child{border-bottom:none;}
-    .acal-chip-date{font-size:11px;font-weight:700;white-space:nowrap;flex-shrink:0;min-width:70px;}
-    .acal-chip-label{font-size:12px;font-weight:400;color:var(--text,#1e293b);}
+    .acal-events{padding:8px 6px;display:flex;flex-wrap:wrap;gap:4px;background:#fff;border-bottom:1px solid var(--border,#e2e8f0);}
+    .acal-chip{display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:5px;border:1px solid;}
+    .acal-chip-date{font-family:'DM Mono',monospace;font-size:10px;font-weight:700;flex-shrink:0;}
+    .acal-chip-label{font-size:11px;font-weight:500;}
+    .acal-chip.holiday{background:#dcfce7;border-color:#bbf7d0;}
     .acal-chip.holiday .acal-chip-date{color:#16a34a;}
+    .acal-chip.holiday .acal-chip-label{color:#166534;}
+    .acal-chip.event{background:#dbeafe;border-color:#bfdbfe;}
     .acal-chip.event .acal-chip-date{color:#2563eb;}
+    .acal-chip.event .acal-chip-label{color:#1e3a8a;}
+    .acal-chip.milestone{background:#0f1e3d;border-color:#0f1e3d;}
+    .acal-chip.milestone .acal-chip-date{color:#93c5fd;}
+    .acal-chip.milestone .acal-chip-label{color:#fff;font-weight:600;}
+    .acal-chip.assessment{background:#fef3c7;border-color:#fde68a;}
+    .acal-chip.assessment .acal-chip-date{color:#d97706;}
+    .acal-chip.assessment .acal-chip-label{color:#92400e;}
+    .acal-chip.deadline{background:#fee2e2;border-color:#fecaca;}
     .acal-chip.deadline .acal-chip-date{color:#dc2626;}
-    .acal-chip.break .acal-chip-date{color:#d97706;}
+    .acal-chip.deadline .acal-chip-label{color:#991b1b;font-weight:600;}
+    .acal-chip.break{background:#f1f5f9;border-color:#e2e8f0;}
+    .acal-chip.break .acal-chip-date{color:#64748b;}
+    .acal-chip.break .acal-chip-label{color:#475569;}
 </style>
 </head>
 <body>
