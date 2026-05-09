@@ -2517,7 +2517,14 @@ function renderStudTimetable(rows, s){
   var SLOT_COLORS=['#1e3a8a','#065f46','#92400e','#6b21a8','#9a3412','#0e7490'];
   var html='<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:10px;margin-bottom:16px;">';
   DAYS.forEach(function(day){
-    var entries=(byDay[day]||[]).sort(function(a,b){return (a.times||'').localeCompare(b.times||'');});
+    // Sort by start time numerically (parsing "9:30" as 570, "11:00" as 660 — string sort is wrong since "11:00" < "9:30" lexically)
+    var entries=(byDay[day]||[]).slice().sort(function(a,b){
+      function startMin(t){
+        var m=String(t||'').match(/(\d+):(\d+)/);
+        return m?parseInt(m[1],10)*60+parseInt(m[2],10):0;
+      }
+      return startMin(a.times)-startMin(b.times);
+    });
     var isWeekend=(day==='Saturday'||day==='Sunday');
     var hdrBg=isWeekend?'background:#475569;':'background:var(--sb-bg);';
     html+='<div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);">';
