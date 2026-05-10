@@ -3211,7 +3211,14 @@ function renderTimetable(rows){
   var html = '<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:10px;margin-bottom:16px;">';
 
   DAYS.forEach(function(day){
-    var entries = (byDay[day]||[]).sort(function(a,b){ return (a.times||'').localeCompare(b.times||''); });
+    // Sort by start time numerically (parsing "9:30" as 570, "11:00" as 660 — string sort is wrong since "11:00" < "9:30" lexically)
+    var entries = (byDay[day]||[]).slice().sort(function(a,b){
+      function startMin(t){
+        var m = String(t||'').match(/(\d+):(\d+)/);
+        return m ? parseInt(m[1],10)*60 + parseInt(m[2],10) : 0;
+      }
+      return startMin(a.times) - startMin(b.times);
+    });
     var isWeekend = (day==='Saturday'||day==='Sunday');
     var hdrBg = isWeekend ? 'background:#475569;' : 'background:var(--sb-bg);';
 
@@ -4150,6 +4157,142 @@ function ukNormName(s){
   return t.toUpperCase().replace(/[-.,'_\s]/g,'');
 }
 
+// ═══════════════════════════════════════════════════════════════════════════
+// NameMatch — token-union matching with phonetic normalization.
+// Runs as Tier 0 BEFORE UKCOUNT exact-match and fuzzy match.
+// Treats names as bags of tokens, unioning CURRENT name + UKCOUNT name per
+// student, normalizing phonetically (AHMED ≡ AHMAD), then scoring by overlap.
+// Returns:
+//   { confident: true,  student: {bsuId, name, ...}, tier: 1|2 }   → auto-match
+//   { confident: false, candidates: [{student, tier, overlap}, ...] } → manual selector
+//   { confident: false, candidates: [] }                            → no match (fall through)
+// Safe rule: only Tier 1 or Tier 2 with a single hit auto-matches.
+// Tier 3, Tier 4, or any tier with multiple hits → manual selector.
+// ═══════════════════════════════════════════════════════════════════════════
+
+// Phonetic equivalence groups. Names that sound alike but spell differently.
+// Each group → all variants normalized to alphabetically-first form.
+var NM_PHONETIC_GROUPS = [
+  ['AHMED','AHMAD','AHAMED','AHAMMED'],
+  ['MOHAMMED','MUHAMMAD','MOHAMED','MOHAMMAD','MUHAMMED'],
+  ['KHADEEJA','KHADIJA','KHADIJEH','KHADEJAH'],
+  ['AYESHA','AISHA','AYSHA'],
+  ['FATIMA','FATHIMA','FATEMA'],
+  ['OBAID','UBAID'],
+  ['ABDULLAH','ABDULLA'],
+  ['KAYLA','KYLA'],
+  ['ZEESHAAN','ZEESHAN']
+];
+var _nmPhoneticLookup = {};
+NM_PHONETIC_GROUPS.forEach(function(grp){
+  var canon = grp.slice().sort()[0];
+  grp.forEach(function(v){ _nmPhoneticLookup[v] = canon; });
+});
+
+// Normalize a single token: strip non-letters, uppercase, apply phonetic map
+function nmCanonToken(t){
+  var clean = String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/[^A-Z]/g,'');
+  if(!clean || clean.length < 2) return null;
+  return _nmPhoneticLookup[clean] || clean;
+}
+
+// Convert a name string to a Set of canonical tokens.
+// Splits on whitespace, hyphens, dots, underscores. Ignores tokens < 2 chars.
+function nmNameToTokenSet(name){
+  if(!name) return {};
+  var raw = String(name).split(/[\s\-\.\_]+/);
+  var out = {};
+  for(var i=0;i<raw.length;i++){
+    var c = nmCanonToken(raw[i]);
+    if(c) out[c] = true;
+  }
+  return out;
+}
+
+function nmTokenCount(s){ var n=0; for(var k in s) n++; return n; }
+function nmTokenIntersect(a, b){
+  var out = {};
+  for(var k in a){ if(b[k]) out[k] = true; }
+  return out;
+}
+function nmTokenSubsetOf(a, b){
+  for(var k in a){ if(!b[k]) return false; }
+  return true;
+}
+function nmTokenEqual(a, b){
+  return nmTokenCount(a) === nmTokenCount(b) && nmTokenSubsetOf(a, b);
+}
+function nmSortedKeys(s){ var arr=[]; for(var k in s) arr.push(k); return arr.sort(); }
+
+// Build a student's UNION token set from CURRENT name + UKCOUNT name.
+// UKCOUNT name is looked up via existing _ukByName index (reverse map BSU → name).
+// Cached on the student record to avoid recomputation.
+function nmGetStudentTokens(student){
+  if(student._nmTokens) return student._nmTokens;
+  var tokens = nmNameToTokenSet(student.name || '');
+  // Try to find UKCOUNT name for this BSU (reverse lookup)
+  if(typeof _ukByName !== 'undefined'){
+    for(var ukName in _ukByName){
+      if(String(_ukByName[ukName]) === String(student.bsuId)){
+        // Reconstruct a likely UKCOUNT name from the normalized key — limited info
+        // Better: store the original UKCOUNT name. For now, we use the bsuId's reverse.
+        // The key is already normalized (no spaces/hyphens) so token-split won't help.
+        // Skip — _ukByName loses the original spacing. CURRENT name only is sufficient.
+        break;
+      }
+    }
+  }
+  // If module also has student.ukName (set during getModuleStudents), include it
+  if(student.ukName){
+    var ukTokens = nmNameToTokenSet(student.ukName);
+    for(var t in ukTokens) tokens[t] = true;
+  }
+  student._nmTokens = tokens;
+  return tokens;
+}
+
+// Main matcher. Returns confident result or candidate list.
+function matchViaNameMatch(firstName, lastName, moduleStudents){
+  var csvTokens = nmNameToTokenSet((firstName || '') + ' ' + (lastName || ''));
+  if(!nmTokenCount(csvTokens)) return {confident:false, candidates:[]};
+
+  var scored = [];
+  for(var i=0; i<moduleStudents.length; i++){
+    var s = moduleStudents[i];
+    var sTokens = nmGetStudentTokens(s);
+    if(!nmTokenCount(sTokens)) continue;
+    var overlap = nmTokenIntersect(csvTokens, sTokens);
+    var oCount = nmTokenCount(overlap);
+    if(!oCount) continue;
+    var tier;
+    if(nmTokenEqual(csvTokens, sTokens)) tier = 1;
+    else if(nmTokenSubsetOf(csvTokens, sTokens) && oCount >= 2) tier = 2;
+    else if(nmTokenSubsetOf(csvTokens, sTokens)) tier = 3;
+    else tier = 4;
+    scored.push({tier:tier, student:s, overlap:nmSortedKeys(overlap)});
+  }
+  if(!scored.length) return {confident:false, candidates:[]};
+
+  scored.sort(function(a,b){
+    if(a.tier !== b.tier) return a.tier - b.tier;
+    return b.overlap.length - a.overlap.length;
+  });
+  var bestTier = scored[0].tier;
+  var bestMatches = scored.filter(function(x){ return x.tier === bestTier; });
+
+  // SAFE RULE: only auto-match Tier 1 or Tier 2 single hits.
+  if((bestTier === 1 || bestTier === 2) && bestMatches.length === 1){
+    return {confident:true, student:bestMatches[0].student, tier:bestTier, overlap:bestMatches[0].overlap, type:'namematch'};
+  }
+  // Otherwise return up to top 6 candidates for manual selector
+  return {confident:false, candidates:scored.slice(0, 6)};
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// END NameMatch module
+// ═══════════════════════════════════════════════════════════════════════════
+
+
 // ── Tier 0: UKCOUNT exact-normalized match ─────────────────────────────────
 // CSV firstName + lastName → normalized → look up _ukByName → BSU ID
 // → verify the BSU is in this module's student roster → return CURRENT record.
@@ -4317,6 +4460,7 @@ function parseSubmissionCSV(input, saId, code, name, sa){
       // Parse CSV — collect submitted BSU IDs
       var submittedBsuIds = {};  // bsuId → true
       var csvRows = [];          // all named rows from CSV
+      var manualQueue = [];      // ambiguous Yes-rows that need tutor confirmation
 
       for(var i=1;i<lines.length;i++){
         var cols = lines[i].split(',').map(function(c){ return c.replace(/^"|"$/g,'').trim(); });
@@ -4325,8 +4469,18 @@ function parseSubmissionCSV(input, saId, code, name, sa){
         var submitted = (cols[2]||'').toLowerCase()==='yes';
         if(!firstName && !lastName) continue; // blank name row — skip, will be caught by cross-ref
 
-        var matchResult = matchViaUkCount(firstName, lastName, moduleStudents)
-                       || matchStudentByName(firstName, lastName, moduleStudents);
+        // Tier 0: NameMatch (token-union with phonetic normalization).
+        // Returns confident match for clear cases; ambiguous cases fall through
+        // to UKCOUNT/fuzzy. If a Yes-row falls through everything but NameMatch
+        // had candidates, queue it for explicit tutor confirmation.
+        var nm = matchViaNameMatch(firstName, lastName, moduleStudents);
+        var matchResult;
+        if(nm.confident){
+          matchResult = {student: nm.student, type: 'namematch'};
+        } else {
+          matchResult = matchViaUkCount(firstName, lastName, moduleStudents)
+                     || matchStudentByName(firstName, lastName, moduleStudents);
+        }
         var row = {
           firstName: firstName.toUpperCase(),
           lastName:  lastName.toUpperCase(),
@@ -4338,6 +4492,19 @@ function parseSubmissionCSV(input, saId, code, name, sa){
         csvRows.push(row);
         if(submitted && matchResult.student){
           submittedBsuIds[String(matchResult.student.bsuId)] = true;
+        }
+        // Queue ambiguous Yes-rows for manual confirmation when:
+        //   - row is submitted (Yes), AND
+        //   - nothing matched confidently, AND
+        //   - NameMatch surfaced plausible candidates
+        if(submitted && !matchResult.student && nm.candidates && nm.candidates.length){
+          manualQueue.push({
+            idx: manualQueue.length,
+            firstName: firstName,
+            lastName:  lastName,
+            csvRowIdx: csvRows.length - 1,    // back-reference into csvRows
+            candidates: nm.candidates
+          });
         }
       }
 
@@ -4385,9 +4552,11 @@ function parseSubmissionCSV(input, saId, code, name, sa){
       window._pendingSub[saId] = {
         code: code, name: name, sa: sa,
         results: results,
-        nonSubmitters: nonSubmitters.map(function(s){ return {bsuId:String(s.bsuId), studentName:s.name||''}; })
+        nonSubmitters: nonSubmitters.map(function(s){ return {bsuId:String(s.bsuId), studentName:s.name||''}; }),
+        manualQueue: manualQueue,
+        manualResolutions: {}
       };
-      renderSubPreview(saId, results, nonSubmitters, moduleStudents.length, moduleStudents);
+      renderSubPreview(saId, results, nonSubmitters, moduleStudents.length, moduleStudents, manualQueue);
     } catch(err){
       if(preview) preview.innerHTML='<div style="color:var(--red);font-size:13px;padding:8px 0;">⚠️ Error: '+err.message+'</div>';
     }
@@ -4395,9 +4564,10 @@ function parseSubmissionCSV(input, saId, code, name, sa){
   reader.readAsText(input.files[0]);
 }
 
-function renderSubPreview(saId, results, nonSubmitters, enrolled, moduleStudents){
+function renderSubPreview(saId, results, nonSubmitters, enrolled, moduleStudents, manualQueue){
   var preview = document.getElementById('sub-preview-'+saId);
   if(!preview) return;
+  manualQueue = manualQueue || [];
 
   var csvSubmitted = results.filter(function(r){ return r.submitted && r.matched && r.matchType!=='none'; });
   var csvUnmatched = results.filter(function(r){ return r.matchType==='none'; });
@@ -4410,18 +4580,79 @@ function renderSubPreview(saId, results, nonSubmitters, enrolled, moduleStudents
   html += '<div style="font-size:12px;color:#16a34a;"><span>✅ Submitted</span> <strong data-subcount>'+csvSubmitted.length+'</strong></div>';
   html += '<div style="font-size:12px;color:#dc2626;"><span>❌ Not Submitted</span> <strong data-nonsubcount>'+totalNonSub+'</strong></div>';
   if(csvUnmatched.length) html += '<div style="font-size:12px;color:#d97706;"><span>⚠️ Unmatched in file</span> <strong>'+csvUnmatched.length+'</strong></div>';
+  if(manualQueue.length) html += '<div style="font-size:12px;color:#d97706;"><span>⚠️ Need confirmation</span> <strong data-sub-manual="'+saId+'">'+manualQueue.length+'</strong></div>';
   html += '<div style="font-size:11px;color:'+(ukCount?'var(--text3)':'#dc2626')+';margin-left:auto;">UKCOUNT: '+(ukCount?ukCount+' names':'NOT LOADED')+'</div>';
   html += '</div>';
 
+  // ── Manual confirmation block (mirror of re-assessment flow) ─────────────
+  // Some Yes-rows from the CSV had ambiguous NameMatch results and no fallback
+  // match. Tutor must explicitly pick the correct student or skip each one
+  // before action buttons unlock.
+  if(manualQueue.length){
+    html += '<div style="background:#fffbeb;border:1.5px solid #fcd34d;border-radius:8px;padding:14px 16px;margin-bottom:14px;">';
+    html += '<div style="font-size:13px;font-weight:700;color:#92400e;margin-bottom:6px;">⚠️ '+manualQueue.length+' submitter(s) need manual confirmation</div>';
+    html += '<div style="font-size:11.5px;color:#78350f;margin-bottom:12px;line-height:1.5;">';
+    html += 'These names from the Blackboard submission report could not be confidently matched to a single enrolled student. ';
+    html += 'For each row, pick the correct student or skip (treat as not submitted).';
+    html += '</div>';
+
+    manualQueue.forEach(function(q){
+      var csvName = ((q.firstName||'') + ' ' + (q.lastName||'')).trim().replace(/\s*-\s*$/,'');
+      html += '<div style="background:#fff;border:1px solid #fde68a;border-radius:6px;padding:11px 13px;margin-bottom:8px;" id="subq-card-'+saId+'-'+q.idx+'">';
+      html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">';
+      html += '<div><span style="font-size:10px;font-weight:700;color:#92400e;text-transform:uppercase;letter-spacing:0.4px;margin-right:6px;">CSV Row</span><span style="font-family:monospace;font-size:12px;background:#f1f5f9;padding:2px 8px;border-radius:3px;">'+escapeHtml(csvName)+'</span></div>';
+      html += '<span style="font-size:11px;font-weight:700;background:#fef3c7;color:#92400e;padding:2px 9px;border-radius:10px;" id="subq-status-'+saId+'-'+q.idx+'">⏳ Pending</span>';
+      html += '</div>';
+      html += '<div style="font-size:11px;color:#92400e;margin-bottom:6px;">Pick the correct student or skip:</div>';
+      html += '<div style="display:flex;flex-direction:column;gap:4px;">';
+      q.candidates.forEach(function(c){
+        var tierLabel = ['','PERFECT','STRONG','WEAK','PARTIAL'][c.tier] || ('T'+c.tier);
+        var tierColor = c.tier===1?'#16a34a':c.tier===2?'#0e7490':c.tier===3?'#b45309':'#b91c1c';
+        html += '<label style="display:flex;align-items:center;gap:8px;padding:7px 10px;background:#fff;border:1px solid #e2e8f0;border-radius:5px;cursor:pointer;" onmouseover="this.style.borderColor=\'#3b82f6\'" onmouseout="this.style.borderColor=\'#e2e8f0\'">';
+        html += '<input type="radio" name="subq-'+saId+'-'+q.idx+'" value="'+c.student.bsuId+'" data-said="'+saId+'" data-qidx="'+q.idx+'" data-bsu="'+c.student.bsuId+'" data-name="'+escapeHtml(c.student.name||'')+'" onchange="subResolveManual(this)">';
+        html += '<div style="flex:1;min-width:0;">';
+        html += '<div style="font-weight:600;font-size:12.5px;">'+escapeHtml(c.student.name||'(no name)')+' <span style="font-family:monospace;font-size:11px;color:#475569;background:#f1f5f9;padding:1px 6px;border-radius:3px;margin-left:4px;">BSU '+c.student.bsuId+'</span></div>';
+        html += '<div style="font-size:10.5px;color:#475569;margin-top:1px;">overlap: '+c.overlap.map(function(t){ return '<code style="font-family:monospace;font-size:10px;background:#f1f5f9;padding:0 4px;border-radius:2px;">'+escapeHtml(t)+'</code>'; }).join(' ')+'</div>';
+        html += '</div>';
+        html += '<span style="font-size:9.5px;font-weight:700;padding:1px 7px;border-radius:8px;letter-spacing:0.4px;background:'+tierColor+';color:#fff;">T'+c.tier+' '+tierLabel+'</span>';
+        html += '</label>';
+      });
+      html += '<label style="display:flex;align-items:center;gap:8px;padding:7px 10px;background:#fafafa;border:1px dashed #cbd5e1;border-radius:5px;cursor:pointer;color:#64748b;font-size:11.5px;">';
+      html += '<input type="radio" name="subq-'+saId+'-'+q.idx+'" value="" data-said="'+saId+'" data-qidx="'+q.idx+'" data-skip="1" onchange="subResolveManual(this)">';
+      html += '⊘ Skip — treat as not submitted (student not in this module, or genuinely missed deadline)';
+      html += '</label>';
+      html += '</div>';
+      html += '</div>';
+    });
+    html += '</div>';
+  }
+
   // ── Save & Send buttons (single-click: persists status to col M, then emails non-submitters) ──
-  html += '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">';
-  html += '<button class="btn-sm" style="background:#0284c7;color:#fff;border-color:#0284c7;" data-notice="reminder" data-sakey="'+saId+'">';
-  html += '📅 Save &amp; Send Submission Reminder ('+totalNonSub+' Non-Submitters)</button>';
-  html += '<button class="btn-sm" style="background:#d97706;color:#fff;border-color:#d97706;" data-notice="2day" data-sakey="'+saId+'">';
-  html += '⚠️ Save &amp; Send 2-Day Extension Notice ('+totalNonSub+' Non-Submitters)</button>';
-  html += '<button class="btn-sm" style="background:#dc2626;color:#fff;border-color:#dc2626;" data-notice="closed" data-sakey="'+saId+'">';
-  html += '🔒 Save &amp; Send Assessment Closed Notice ('+totalNonSub+' Non-Submitters)</button>';
+  // Disabled while manualQueue has unresolved items.
+  var subDisabledAttr = manualQueue.length ? ' disabled style="opacity:0.5;cursor:not-allowed;background:#94a3b8;color:#fff;border-color:#94a3b8;"' : '';
+  html += '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;" id="sub-actions-'+saId+'">';
+  if(manualQueue.length){
+    html += '<button class="btn-sm" data-notice="reminder" data-sakey="'+saId+'"'+subDisabledAttr+'>';
+  } else {
+    html += '<button class="btn-sm" style="background:#0284c7;color:#fff;border-color:#0284c7;" data-notice="reminder" data-sakey="'+saId+'">';
+  }
+  html += '📅 Save &amp; Send Submission Reminder (<span data-sub-btncount="'+saId+'">'+totalNonSub+'</span> Non-Submitters)</button>';
+  if(manualQueue.length){
+    html += '<button class="btn-sm" data-notice="2day" data-sakey="'+saId+'"'+subDisabledAttr+'>';
+  } else {
+    html += '<button class="btn-sm" style="background:#d97706;color:#fff;border-color:#d97706;" data-notice="2day" data-sakey="'+saId+'">';
+  }
+  html += '⚠️ Save &amp; Send 2-Day Extension Notice (<span data-sub-btncount="'+saId+'">'+totalNonSub+'</span> Non-Submitters)</button>';
+  if(manualQueue.length){
+    html += '<button class="btn-sm" data-notice="closed" data-sakey="'+saId+'"'+subDisabledAttr+'>';
+  } else {
+    html += '<button class="btn-sm" style="background:#dc2626;color:#fff;border-color:#dc2626;" data-notice="closed" data-sakey="'+saId+'">';
+  }
+  html += '🔒 Save &amp; Send Assessment Closed Notice (<span data-sub-btncount="'+saId+'">'+totalNonSub+'</span> Non-Submitters)</button>';
   html += '</div>';
+  if(manualQueue.length){
+    html += '<div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:6px;padding:9px 12px;font-size:11.5px;color:#92400e;margin-bottom:10px;" id="sub-blockmsg-'+saId+'">⚠️ Resolve all '+manualQueue.length+' manual confirmations above before sending notices.</div>';
+  }
   html += '<div style="font-size:11px;color:var(--text3);margin-bottom:14px;">Each click first persists Submitted / Not Submitted to all portals (Student · Parent · Admin), then emails the listed non-submitters.</div>';
 
   // ── Table: non-submitters FIRST, then submitted ──────────────────────────
@@ -4440,45 +4671,10 @@ function renderSubPreview(saId, results, nonSubmitters, enrolled, moduleStudents
   html += '<th onclick="sortSubTable(this,2)" style="padding:8px 12px;text-align:left;color:#fff;font-weight:600;cursor:pointer;user-select:none;">CURRENT Name ↕</th>';
   html += '<th onclick="sortSubTable(this,3)" style="padding:8px 12px;text-align:center;color:#fff;font-weight:600;cursor:pointer;user-select:none;">Submitted ↕</th>';
   html += '<th style="padding:8px 12px;text-align:center;color:#fff;font-weight:600;">Match</th>';
-  html += '</tr></thead><tbody>';
+  html += '</tr></thead><tbody id="sub-tbody-'+saId+'">';
 
   sortedResults.forEach(function(r, idx){
-    var isUnmatched = r.matchType==='none';
-    var isNotInFile = r.matchType==='enrolled';
-    var isNotSub    = !r.submitted;
-    var rowBg = isNotInFile ? '#fef2f2' : isUnmatched ? '#fef3c7' : isNotSub ? '#fff7ed' : (idx%2===0?'#fff':'#f9fafb');
-    var bsuId = r.matched ? r.matched.bsuId : '—';
-    var sName = r.matched ? (r.matched.name||'') : '—';
-    var subIcon  = r.submitted ? '<span style="color:#16a34a;font-weight:700;">✅ Yes</span>' : '<span style="color:#dc2626;font-weight:700;">❌ No</span>';
-    var matchBadge = r.matchType==='exact'    ? '<span style="color:#16a34a;font-size:11px;">✓ Exact</span>'
-                   : r.matchType==='ukcount'  ? '<span style="color:#16a34a;font-size:11px;">✓ UKCOUNT</span>'
-                   : r.matchType==='likely'   ? '<span style="color:#d97706;font-size:11px;">⚠️ Likely</span>'
-                   : r.matchType==='enrolled' ? '<span style="color:#dc2626;font-size:11px;">🚫 Not in file</span>'
-                   : '<span style="color:#dc2626;font-size:11px;">✗ No match</span>';
-
-    var bsuIdCell = '<td style="padding:7px 12px;border-bottom:1px solid #f0f0f0;font-family:monospace;">'+bsuId+'</td>';
-    var sNameCell = '<td style="padding:7px 12px;border-bottom:1px solid #f0f0f0;">'+sName+'</td>';
-    var matchCell = '<td style="padding:7px 12px;border-bottom:1px solid #f0f0f0;text-align:center;">'+matchBadge+'</td>';
-
-    if(isUnmatched){
-      var opts = '<option value="">— Select student —</option>';
-      moduleStudents.forEach(function(s){
-        if(!matchedBsuIds[String(s.bsuId)]) opts += '<option value="'+s.bsuId+'">'+s.name+' · BSU '+s.bsuId+'</option>';
-      });
-      bsuIdCell = '<td style="padding:7px 12px;border-bottom:1px solid #f0f0f0;font-family:monospace;" id="mbsu-'+saId+'-'+idx+'">—</td>';
-      sNameCell = '<td style="padding:5px 12px;border-bottom:1px solid #f0f0f0;">'
-        + '<select id="manual-match-'+saId+'-'+idx+'" data-said="'+saId+'" data-idx="'+idx+'" '
-        + 'style="font-size:11px;padding:4px 6px;border:1px solid #fcd34d;border-radius:4px;background:#fffbeb;width:100%;max-width:260px;"'
-        + ' onchange="applyManualMatch(this, window[\'moduleStudents_'+saId+'\'])">'        + opts+'</select></td>';
-      matchCell = '<td style="padding:7px 12px;border-bottom:1px solid #f0f0f0;text-align:center;" id="mbadge-'+saId+'-'+idx+'">'
-        + '<span style="color:#dc2626;font-size:11px;">✗ No match</span></td>';
-    }
-
-    html += '<tr style="background:'+rowBg+';" id="mrow-'+saId+'-'+idx+'">';
-    html += '<td style="padding:7px 12px;border-bottom:1px solid #f0f0f0;">'+(r.fullName||'—')+'</td>';
-    html += bsuIdCell + sNameCell;
-    html += '<td style="padding:7px 12px;border-bottom:1px solid #f0f0f0;text-align:center;">'+subIcon+'</td>';
-    html += matchCell + '</tr>';
+    html += renderSubRow(r, idx, saId, moduleStudents, matchedBsuIds);
   });
 
   window['moduleStudents_'+saId] = moduleStudents;
@@ -4490,6 +4686,168 @@ function renderSubPreview(saId, results, nonSubmitters, enrolled, moduleStudents
 
   preview.innerHTML = html;
   preview.style.display = 'block';
+}
+
+// Renders a single submission table row. Extracted so subResolveManual can
+// re-render the table cleanly after resolving manual confirmation queue items.
+function renderSubRow(r, idx, saId, moduleStudents, matchedBsuIds){
+  var isUnmatched = r.matchType==='none';
+  var isNotInFile = r.matchType==='enrolled';
+  var isNotSub    = !r.submitted;
+  var rowBg = isNotInFile ? '#fef2f2' : isUnmatched ? '#fef3c7' : isNotSub ? '#fff7ed' : (idx%2===0?'#fff':'#f9fafb');
+  var bsuId = r.matched ? r.matched.bsuId : '—';
+  var sName = r.matched ? (r.matched.name||'') : '—';
+  var subIcon  = r.submitted ? '<span style="color:#16a34a;font-weight:700;">✅ Yes</span>' : '<span style="color:#dc2626;font-weight:700;">❌ No</span>';
+  var matchBadge = r.matchType==='exact'    ? '<span style="color:#16a34a;font-size:11px;">✓ Exact</span>'
+                 : r.matchType==='namematch'? '<span style="color:#16a34a;font-size:11px;">✓ NameMatch</span>'
+                 : r.matchType==='ukcount'  ? '<span style="color:#16a34a;font-size:11px;">✓ UKCOUNT</span>'
+                 : r.matchType==='likely'   ? '<span style="color:#d97706;font-size:11px;">⚠️ Likely</span>'
+                 : r.matchType==='enrolled' ? '<span style="color:#dc2626;font-size:11px;">🚫 Not in file</span>'
+                 : r.matchType==='manual'   ? '<span style="color:#7c3aed;font-size:11px;">✎ Manual</span>'
+                 : '<span style="color:#dc2626;font-size:11px;">✗ No match</span>';
+
+  var bsuIdCell = '<td style="padding:7px 12px;border-bottom:1px solid #f0f0f0;font-family:monospace;">'+bsuId+'</td>';
+  var sNameCell = '<td style="padding:7px 12px;border-bottom:1px solid #f0f0f0;">'+sName+'</td>';
+  var matchCell = '<td style="padding:7px 12px;border-bottom:1px solid #f0f0f0;text-align:center;">'+matchBadge+'</td>';
+
+  if(isUnmatched){
+    var opts = '<option value="">— Select student —</option>';
+    moduleStudents.forEach(function(s){
+      if(!matchedBsuIds[String(s.bsuId)]) opts += '<option value="'+s.bsuId+'">'+s.name+' · BSU '+s.bsuId+'</option>';
+    });
+    bsuIdCell = '<td style="padding:7px 12px;border-bottom:1px solid #f0f0f0;font-family:monospace;" id="mbsu-'+saId+'-'+idx+'">—</td>';
+    sNameCell = '<td style="padding:5px 12px;border-bottom:1px solid #f0f0f0;">'
+      + '<select id="manual-match-'+saId+'-'+idx+'" data-said="'+saId+'" data-idx="'+idx+'" '
+      + 'style="font-size:11px;padding:4px 6px;border:1px solid #fcd34d;border-radius:4px;background:#fffbeb;width:100%;max-width:260px;"'
+      + ' onchange="applyManualMatch(this, window[\'moduleStudents_'+saId+'\'])">'        + opts+'</select></td>';
+    matchCell = '<td style="padding:7px 12px;border-bottom:1px solid #f0f0f0;text-align:center;" id="mbadge-'+saId+'-'+idx+'">'
+      + '<span style="color:#dc2626;font-size:11px;">✗ No match</span></td>';
+  }
+
+  var rowHtml = '<tr style="background:'+rowBg+';" id="mrow-'+saId+'-'+idx+'">';
+  rowHtml += '<td style="padding:7px 12px;border-bottom:1px solid #f0f0f0;">'+(r.fullName||'—')+'</td>';
+  rowHtml += bsuIdCell + sNameCell;
+  rowHtml += '<td style="padding:7px 12px;border-bottom:1px solid #f0f0f0;text-align:center;">'+subIcon+'</td>';
+  rowHtml += matchCell + '</tr>';
+  return rowHtml;
+}
+
+// ── Manual resolver for ambiguous first-assessment NameMatch cases ─────────
+// Mirror of raResolveManual but for parseSubmissionCSV. Updates
+// _pendingSub.results in place: marks the resolved CSV row as 'manual', sets
+// matched/matchType, removes the BSU from non-submitters, then re-renders the
+// summary counts, action buttons, and the full submission table body.
+function subResolveManual(input){
+  var saId = input.dataset.said;
+  var qIdx = parseInt(input.dataset.qidx, 10);
+  var pending = window._pendingSub && window._pendingSub[saId];
+  if(!pending) return;
+  pending.manualResolutions = pending.manualResolutions || {};
+
+  var queueItem = (pending.manualQueue || []).find(function(q){ return q.idx === qIdx; });
+  if(!queueItem) return;
+
+  var prevResolution = pending.manualResolutions[qIdx]; // {bsuId,name} or 'SKIP'
+
+  // Locate the underlying CSV result row (csvRowIdx points into pending.results)
+  var csvRow = pending.results[queueItem.csvRowIdx];
+
+  // Undo previous resolution if it credited a BSU (restore that student to non-submitters)
+  if(prevResolution && prevResolution !== 'SKIP'){
+    var prevBsu = String(prevResolution.bsuId);
+    if(csvRow){
+      csvRow.matched = null;
+      csvRow.matchType = 'none';
+    }
+    var alreadyInNonSub = pending.nonSubmitters.some(function(s){ return s.bsuId === prevBsu; });
+    if(!alreadyInNonSub){
+      pending.nonSubmitters.push({bsuId: prevBsu, studentName: prevResolution.name || ''});
+    }
+    // Drop any synthetic "enrolled" row that was added back for this BSU
+    pending.results = pending.results.filter(function(r){
+      return !(r.matchType === 'enrolled' && r.matched && String(r.matched.bsuId) === prevBsu);
+    });
+  }
+
+  // Apply new resolution
+  if(input.dataset.skip === '1'){
+    pending.manualResolutions[qIdx] = 'SKIP';
+    if(csvRow){
+      csvRow.matched = null;
+      csvRow.matchType = 'none';
+    }
+  } else {
+    var bsu  = input.dataset.bsu;
+    var name = input.dataset.name || '';
+    pending.manualResolutions[qIdx] = {bsuId: bsu, name: name};
+    if(csvRow){
+      csvRow.matched   = {bsuId: bsu, name: name};
+      csvRow.matchType = 'manual';
+    }
+    // Remove this BSU from non-submitters list
+    pending.nonSubmitters = pending.nonSubmitters.filter(function(s){ return String(s.bsuId) !== String(bsu); });
+    // Remove any synthetic "Not in submission file" row for this BSU (was added when student wasn't matched)
+    pending.results = pending.results.filter(function(r){
+      return !(r.matchType === 'enrolled' && r.matched && String(r.matched.bsuId) === String(bsu));
+    });
+  }
+
+  // Update card status badge
+  var statusEl = document.getElementById('subq-status-'+saId+'-'+qIdx);
+  if(statusEl){
+    if(input.dataset.skip === '1'){
+      statusEl.style.background = '#e0e7ef'; statusEl.style.color = '#475569'; statusEl.textContent = '⊘ Skipped';
+    } else {
+      statusEl.style.background = '#dcfce7'; statusEl.style.color = '#15803d'; statusEl.textContent = '✓ Resolved';
+    }
+  }
+  var card = document.getElementById('subq-card-'+saId+'-'+qIdx);
+  if(card){
+    card.style.background  = input.dataset.skip === '1' ? '#f8fafc' : '#f0fdf4';
+    card.style.borderColor = input.dataset.skip === '1' ? '#cbd5e1' : '#bbf7d0';
+  }
+
+  // Recompute counts
+  var newCsvSubmitted = pending.results.filter(function(r){ return r.submitted && r.matched && r.matchType!=='none'; });
+  var newNonSub       = pending.nonSubmitters.length;
+
+  // Update summary bar counters
+  var subCountEl = document.querySelector('[data-subcount]');
+  if(subCountEl) subCountEl.textContent = newCsvSubmitted.length;
+  var nonSubCountEl = document.querySelector('[data-nonsubcount]');
+  if(nonSubCountEl) nonSubCountEl.textContent = newNonSub;
+  document.querySelectorAll('[data-sub-btncount="'+saId+'"]').forEach(function(el){ el.textContent = newNonSub; });
+
+  // Re-render the submission table body so resolved rows reflect new state
+  var tbody = document.getElementById('sub-tbody-'+saId);
+  if(tbody){
+    var nonSubRows = pending.results.filter(function(r){ return !r.submitted || r.matchType==='enrolled'; });
+    var subRows    = pending.results.filter(function(r){ return r.submitted && r.matched && r.matchType!=='none'; });
+    var sortedResults = nonSubRows.concat(subRows);
+    var matchedBsuIds = {};
+    pending.results.forEach(function(r){ if(r.matched && r.matchType!=='none') matchedBsuIds[String(r.matched.bsuId)] = true; });
+    var moduleStudents = window['moduleStudents_'+saId] || [];
+    var rowsHtml = '';
+    sortedResults.forEach(function(r, i){ rowsHtml += renderSubRow(r, i, saId, moduleStudents, matchedBsuIds); });
+    tbody.innerHTML = rowsHtml;
+  }
+
+  // Check if all resolved → enable action buttons + remove warning
+  var allResolved = (pending.manualQueue || []).every(function(q){ return pending.manualResolutions[q.idx]; });
+  if(allResolved){
+    var blockMsg = document.getElementById('sub-blockmsg-'+saId);
+    if(blockMsg) blockMsg.remove();
+    var actions = document.getElementById('sub-actions-'+saId);
+    if(actions){
+      actions.querySelectorAll('button[data-notice]').forEach(function(b){
+        b.disabled = false;
+        var n = b.getAttribute('data-notice');
+        if(n === 'reminder')   b.style.cssText = 'background:#0284c7;color:#fff;border-color:#0284c7;';
+        else if(n === '2day')  b.style.cssText = 'background:#d97706;color:#fff;border-color:#d97706;';
+        else if(n === 'closed')b.style.cssText = 'background:#dc2626;color:#fff;border-color:#dc2626;';
+      });
+    }
+  }
 }
 
 // ── Sort submission table columns ─────────────────────────────────────────
@@ -4564,9 +4922,11 @@ function parseReassessSubmission(input, saId, code, name, sa, title, weight){
         var text  = e.target.result;
         var lines = text.split('\n').filter(function(l){ return l.trim(); });
 
-        // Build submitted name set from CSV using same 9-tier matching
+        // Build submitted name set from CSV using token-union NameMatch first,
+        // then UKCOUNT exact, then fuzzy as fallback.
         var candidateStudents = Object.keys(failedMap).map(function(id){ return { bsuId:id, name: failedMap[id].studentName||'' }; });
         var submittedBsuIds = {};
+        var manualQueue = []; // { idx, firstName, lastName, candidates:[{student,tier,overlap}] }
 
         for(var i=1; i<lines.length; i++){
           var cols = lines[i].split(',').map(function(c){ return c.replace(/^"|"$/g,'').trim(); });
@@ -4575,9 +4935,30 @@ function parseReassessSubmission(input, saId, code, name, sa, title, weight){
           var submitted = (cols[2]||'').toLowerCase()==='yes';
           if(!firstName && !lastName) continue;
           if(!submitted) continue; // only care about Yes
+
+          // Tier 0: NameMatch (token-union with phonetic normalization)
+          var nm = matchViaNameMatch(firstName, lastName, candidateStudents);
+          if(nm.confident){
+            submittedBsuIds[String(nm.student.bsuId)] = true;
+            continue;
+          }
+          // Tier 1: UKCOUNT exact, Tier 2: fuzzy
           var match = matchViaUkCount(firstName, lastName, candidateStudents)
                    || matchStudentByName(firstName, lastName, candidateStudents);
-          if(match && match.student) submittedBsuIds[String(match.student.bsuId)] = true;
+          if(match && match.student){
+            submittedBsuIds[String(match.student.bsuId)] = true;
+            continue;
+          }
+          // Nothing matched. If NameMatch found candidates → push to manual queue.
+          // Otherwise the submitter genuinely isn't in failedMap (already passed, or not in module) → skip silently.
+          if(nm.candidates && nm.candidates.length){
+            manualQueue.push({
+              idx: manualQueue.length,
+              firstName: firstName,
+              lastName:  lastName,
+              candidates: nm.candidates
+            });
+          }
         }
 
         // Step 3: classify candidates
@@ -4600,10 +4981,12 @@ function parseReassessSubmission(input, saId, code, name, sa, title, weight){
         window._pendingRA[saId] = {
           code:code, name:name, sa:sa, title:title, weight:weight,
           reassessDeadline:reassessDeadline,
-          toMark40:toMark40, toEmail:toEmail
+          toMark40:toMark40, toEmail:toEmail,
+          manualQueue:manualQueue,
+          manualResolutions:{}    // idx → bsuId (set when tutor picks)
         };
 
-        renderReassessPreview(saId, toMark40, toEmail);
+        renderReassessPreview(saId, toMark40, toEmail, manualQueue);
       } catch(err){
         if(preview) preview.innerHTML='<div style="color:var(--red);font-size:13px;padding:8px 0;">⚠️ Error: '+err.message+'</div>';
       }
@@ -4614,26 +4997,74 @@ function parseReassessSubmission(input, saId, code, name, sa, title, weight){
   });
 }
 
-function renderReassessPreview(saId, toMark40, toEmail){
+function renderReassessPreview(saId, toMark40, toEmail, manualQueue){
   var preview = document.getElementById('ra-preview-'+saId);
   if(!preview) return;
+  manualQueue = manualQueue || [];
 
   var html = '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px;padding:12px 14px;background:#f5f3ff;border-radius:8px;border:1px solid #c4b5fd;">';
   html += '<div style="font-size:12px;color:#7c3aed;font-weight:700;">🔄 Re-Assessment Report</div>';
-  html += '<div style="font-size:12px;"><span style="color:#16a34a;">✅ Submitted</span> → <strong>Mark 40</strong> &nbsp;'+toMark40.length+' student(s)</div>';
-  html += '<div style="font-size:12px;"><span style="color:#dc2626;">❌ Not Submitted</span> → <strong>2-Day Notice email</strong> &nbsp;'+toEmail.length+' student(s)</div>';
+  html += '<div style="font-size:12px;"><span style="color:#16a34a;">✅ Submitted</span> → <strong>Mark 40</strong> &nbsp;<strong data-ra-submitted="'+saId+'">'+toMark40.length+'</strong> student(s)</div>';
+  html += '<div style="font-size:12px;"><span style="color:#dc2626;">❌ Not Submitted</span> → <strong>2-Day Notice email</strong> &nbsp;<strong data-ra-notsub="'+saId+'">'+toEmail.length+'</strong> student(s)</div>';
+  if(manualQueue.length){
+    html += '<div style="font-size:12px;"><span style="color:#d97706;">⚠️ Need confirmation</span> &nbsp;<strong data-ra-manual="'+saId+'">'+manualQueue.length+'</strong></div>';
+  }
   html += '</div>';
 
+  // ── Manual confirmation block ─────────────────────────────────────────────
+  // Some CSV submission rows have ambiguous or low-confidence matches.
+  // Tutor must explicitly confirm each one before sending notices.
+  if(manualQueue.length){
+    html += '<div style="background:#fffbeb;border:1.5px solid #fcd34d;border-radius:8px;padding:14px 16px;margin-bottom:14px;">';
+    html += '<div style="font-size:13px;font-weight:700;color:#92400e;margin-bottom:6px;">⚠️ '+manualQueue.length+' submitter(s) need manual confirmation</div>';
+    html += '<div style="font-size:11.5px;color:#78350f;margin-bottom:12px;line-height:1.5;">';
+    html += 'These names from the Blackboard submission report could not be confidently matched to a single failed student in this module. ';
+    html += 'For each row, pick the correct student or skip (treat as not submitted).';
+    html += '</div>';
+
+    manualQueue.forEach(function(q){
+      var csvName = ((q.firstName||'') + ' ' + (q.lastName||'')).trim().replace(/\s*-\s*$/,'');
+      html += '<div style="background:#fff;border:1px solid #fde68a;border-radius:6px;padding:11px 13px;margin-bottom:8px;" id="raq-card-'+saId+'-'+q.idx+'">';
+      html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">';
+      html += '<div><span style="font-size:10px;font-weight:700;color:#92400e;text-transform:uppercase;letter-spacing:0.4px;margin-right:6px;">CSV Row</span><span style="font-family:monospace;font-size:12px;background:#f1f5f9;padding:2px 8px;border-radius:3px;">'+escapeHtml(csvName)+'</span></div>';
+      html += '<span style="font-size:11px;font-weight:700;background:#fef3c7;color:#92400e;padding:2px 9px;border-radius:10px;" id="raq-status-'+saId+'-'+q.idx+'">⏳ Pending</span>';
+      html += '</div>';
+      html += '<div style="font-size:11px;color:#92400e;margin-bottom:6px;">Pick the correct student or skip:</div>';
+      html += '<div style="display:flex;flex-direction:column;gap:4px;">';
+      q.candidates.forEach(function(c){
+        var tierLabel = ['','PERFECT','STRONG','WEAK','PARTIAL'][c.tier] || ('T'+c.tier);
+        var tierColor = c.tier===1?'#16a34a':c.tier===2?'#0e7490':c.tier===3?'#b45309':'#b91c1c';
+        html += '<label style="display:flex;align-items:center;gap:8px;padding:7px 10px;background:#fff;border:1px solid #e2e8f0;border-radius:5px;cursor:pointer;" onmouseover="this.style.borderColor=\'#3b82f6\'" onmouseout="this.style.borderColor=\'#e2e8f0\'">';
+        html += '<input type="radio" name="raq-'+saId+'-'+q.idx+'" value="'+c.student.bsuId+'" data-said="'+saId+'" data-qidx="'+q.idx+'" data-bsu="'+c.student.bsuId+'" data-name="'+escapeHtml(c.student.name||'')+'" onchange="raResolveManual(this)">';
+        html += '<div style="flex:1;min-width:0;">';
+        html += '<div style="font-weight:600;font-size:12.5px;">'+escapeHtml(c.student.name||'(no name)')+' <span style="font-family:monospace;font-size:11px;color:#475569;background:#f1f5f9;padding:1px 6px;border-radius:3px;margin-left:4px;">BSU '+c.student.bsuId+'</span></div>';
+        html += '<div style="font-size:10.5px;color:#475569;margin-top:1px;">overlap: '+c.overlap.map(function(t){ return '<code style="font-family:monospace;font-size:10px;background:#f1f5f9;padding:0 4px;border-radius:2px;">'+escapeHtml(t)+'</code>'; }).join(' ')+'</div>';
+        html += '</div>';
+        html += '<span style="font-size:9.5px;font-weight:700;padding:1px 7px;border-radius:8px;letter-spacing:0.4px;background:'+tierColor+';color:#fff;">T'+c.tier+' '+tierLabel+'</span>';
+        html += '</label>';
+      });
+      // Skip option
+      html += '<label style="display:flex;align-items:center;gap:8px;padding:7px 10px;background:#fafafa;border:1px dashed #cbd5e1;border-radius:5px;cursor:pointer;color:#64748b;font-size:11.5px;">';
+      html += '<input type="radio" name="raq-'+saId+'-'+q.idx+'" value="" data-said="'+saId+'" data-qidx="'+q.idx+'" data-skip="1" onchange="raResolveManual(this)">';
+      html += '⊘ Skip — treat as not submitted (student not in this module, or genuinely missed deadline)';
+      html += '</label>';
+      html += '</div>';
+      html += '</div>';
+    });
+
+    html += '</div>';
+  }
+
   if(toMark40.length){
-    html += '<div style="font-size:12px;font-weight:700;color:#16a34a;margin-bottom:6px;">✅ Will be marked 40 (submitted):</div>';
-    html += '<div style="overflow-x:auto;margin-bottom:14px;border-radius:8px;border:1px solid #bbf7d0;">';
+    html += '<div style="font-size:12px;font-weight:700;color:#16a34a;margin-bottom:6px;" id="ra-mark40-title-'+saId+'">✅ Will be marked 40 (submitted): <span data-ra-mark40count="'+saId+'">'+toMark40.length+'</span></div>';
+    html += '<div style="overflow-x:auto;margin-bottom:14px;border-radius:8px;border:1px solid #bbf7d0;" id="ra-mark40-tablewrap-'+saId+'">';
     html += '<table style="table-layout:fixed;width:100%;border-collapse:collapse;font-size:12px;">';
     html += '<thead><tr style="background:#16a34a;">';
     html += '<th style="padding:7px 12px;color:#fff;text-align:left;width:5%;">#</th>';
     html += '<th style="padding:7px 12px;color:#fff;text-align:left;width:20%;">BSU ID</th>';
     html += '<th style="padding:7px 12px;color:#fff;text-align:left;width:55%;">Name</th>';
     html += '<th style="padding:7px 12px;color:#fff;text-align:center;width:20%;">Mark</th>';
-    html += '</tr></thead><tbody>';
+    html += '</tr></thead><tbody id="ra-mark40-tbody-'+saId+'">';
     toMark40.forEach(function(r,i){
       html += '<tr style="background:'+(i%2===0?'#fff':'#f0fdf4')+';">';
       html += '<td style="padding:6px 12px;border-bottom:1px solid #f0f0f0;">'+( i+1)+'</td>';
@@ -4646,17 +5077,17 @@ function renderReassessPreview(saId, toMark40, toEmail){
   }
 
   if(toEmail.length){
-    html += '<div style="font-size:12px;font-weight:700;color:#dc2626;margin-bottom:6px;">⚠️ '+toEmail.length+' non-submitters — choose an action below:</div>';
-    html += '<div style="overflow-x:auto;margin-bottom:14px;border-radius:8px;border:1px solid #fecaca;">';
+    html += '<div style="font-size:12px;font-weight:700;color:#dc2626;margin-bottom:6px;" id="ra-email-title-'+saId+'">⚠️ <span data-ra-emailcount="'+saId+'">'+toEmail.length+'</span> non-submitters — choose an action below:</div>';
+    html += '<div style="overflow-x:auto;margin-bottom:14px;border-radius:8px;border:1px solid #fecaca;" id="ra-email-tablewrap-'+saId+'">';
     html += '<table style="table-layout:fixed;width:100%;border-collapse:collapse;font-size:12px;">';
     html += '<thead><tr style="background:#dc2626;">';
     html += '<th style="padding:7px 12px;color:#fff;text-align:left;width:5%;">#</th>';
     html += '<th style="padding:7px 12px;color:#fff;text-align:left;width:20%;">BSU ID</th>';
     html += '<th style="padding:7px 12px;color:#fff;text-align:left;width:55%;">Name</th>';
     html += '<th style="padding:7px 12px;color:#fff;text-align:center;width:20%;">Status</th>';
-    html += '</tr></thead><tbody>';
+    html += '</tr></thead><tbody id="ra-email-tbody-'+saId+'">';
     toEmail.forEach(function(r,i){
-      html += '<tr style="background:'+(i%2===0?'#fff':'#fef2f2')+';">';
+      html += '<tr style="background:'+(i%2===0?'#fff':'#fef2f2')+';" data-ra-emailrow-bsu="'+r.bsuId+'">';
       html += '<td style="padding:6px 12px;border-bottom:1px solid #f0f0f0;">'+(i+1)+'</td>';
       html += '<td style="padding:6px 12px;border-bottom:1px solid #f0f0f0;font-family:monospace;">'+r.bsuId+'</td>';
       html += '<td style="padding:6px 12px;border-bottom:1px solid #f0f0f0;">'+r.studentName+'</td>';
@@ -4666,17 +5097,171 @@ function renderReassessPreview(saId, toMark40, toEmail){
     html += '</tbody></table></div>';
   }
 
-  html += '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">';
-  html += '<button class="btn-sm" style="background:#0284c7;color:#fff;border-color:#0284c7;" data-renotice="reminder" data-sakey="'+saId+'">';
-  html += '📅 Send Re-Assessment Submission Reminder to '+toEmail.length+' Non-Submitters</button>';
-  html += '<button class="btn-sm" style="background:#d97706;color:#fff;border-color:#d97706;" data-renotice="2day" data-sakey="'+saId+'">';
-  html += '⚠️ Send 2-Day Re-Assessment Extension Notice to '+toEmail.length+' Non-Submitters</button>';
-  html += '<button class="btn-sm" style="background:#dc2626;color:#fff;border-color:#dc2626;" data-renotice="closed" data-sakey="'+saId+'">';
-  html += '🔒 Send Re-Assessment Closed Notice to '+toEmail.length+' Non-Submitters</button>';
+  // Block action buttons if there are unresolved manual rows
+  var blockMsg = '';
+  if(manualQueue.length){
+    blockMsg = '<div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:6px;padding:9px 12px;font-size:11.5px;color:#92400e;margin-top:6px;margin-bottom:8px;" id="ra-blockmsg-'+saId+'">⚠️ Resolve all '+manualQueue.length+' manual confirmations above before sending notices.</div>';
+  }
+  html += blockMsg;
+
+  var disabledAttr = manualQueue.length ? ' disabled style="opacity:0.5;cursor:not-allowed;background:#94a3b8;color:#fff;border-color:#94a3b8;"' : '';
+  html += '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;" id="ra-actions-'+saId+'">';
+  if(manualQueue.length){
+    html += '<button class="btn-sm" data-renotice="reminder" data-sakey="'+saId+'"'+disabledAttr+'>';
+  } else {
+    html += '<button class="btn-sm" style="background:#0284c7;color:#fff;border-color:#0284c7;" data-renotice="reminder" data-sakey="'+saId+'">';
+  }
+  html += '📅 Send Re-Assessment Submission Reminder to <span data-ra-btncount="'+saId+'">'+toEmail.length+'</span> Non-Submitters</button>';
+  if(manualQueue.length){
+    html += '<button class="btn-sm" data-renotice="2day" data-sakey="'+saId+'"'+disabledAttr+'>';
+  } else {
+    html += '<button class="btn-sm" style="background:#d97706;color:#fff;border-color:#d97706;" data-renotice="2day" data-sakey="'+saId+'">';
+  }
+  html += '⚠️ Send 2-Day Re-Assessment Extension Notice to <span data-ra-btncount="'+saId+'">'+toEmail.length+'</span> Non-Submitters</button>';
+  if(manualQueue.length){
+    html += '<button class="btn-sm" data-renotice="closed" data-sakey="'+saId+'"'+disabledAttr+'>';
+  } else {
+    html += '<button class="btn-sm" style="background:#dc2626;color:#fff;border-color:#dc2626;" data-renotice="closed" data-sakey="'+saId+'">';
+  }
+  html += '🔒 Send Re-Assessment Closed Notice to <span data-ra-btncount="'+saId+'">'+toEmail.length+'</span> Non-Submitters</button>';
   html += '</div>';
 
   preview.innerHTML = html;
   preview.style.display = 'block';
+}
+
+// ── Manual resolver for ambiguous Re-Assessment NameMatch cases ─────────────
+// Called when tutor picks a radio (a candidate or "Skip") in the manual queue.
+// Updates _pendingRA in place: if a BSU was picked, remove it from toEmail and
+// add it to toMark40. If "Skip" was picked, leave the failedMap entry where it
+// was (treat as not submitted). Re-renders preview to reflect new counts.
+function raResolveManual(input){
+  var saId = input.dataset.said;
+  var qIdx = parseInt(input.dataset.qidx, 10);
+  var pending = window._pendingRA && window._pendingRA[saId];
+  if(!pending) return;
+  pending.manualResolutions = pending.manualResolutions || {};
+
+  var queueItem = (pending.manualQueue || []).find(function(q){ return q.idx === qIdx; });
+  if(!queueItem) return;
+
+  var prevResolution = pending.manualResolutions[qIdx]; // could be {bsuId, name} or 'SKIP'
+
+  // Undo previous resolution if it credited a BSU
+  if(prevResolution && prevResolution !== 'SKIP'){
+    // Remove from toMark40, restore to toEmail (if originally in failedMap)
+    pending.toMark40 = pending.toMark40.filter(function(r){ return String(r.bsuId) !== String(prevResolution.bsuId); });
+    var alreadyInEmail = pending.toEmail.some(function(r){ return String(r.bsuId) === String(prevResolution.bsuId); });
+    if(!alreadyInEmail){
+      pending.toEmail.push({ bsuId: prevResolution.bsuId, studentName: prevResolution.name || '' });
+    }
+  }
+
+  // Apply new resolution
+  if(input.dataset.skip === '1'){
+    pending.manualResolutions[qIdx] = 'SKIP';
+  } else {
+    var bsu  = input.dataset.bsu;
+    var name = input.dataset.name || '';
+    pending.manualResolutions[qIdx] = { bsuId: bsu, name: name };
+    // Move from toEmail → toMark40 (this BSU was failedMap so it WAS in toEmail)
+    pending.toEmail  = pending.toEmail.filter(function(r){ return String(r.bsuId) !== String(bsu); });
+    var alreadyInMark = pending.toMark40.some(function(r){ return String(r.bsuId) === String(bsu); });
+    if(!alreadyInMark){
+      pending.toMark40.push({ bsuId: bsu, studentName: name });
+    }
+  }
+
+  // Update status badge on this card
+  var statusEl = document.getElementById('raq-status-'+saId+'-'+qIdx);
+  if(statusEl){
+    if(input.dataset.skip === '1'){
+      statusEl.style.background = '#e0e7ef';
+      statusEl.style.color      = '#475569';
+      statusEl.textContent      = '⊘ Skipped';
+    } else {
+      statusEl.style.background = '#dcfce7';
+      statusEl.style.color      = '#15803d';
+      statusEl.textContent      = '✓ Resolved';
+    }
+  }
+  // Mark card as resolved
+  var card = document.getElementById('raq-card-'+saId+'-'+qIdx);
+  if(card){
+    card.style.background    = input.dataset.skip === '1' ? '#f8fafc' : '#f0fdf4';
+    card.style.borderColor   = input.dataset.skip === '1' ? '#cbd5e1' : '#bbf7d0';
+  }
+
+  // Check if all resolved
+  var allResolved = (pending.manualQueue || []).every(function(q){ return pending.manualResolutions[q.idx]; });
+
+  // Re-render counts in summary bar
+  var subEl  = document.querySelector('[data-ra-submitted="'+saId+'"]');
+  var nsEl   = document.querySelector('[data-ra-notsub="'+saId+'"]');
+  if(subEl) subEl.textContent = pending.toMark40.length;
+  if(nsEl)  nsEl.textContent  = pending.toEmail.length;
+  // Update btn counts
+  document.querySelectorAll('[data-ra-btncount="'+saId+'"]').forEach(function(el){ el.textContent = pending.toEmail.length; });
+
+  // If all resolved, enable buttons + remove the warning bar
+  if(allResolved){
+    var blockMsg = document.getElementById('ra-blockmsg-'+saId);
+    if(blockMsg) blockMsg.remove();
+    var actions = document.getElementById('ra-actions-'+saId);
+    if(actions){
+      var btns = actions.querySelectorAll('button[data-renotice]');
+      btns.forEach(function(b){
+        b.disabled = false;
+        var n = b.getAttribute('data-renotice');
+        if(n === 'reminder')   b.style.cssText = 'background:#0284c7;color:#fff;border-color:#0284c7;';
+        else if(n === '2day')  b.style.cssText = 'background:#d97706;color:#fff;border-color:#d97706;';
+        else if(n === 'closed')b.style.cssText = 'background:#dc2626;color:#fff;border-color:#dc2626;';
+      });
+    }
+  }
+
+  // Re-render the toMark40 and toEmail tables in place to reflect new contents.
+  // Using innerHTML on the tbody only (preserves the table headers + scroll position
+  // of the surrounding container).
+  var mark40Title = document.querySelector('[data-ra-mark40count="'+saId+'"]');
+  if(mark40Title) mark40Title.textContent = pending.toMark40.length;
+  var emailTitle = document.querySelector('[data-ra-emailcount="'+saId+'"]');
+  if(emailTitle) emailTitle.textContent = pending.toEmail.length;
+
+  var mark40Tbody = document.getElementById('ra-mark40-tbody-'+saId);
+  if(mark40Tbody){
+    var mark40Html = '';
+    pending.toMark40.forEach(function(r,i){
+      mark40Html += '<tr style="background:'+(i%2===0?'#fff':'#f0fdf4')+';">';
+      mark40Html += '<td style="padding:6px 12px;border-bottom:1px solid #f0f0f0;">'+(i+1)+'</td>';
+      mark40Html += '<td style="padding:6px 12px;border-bottom:1px solid #f0f0f0;font-family:monospace;">'+r.bsuId+'</td>';
+      mark40Html += '<td style="padding:6px 12px;border-bottom:1px solid #f0f0f0;">'+escapeHtml(r.studentName||'')+'</td>';
+      mark40Html += '<td style="padding:6px 12px;border-bottom:1px solid #f0f0f0;text-align:center;font-weight:700;color:#16a34a;">40</td>';
+      mark40Html += '</tr>';
+    });
+    mark40Tbody.innerHTML = mark40Html;
+  }
+
+  var emailTbody = document.getElementById('ra-email-tbody-'+saId);
+  if(emailTbody){
+    var emailHtml = '';
+    pending.toEmail.forEach(function(r,i){
+      emailHtml += '<tr style="background:'+(i%2===0?'#fff':'#fef2f2')+';" data-ra-emailrow-bsu="'+r.bsuId+'">';
+      emailHtml += '<td style="padding:6px 12px;border-bottom:1px solid #f0f0f0;">'+(i+1)+'</td>';
+      emailHtml += '<td style="padding:6px 12px;border-bottom:1px solid #f0f0f0;font-family:monospace;">'+r.bsuId+'</td>';
+      emailHtml += '<td style="padding:6px 12px;border-bottom:1px solid #f0f0f0;">'+escapeHtml(r.studentName||'')+'</td>';
+      emailHtml += '<td style="padding:6px 12px;border-bottom:1px solid #f0f0f0;text-align:center;color:#dc2626;font-weight:700;">Not Submitted</td>';
+      emailHtml += '</tr>';
+    });
+    emailTbody.innerHTML = emailHtml;
+  }
+}
+
+// HTML escape used in the manual selector renderer
+function escapeHtml(s){
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
 }
 
 // ── Save re-assessment marks + email non-submitters ──────────────────────────
