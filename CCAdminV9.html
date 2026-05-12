@@ -771,6 +771,7 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
         <button class="nav-item" onclick="showPage('staff',this)"><span class="icon">👥</span> Current Staff</button>
         <div class="nav-section-label">Alerts</div>
         <button class="nav-item" onclick="showPage('announcements',this)"><span class="icon">📢</span> Announcements</button>
+        <button class="nav-item" onclick="showPage('emailcohort',this)"><span class="icon">✉️</span> Email Cohort</button>
         <button class="nav-item" onclick="showPage('alerts',this)"><span class="icon">⚠️</span> Document Alerts <span class="nav-badge" id="alerts-nav-badge">—</span></button>
         <div class="nav-section-label">University</div>
         <div id="nav-group-university">
@@ -1913,6 +1914,90 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
           <div style="padding:40px;text-align:center;color:var(--text3);font-size:13px;">⏳ Loading announcements…</div>
         </div>
       </div><!-- /announcements -->
+
+
+      <!-- EMAIL COHORT — bulk email tool with 3 modes -->
+      <div id="page-emailcohort" class="page">
+        <div class="page-header"><h1>Email Cohort</h1><p>Build a cohort by filtering. Student + parent emails are copied to clipboard, ready to paste into Gmail BCC.</p></div>
+
+        <!-- Mode selector cards -->
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;" id="ec-mode-selector">
+          <div class="ec-mode-card" data-mode="all" onclick="ecSelectMode('all')" style="background:#e0f2fe;border:2px solid #2563eb;border-radius:var(--radius-lg);padding:14px;cursor:pointer;transition:all 0.15s;">
+            <div style="font-size:22px;line-height:1;">👥</div>
+            <div style="font-size:14px;font-weight:600;margin:6px 0 2px;color:#1e40af;">Email all</div>
+            <div style="font-size:11px;color:#1e40af;">Entire university</div>
+          </div>
+          <div class="ec-mode-card" data-mode="filter" onclick="ecSelectMode('filter')" style="background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px;cursor:pointer;transition:all 0.15s;">
+            <div style="font-size:22px;line-height:1;">🎓</div>
+            <div style="font-size:14px;font-weight:600;margin:6px 0 2px;">By programme &amp; year</div>
+            <div style="font-size:11px;color:var(--text2);">Filter to a segment</div>
+          </div>
+          <div class="ec-mode-card" data-mode="search" onclick="ecSelectMode('search')" style="background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px;cursor:pointer;transition:all 0.15s;">
+            <div style="font-size:22px;line-height:1;">🔍</div>
+            <div style="font-size:14px;font-weight:600;margin:6px 0 2px;">By specific students</div>
+            <div style="font-size:11px;color:var(--text2);">Pick individuals</div>
+          </div>
+        </div>
+
+        <!-- ── MODE: ALL ── -->
+        <div id="ec-panel-all" class="ec-panel" style="background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 22px;margin-bottom:10px;">
+          <div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px;">Email all — entire university</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+            <div>
+              <div style="font-size:24px;font-weight:600;line-height:1.1;" id="ec-all-count">— students</div>
+              <div style="font-size:12px;color:var(--text2);margin-top:3px;" id="ec-all-sub">—</div>
+            </div>
+            <button class="btn-sm primary" onclick="ecPrepare('all')" style="padding:9px 16px;">✉️ Prepare email chunks</button>
+          </div>
+        </div>
+
+        <!-- ── MODE: FILTER ── -->
+        <div id="ec-panel-filter" class="ec-panel" style="background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 22px;margin-bottom:10px;display:none;">
+          <div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Programme</div>
+          <div id="ec-prog-chips" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;"></div>
+
+          <div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Year</div>
+          <div id="ec-year-chips" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;"></div>
+
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;padding-top:14px;border-top:1px solid var(--border);">
+            <div>
+              <div style="font-size:24px;font-weight:600;line-height:1.1;" id="ec-filter-count">0 students matched</div>
+              <div style="font-size:11px;color:var(--text2);margin-top:3px;" id="ec-filter-preview">—</div>
+            </div>
+            <button class="btn-sm primary" onclick="ecPrepare('filter')" style="padding:9px 16px;" id="ec-filter-btn">✉️ Prepare email chunks</button>
+          </div>
+        </div>
+
+        <!-- ── MODE: SEARCH ── -->
+        <div id="ec-panel-search" class="ec-panel" style="background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 22px;margin-bottom:10px;display:none;">
+          <div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Search by name or BSU ID</div>
+          <div style="position:relative;">
+            <input type="text" id="ec-search-input" placeholder="Type name or BSU ID..." style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:'Sora',sans-serif;font-size:13px;outline:none;" oninput="ecSearchInput()" onfocus="ecSearchInput()" onblur="setTimeout(function(){var d=document.getElementById('ec-search-dropdown');if(d)d.style.display='none';},200)">
+            <div id="ec-search-dropdown" style="display:none;position:absolute;top:100%;left:0;right:0;margin-top:2px;background:#fff;border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);max-height:280px;overflow-y:auto;z-index:10;"></div>
+          </div>
+
+          <div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin:16px 0 8px;">Selected (<span id="ec-search-selcount">0</span>)</div>
+          <div id="ec-search-selected" style="display:flex;flex-wrap:wrap;gap:6px;min-height:32px;padding:8px;background:var(--surface2);border:1px dashed var(--border);border-radius:var(--radius);">
+            <span style="font-size:11px;color:var(--text3);align-self:center;">No students selected — search above to add</span>
+          </div>
+
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);">
+            <div>
+              <div style="font-size:24px;font-weight:600;line-height:1.1;" id="ec-search-count">0 selected</div>
+              <div style="font-size:11px;color:var(--text2);margin-top:3px;" id="ec-search-sub">—</div>
+            </div>
+            <button class="btn-sm primary" onclick="ecPrepare('search')" style="padding:9px 16px;" id="ec-search-btn" disabled>✉️ Prepare email</button>
+          </div>
+        </div>
+
+        <!-- ── CHUNK LIST (appears after Prepare clicked) ── -->
+        <div id="ec-chunks-card" style="display:none;background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 22px;margin-top:14px;">
+          <div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px;" id="ec-chunks-label">Send in chunks</div>
+          <div id="ec-chunks-list" style="display:flex;flex-direction:column;gap:6px;"></div>
+          <div style="font-size:11px;color:var(--text3);margin-top:12px;line-height:1.6;">ℹ️ Each chunk button copies its emails to your clipboard and opens an empty Gmail compose. Paste into the BCC field, compose your message, then send.</div>
+        </div>
+
+      </div><!-- /emailcohort -->
 
 
       <!-- ACADEMIC CALENDAR -->
@@ -4435,6 +4520,7 @@ function showPage(id, btn){
   if(id==='alerts') renderAlertsPanel();
   if(id==='acadcalendar'){ loadAdminAcadCalendar(); initCalSemesterSelect(); }
   if(id==='announcements') loadAnnouncements();
+  if(id==='emailcohort') initEmailCohort();
   if(id==='ucalendar') loadUCalendarEvents();
   if(id==='policies') loadPolicies();
   if(id==='helpdesk') initHelpDesk();
@@ -5607,6 +5693,388 @@ function toggleCompose(){
   body.style.display = open ? 'none' : 'block';
   if(chev) chev.style.transform = open ? '' : 'rotate(180deg)';
 }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// EMAIL COHORT — 3-mode bulk emailer (All / Programme+Year / Specific Students)
+// Copies emails (student + parent) to clipboard in 500-email chunks; admin
+// pastes each chunk into a Gmail compose's BCC field and sends.
+// Reads from _students which is already loaded at startup.
+// ═══════════════════════════════════════════════════════════════════════════
+
+var _ecState = {
+  mode: 'all',                // 'all' | 'filter' | 'search'
+  selectedProgs: {},          // programme → true
+  selectedYears: {},          // year → true
+  selectedStudents: [],       // [{bsuId, name, programme, year}]
+  preparedChunks: null,       // [[emails], [emails], ...] when prepared
+  chunkVisited: {}            // chunkIdx → true once admin clicks
+};
+
+var EC_CHUNK_SIZE = 500;      // Gmail BCC practical limit
+
+function initEmailCohort(){
+  // Build programme + year chips from the actual _students roster
+  var progs = [];
+  var years = [];
+  var seen  = {};
+  (_students||[]).forEach(function(s){
+    var p = (s.programme||'').trim();
+    var y = (s.year||'').trim();
+    if(p && !seen['P:'+p]){ seen['P:'+p]=true; progs.push(p); }
+    if(y && !seen['Y:'+y]){ seen['Y:'+y]=true; years.push(y); }
+  });
+  progs.sort();
+  // Year ordering — Foundation first, then Year 1/2/3 numerically
+  years.sort(function(a,b){
+    var an = a.match(/(\d+)/), bn = b.match(/(\d+)/);
+    if(a.toLowerCase().indexOf('found')===0 && b.toLowerCase().indexOf('found')!==0) return -1;
+    if(b.toLowerCase().indexOf('found')===0 && a.toLowerCase().indexOf('found')!==0) return 1;
+    if(an && bn) return parseInt(an[1],10) - parseInt(bn[1],10);
+    return a.localeCompare(b);
+  });
+
+  // Render programme chips
+  var progBox = document.getElementById('ec-prog-chips');
+  if(progBox){
+    var html = '<button class="ec-chip" data-all="1" onclick="ecToggleProg(\'\')" ' +
+               'style="font-size:12px;padding:5px 11px;border-radius:999px;border:1px solid #2563eb;background:#dbeafe;color:#1e40af;font-weight:500;cursor:pointer;font-family:inherit;">All programmes</button>';
+    progs.forEach(function(p){
+      var esc = p.replace(/'/g, "\\'");
+      html += '<button class="ec-chip" data-prog="'+escEc(p)+'" onclick="ecToggleProg(\''+esc+'\')" ' +
+              'style="font-size:12px;padding:5px 11px;border-radius:999px;border:1px solid var(--border);background:#fff;color:var(--text);cursor:pointer;font-family:inherit;">'+escEc(p)+'</button>';
+    });
+    progBox.innerHTML = html;
+  }
+
+  // Render year chips
+  var yearBox = document.getElementById('ec-year-chips');
+  if(yearBox){
+    var html = '<button class="ec-chip" data-all="1" onclick="ecToggleYear(\'\')" ' +
+               'style="font-size:12px;padding:5px 11px;border-radius:999px;border:1px solid #2563eb;background:#dbeafe;color:#1e40af;font-weight:500;cursor:pointer;font-family:inherit;">All years</button>';
+    years.forEach(function(y){
+      var esc = y.replace(/'/g, "\\'");
+      html += '<button class="ec-chip" data-year="'+escEc(y)+'" onclick="ecToggleYear(\''+esc+'\')" ' +
+              'style="font-size:12px;padding:5px 11px;border-radius:999px;border:1px solid var(--border);background:#fff;color:var(--text);cursor:pointer;font-family:inherit;">'+escEc(y)+'</button>';
+    });
+    yearBox.innerHTML = html;
+  }
+
+  // Reset state
+  _ecState.selectedProgs = {};
+  _ecState.selectedYears = {};
+  _ecState.selectedStudents = [];
+  _ecState.preparedChunks = null;
+  _ecState.chunkVisited = {};
+
+  ecUpdateAllPanel();
+  ecUpdateFilterPanel();
+  ecUpdateSearchPanel();
+  ecRenderSearchSelected();
+  ecHideChunks();
+}
+
+// HTML escape — local helper (avoid colliding with any other escHtml in file)
+function escEc(s){
+  return String(s==null?'':s).replace(/[<>&"']/g, function(c){
+    return {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+
+function ecSelectMode(mode){
+  _ecState.mode = mode;
+  // Reset prepared chunks when switching modes
+  _ecState.preparedChunks = null;
+  _ecState.chunkVisited = {};
+  ecHideChunks();
+  // Update card highlights
+  document.querySelectorAll('.ec-mode-card').forEach(function(card){
+    var isSel = card.getAttribute('data-mode') === mode;
+    if(isSel){
+      card.style.background    = '#e0f2fe';
+      card.style.border        = '2px solid #2563eb';
+      card.querySelector('div:nth-child(2)').style.color = '#1e40af';
+      card.querySelector('div:nth-child(3)').style.color = '#1e40af';
+    } else {
+      card.style.background    = '#fff';
+      card.style.border        = '1px solid var(--border)';
+      card.querySelector('div:nth-child(2)').style.color = '';
+      card.querySelector('div:nth-child(3)').style.color = 'var(--text2)';
+    }
+  });
+  // Show only the active panel
+  document.querySelectorAll('.ec-panel').forEach(function(p){ p.style.display = 'none'; });
+  var panel = document.getElementById('ec-panel-'+mode);
+  if(panel) panel.style.display = '';
+}
+
+// ── Mode 1: Email all ─────────────────────────────────────────────────────
+function ecUpdateAllPanel(){
+  var withEmail = (_students||[]).filter(function(s){ return s.email || s.parentEmail; });
+  var emailCount = 0;
+  withEmail.forEach(function(s){ if(s.email) emailCount++; if(s.parentEmail) emailCount++; });
+  var nChunks = Math.ceil(emailCount / EC_CHUNK_SIZE);
+  var countEl = document.getElementById('ec-all-count');
+  var subEl   = document.getElementById('ec-all-sub');
+  if(countEl) countEl.textContent = withEmail.length.toLocaleString() + ' students';
+  if(subEl)   subEl.textContent   = emailCount.toLocaleString() + ' emails (student + parent) · will send in ' + nChunks + ' chunk' + (nChunks!==1?'s':'') + ' of ≤'+EC_CHUNK_SIZE;
+}
+
+// ── Mode 2: By Programme & Year ───────────────────────────────────────────
+function ecToggleProg(prog){
+  if(!prog){
+    // "All programmes" clicked → clear all
+    _ecState.selectedProgs = {};
+  } else {
+    if(_ecState.selectedProgs[prog]) delete _ecState.selectedProgs[prog];
+    else _ecState.selectedProgs[prog] = true;
+  }
+  ecRefreshChipStyles();
+  ecUpdateFilterPanel();
+}
+function ecToggleYear(year){
+  if(!year){
+    _ecState.selectedYears = {};
+  } else {
+    if(_ecState.selectedYears[year]) delete _ecState.selectedYears[year];
+    else _ecState.selectedYears[year] = true;
+  }
+  ecRefreshChipStyles();
+  ecUpdateFilterPanel();
+}
+function ecRefreshChipStyles(){
+  var anyProg = Object.keys(_ecState.selectedProgs).length > 0;
+  var anyYear = Object.keys(_ecState.selectedYears).length > 0;
+  document.querySelectorAll('#ec-prog-chips .ec-chip').forEach(function(b){
+    var p = b.getAttribute('data-prog');
+    var isAll = b.getAttribute('data-all') === '1';
+    var sel = isAll ? !anyProg : _ecState.selectedProgs[p];
+    if(sel){ b.style.background='#dbeafe'; b.style.borderColor='#2563eb'; b.style.color='#1e40af'; b.style.fontWeight='500'; }
+    else   { b.style.background='#fff';    b.style.borderColor='var(--border)'; b.style.color='var(--text)'; b.style.fontWeight=''; }
+  });
+  document.querySelectorAll('#ec-year-chips .ec-chip').forEach(function(b){
+    var y = b.getAttribute('data-year');
+    var isAll = b.getAttribute('data-all') === '1';
+    var sel = isAll ? !anyYear : _ecState.selectedYears[y];
+    if(sel){ b.style.background='#dbeafe'; b.style.borderColor='#2563eb'; b.style.color='#1e40af'; b.style.fontWeight='500'; }
+    else   { b.style.background='#fff';    b.style.borderColor='var(--border)'; b.style.color='var(--text)'; b.style.fontWeight=''; }
+  });
+}
+function ecGetFilteredStudents(){
+  var anyProg = Object.keys(_ecState.selectedProgs).length > 0;
+  var anyYear = Object.keys(_ecState.selectedYears).length > 0;
+  return (_students||[]).filter(function(s){
+    if(anyProg && !_ecState.selectedProgs[(s.programme||'').trim()]) return false;
+    if(anyYear && !_ecState.selectedYears[(s.year||'').trim()]) return false;
+    return s.email || s.parentEmail;
+  });
+}
+function ecUpdateFilterPanel(){
+  var matched = ecGetFilteredStudents();
+  var countEl = document.getElementById('ec-filter-count');
+  var prevEl  = document.getElementById('ec-filter-preview');
+  var btn     = document.getElementById('ec-filter-btn');
+  if(countEl) countEl.textContent = matched.length.toLocaleString() + ' students matched';
+  // 2-line preview: show first 3 names + "and N others"
+  if(prevEl){
+    if(matched.length === 0){
+      prevEl.textContent = 'No students match these filters';
+    } else {
+      var names = matched.slice(0, 3).map(function(s){ return s.name; });
+      var rest  = matched.length - names.length;
+      var line  = names.join(', ');
+      if(rest > 0) line += ', and ' + rest + ' other' + (rest!==1?'s':'');
+      var emailCount = 0;
+      matched.forEach(function(s){ if(s.email) emailCount++; if(s.parentEmail) emailCount++; });
+      var nChunks = Math.ceil(emailCount / EC_CHUNK_SIZE);
+      prevEl.innerHTML = '<div>'+escEc(line)+'</div><div style="margin-top:2px;">'+emailCount.toLocaleString()+' emails · ' + nChunks + ' chunk' + (nChunks!==1?'s':'') + '</div>';
+    }
+  }
+  if(btn) btn.disabled = matched.length === 0;
+}
+
+// ── Mode 3: By Specific Students ──────────────────────────────────────────
+function ecSearchInput(){
+  var input = document.getElementById('ec-search-input');
+  var drop  = document.getElementById('ec-search-dropdown');
+  if(!input || !drop) return;
+  var q = (input.value||'').trim().toLowerCase();
+  if(!q){ drop.style.display = 'none'; return; }
+  // Substring matching on name OR BSU ID
+  var selectedSet = {};
+  _ecState.selectedStudents.forEach(function(s){ selectedSet[s.bsuId]=true; });
+  var matches = (_students||[]).filter(function(s){
+    if(selectedSet[s.bsuId]) return false; // hide already-selected
+    if(!s.email && !s.parentEmail) return false; // skip students with no emails
+    var name = (s.name||'').toLowerCase();
+    var bsu  = String(s.bsuId||'');
+    return name.indexOf(q) !== -1 || bsu.indexOf(q) !== -1;
+  }).slice(0, 8);
+  if(!matches.length){ drop.innerHTML = '<div style="padding:10px 12px;font-size:12px;color:var(--text3);">No matches</div>'; drop.style.display = ''; return; }
+  drop.innerHTML = matches.map(function(s){
+    var bsu = String(s.bsuId||'').replace(/'/g, "\\'");
+    return '<div onmousedown="ecAddSelected(\''+bsu+'\')" style="padding:8px 12px;cursor:pointer;border-bottom:1px solid var(--surface3);" onmouseover="this.style.background=\'var(--surface2)\'" onmouseout="this.style.background=\'\'">' +
+           '<div style="font-size:13px;font-weight:500;">'+escEc(s.name||'')+' <span style="font-family:\'DM Mono\',monospace;font-size:11px;color:var(--text2);background:var(--surface3);padding:1px 6px;border-radius:3px;margin-left:6px;">BSU '+bsu+'</span></div>' +
+           '<div style="font-size:11px;color:var(--text2);margin-top:1px;">'+escEc((s.programme||'')+(s.year?' · '+s.year:''))+'</div>' +
+           '</div>';
+  }).join('');
+  drop.style.display = '';
+}
+function ecAddSelected(bsuId){
+  var s = (_students||[]).find(function(x){ return String(x.bsuId) === String(bsuId); });
+  if(!s) return;
+  // De-dup
+  if(_ecState.selectedStudents.some(function(x){ return String(x.bsuId) === String(s.bsuId); })) return;
+  _ecState.selectedStudents.push(s);
+  // Clear input + dropdown
+  var input = document.getElementById('ec-search-input');
+  var drop  = document.getElementById('ec-search-dropdown');
+  if(input) input.value = '';
+  if(drop)  drop.style.display = 'none';
+  // Reset chunks since selection changed
+  _ecState.preparedChunks = null;
+  ecHideChunks();
+  ecRenderSearchSelected();
+  ecUpdateSearchPanel();
+}
+function ecRemoveSelected(bsuId){
+  _ecState.selectedStudents = _ecState.selectedStudents.filter(function(x){ return String(x.bsuId) !== String(bsuId); });
+  _ecState.preparedChunks = null;
+  ecHideChunks();
+  ecRenderSearchSelected();
+  ecUpdateSearchPanel();
+}
+function ecRenderSearchSelected(){
+  var box = document.getElementById('ec-search-selected');
+  if(!box) return;
+  if(!_ecState.selectedStudents.length){
+    box.innerHTML = '<span style="font-size:11px;color:var(--text3);align-self:center;">No students selected — search above to add</span>';
+    return;
+  }
+  box.innerHTML = _ecState.selectedStudents.map(function(s){
+    var bsu = String(s.bsuId||'').replace(/'/g, "\\'");
+    return '<span style="display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid #2563eb;border-radius:999px;padding:4px 10px 4px 12px;font-size:12px;color:#1e40af;">'
+         + '<span>'+escEc(s.name||'')+'</span>'
+         + '<span style="font-family:\'DM Mono\',monospace;font-size:10px;color:var(--text3);">BSU '+bsu+'</span>'
+         + '<span style="cursor:pointer;color:var(--text2);font-weight:700;padding:0 2px;" onclick="ecRemoveSelected(\''+bsu+'\')" title="Remove">✕</span>'
+         + '</span>';
+  }).join('');
+}
+function ecUpdateSearchPanel(){
+  var n = _ecState.selectedStudents.length;
+  var emailCount = 0;
+  _ecState.selectedStudents.forEach(function(s){ if(s.email) emailCount++; if(s.parentEmail) emailCount++; });
+  var c1 = document.getElementById('ec-search-count');
+  var c2 = document.getElementById('ec-search-sub');
+  var sc = document.getElementById('ec-search-selcount');
+  var btn= document.getElementById('ec-search-btn');
+  if(c1) c1.textContent = n.toLocaleString() + ' selected';
+  if(c2) c2.textContent = n ? emailCount.toLocaleString() + ' emails (student + parent)' : '—';
+  if(sc) sc.textContent = n;
+  if(btn) btn.disabled = n === 0;
+}
+
+// ── Chunk preparation + clipboard ─────────────────────────────────────────
+function ecPrepare(mode){
+  var students;
+  if(mode === 'all')         students = (_students||[]).filter(function(s){ return s.email || s.parentEmail; });
+  else if(mode === 'filter') students = ecGetFilteredStudents();
+  else /*search*/            students = _ecState.selectedStudents;
+
+  if(!students.length){
+    showToast && showToast('No students in cohort','error');
+    alert('No students in cohort');
+    return;
+  }
+
+  // Flatten to email list: student email + parent email per student, de-duped
+  var emailSet = {};
+  var emails = [];
+  students.forEach(function(s){
+    [s.email, s.parentEmail].forEach(function(e){
+      if(!e) return;
+      var key = String(e).trim().toLowerCase();
+      if(!key || emailSet[key]) return;
+      emailSet[key] = true;
+      emails.push(String(e).trim());
+    });
+  });
+
+  // Chunk into ≤500
+  var chunks = [];
+  for(var i=0; i<emails.length; i+=EC_CHUNK_SIZE){
+    chunks.push(emails.slice(i, i+EC_CHUNK_SIZE));
+  }
+  _ecState.preparedChunks = chunks;
+  _ecState.chunkVisited = {};
+  ecRenderChunks();
+}
+function ecRenderChunks(){
+  var card = document.getElementById('ec-chunks-card');
+  var list = document.getElementById('ec-chunks-list');
+  var label= document.getElementById('ec-chunks-label');
+  if(!card || !list) return;
+  if(!_ecState.preparedChunks || !_ecState.preparedChunks.length){
+    card.style.display = 'none';
+    return;
+  }
+  var total = _ecState.preparedChunks.reduce(function(s,c){ return s+c.length; }, 0);
+  if(label) label.textContent = 'Send in chunks · ' + _ecState.preparedChunks.length + ' chunk' + (_ecState.preparedChunks.length!==1?'s':'') + ' · ' + total.toLocaleString() + ' total emails';
+  list.innerHTML = _ecState.preparedChunks.map(function(c, idx){
+    var visited = _ecState.chunkVisited[idx];
+    var borderCol = visited ? '#16a34a' : 'var(--border)';
+    var bgCol     = visited ? '#f0fdf4' : '#fff';
+    var iconCol   = visited ? '#16a34a' : 'var(--text3)';
+    var icon      = visited ? '✓' : '○';
+    var label2    = visited ? 'Re-copy' : 'Copy &amp; open Gmail';
+    return '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border:1px solid '+borderCol+';background:'+bgCol+';border-radius:var(--radius);">' +
+           '<div style="display:flex;align-items:center;gap:10px;">' +
+           '<span style="font-size:16px;color:'+iconCol+';font-weight:700;">'+icon+'</span>' +
+           '<span style="font-size:13px;"><strong>Chunk '+(idx+1)+'</strong> · '+c.length+' emails'+(visited?' · copied & Gmail opened':'')+'</span>' +
+           '</div>' +
+           '<button class="btn-sm" style="font-size:11px;padding:4px 12px;background:'+(visited?'#fff':'#2563eb')+';color:'+(visited?'#2563eb':'#fff')+';border-color:#2563eb;" onclick="ecSendChunk('+idx+')">'+label2+'</button>' +
+           '</div>';
+  }).join('');
+  card.style.display = '';
+}
+function ecHideChunks(){
+  var card = document.getElementById('ec-chunks-card');
+  if(card) card.style.display = 'none';
+}
+function ecSendChunk(idx){
+  var chunk = _ecState.preparedChunks && _ecState.preparedChunks[idx];
+  if(!chunk || !chunk.length) return;
+  var blob = chunk.join(', ');
+
+  // Try modern clipboard API first, fall back to textarea-select-copy
+  function fallbackCopy(){
+    var ta = document.createElement('textarea');
+    ta.value = blob;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); } catch(e){}
+    document.body.removeChild(ta);
+  }
+
+  var copyPromise;
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    copyPromise = navigator.clipboard.writeText(blob).catch(function(){ fallbackCopy(); });
+  } else {
+    fallbackCopy();
+    copyPromise = Promise.resolve();
+  }
+  Promise.resolve(copyPromise).then(function(){
+    // Open Gmail compose in a new tab (empty — admin pastes BCC manually)
+    window.open('https://mail.google.com/mail/u/0/?view=cm&fs=1', '_blank', 'noopener');
+    _ecState.chunkVisited[idx] = true;
+    ecRenderChunks();
+    if(typeof showToast === 'function') showToast('Copied ' + chunk.length + ' emails to clipboard', 'success');
+  });
+}
+// ═══════════════════════════════════════════════════════════════════════════
+// END EMAIL COHORT
+// ═══════════════════════════════════════════════════════════════════════════
 
 var _announcementsLoaded = false;
 function loadAnnouncements(forceReload){
