@@ -563,6 +563,7 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
         <button class="nav-item" onclick="showPage('stusat',this)"><span class="icon">📊</span> Student Satisfaction</button>
         <button class="nav-item" onclick="showPage('progrev',this)"><span class="icon">🎓</span> Program Review</button>
         <div class="nav-section-label">University</div>
+        <button class="nav-item" onclick="showPage('mytutors',this)"><span class="icon">👨‍🏫</span> My Tutors</button>
         <button class="nav-item" onclick="showPage('timetable',this)"><span class="icon">🕐</span> My Timetable</button>
         <button class="nav-item" onclick="showPage('acadcalendar',this)"><span class="icon">🗓️</span> Academic Calendar</button>
         <button class="nav-item" onclick="showPage('ucalendar',this)"><span class="icon">📅</span> Annual Calendar</button>
@@ -1038,6 +1039,10 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
           .acal-wrapper{border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow-sm);margin-bottom:14px;}
         </style>
         <div id="stud-acal-container"><div style="padding:60px;text-align:center;color:var(--text3);font-size:13px;">Loading…</div></div>
+      </div>
+      <div id="page-mytutors" class="page">
+        <div class="page-header"><h1>My Tutors</h1><p id="mt-stud-sub">Programme leader plus teaching staff for your current academic year</p></div>
+        <div id="stud-mytutors-container"><div style="padding:60px;text-align:center;color:var(--text3);font-size:13px;">Loading tutors…</div></div>
       </div>
       <div id="page-timetable" class="page">
         <div class="page-header"><h1>My Timetable</h1><p id="tt-stud-sub">Your weekly teaching schedule</p></div>
@@ -2475,6 +2480,262 @@ function renderStudGuidance(items){
     });
   });
 }
+// ═══════════════════════════════════════════════════════════════════════════
+// MY TUTORS — student-facing tutor directory
+// Pinned Programme Leader card (from Contact Us sheet) + teaching staff cards
+// for student's current-year modules (Sem 1 + Sem 2, from TIMETABLE_DATA).
+// Click to toggle selection. "Email selected" opens Gmail mailto in new tab.
+// Lazy-loaded on first visit; cached for the session.
+// ═══════════════════════════════════════════════════════════════════════════
+var _mtLoaded   = false;
+var _mtState    = { pl: null, tutors: [], selected: {} };  // selected: key → true
+
+function loadStudMyTutors(){
+  if(_mtLoaded){ renderStudMyTutors(); return; }
+  var s = _student; if(!s) return;
+  // Three calls in parallel:
+  //  - getTutorContacts → Programme Leader
+  //  - getPrograms → rich module data with {tutor, tutorEmail, moduleName, moduleCode, semester, year, programme}
+  //  - getStaff → photo URLs keyed by email
+  Promise.all([
+    apiFetch({ action:'getTutorContacts', programme: s.programme || '' }),
+    apiFetch({ action:'getPrograms' }),
+    apiFetch({ action:'getStaff' })
+  ]).then(function(results){
+    var contacts   = results[0] || {};
+    var programs   = results[1] || [];
+    var staffList  = results[2] || [];
+    // Build email → staff record map for photo lookup
+    var staffByEmail = {};
+    staffList.forEach(function(st){
+      var e = (st.email || '').toLowerCase().trim();
+      if(e) staffByEmail[e] = st;
+    });
+
+    var pl = contacts && contacts.pl ? {
+      name:  contacts.pl.name  || '',
+      email: contacts.pl.email || '',
+      photoUrl: ''
+    } : null;
+    if(pl && pl.email){
+      var plStaff = staffByEmail[pl.email.toLowerCase()];
+      if(plStaff && plStaff.photoUrl) pl.photoUrl = plStaff.photoUrl;
+    }
+
+    // Filter PROGRAMS rows to student's programme + current year (covers both Sem 1 and Sem 2)
+    var curYear = (s.year || '').trim().toLowerCase();
+    var curProg = (s.programme || '').trim().toLowerCase();
+    var rel = (programs || []).filter(function(r){
+      if(curProg && String(r.programme||'').trim().toLowerCase() !== curProg) return false;
+      if(curYear && String(r.year     ||'').trim().toLowerCase() !== curYear) return false;
+      return !!r.tutorEmail || !!r.tutor;
+    });
+
+    // Group by tutor (email if present, else lowercase name)
+    var groups = {};
+    rel.forEach(function(r){
+      var key = (r.tutorEmail || '').toLowerCase().trim();
+      if(!key) key = '__name:' + String(r.tutor||'').toLowerCase().trim();
+      if(!key || key === '__name:') return;
+      if(!groups[key]){
+        var photoUrl = '';
+        if(r.tutorEmail){
+          var st = staffByEmail[r.tutorEmail.toLowerCase()];
+          if(st && st.photoUrl) photoUrl = st.photoUrl;
+        }
+        groups[key] = { key: key, name: r.tutor||'', email: r.tutorEmail||'', photoUrl: photoUrl, modules: [] };
+      }
+      // De-dup module entries by code+semester
+      var modKey = (r.moduleCode||'') + '__' + (r.semester||'');
+      if(!groups[key].modules.some(function(m){ return m._k === modKey; })){
+        groups[key].modules.push({ _k: modKey, name: r.moduleName||'', code: r.moduleCode||'', semester: r.semester||'' });
+      }
+    });
+    var tutors = Object.keys(groups).map(function(k){ return groups[k]; });
+    // Sort: those with email first, then alphabetically
+    tutors.sort(function(a,b){
+      if(!!a.email !== !!b.email) return a.email ? -1 : 1;
+      return (a.name||'').localeCompare(b.name||'');
+    });
+    _mtState  = { pl: pl, tutors: tutors, selected: {} };
+    _mtLoaded = true;
+    renderStudMyTutors();
+  }).catch(function(e){
+    var c = document.getElementById('stud-mytutors-container');
+    if(c) c.innerHTML = '<div style="padding:40px;text-align:center;color:var(--red);font-size:13px;">Could not load tutors: '+escMt(e && e.message || '')+'</div>';
+  });
+}
+
+// Local HTML escape
+function escMt(s){
+  return String(s == null ? '' : s).replace(/[<>&"']/g, function(c){
+    return {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+
+function mtInitials(name){
+  if(!name) return '?';
+  var parts = String(name).trim().split(/\s+/).filter(Boolean);
+  if(!parts.length) return '?';
+  if(parts.length === 1) return parts[0].substring(0,2).toUpperCase();
+  return (parts[0][0] + parts[parts.length-1][0]).toUpperCase();
+}
+
+function mtAvatarHtml(name, isSelected, photoUrl){
+  var initials = mtInitials(name);
+  var bg = isSelected ? '#fff' : '#f1f5f9';
+  var fg = isSelected ? '#2563eb' : '#64748b';
+  var bd = isSelected ? '1px solid #cbd5e1' : 'none';
+  var photo = photoUrl ? driveImgUrl(photoUrl) : '';
+  if(photo){
+    var fallbackBg = isSelected ? '#fff' : '#f1f5f9';
+    var fallbackFg = isSelected ? '#2563eb' : '#64748b';
+    return '<div style="width:44px;height:44px;border-radius:50%;background:'+fallbackBg+';border:'+bd+';overflow:hidden;flex-shrink:0;position:relative;">'
+      + '<img src="'+escMt(photo)+'" alt="" style="width:100%;height:100%;object-fit:cover;display:block;" '
+      + 'onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';">'
+      + '<div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-weight:600;font-size:13px;color:'+fallbackFg+';position:absolute;top:0;left:0;">'+escMt(initials)+'</div>'
+      + '</div>';
+  }
+  return '<div style="width:44px;height:44px;border-radius:50%;background:'+bg+';border:'+bd+';display:flex;align-items:center;justify-content:center;font-weight:600;font-size:13px;color:'+fg+';flex-shrink:0;">'+escMt(initials)+'</div>';
+}
+
+function mtCardHtml(t, isSelected, isPL){
+  // t = { key, name, email, modules?, programme? }
+  var borderColor = isSelected ? '#2563eb' : (isPL ? '#d97706' : 'var(--border)');
+  var borderWidth = (isSelected || isPL) ? '2px' : '1px';
+  var bg          = isSelected ? '#dbeafe' : '#fff';
+  var nameColor   = isSelected ? '#1e40af' : 'var(--text)';
+  var subColor    = isSelected ? '#1e40af' : 'var(--text2)';
+  var hasEmail    = !!t.email;
+  var modulesHtml = '';
+  if(isPL){
+    modulesHtml = '<p style="font-size:11.5px;color:'+subColor+';margin:3px 0 0;line-height:1.5;">'+escMt(t.programme||'')+'</p>';
+  } else if(t.modules && t.modules.length){
+    var lines = t.modules.map(function(m){
+      var sem = m.semester ? ' <span style="color:var(--text3);font-size:10.5px;">('+escMt(m.semester)+')</span>' : '';
+      return '<span style="display:block;">'+escMt(m.name||m.code||'')+sem+'</span>';
+    }).join('');
+    modulesHtml = '<p style="font-size:11.5px;color:'+subColor+';margin:3px 0 0;line-height:1.5;">'+lines+'</p>';
+  }
+  var plBadge = isPL
+    ? '<span style="display:inline-block;font-size:10.5px;padding:2px 8px;border-radius:4px;background:#fef3c7;color:#92400e;font-weight:600;margin-left:6px;vertical-align:1px;">Programme Leader</span>'
+    : '';
+  var checkbox;
+  if(!hasEmail){
+    checkbox = '';
+  } else if(isSelected){
+    checkbox = '<div style="width:18px;height:18px;border-radius:4px;background:#2563eb;border:1.5px solid #2563eb;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff;font-weight:700;font-size:12px;line-height:1;">✓</div>';
+  } else {
+    checkbox = '<div style="width:18px;height:18px;border-radius:4px;border:1.5px solid #cbd5e1;flex-shrink:0;background:#fff;"></div>';
+  }
+  var emailLine;
+  if(hasEmail){
+    emailLine = '<div style="font-size:11.5px;color:'+(isSelected?'#1e40af':'var(--accent,#2563eb)')+';padding-top:9px;border-top:1px solid '+(isSelected?'#bfdbfe':'var(--surface3,#f1f5f9)')+';margin-top:9px;">✉️ '+escMt(t.email)+'</div>';
+  } else {
+    emailLine = '<div style="font-size:11px;color:var(--text3);padding-top:9px;border-top:1px solid var(--surface3,#f1f5f9);margin-top:9px;font-style:italic;">ⓘ Email not on file</div>';
+  }
+  var cursor = hasEmail ? 'pointer' : 'default';
+  var opacity = hasEmail ? '1' : '0.65';
+  var onclickAttr = hasEmail ? ' onclick="mtToggle(\''+escMt(t.key).replace(/'/g,"\\'")+'\')"' : '';
+
+  return '<div class="mt-card" data-mt-key="'+escMt(t.key)+'" style="background:'+bg+';border:'+borderWidth+' solid '+borderColor+';border-radius:10px;padding:13px;cursor:'+cursor+';opacity:'+opacity+';transition:all 0.12s;"'+onclickAttr+'>'
+    + '<div style="display:flex;align-items:flex-start;gap:11px;">'
+    +   mtAvatarHtml(t.name, isSelected, t.photoUrl)
+    +   '<div style="flex:1;min-width:0;">'
+    +     '<p style="font-weight:600;font-size:13.5px;margin:0;color:'+nameColor+';">'+escMt(t.name||'(unknown)')+plBadge+'</p>'
+    +     modulesHtml
+    +   '</div>'
+    +   checkbox
+    + '</div>'
+    + emailLine
+    + '</div>';
+}
+
+function renderStudMyTutors(){
+  var c = document.getElementById('stud-mytutors-container');
+  if(!c) return;
+  var s = _student || {};
+  var sub = document.getElementById('mt-stud-sub');
+  if(sub) sub.textContent = 'Programme leader plus teaching staff · '+(s.programme||'')+' · '+(s.year||'')+' · '+(_config.academic_year||'2025–2026');
+
+  var pl = _mtState.pl;
+  var tutors = _mtState.tutors || [];
+  var totalSelectable = (pl && pl.email ? 1 : 0) + tutors.filter(function(t){ return !!t.email; }).length;
+  var selectedCount = Object.keys(_mtState.selected).filter(function(k){ return _mtState.selected[k]; }).length;
+
+  // ── Selection bar ──
+  var btnDisabled = selectedCount === 0;
+  var btnStyle = btnDisabled
+    ? 'background:#94a3b8;color:#fff;border-color:#94a3b8;opacity:0.5;cursor:not-allowed;'
+    : 'background:#2563eb;color:#fff;border-color:#2563eb;cursor:pointer;';
+  var html = '<div style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:11px 14px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">'
+    + '<p style="font-size:13px;margin:0;"><span style="font-weight:600;" id="mt-selcount">'+selectedCount+' selected</span> <span style="color:var(--text2);">of '+totalSelectable+' tutor'+(totalSelectable!==1?'s':'')+'</span></p>'
+    + '<div style="display:flex;gap:8px;">'
+    +   '<button class="btn-sm" onclick="mtClear()" style="font-size:12px;padding:6px 12px;">Clear</button>'
+    +   '<button class="btn-sm" id="mt-email-btn" onclick="mtSendEmail()" '+(btnDisabled?'disabled':'')+' style="font-size:12px;padding:6px 12px;'+btnStyle+'">✉️ Email selected ('+selectedCount+')</button>'
+    + '</div>'
+    + '</div>';
+
+  // ── Programme Leader (pinned top) ──
+  if(pl && (pl.name || pl.email)){
+    var plKey = '__PL';
+    var plObj = { key: plKey, name: pl.name, email: pl.email, photoUrl: pl.photoUrl || '', programme: s.programme||'' };
+    html += '<p style="font-size:10.5px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.6px;margin:0 0 7px;">Programme Leader</p>';
+    html += '<div style="margin-bottom:18px;">';
+    html +=   mtCardHtml(plObj, !!_mtState.selected[plKey], true);
+    html += '</div>';
+  } else {
+    html += '<div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:8px;padding:10px 14px;font-size:12px;color:#92400e;margin-bottom:16px;">⚠️ Programme Leader not found for "'+escMt(s.programme||'')+'". Please contact academics@bathspa.ae.</div>';
+  }
+
+  // ── Teaching staff cards ──
+  html += '<p style="font-size:10.5px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.6px;margin:0 0 7px;">Teaching staff · '+escMt(s.year||'')+' · '+escMt(_config.academic_year||'2025–2026')+'</p>';
+  if(!tutors.length){
+    html += '<div style="background:var(--surface2);border:1px dashed var(--border);border-radius:8px;padding:30px;text-align:center;color:var(--text3);font-size:13px;">No tutors assigned yet for your current academic year. Contact academics@bathspa.ae if this seems wrong.</div>';
+  } else {
+    html += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;">';
+    tutors.forEach(function(t){
+      html += mtCardHtml(t, !!_mtState.selected[t.key], false);
+    });
+    html += '</div>';
+  }
+
+  // Footnote
+  html += '<p style="font-size:11px;color:var(--text3);margin:14px 0 0;line-height:1.6;">ℹ️ Click cards to select. "Email selected" opens Gmail compose with addresses pre-filled in the To field — just write your message and send.</p>';
+
+  c.innerHTML = html;
+}
+
+function mtToggle(key){
+  if(!key) return;
+  if(_mtState.selected[key]) delete _mtState.selected[key];
+  else _mtState.selected[key] = true;
+  renderStudMyTutors();
+}
+function mtClear(){
+  _mtState.selected = {};
+  renderStudMyTutors();
+}
+function mtSendEmail(){
+  // Build list of emails for selected entries
+  var emails = [];
+  if(_mtState.selected['__PL'] && _mtState.pl && _mtState.pl.email){
+    emails.push(_mtState.pl.email);
+  }
+  (_mtState.tutors || []).forEach(function(t){
+    if(_mtState.selected[t.key] && t.email && emails.indexOf(t.email) === -1){
+      emails.push(t.email);
+    }
+  });
+  if(!emails.length) return;
+  // Open Gmail compose in new tab with TO pre-filled (mailto: works reliably for ≤5)
+  var url = 'https://mail.google.com/mail/?view=cm&fs=1&to=' + encodeURIComponent(emails.join(','));
+  window.open(url, '_blank', 'noopener');
+}
+// ═══════════════════════════════════════════════════════════════════════════
+// END MY TUTORS
+// ═══════════════════════════════════════════════════════════════════════════
+
 // ── Student Timetable ──────────────────────────────────────────
 var _studTTLoaded = false;
 function loadStudTimetable(){
@@ -3560,6 +3821,7 @@ function showPage(id,btn){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   if(id==='announcements') loadStudAnnouncements();
   if(id==='timetable') loadStudTimetable();
+  if(id==='mytutors') loadStudMyTutors();
   if(id==='acadcalendar') loadStudAcadCalendar();
   if(id==='ucalendar') loadStudUCal();
   if(id==='policies') loadStudPolicies();
