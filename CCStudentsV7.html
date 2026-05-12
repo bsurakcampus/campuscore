@@ -2599,54 +2599,103 @@ function mtAvatarHtml(name, isSelected, photoUrl){
   return '<div style="width:44px;height:44px;border-radius:50%;background:'+bg+';border:'+bd+';display:flex;align-items:center;justify-content:center;font-weight:600;font-size:13px;color:'+fg+';flex-shrink:0;">'+escMt(initials)+'</div>';
 }
 
-function mtCardHtml(t, isSelected, isPL){
-  // t = { key, name, email, modules?, programme? }
-  var borderColor = isSelected ? '#2563eb' : (isPL ? '#d97706' : 'var(--border)');
-  var borderWidth = (isSelected || isPL) ? '2px' : '1px';
-  var bg          = isSelected ? '#dbeafe' : '#fff';
-  var nameColor   = isSelected ? '#1e40af' : 'var(--text)';
-  var subColor    = isSelected ? '#1e40af' : 'var(--text2)';
-  var hasEmail    = !!t.email;
-  var modulesHtml = '';
-  if(isPL){
-    modulesHtml = '<p style="font-size:11.5px;color:'+subColor+';margin:3px 0 0;line-height:1.5;">'+escMt(t.programme||'')+'</p>';
-  } else if(t.modules && t.modules.length){
-    var lines = t.modules.map(function(m){
-      var sem = m.semester ? ' <span style="color:var(--text3);font-size:10.5px;">('+escMt(m.semester)+')</span>' : '';
-      return '<span style="display:block;">'+escMt(m.name||m.code||'')+sem+'</span>';
-    }).join('');
-    modulesHtml = '<p style="font-size:11.5px;color:'+subColor+';margin:3px 0 0;line-height:1.5;">'+lines+'</p>';
+function mtAvatarHtml(name, isSelected, photoUrl, size){
+  size = size || 44;
+  var initials = mtInitials(name);
+  var fontSize = size >= 80 ? '26px' : (size >= 60 ? '18px' : '13px');
+  var bg = isSelected ? '#fff' : '#f1f5f9';
+  var fg = isSelected ? '#2563eb' : '#64748b';
+  var bd = isSelected ? '1px solid #cbd5e1' : 'none';
+  var photo = photoUrl ? driveImgUrl(photoUrl) : '';
+  if(photo){
+    var fallbackBg = isSelected ? '#fff' : '#f1f5f9';
+    var fallbackFg = isSelected ? '#2563eb' : '#64748b';
+    return '<div style="width:'+size+'px;height:'+size+'px;border-radius:50%;background:'+fallbackBg+';border:'+bd+';overflow:hidden;flex-shrink:0;position:relative;">'
+      + '<img src="'+escMt(photo)+'" alt="" style="width:100%;height:100%;object-fit:cover;display:block;" '
+      + 'onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';">'
+      + '<div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-weight:600;font-size:'+fontSize+';color:'+fallbackFg+';position:absolute;top:0;left:0;">'+escMt(initials)+'</div>'
+      + '</div>';
   }
-  var plBadge = isPL
-    ? '<span style="display:inline-block;font-size:10.5px;padding:2px 8px;border-radius:4px;background:#fef3c7;color:#92400e;font-weight:600;margin-left:6px;vertical-align:1px;">Programme Leader</span>'
-    : '';
+  return '<div style="width:'+size+'px;height:'+size+'px;border-radius:50%;background:'+bg+';border:'+bd+';display:flex;align-items:center;justify-content:center;font-weight:600;font-size:'+fontSize+';color:'+fg+';flex-shrink:0;">'+escMt(initials)+'</div>';
+}
+
+// ─ Programme Leader banner card (full-width, horizontal layout, larger photo) ─
+function mtPlCardHtml(t, isSelected){
+  var hasEmail   = !!t.email;
+  var borderColor= isSelected ? '#2563eb' : '#d97706';
+  var bg         = isSelected ? '#dbeafe' : '#fff';
+  var nameColor  = isSelected ? '#1e40af' : 'var(--text)';
+  var subColor   = isSelected ? '#1e40af' : 'var(--text2)';
   var checkbox;
   if(!hasEmail){
     checkbox = '';
   } else if(isSelected){
-    checkbox = '<div style="width:18px;height:18px;border-radius:4px;background:#2563eb;border:1.5px solid #2563eb;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff;font-weight:700;font-size:12px;line-height:1;">✓</div>';
+    checkbox = '<div style="width:22px;height:22px;border-radius:5px;background:#2563eb;border:1.5px solid #2563eb;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff;font-weight:700;font-size:14px;line-height:1;">✓</div>';
   } else {
-    checkbox = '<div style="width:18px;height:18px;border-radius:4px;border:1.5px solid #cbd5e1;flex-shrink:0;background:#fff;"></div>';
+    checkbox = '<div style="width:22px;height:22px;border-radius:5px;border:1.5px solid #cbd5e1;flex-shrink:0;background:#fff;"></div>';
+  }
+  var cursor = hasEmail ? 'pointer' : 'default';
+  var opacity = hasEmail ? '1' : '0.65';
+  var onclickAttr = hasEmail ? ' onclick="mtToggle(\''+escMt(t.key).replace(/'/g,"\\'")+'\')"' : '';
+  var emailHtml = hasEmail
+    ? '<p style="font-size:13px;color:'+(isSelected?'#1e40af':'var(--accent,#2563eb)')+';margin:0;">✉️ '+escMt(t.email)+'</p>'
+    : '<p style="font-size:12px;color:var(--text3);margin:0;font-style:italic;">ⓘ Email not on file</p>';
+
+  return '<div class="mt-card-pl" data-mt-key="'+escMt(t.key)+'" style="background:'+bg+';border:2px solid '+borderColor+';border-radius:14px;padding:18px;display:flex;align-items:center;gap:18px;cursor:'+cursor+';opacity:'+opacity+';transition:all 0.12s;"'+onclickAttr+'>'
+    +   mtAvatarHtml(t.name, isSelected, t.photoUrl, 96)
+    + '<div style="flex:1;min-width:0;">'
+    +   '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:3px;">'
+    +     '<p style="font-weight:600;font-size:18px;margin:0;color:'+nameColor+';">'+escMt(t.name||'(unknown)')+'</p>'
+    +     '<span style="font-size:11px;padding:3px 10px;border-radius:6px;background:#fef3c7;color:#92400e;font-weight:600;">Programme Leader</span>'
+    +   '</div>'
+    +   '<p style="font-size:13px;color:'+subColor+';margin:0 0 8px;">'+escMt(t.programme||'')+'</p>'
+    +   emailHtml
+    + '</div>'
+    + checkbox
+    + '</div>';
+}
+
+// ─ Teacher vertical card (centered photo on top, name, modules, email) ─
+function mtCardHtml(t, isSelected){
+  var hasEmail   = !!t.email;
+  var borderColor= isSelected ? '#2563eb' : 'var(--border)';
+  var borderWidth= isSelected ? '2px' : '1px';
+  var bg         = isSelected ? '#dbeafe' : '#fff';
+  var nameColor  = isSelected ? '#1e40af' : 'var(--text)';
+  var subColor   = isSelected ? '#1e40af' : 'var(--text2)';
+  var modulesHtml = '';
+  if(t.modules && t.modules.length){
+    var lines = t.modules.map(function(m){
+      var sem = m.semester ? ' <span style="font-size:10.5px;opacity:0.75;">('+escMt(m.semester)+')</span>' : '';
+      return '<span style="display:block;">'+escMt(m.name||m.code||'')+sem+'</span>';
+    }).join('');
+    modulesHtml = '<p style="font-size:11.5px;color:'+subColor+';margin:0 0 12px;line-height:1.5;min-height:36px;">'+lines+'</p>';
+  } else {
+    modulesHtml = '<p style="font-size:11.5px;color:'+subColor+';margin:0 0 12px;line-height:1.5;min-height:36px;">&nbsp;</p>';
+  }
+  var checkbox;
+  if(!hasEmail){
+    checkbox = '';
+  } else if(isSelected){
+    checkbox = '<div style="position:absolute;top:10px;right:10px;width:22px;height:22px;border-radius:5px;background:#2563eb;border:1.5px solid #2563eb;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:14px;line-height:1;">✓</div>';
+  } else {
+    checkbox = '<div style="position:absolute;top:10px;right:10px;width:22px;height:22px;border-radius:5px;border:1.5px solid #cbd5e1;background:#fff;"></div>';
   }
   var emailLine;
   if(hasEmail){
-    emailLine = '<div style="font-size:11.5px;color:'+(isSelected?'#1e40af':'var(--accent,#2563eb)')+';padding-top:9px;border-top:1px solid '+(isSelected?'#bfdbfe':'var(--surface3,#f1f5f9)')+';margin-top:9px;">✉️ '+escMt(t.email)+'</div>';
+    emailLine = '<div style="font-size:11.5px;color:'+(isSelected?'#1e40af':'var(--accent,#2563eb)')+';padding-top:10px;border-top:1px solid '+(isSelected?'#bfdbfe':'var(--surface3,#f1f5f9)')+';word-break:break-all;">✉️ '+escMt(t.email)+'</div>';
   } else {
-    emailLine = '<div style="font-size:11px;color:var(--text3);padding-top:9px;border-top:1px solid var(--surface3,#f1f5f9);margin-top:9px;font-style:italic;">ⓘ Email not on file</div>';
+    emailLine = '<div style="font-size:11px;color:var(--text3);padding-top:10px;border-top:1px solid var(--surface3,#f1f5f9);font-style:italic;">ⓘ Email not on file</div>';
   }
   var cursor = hasEmail ? 'pointer' : 'default';
   var opacity = hasEmail ? '1' : '0.65';
   var onclickAttr = hasEmail ? ' onclick="mtToggle(\''+escMt(t.key).replace(/'/g,"\\'")+'\')"' : '';
 
-  return '<div class="mt-card" data-mt-key="'+escMt(t.key)+'" style="background:'+bg+';border:'+borderWidth+' solid '+borderColor+';border-radius:10px;padding:13px;cursor:'+cursor+';opacity:'+opacity+';transition:all 0.12s;"'+onclickAttr+'>'
-    + '<div style="display:flex;align-items:flex-start;gap:11px;">'
-    +   mtAvatarHtml(t.name, isSelected, t.photoUrl)
-    +   '<div style="flex:1;min-width:0;">'
-    +     '<p style="font-weight:600;font-size:13.5px;margin:0;color:'+nameColor+';">'+escMt(t.name||'(unknown)')+plBadge+'</p>'
-    +     modulesHtml
-    +   '</div>'
-    +   checkbox
-    + '</div>'
+  return '<div class="mt-card" data-mt-key="'+escMt(t.key)+'" style="background:'+bg+';border:'+borderWidth+' solid '+borderColor+';border-radius:14px;padding:18px 14px;cursor:'+cursor+';opacity:'+opacity+';transition:all 0.12s;text-align:center;position:relative;"'+onclickAttr+'>'
+    + checkbox
+    + '<div style="display:flex;justify-content:center;margin-bottom:12px;">'+mtAvatarHtml(t.name, isSelected, t.photoUrl, 96)+'</div>'
+    + '<p style="font-weight:600;font-size:14px;margin:0 0 4px;color:'+nameColor+';">'+escMt(t.name||'(unknown)')+'</p>'
+    + modulesHtml
     + emailLine
     + '</div>';
 }
@@ -2676,26 +2725,26 @@ function renderStudMyTutors(){
     + '</div>'
     + '</div>';
 
-  // ── Programme Leader (pinned top) ──
+  // ── Programme Leader (pinned top, full-width banner) ──
   if(pl && (pl.name || pl.email)){
     var plKey = '__PL';
     var plObj = { key: plKey, name: pl.name, email: pl.email, photoUrl: pl.photoUrl || '', programme: s.programme||'' };
-    html += '<p style="font-size:10.5px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.6px;margin:0 0 7px;">Programme Leader</p>';
-    html += '<div style="margin-bottom:18px;">';
-    html +=   mtCardHtml(plObj, !!_mtState.selected[plKey], true);
+    html += '<p style="font-size:10.5px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.6px;margin:0 0 8px;">Programme Leader</p>';
+    html += '<div style="margin-bottom:20px;">';
+    html +=   mtPlCardHtml(plObj, !!_mtState.selected[plKey]);
     html += '</div>';
   } else {
     html += '<div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:8px;padding:10px 14px;font-size:12px;color:#92400e;margin-bottom:16px;">⚠️ Programme Leader not found for "'+escMt(s.programme||'')+'". Please contact academics@bathspa.ae.</div>';
   }
 
-  // ── Teaching staff cards ──
-  html += '<p style="font-size:10.5px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.6px;margin:0 0 7px;">Teaching staff · '+escMt(s.year||'')+' · '+escMt(_config.academic_year||'2025–2026')+'</p>';
+  // ── Teaching staff (3-column vertical-card grid) ──
+  html += '<p style="font-size:10.5px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.6px;margin:0 0 8px;">Teaching staff · '+escMt(s.year||'')+' · '+escMt(_config.academic_year||'2025–2026')+'</p>';
   if(!tutors.length){
     html += '<div style="background:var(--surface2);border:1px dashed var(--border);border-radius:8px;padding:30px;text-align:center;color:var(--text3);font-size:13px;">No tutors assigned yet for your current academic year. Contact academics@bathspa.ae if this seems wrong.</div>';
   } else {
-    html += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;">';
+    html += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;">';
     tutors.forEach(function(t){
-      html += mtCardHtml(t, !!_mtState.selected[t.key], false);
+      html += mtCardHtml(t, !!_mtState.selected[t.key]);
     });
     html += '</div>';
   }
