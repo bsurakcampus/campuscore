@@ -4284,9 +4284,8 @@ function matchViaNameMatch(firstName, lastName, moduleStudents){
   if((bestTier === 1 || bestTier === 2) && bestMatches.length === 1){
     return {confident:true, student:bestMatches[0].student, tier:bestTier, overlap:bestMatches[0].overlap, type:'namematch'};
   }
-  // Otherwise return up to top 15 candidates for manual selector
-  // (15 not 6 — phonetic groups like MOHAMED/MOHAMMED/MUHAMMAD can match 10+ students)
-  return {confident:false, candidates:scored.slice(0, 15)};
+  // Otherwise return up to top 6 candidates for manual selector
+  return {confident:false, candidates:scored.slice(0, 6)};
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -4712,49 +4711,10 @@ function renderSubRow(r, idx, saId, moduleStudents, matchedBsuIds){
   var matchCell = '<td style="padding:7px 12px;border-bottom:1px solid #f0f0f0;text-align:center;">'+matchBadge+'</td>';
 
   if(isUnmatched){
-    // Sort un-matched students by NameMatch overlap score against this CSV row.
-    // FATIMA UMER should bubble to top for CSV row "FATIMA FATIMA", etc.
-    //
-    // IMPORTANT: matchedBsuIds includes non-submitters with matchType='enrolled' (because
-    // their row has r.matched = <self>). But those students are NOT bound to a CSV row —
-    // they're just shown as enrolled-not-in-file. They're legitimate candidates for any
-    // unmatched CSV row. So we use a stricter map here: only exclude students who are
-    // truly bound to a real (named) CSV row, i.e. matchType is one of the confident match
-    // types from CSV parsing (not 'enrolled' which means "no CSV row, just enrolled").
-    var trulyBoundBsuIds = {};
-    var pendingState = window._pendingSub && window._pendingSub[saId];
-    var allResults = pendingState ? pendingState.results : [];
-    allResults.forEach(function(rr){
-      if(rr.matched && rr.matchType && rr.matchType !== 'none' && rr.matchType !== 'enrolled'){
-        trulyBoundBsuIds[String(rr.matched.bsuId)] = true;
-      }
-    });
-
-    var nmScore = matchViaNameMatch(r.firstName||'', r.lastName||'', moduleStudents);
-    var ranked = (nmScore && nmScore.candidates && nmScore.candidates.length) ? nmScore.candidates : [];
-    var rankedBsuIds = {};
-    ranked.forEach(function(c){ rankedBsuIds[String(c.student.bsuId)] = true; });
-
     var opts = '<option value="">— Select student —</option>';
-    // First: ranked candidates (only ones not truly bound to another CSV row)
-    var addedAny = false;
-    ranked.forEach(function(c){
-      var s = c.student;
-      if(trulyBoundBsuIds[String(s.bsuId)]) return;
-      var tag = c.tier === 1 ? '★' : c.tier === 2 ? '✓' : c.tier === 3 ? '·' : ' ';
-      opts += '<option value="'+s.bsuId+'">'+tag+' '+s.name+' · BSU '+s.bsuId+'</option>';
-      addedAny = true;
-    });
-    if(addedAny){
-      opts += '<option value="" disabled>──────────</option>';
-    }
-    // Then: remaining students not in the ranked list (alphabetical, by insertion order)
     moduleStudents.forEach(function(s){
-      if(trulyBoundBsuIds[String(s.bsuId)]) return;
-      if(rankedBsuIds[String(s.bsuId)]) return; // already shown above
-      opts += '<option value="'+s.bsuId+'">'+s.name+' · BSU '+s.bsuId+'</option>';
+      if(!matchedBsuIds[String(s.bsuId)]) opts += '<option value="'+s.bsuId+'">'+s.name+' · BSU '+s.bsuId+'</option>';
     });
-
     bsuIdCell = '<td style="padding:7px 12px;border-bottom:1px solid #f0f0f0;font-family:monospace;" id="mbsu-'+saId+'-'+idx+'">—</td>';
     sNameCell = '<td style="padding:5px 12px;border-bottom:1px solid #f0f0f0;">'
       + '<select id="manual-match-'+saId+'-'+idx+'" data-said="'+saId+'" data-idx="'+idx+'" '
