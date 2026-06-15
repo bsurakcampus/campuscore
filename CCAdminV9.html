@@ -621,6 +621,75 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
 .sps-doc-label{font-size:11px;font-weight:700;color:var(--text);line-height:1.3;}
 .sps-doc-sub{font-size:10px;font-weight:600;margin-top:1px;}
 
+/* ── STUDENTS RECORDS PAGE ── */
+.sr-split{display:grid;grid-template-columns:330px 1fr;gap:14px;align-items:start;}
+.sr-list-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow:hidden;}
+.sr-list-head{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-bottom:1px solid var(--border);}
+.sr-list-head .lc{font-size:11px;font-weight:700;color:var(--text2);}
+.sr-list-count{font-size:11px;font-weight:600;background:var(--surface3);color:var(--text2);padding:2px 10px;border-radius:20px;}
+.sr-stu-list{max-height:calc(100vh - 300px);overflow:auto;}
+.sr-stu-row{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--surface3);cursor:pointer;transition:background 0.12s;}
+.sr-stu-row:hover{background:var(--surface2);}
+.sr-stu-row.sel{background:var(--accent-light);border-left:3px solid var(--accent);padding-left:11px;}
+.sr-stu-row img{width:34px;height:34px;border-radius:50%;object-fit:cover;flex-shrink:0;background:var(--surface3);}
+.sr-stu-ava{width:34px;height:34px;border-radius:50%;flex-shrink:0;background:var(--surface3);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--text3);}
+.sr-stu-row .nm{font-size:12px;font-weight:700;color:var(--text);line-height:1.25;}
+.sr-stu-row .mt{font-size:10px;color:var(--text3);}
+.sr-doc-chip{margin-left:auto;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;flex-shrink:0;}
+.sr-doc-chip.full{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border);}
+.sr-doc-chip.part{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-border);}
+.sr-srs{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow);overflow:hidden;}
+.sr-sec-title{font-size:10px;font-weight:700;color:#0F1E3D;text-transform:uppercase;letter-spacing:1px;border-bottom:2px solid #0F1E3D;padding-bottom:5px;margin:0 0 14px;display:flex;align-items:center;justify-content:space-between;}
+.sr-sec-title .hint{font-size:10px;font-weight:500;color:var(--text3);text-transform:none;letter-spacing:0;}
+.sr-rec-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+.sr-rec-card{display:flex;align-items:center;gap:13px;padding:15px 16px;border-radius:11px;border:1.5px solid var(--border);background:#fff;text-decoration:none;cursor:pointer;transition:box-shadow 0.15s,border-color 0.15s,transform 0.08s;}
+.sr-rec-card:hover{box-shadow:0 4px 16px rgba(0,0,0,0.10);transform:translateY(-1px);}
+.sr-rec-card.uploaded{background:var(--green-bg);border-color:var(--green-border);}
+.sr-rec-card.uploaded:hover{border-color:var(--green);}
+.sr-rec-card.expiring{background:var(--amber-bg);border-color:var(--amber-border);}
+.sr-rec-card.expiring:hover{border-color:var(--amber);}
+.sr-rec-card.expired{background:var(--red-bg);border-color:var(--red-border);}
+.sr-rec-card.expired:hover{border-color:var(--red);}
+.sr-rec-card.missing{opacity:0.5;cursor:default;pointer-events:none;background:var(--surface2);}
+.sr-rec-icon{font-size:26px;flex-shrink:0;width:30px;text-align:center;}
+.sr-rec-label{font-size:13px;font-weight:700;color:var(--text);line-height:1.3;}
+.sr-rec-sub{font-size:11px;font-weight:600;margin-top:2px;}
+.sr-rec-sub.green{color:var(--green);}.sr-rec-sub.amber{color:var(--amber);}.sr-rec-sub.red{color:var(--red);}.sr-rec-sub.grey{color:var(--text3);}
+.sr-rec-view{margin-left:auto;font-size:10px;font-weight:700;color:var(--text3);opacity:0;transition:opacity 0.15s;white-space:nowrap;}
+.sr-rec-card:hover .sr-rec-view{opacity:1;}
+.sr-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:80px 20px;color:var(--text3);}
+.sr-empty .e1{font-size:40px;margin-bottom:10px;}
+/* viewer */
+.sr-viewer{position:fixed;inset:0;z-index:99999;background:rgba(8,14,30,0.92);display:none;flex-direction:column;backdrop-filter:blur(2px);}
+.sr-viewer.open{display:flex;}
+.sr-v-top{display:flex;align-items:center;gap:14px;padding:13px 18px;color:#fff;border-bottom:1px solid rgba(255,255,255,0.1);}
+.sr-v-top .v-ic{font-size:22px;}
+.sr-v-title{font-size:14px;font-weight:700;line-height:1.2;}
+.sr-v-sub{font-size:11px;color:rgba(255,255,255,0.55);}
+.sr-v-count{font-size:12px;font-weight:600;color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.08);padding:3px 11px;border-radius:20px;}
+.sr-v-spacer{flex:1;}
+.sr-v-btn{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:#fff;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.18);border-radius:8px;padding:7px 13px;cursor:pointer;text-decoration:none;transition:background 0.15s;font-family:'Sora',sans-serif;}
+.sr-v-btn:hover{background:rgba(255,255,255,0.2);}
+.sr-v-close{font-size:20px;line-height:1;color:#fff;background:none;border:none;cursor:pointer;padding:4px 8px;border-radius:8px;}
+.sr-v-close:hover{background:rgba(255,255,255,0.12);}
+.sr-v-stage{flex:1;position:relative;display:flex;align-items:center;justify-content:center;padding:18px 70px;min-height:0;}
+.sr-v-frame-wrap{position:relative;width:100%;height:100%;max-width:920px;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.5);}
+.sr-v-fallback{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#64748b;padding:30px;gap:8px;}
+.sr-v-fallback .f-ic{font-size:46px;}
+.sr-v-frame{position:absolute;inset:0;width:100%;height:100%;border:none;background:transparent;}
+.sr-v-arrow{position:absolute;top:50%;transform:translateY(-50%);width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,0.14);border:1px solid rgba(255,255,255,0.22);color:#fff;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s;z-index:2;}
+.sr-v-arrow:hover{background:rgba(255,255,255,0.28);}
+.sr-v-arrow.l{left:14px;}.sr-v-arrow.r{right:14px;}
+.sr-v-arrow:disabled{opacity:0.25;cursor:default;}
+.sr-v-strip{display:flex;gap:8px;padding:12px 18px 8px;overflow-x:auto;justify-content:center;border-top:1px solid rgba(255,255,255,0.1);}
+.sr-v-thumb{display:flex;align-items:center;gap:7px;padding:8px 12px;border-radius:9px;background:rgba(255,255,255,0.06);border:1.5px solid transparent;color:rgba(255,255,255,0.8);cursor:pointer;font-size:11px;font-weight:600;white-space:nowrap;transition:all 0.15s;flex-shrink:0;}
+.sr-v-thumb:hover{background:rgba(255,255,255,0.14);}
+.sr-v-thumb.active{background:#fff;color:#0F1E3D;border-color:#4F8EF7;}
+.sr-v-thumb .ti{font-size:15px;}
+.sr-v-thumb.missing{opacity:0.35;cursor:default;}
+.sr-v-thumb.missing .tx{text-decoration:line-through;}
+.sr-kbd{font-family:'DM Mono',monospace;font-size:10px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);border-radius:4px;padding:1px 5px;color:rgba(255,255,255,0.7);}
+
 /* MOBILE BLOCK */
 #mobile-block{display:none;position:fixed;inset:0;z-index:99999;background:#0f1e3d;flex-direction:column;align-items:center;justify-content:center;padding:32px;text-align:center;}
 #mobile-block .mb-icon{font-size:48px;margin-bottom:20px;}
@@ -758,18 +827,18 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
       <div class="sidebar-nav">
         <div class="nav-section-label">Overview</div>
         <button class="nav-item active" onclick="showPage('dashboard',this)"><span class="icon">🏠</span> Dashboard</button>
-        <button class="nav-item" id="nav-reports-btn" onclick="showPage('admin-reports',this)" style="display:none;color:#fbbf24;"><span class="icon">📊</span> Admin Reports</button>
         <button class="nav-item" onclick="showPage('profile',this)"><span class="icon">👤</span> My Profile</button>
-        <div class="nav-section-label">Students</div>
+        <button class="nav-item" id="nav-reports-btn" onclick="showPage('admin-reports',this)" style="display:none;color:#fbbf24;"><span class="icon">📊</span> Admin Reports</button>
+        <div class="nav-section-label">Records</div>
         <!-- SRS menu hidden — accessible via Current Students drill-down only -->
         <!-- <button class="nav-item" onclick="showPage('sps',this)"><span class="icon">📄</span> SRS</button> -->
-        <button class="nav-item" onclick="showPage('helpdesk',this)"><span class="icon">🆘</span> Help Desk <span class="nav-badge" id="helpdesk-nav-badge" style="display:none;">—</span></button>
-        <button class="nav-item" onclick="showPage('students',this)"><span class="icon">🎓</span> Current Students</button>
-        <button class="nav-item" onclick="showPage('alumni',this)"><span class="icon">🏛️</span> Alumni</button>
+        <button class="nav-item" onclick="showPage('studentrecords',this)" style="color:#fbbf24;"><span class="icon">🗂️</span> Students Records</button>
+        <button class="nav-item" onclick="showPage('students',this)"><span class="icon">🎓</span> Students ARS</button>
         <button class="nav-item" onclick="showPage('studybreak',this)"><span class="icon">⏸️</span> Study Break/Withdraw</button>
-        <div class="nav-section-label">Staff</div>
-        <button class="nav-item" onclick="showPage('staff',this)"><span class="icon">👥</span> Current Staff</button>
+        <button class="nav-item" onclick="showPage('staff',this)"><span class="icon">👥</span> Staff</button>
+        <button class="nav-item" onclick="showPage('alumni',this)"><span class="icon">🏛️</span> Alumni</button>
         <div class="nav-section-label">Alerts</div>
+        <button class="nav-item" onclick="showPage('helpdesk',this)"><span class="icon">🆘</span> Help Desk <span class="nav-badge" id="helpdesk-nav-badge" style="display:none;">—</span></button>
         <button class="nav-item" onclick="showPage('announcements',this)"><span class="icon">📢</span> Announcements</button>
         <button class="nav-item" onclick="showPage('emailcohort',this)"><span class="icon">✉️</span> Email Cohort</button>
         <button class="nav-item" onclick="showPage('alerts',this)"><span class="icon">⚠️</span> Document Alerts <span class="nav-badge" id="alerts-nav-badge">—</span></button>
@@ -903,7 +972,7 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
       <div id="page-sps" class="page">
         <button id="sps-back-btn" onclick="showPage('students')" style="display:none;margin-bottom:12px;padding:6px 14px;background:none;border:1.5px solid var(--border2);border-radius:var(--radius);font-family:'Sora',sans-serif;font-size:12px;font-weight:600;color:var(--text2);cursor:pointer;">← Current Students</button>
         <div class="page-header">
-          <h1>Student Records Snapshot</h1>
+          <h1>Student Academic Record Snapshot</h1>
           <p>Enter a BSU ID to generate the full performance report</p>
         </div>
 
@@ -914,7 +983,7 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
               style="width:100%;padding:9px 12px;border:1.5px solid var(--border2);border-radius:var(--radius);font-size:14px;font-weight:600;background:#fff;color:var(--text);outline:none;letter-spacing:1px;"
               onkeydown="if(event.key==='Enter') generateSps()">
           </div>
-          <button onclick="generateSps()" style="height:38px;padding:0 24px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius);font-family:'Sora',sans-serif;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;">Give SPS →</button>
+          <button onclick="generateSps()" style="height:38px;padding:0 24px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius);font-family:'Sora',sans-serif;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;">Give SARS →</button>
           <button id="sps-contact-btn" onclick="spsEmailContact()" style="height:38px;padding:0 18px;background:#fff;color:var(--text);border:1.5px solid var(--border2);border-radius:var(--radius);font-family:'Sora',sans-serif;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;opacity:0.4;" disabled>✉️ Email Student &amp; Parent</button>
           <div id="sps-status" style="font-size:12px;color:var(--text3);display:none;"></div>
         </div>
@@ -967,10 +1036,6 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
             </div>
 
             <!-- Academic Record -->
-            <div class="sps-sec-title" style="margin-top:14px;">Student Records</div>
-            <div id="sps-records-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:4px;"></div>
-
-            <!-- Academic Record -->
             <div class="sps-sec-title" style="margin-top:14px;">Academic Record</div>
             <div id="sps-academic-body">
               <div style="border:1px solid #e2e8f0;border-radius:7px;overflow:hidden;margin-bottom:9px;">
@@ -987,7 +1052,7 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
 
             <!-- Disclaimer -->
             <div style="border-top:1px solid #e2e8f0;padding:10px 0 4px;margin-top:8px;">
-              <p style="font-size:8px;color:#94a3b8;line-height:1.7;"><strong style="color:#0f172a;">Disclaimer</strong> &nbsp;·&nbsp; This Student Records Snapshot (SRS) aspires to provide important indicative data on key academic aspects for our students and parents at Bath Spa University – RAK Campus. All information displayed — including Attendance, Assessments and Marks, Outstanding Fees, Accounts Status, and Assessment Link Access — is for reference and follow-up purposes only. All data is subject to technical and manual delays or errors, and should be cross-checked and confirmed with the relevant department and staff members in person. Official Assessment Submissions are managed exclusively on Blackboard Ultra, and Official Marks &amp; Results are emailed by the Home Campus (BSU UK) directly to students. This SRS does not override or replace any official academic data from the Home Campus, and Accounts data from RAK Campus.</p>
+              <p style="font-size:8px;color:#94a3b8;line-height:1.7;"><strong style="color:#0f172a;">Disclaimer</strong> &nbsp;·&nbsp; This Student Academic Record Snapshot (SARS) aspires to provide important indicative data on key academic aspects for our students and parents at Bath Spa University – RAK Campus. All information displayed — including Attendance, Assessments and Marks, Outstanding Fees, Accounts Status, and Assessment Link Access — is for reference and follow-up purposes only. All data is subject to technical and manual delays or errors, and should be cross-checked and confirmed with the relevant department and staff members in person. Official Assessment Submissions are managed exclusively on Blackboard Ultra, and Official Marks &amp; Results are emailed by the Home Campus (BSU UK) directly to students. This SARS does not override or replace any official academic data from the Home Campus, and Accounts data from RAK Campus.</p>
             </div>
 
           </div>
@@ -1008,12 +1073,39 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
         <!-- Action buttons -->
         <div style="display:flex;gap:10px;justify-content:flex-end;padding:4px 0 20px;">
           <button onclick="window.print()" style="display:flex;align-items:center;gap:6px;padding:9px 20px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius);font-family:'Sora',sans-serif;font-size:13px;font-weight:700;cursor:pointer;">🖨️ &nbsp;Print / Save PDF</button>
-          <button id="sps-email-btn" onclick="spsSendEmail()" style="display:flex;align-items:center;gap:6px;padding:9px 20px;background:#fff;color:var(--text);border:1.5px solid var(--border2);border-radius:var(--radius);font-family:'Sora',sans-serif;font-size:13px;font-weight:600;cursor:pointer;opacity:0.5;" disabled>✉️ &nbsp;Email SRS Student &amp; Parent</button>
+          <button id="sps-email-btn" onclick="spsSendEmail()" style="display:flex;align-items:center;gap:6px;padding:9px 20px;background:#fff;color:var(--text);border:1.5px solid var(--border2);border-radius:var(--radius);font-family:'Sora',sans-serif;font-size:13px;font-weight:600;cursor:pointer;opacity:0.5;" disabled>✉️ &nbsp;Email SARS Student &amp; Parent</button>
         </div>
 
       </div><!-- /page-sps -->
 
       <!-- ALL STUDENTS -->
+      <!-- ═══ STUDENTS RECORDS PAGE ═══ -->
+      <div id="page-studentrecords" class="page">
+        <div class="page-header" style="flex-shrink:0;">
+          <h1>Students Records</h1>
+          <p>Legal &amp; compliance documents for every active student. Pick a student to review and flip through their records.</p>
+        </div>
+        <div class="filter-card" style="background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:12px;box-shadow:var(--shadow-sm);flex-shrink:0;">
+          <input class="search-input" id="sr-search" placeholder="Search by name, BSU ID, or email..." style="width:100%;margin-bottom:8px;" oninput="srApplyFilters()">
+          <div id="sr-prog-pills" style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:5px;">
+            <button class="filter-pill active" onclick="srSetFilter(this,'prog','')">All</button>
+          </div>
+          <div id="sr-year-pills" style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:5px;">
+            <button class="filter-pill active" onclick="srSetFilter(this,'year','')">All Years</button>
+          </div>
+          <div id="sr-group-pills" style="display:flex;flex-wrap:wrap;gap:5px;">
+            <button class="filter-pill active" onclick="srSetFilter(this,'group','')">All Groups</button>
+          </div>
+        </div>
+        <div class="sr-split">
+          <div class="sr-list-card">
+            <div class="sr-list-head"><span class="lc">STUDENTS</span><span class="sr-list-count" id="sr-count">— students</span></div>
+            <div class="sr-stu-list" id="sr-list"></div>
+          </div>
+          <div id="sr-detail"></div>
+        </div>
+      </div>
+
       <div id="page-students" class="page">
         <div class="page-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;flex-shrink:0;">
           <div><h1>Current Students</h1><p>187 active students across all programs</p></div>
@@ -1696,7 +1788,7 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
       <!-- STAFF DETAIL PAGE -->
       <div id="page-staff-detail" class="page">
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;">
-          <button class="btn-sm" onclick="showPage('staff')">← Current Staff</button>
+          <button class="btn-sm" onclick="showPage('staff')">← Staff</button>
           <h1 style="font-size:18px;font-weight:700;" id="sfd-name">Staff Profile</h1>
         </div>
 
@@ -1768,7 +1860,7 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
       <!-- CURRENT STAFF -->
       <div id="page-staff" class="page">
         <div class="page-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
-          <div><h1>Current Staff</h1><p id="staff-count-label">Loading…</p></div>
+          <div><h1>Staff</h1><p id="staff-count-label">Loading…</p></div>
         </div>
         <div style="background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:10px;box-shadow:var(--shadow-sm);">
           <input class="search-input" id="staff-search" placeholder="Search by name, email, or department..." style="width:100%;margin-bottom:8px;" oninput="filterStaff()">
@@ -4517,6 +4609,7 @@ function showPage(id, btn){
   if(id==='reports-alumni')   initAlumniContactSheet();
   if(id==='reports-alumni')   renderAlumniReportSections();
   if(id==='studybreak') { if(!_sbLoaded) loadSbData(); else renderSbTable(); }
+  if(id==='studentrecords') initStudentRecords();
   if(id==='alerts') renderAlertsPanel();
   if(id==='acadcalendar'){ loadAdminAcadCalendar(); initCalSemesterSelect(); }
   if(id==='announcements') loadAnnouncements();
@@ -5093,6 +5186,261 @@ function updateStudentsShowingCount(visible, total){
 }
 
 // ═══════════════════════════════════════════════════════════════
+// STUDENTS RECORDS  (legal/compliance documents + viewer)
+// ═══════════════════════════════════════════════════════════════
+const SR_DOC_DEFS = [
+  {key:'passport',   icon:'🛂', label:'Passport'},
+  {key:'eidFront',   icon:'🪪', label:'EID Front'},
+  {key:'eidBack',    icon:'🪪', label:'EID Back'},
+  {key:'engCert',    icon:'📜', label:'English Language Certificate'},
+  {key:'qual',       icon:'🎓', label:'Qualification / Prior Degree'},
+  {key:'offer',      icon:'🇬🇧', label:'UK Offer Letter'},
+  {key:'transcript', icon:'📋', label:'Annual Transcript'},
+];
+let _srProg='', _srYear='', _srGroup='';
+let _srSelectedId = null;
+let _srBundleCache = {};   // bsuId -> bundle.student
+let _srInit = false;
+let _srSeq = [], _srPos = 0;
+
+function initStudentRecords(){
+  // Build pills from live _students (same source as Current Students)
+  const current = (_students||[]).filter(s => s.status !== 'Alumni');
+  const progEl = document.getElementById('sr-prog-pills');
+  if(progEl){
+    const progs = [...new Set(current.map(s=>s.programme).filter(Boolean))].sort();
+    progEl.innerHTML = '<button class="filter-pill active" onclick="srSetFilter(this,\'prog\',\'\')">All</button>'
+      + progs.map(p=>`<button class="filter-pill" onclick="srSetFilter(this,'prog','${p.replace(/'/g,"\\'")}')">${p}</button>`).join('');
+  }
+  const yearEl = document.getElementById('sr-year-pills');
+  if(yearEl){
+    const years = [...new Set(current.map(s=>s.year).filter(Boolean))].sort();
+    yearEl.innerHTML = '<button class="filter-pill active" onclick="srSetFilter(this,\'year\',\'\')">All Years</button>'
+      + years.map(y=>`<button class="filter-pill" onclick="srSetFilter(this,'year','${y}')">${y}</button>`).join('');
+  }
+  const grpEl = document.getElementById('sr-group-pills');
+  if(grpEl){
+    const groups = [...new Set(current.map(s=>s.groupLabel||'').filter(Boolean))].sort();
+    grpEl.innerHTML = '<button class="filter-pill active" onclick="srSetFilter(this,\'group\',\'\')">All Groups</button>'
+      + groups.map(g=>`<button class="filter-pill" onclick="srSetFilter(this,'group','${g.replace(/'/g,"\\'")}')">${g}</button>`).join('');
+  }
+  _srInit = true;
+  srRenderList();
+}
+
+function srSetFilter(btn, type, val){
+  if(type==='prog'){
+    _srProg=val; _srYear=''; _srGroup='';
+    document.querySelectorAll('#sr-year-pills .filter-pill, #sr-group-pills .filter-pill').forEach(b=>b.classList.remove('active'));
+    const yAll=document.querySelector('#sr-year-pills .filter-pill'); if(yAll) yAll.classList.add('active');
+    const gAll=document.querySelector('#sr-group-pills .filter-pill'); if(gAll) gAll.classList.add('active');
+  }
+  if(type==='year')  _srYear  = val;
+  if(type==='group') _srGroup = val;
+  btn.closest('div').querySelectorAll('.filter-pill').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  srRenderList();
+}
+function srApplyFilters(){ srRenderList(); }
+
+function srMatches(s){
+  const q = (document.getElementById('sr-search')?.value || '').toLowerCase();
+  if(_srProg  && (s.programme||'') !== _srProg) return false;
+  if(_srYear  && (s.year||'') !== _srYear) return false;
+  if(_srGroup && (s.groupLabel||'') !== _srGroup) return false;
+  if(q){
+    const blob = ((s.name||'')+' '+(s.bsuId||'')+' '+(s.email||'')).toLowerCase();
+    if(blob.indexOf(q)<0) return false;
+  }
+  return true;
+}
+
+function srRenderList(){
+  const listEl = document.getElementById('sr-list');
+  const countEl = document.getElementById('sr-count');
+  if(!listEl) return;
+  const list = (_students||[]).filter(s => s.status !== 'Alumni').filter(srMatches);
+  const total = (_students||[]).filter(s => s.status !== 'Alumni').length;
+  if(countEl) countEl.textContent = list.length===total ? total+' students' : list.length+' of '+total;
+  if(!list.length){
+    listEl.innerHTML = '<div style="padding:30px;text-align:center;color:var(--text3);font-size:12px;">No students match these filters.</div>';
+    srRenderDetail(null); return;
+  }
+  if(!list.find(s=>s.bsuId===_srSelectedId)) _srSelectedId = list[0].bsuId;
+  listEl.innerHTML = list.map(s=>{
+    const ava = s.photoUrl
+      ? `<img src="${driveImgUrl(s.photoUrl)}" onerror="this.outerHTML='<div class=&quot;sr-stu-ava&quot;>${srInitials(s.name)}</div>'">`
+      : `<div class="sr-stu-ava">${srInitials(s.name)}</div>`;
+    const have = srDocCount(s), tot = SR_DOC_DEFS.length;
+    const chipCls = have===tot ? 'full' : 'part';
+    return `<div class="sr-stu-row ${s.bsuId===_srSelectedId?'sel':''}" onclick="srSelectStudent('${s.bsuId}')">
+      ${ava}
+      <div><div class="nm">${s.name||'—'}</div><div class="mt">${s.bsuId} · ${s.year||'—'}</div></div>
+      <span class="sr-doc-chip ${chipCls}">${have}/${tot}</span>
+    </div>`;
+  }).join('');
+  srSelectStudent(_srSelectedId, true);
+}
+function srDocCount(s){
+  const docs = srDocsFor(s);
+  let n = 0;
+  SR_DOC_DEFS.forEach(def => { if(srValidUrl((docs[def.key]||{}).url)) n++; });
+  return n;
+}
+function srInitials(name){ return (name||'?').split(' ').map(w=>w[0]||'').slice(0,2).join('').toUpperCase(); }
+
+function srFindStudent(bsuId){ return (_students||[]).find(s => String(s.bsuId)===String(bsuId)) || null; }
+
+function srSelectStudent(bsuId, keepScroll){
+  _srSelectedId = bsuId;
+  document.querySelectorAll('#sr-list .sr-stu-row').forEach(r=>{
+    r.classList.toggle('sel', r.getAttribute('onclick')?.includes("'"+bsuId+"'"));
+  });
+  // Doc URLs already live in the in-memory student list (built server-side via buildStudentObj),
+  // so render straight from memory — instant, no network round-trip.
+  const s = srFindStudent(bsuId);
+  if(s){ srRenderDetail(s); }
+  else {
+    const d = document.getElementById('sr-detail');
+    if(d) d.innerHTML = `<div class="sr-srs"><div class="sr-empty"><div class="e1">❌</div><div>Records not found for ${bsuId}.</div></div></div>`;
+  }
+}
+
+// Map bundle.student fields onto the fixed doc list
+function srDocsFor(s){
+  function st(colour){ var c=(colour||'').toLowerCase(); return c==='red'||c==='expired'?'expired':c==='amber'?'expiring':'uploaded'; }
+  function sub(colour, disp){ return disp ? 'Exp: '+disp : 'Uploaded ✓'; }
+  return {
+    passport:   {url:s.passportUrl,    status:st(s.passportColour), sub:sub(s.passportColour, s.passportExpDisplay)},
+    eidFront:   {url:s.eidFrontUrl,    status:st(s.eidColour),      sub:sub(s.eidColour, s.eidExpDisplay)},
+    eidBack:    {url:s.eidBackUrl,     status:'uploaded',           sub:'Uploaded ✓'},
+    engCert:    {url:s.engCertUrl,     status:'uploaded',           sub:'Uploaded ✓'},
+    qual:       {url:s.qualUrl,        status:'uploaded',           sub:'Uploaded ✓'},
+    offer:      {url:s.offerLetterUrl, status:'uploaded',           sub:'Uploaded ✓'},
+    transcript: {url:s.transcriptUrl,  status:'uploaded',           sub:'Uploaded ✓'},
+  };
+}
+function srValidUrl(u){ return u && String(u).startsWith('http') && u!=='NF'; }
+
+function srRenderDetail(s){
+  const d = document.getElementById('sr-detail');
+  if(!d) return;
+  if(!s){ d.innerHTML = `<div class="sr-srs"><div class="sr-empty"><div class="e1">🗂️</div><div>Select a student to view their records.</div></div></div>`; return; }
+  const docs = srDocsFor(s);
+  const cards = SR_DOC_DEFS.map(def=>{
+    const doc = docs[def.key] || {};
+    const valid = srValidUrl(doc.url);
+    if(!valid){
+      return `<span class="sr-rec-card missing"><span class="sr-rec-icon">${def.icon}</span>
+        <div><div class="sr-rec-label">${def.label}</div><div class="sr-rec-sub grey">Not uploaded</div></div></span>`;
+    }
+    const subCls = doc.status==='expired'?'red':doc.status==='expiring'?'amber':'green';
+    return `<a class="sr-rec-card ${doc.status}" href="#" onclick="srOpenViewer('${s.bsuId}','${def.key}');return false;">
+      <span class="sr-rec-icon">${def.icon}</span>
+      <div><div class="sr-rec-label">${def.label}</div><div class="sr-rec-sub ${subCls}">${doc.sub||'Uploaded ✓'}</div></div>
+      <span class="sr-rec-view">View ↗</span></a>`;
+  }).join('');
+  const photo = s.photoUrl ? driveImgUrl(s.photoUrl) : '';
+  const initials = srInitials(s.name);
+  const photoStyle = photo ? `background-image:url('${photo}');background-size:cover;background-position:center;` : '';
+  const ageVal = s.dob ? Math.floor((new Date()-new Date(s.dob))/31557600000) : null;
+  const today = new Date();
+  const mos=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const dateStr = today.getDate()+' '+mos[today.getMonth()]+' '+today.getFullYear();
+  const stv=(s.status||'Current').toLowerCase();
+  const isAct=stv==='current'||stv==='active', isSB=stv==='study break';
+  const stLabel=isAct?'Active':(s.status||'—');
+  const stCol=isAct?'#4ade80':isSB?'#fbbf24':'#f87171';
+  const stBg=isAct?'rgba(74,222,128,0.15)':isSB?'rgba(251,191,36,0.15)':'rgba(248,113,113,0.15)';
+  const stBorder=isAct?'rgba(74,222,128,0.3)':isSB?'rgba(251,191,36,0.3)':'rgba(248,113,113,0.3)';
+  d.innerHTML = `
+    <div class="sr-srs">
+      <div class="sps-hdr">
+        <div class="sps-photo-circle" style="${photoStyle}">${photo?'':initials}</div>
+        <div style="flex:1;">
+          <div style="font-size:17px;font-weight:800;color:#fff;letter-spacing:-0.3px;">${(s.name||'—').toUpperCase()}<span style="font-size:12px;font-weight:500;color:rgba(255,255,255,0.4);margin-left:14px;font-family:'DM Mono',monospace;letter-spacing:0.5px;">BSU ID# ${s.bsuId}</span></div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.45);margin-top:3px;">${s.programme||''} · ${s.year||''}${s.levelEntry?' · Level Entry: '+s.levelEntry:''}</div>
+          <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:7px;">
+            <span style="font-size:10px;font-weight:600;padding:2px 9px;border-radius:20px;background:${stBg};color:${stCol};border:1px solid ${stBorder};">● ${stLabel}</span>
+            ${s.dobDisplay?`<span style="font-size:10px;font-weight:600;padding:2px 9px;border-radius:20px;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.65);border:1px solid rgba(255,255,255,0.15);">DOB: ${s.dobDisplay}</span>`:''}
+            ${ageVal&&ageVal>0?`<span style="font-size:10px;font-weight:600;padding:2px 9px;border-radius:20px;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.65);border:1px solid rgba(255,255,255,0.15);">Age: ${ageVal}</span>`:''}
+            ${(s.nationality||s.gender)?`<span style="font-size:10px;font-weight:600;padding:2px 9px;border-radius:20px;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.65);border:1px solid rgba(255,255,255,0.15);">${s.nationality||''}${s.gender?' · '+s.gender:''}</span>`:''}
+          </div>
+        </div>
+        <div style="text-align:right;flex-shrink:0;">
+          <div style="font-size:11px;font-weight:800;color:#4F8EF7;letter-spacing:1px;">CAMPUSCORE</div>
+          <div style="font-size:9px;color:rgba(255,255,255,0.3);margin-top:2px;line-height:1.5;">Bath Spa University<br>RAK Campus</div>
+          <div style="font-size:9px;color:rgba(255,255,255,0.3);margin-top:5px;">${dateStr}</div>
+        </div>
+      </div>
+      <div style="padding:18px 24px 22px;">
+        <div class="sr-sec-title">Student Records <span class="hint">Click any document to view · scroll through the rest with ‹ ›</span></div>
+        <div class="sr-rec-grid">${cards}</div>
+      </div>
+    </div>`;
+}
+
+// ── Viewer ──
+function srFileId(url){
+  if(!url) return '';
+  var m = String(url).match(/\/d\/([-\w]{20,})/) || String(url).match(/[?&]id=([-\w]{20,})/) || String(url).match(/([-\w]{25,})/);
+  return m ? m[1] : '';
+}
+function srPreviewUrl(url){ var id=srFileId(url); return id ? 'https://drive.google.com/file/d/'+id+'/preview' : url; }
+function srOpenUrl(url){ var id=srFileId(url); return id ? 'https://drive.google.com/file/d/'+id+'/view' : url; }
+
+function srOpenViewer(bsuId, key){
+  const s = srFindStudent(bsuId); if(!s) return;
+  const docs = srDocsFor(s);
+  _srSeq = SR_DOC_DEFS.filter(def => srValidUrl((docs[def.key]||{}).url))
+                      .map(def => ({def, doc:docs[def.key]}));
+  _srPos = Math.max(0, _srSeq.findIndex(x=>x.def.key===key));
+  srBuildStrip(docs);
+  srShowCurrent();
+  document.getElementById('sr-viewer').classList.add('open');
+  document.addEventListener('keydown', srKeyNav);
+}
+function srBuildStrip(docs){
+  const strip = document.getElementById('sr-v-strip');
+  strip.innerHTML = SR_DOC_DEFS.map(def=>{
+    const valid = srValidUrl((docs[def.key]||{}).url);
+    if(!valid){
+      return `<div class="sr-v-thumb missing"><span class="ti">${def.icon}</span><span class="tx">${def.label}</span></div>`;
+    }
+    const seqIdx = _srSeq.findIndex(x=>x.def.key===def.key);
+    return `<div class="sr-v-thumb" data-seq="${seqIdx}" onclick="srJump(${seqIdx})"><span class="ti">${def.icon}</span><span class="tx">${def.label}</span></div>`;
+  }).join('');
+}
+function srShowCurrent(){
+  const cur = _srSeq[_srPos]; if(!cur) return;
+  document.getElementById('sr-v-ic').textContent = cur.def.icon;
+  document.getElementById('sr-v-title').textContent = cur.def.label;
+  document.getElementById('sr-v-sub').textContent = cur.doc.sub || '';
+  document.getElementById('sr-v-count').textContent = (_srPos+1)+' / '+_srSeq.length;
+  document.getElementById('sr-v-open').href = srOpenUrl(cur.doc.url);
+  document.getElementById('sr-v-fic').textContent = cur.def.icon;
+  document.getElementById('sr-v-fname').textContent = cur.def.label;
+  document.getElementById('sr-v-frame').src = srPreviewUrl(cur.doc.url);
+  document.getElementById('sr-v-prev').disabled = _srPos<=0;
+  document.getElementById('sr-v-next').disabled = _srPos>=_srSeq.length-1;
+  document.querySelectorAll('#sr-v-strip .sr-v-thumb').forEach(t=>{
+    t.classList.toggle('active', t.getAttribute('data-seq')==String(_srPos));
+  });
+}
+function srStep(dir){ const n=_srPos+dir; if(n>=0 && n<_srSeq.length){ _srPos=n; srShowCurrent(); } }
+function srJump(seq){ if(seq>=0){ _srPos=seq; srShowCurrent(); } }
+function srCloseViewer(){
+  document.getElementById('sr-viewer').classList.remove('open');
+  document.getElementById('sr-v-frame').src='';
+  document.removeEventListener('keydown', srKeyNav);
+}
+function srKeyNav(e){
+  if(e.key==='ArrowRight') srStep(1);
+  else if(e.key==='ArrowLeft') srStep(-1);
+  else if(e.key==='Escape') srCloseViewer();
+}
+
+// ═══════════════════════════════════════════════════════════════
 // ALUMNI TABLE
 // ═══════════════════════════════════════════════════════════════
 function renderAlumniTable(){
@@ -5134,7 +5482,7 @@ function renderAlumniTable(){
   }
 
   tbody.innerHTML = alumni.map(s => {
-    const emailCell = s.email ? `<a href="mailto:${s.email}" onclick="event.stopPropagation()" style="color:var(--accent);">${s.email}</a>` : '—';
+    const emailCell = s.email ? `<a href="https://mail.google.com/mail/u/0/?view=cm&fs=1&to=${encodeURIComponent(s.email)}" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="color:var(--accent);">${s.email}</a>` : '—';
     const degBadge  = s.degreeClass ? `<span style="font-size:11px;font-weight:600;background:var(--accent-light);color:var(--accent);border:1px solid var(--accent-border);padding:1px 8px;border-radius:4px;">${s.degreeClass}</span>` : '—';
     const transcriptCell = s.transcriptUrl ? `<a href="${s.transcriptUrl}" target="_blank" onclick="event.stopPropagation()" style="color:var(--accent);font-size:11px;font-weight:600;text-decoration:none;">📄 View</a>` : '<span style="color:var(--text3);font-size:11px;">—</span>';
     const degBadgeAlumni = s.degreeClass ? `<span style="font-size:10px;font-weight:600;background:var(--accent-light);color:var(--accent);border:1px solid var(--accent-border);padding:1px 8px;border-radius:4px;white-space:nowrap;">${s.degreeClass}</span>` : '<span style="color:var(--text3);">—</span>';
@@ -6781,7 +7129,7 @@ function sendAnnouncement(){
   alert('📢 Announcement sent.\n\nIn live build: saved to Google Sheet and pushed to portal via Apps Script.');
 }
 
-// ── Stubs for any remaining on// ── SRS — Student Records Snapshot ───────────────────────
+// ── Stubs for any remaining on// ── SARS — Student Academic Record Snapshot ───────────────────────
 var _spsBsuId = null;
 
 function loadSpsPage(){ /* skeleton always visible */ }
@@ -6924,39 +7272,9 @@ function fillSpsSkeleton(bundle){
   if(el('sps-a-tui')){ el('sps-a-tui').textContent=rk.tuitionOutstanding||s.tuitionOutstanding||'—'; el('sps-a-tui').style.color=(rk.tuitionOutstanding||s.tuitionOutstanding)&&(rk.tuitionOutstanding||s.tuitionOutstanding)!=='0'?'#dc2626':'#94a3b8'; }
   if(el('sps-a-tot')){ el('sps-a-tot').textContent=rk.totalReceivable||s.totalReceivable||'—'; el('sps-a-tot').style.color=(rk.totalReceivable||s.totalReceivable)&&(rk.totalReceivable||s.totalReceivable)!=='0'?'#dc2626':'#94a3b8'; }
 
-  // Student Records — document cards
-  var recGrid = document.getElementById('sps-records-grid');
-  if(recGrid){
-    function docCard(url, icon, label, sub, cls){
-      var valid = url && url.startsWith('http') && url !== 'NF';
-      if(valid){
-        return '<a href="'+url+'" target="_blank" rel="noopener" class="sps-doc-card '+(cls||'uploaded')+'">'
-          +'<span class="sps-doc-icon">'+icon+'</span>'
-          +'<div><div class="sps-doc-label">'+label+'</div>'
-          +(sub?'<div class="sps-doc-sub '+(cls||'green')+'">'+sub+'</div>':'')
-          +'</div></a>';
-      }
-      return '<span class="sps-doc-card missing">'
-        +'<span class="sps-doc-icon">'+icon+'</span>'
-        +'<div><div class="sps-doc-label">'+label+'</div>'
-        +'<div class="sps-doc-sub" style="color:var(--text3);">Not uploaded</div>'
-        +'</div></span>';
-    }
-    function expCls(col){ return col==='red'||col==='expired'?'expired':col==='amber'?'expiring':'uploaded'; }
-    function expSub(col, disp){ return disp?'Exp: '+disp:'Uploaded ✓'; }
-    function expSubCls(col){ return col==='red'||col==='expired'?'red':col==='amber'?'amber':'green'; }
+// (Student Records document cards removed — now on the dedicated Students Records page)
 
-    recGrid.innerHTML =
-      docCard(s.passportUrl,    '🛂', 'Passport',                       expSub(s.passportColour, s.passportExpDisplay), expCls(s.passportColour))
-    + docCard(s.eidFrontUrl,    '🪪', 'EID Front',                      expSub(s.eidColour,      s.eidExpDisplay),      expCls(s.eidColour))
-    + docCard(s.eidBackUrl,     '🪪', 'EID Back',                       'Uploaded ✓',            'uploaded')
-    + docCard(s.engCertUrl,     '📜', 'English Language Certificate',   'Uploaded ✓',            'uploaded')
-    + docCard(s.qualUrl,        '🎓', 'Qualification / Prior Degree',   'Uploaded ✓',            'uploaded')
-    + docCard(s.offerLetterUrl, '🇬🇧', 'UK Offer Letter',                'Uploaded ✓',            'uploaded')
-    + docCard(s.transcriptUrl,  '📋', 'Annual Transcript',              'Uploaded ✓',            'uploaded');
-  }
-
-  // Academic record
+    // Academic record
   var body=document.getElementById('sps-academic-body');
   if(!body) return;
   var resMap={};
@@ -7129,7 +7447,11 @@ function spsEmailContact(){
   var sEmail = btn.dataset.semail || '', pEmail = btn.dataset.pemail || '', sName = btn.dataset.sname || 'Student';
   var to = [sEmail, pEmail].filter(Boolean).join(',');
   if(!to){ showToast('No email addresses available.','warning'); return; }
-  window.open('mailto:'+to+'?subject='+encodeURIComponent('CampusCore Update — '+sName)+'&body='+encodeURIComponent('Dear '+sName+' and Parent/Guardian,\n\n'));
+  var url = 'https://mail.google.com/mail/u/0/?view=cm&fs=1'
+    + '&to=' + encodeURIComponent(to)
+    + '&su=' + encodeURIComponent('CampusCore Update — ' + sName)
+    + '&body=' + encodeURIComponent('Dear ' + sName + ' and Parent/Guardian,\n\n');
+  window.open(url, '_blank', 'noopener');
 }
 
 function openStudentSps(bsuId){
@@ -7147,10 +7469,10 @@ function spsSendEmail(){
   if(btn) btn.textContent = '⏳ Sending…';
   apiPost({action:'sendSpsEmail', bsuId:_spsBsuId, sentBy:(_adminUser&&(_adminUser.name||_adminUser.email))||'Admin Portal'}).then(function(r){
     showToast('✅ SRS emailed to student (CC: parent) successfully.','success');
-    if(btn){ btn.innerHTML='✉️ &nbsp;Email SRS Student &amp; Parent'; }
+    if(btn){ btn.innerHTML='✉️ &nbsp;Email SARS Student &amp; Parent'; }
   }).catch(function(e){
     showToast('❌ Email failed: '+(e.message||'unknown'),'error');
-    if(btn){ btn.innerHTML='✉️ &nbsp;Email SRS Student &amp; Parent'; }
+    if(btn){ btn.innerHTML='✉️ &nbsp;Email SARS Student &amp; Parent'; }
   });
 }
 // ── Note Modal ────────────────────────────────────────────────
@@ -10496,6 +10818,34 @@ function ccSignOut(){
   localStorage.removeItem('cc_session');
   window.location.href = 'index.html';
 }
-</script>
+</script><!-- ═══ STUDENTS RECORDS — DOCUMENT VIEWER ═══ -->
+<div class="sr-viewer" id="sr-viewer" onclick="if(event.target===this)srCloseViewer()">
+  <div class="sr-v-top">
+    <span class="v-ic" id="sr-v-ic">🛂</span>
+    <div><div class="sr-v-title" id="sr-v-title">Document</div><div class="sr-v-sub" id="sr-v-sub"></div></div>
+    <span class="sr-v-count" id="sr-v-count">1 / 1</span>
+    <div class="sr-v-spacer"></div>
+    <a class="sr-v-btn" id="sr-v-open" href="#" target="_blank" rel="noopener">Open in Drive ↗</a>
+    <button class="sr-v-close" onclick="srCloseViewer()" title="Close (Esc)">✕</button>
+  </div>
+  <div class="sr-v-stage">
+    <button class="sr-v-arrow l" id="sr-v-prev" onclick="srStep(-1)">‹</button>
+    <div class="sr-v-frame-wrap">
+      <div class="sr-v-fallback">
+        <div class="f-ic" id="sr-v-fic">🛂</div>
+        <div style="font-weight:700;color:#0f172a;" id="sr-v-fname">Document</div>
+        <div style="font-size:12px;">Document preview loads here.</div>
+        <div style="font-size:12px;">If the embed does not appear, use <strong>Open in Drive ↗</strong>.</div>
+      </div>
+      <iframe class="sr-v-frame" id="sr-v-frame" allow="autoplay"></iframe>
+    </div>
+    <button class="sr-v-arrow r" id="sr-v-next" onclick="srStep(1)">›</button>
+  </div>
+  <div class="sr-v-strip" id="sr-v-strip"></div>
+  <div style="text-align:center;color:rgba(255,255,255,0.4);font-size:11px;padding-bottom:10px;">
+    <span class="sr-kbd">←</span> <span class="sr-kbd">→</span> to flip · <span class="sr-kbd">Esc</span> to close
+  </div>
+</div>
+
 </body>
 </html>
