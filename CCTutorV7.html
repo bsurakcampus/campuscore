@@ -718,7 +718,7 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
         <button class="nav-item" onclick="showPage('announcements',this)"><span class="icon">📢</span> Announcements </button>
         <div class="nav-section-label">Teaching</div>
         <button class="nav-item" onclick="showPage('leave',this)"><span class="icon">📋</span> Leave Applications <span id="leave-nav-badge" style="display:none;background:var(--amber);color:#fff;font-size:10px;font-weight:700;padding:1px 7px;border-radius:10px;margin-left:4px;">0</span></button>
-        <button class="nav-item" onclick="showPage('sps',this)"><span class="icon">📄</span> SRS</button>
+        <button class="nav-item" onclick="showPage('sps',this)"><span class="icon">🎓</span> Students ARS</button>
         <button class="nav-item" onclick="showPage('emailcohort',this)"><span class="icon">✉️</span> Email Cohort</button>
         <div class="nav-section-label">Account</div>
         <button class="nav-item" onclick="showPage('profile',this)"><span class="icon">👤</span> My Profile</button>
@@ -1368,8 +1368,8 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
       <div id="page-sps" class="page">
         <button id="sps-back-btn" onclick="showPage('module-detail')" style="display:none;margin-bottom:12px;padding:6px 14px;background:none;border:1.5px solid var(--border2);border-radius:var(--radius);font-family:'Sora',sans-serif;font-size:12px;font-weight:600;color:var(--text2);cursor:pointer;">← Back to Module</button>
         <div class="page-header">
-          <h1>Student Records Snapshot</h1>
-          <p>Enter a BSU ID to view the Student's Records Snapshot</p>
+          <h1>Student Academic Record Snapshot</h1>
+          <p>Enter a BSU ID to view the Student's Academic Record Snapshot</p>
         </div>
 
         <!-- BSU ID input bar -->
@@ -1379,7 +1379,7 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
               style="width:100%;padding:9px 12px;border:1.5px solid var(--border2);border-radius:var(--radius);font-family:'DM Mono',monospace;font-size:14px;font-weight:600;background:#fff;color:var(--text);outline:none;letter-spacing:1px;"
               onkeydown="if(event.key==='Enter') generateSps()">
           </div>
-          <button onclick="generateSps()" style="height:38px;padding:0 24px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius);font-family:'Sora',sans-serif;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;">Give SRS →</button>
+          <button onclick="generateSps()" style="height:38px;padding:0 24px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius);font-family:'Sora',sans-serif;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;">Give SARS →</button>
           <div id="sps-status" style="font-size:12px;color:var(--text3);display:none;"></div>
         </div>
 
@@ -1448,7 +1448,7 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
 
             <!-- Disclaimer -->
             <div style="border-top:1px solid #e2e8f0;padding:10px 0 4px;margin-top:8px;">
-              <p style="font-size:8px;color:#94a3b8;line-height:1.7;"><strong style="color:#0f172a;">Disclaimer</strong> &nbsp;·&nbsp; This Student Records Snapshot (SRS) aspires to provide important indicative data on key academic aspects for our students and parents at Bath Spa University – RAK Campus. All information displayed — including Attendance, Assessments and Marks, Outstanding Fees, Accounts Status, and Assessment Link Access — is for reference and follow-up purposes only. All data is subject to technical and manual delays or errors, and should be cross-checked and confirmed with the relevant department and staff members in person. Official Assessment Submissions are managed exclusively on Blackboard Ultra, and Official Marks &amp; Results are emailed by the Home Campus (BSU UK) directly to students. This SRS does not override or replace any official academic data from the Home Campus, and Accounts data from RAK Campus.</p>
+              <p style="font-size:8px;color:#94a3b8;line-height:1.7;"><strong style="color:#0f172a;">Disclaimer</strong> &nbsp;·&nbsp; This Student Academic Record Snapshot (SARS) aspires to provide important indicative data on key academic aspects for our students and parents at Bath Spa University – RAK Campus. All information displayed — including Attendance, Assessments and Marks, Outstanding Fees, Accounts Status, and Assessment Link Access — is for reference and follow-up purposes only. All data is subject to technical and manual delays or errors, and should be cross-checked and confirmed with the relevant department and staff members in person. Official Assessment Submissions are managed exclusively on Blackboard Ultra, and Official Marks &amp; Results are emailed by the Home Campus (BSU UK) directly to students. This SARS does not override or replace any official academic data from the Home Campus, and Accounts data from RAK Campus.</p>
             </div>
 
           </div>
@@ -7188,7 +7188,7 @@ function spsSendEmail(){
     bsuId:   _spsBsuId,
     sentBy: (_tutor && (_tutor.name||_tutor.email)) || 'Tutor Portal'
   }).then(function(r){
-    showToast('✅ SRS emailed to parent (CC: student) successfully.','success');
+    showToast('✅ SARS emailed to parent (CC: student) successfully.','success');
     if(btn) btn.innerHTML = '✉️ &nbsp;Email Student &amp; Parent';
   }).catch(function(e){
     showToast('❌ Email failed: '+(e.message||'unknown error'),'error');

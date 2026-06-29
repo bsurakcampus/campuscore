@@ -690,6 +690,73 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
 .sr-v-thumb.missing .tx{text-decoration:line-through;}
 .sr-kbd{font-family:'DM Mono',monospace;font-size:10px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);border-radius:4px;padding:1px 5px;color:rgba(255,255,255,0.7);}
 
+/* ── MY PROGRAMS (Programme Leader) ── */
+.mp-pl-banner{display:flex;align-items:center;gap:8px;background:linear-gradient(90deg,rgba(120,24,174,0.08),rgba(37,99,235,0.06));border:1px solid #e3d4f0;border-left:3px solid #7818AE;border-radius:10px;padding:11px 15px;margin:0 0 16px;font-size:12px;color:#4a2570;}
+.mp-pl-banner b{color:#3b0764;}
+.mp-prog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:14px;}
+.mp-prog-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow:hidden;cursor:pointer;transition:box-shadow 0.15s,transform 0.08s,border-color 0.15s;}
+.mp-prog-card:hover{box-shadow:var(--shadow);transform:translateY(-2px);border-color:var(--accent-border);}
+.mp-prog-top{padding:16px 18px;color:#fff;display:flex;align-items:center;gap:12px;}
+.mp-prog-ic{font-size:30px;}
+.mp-prog-name{font-size:15px;font-weight:800;line-height:1.25;}
+.mp-prog-tag{font-size:10px;opacity:0.85;font-family:'DM Mono',monospace;}
+.mp-prog-body{padding:14px 18px;}
+.mp-prog-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;}
+.mp-pstat{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px;text-align:center;}
+.mp-pstat .v{font-size:17px;font-weight:800;color:var(--text);}
+.mp-pstat .l{font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;}
+.mp-prog-open{font-size:12px;font-weight:700;color:var(--accent);text-align:right;}
+.mp-year-sec{margin-bottom:22px;}
+.mp-year-head{font-size:13px;font-weight:800;color:#0F1E3D;border-bottom:2px solid #0F1E3D;padding-bottom:6px;margin-bottom:12px;}
+.mp-year-head .meta{font-size:11px;font-weight:500;color:var(--text3);}
+.mp-sem-label{font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin:10px 0 8px;}
+.mp-mod-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;}
+.mp-module-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow-sm);display:flex;flex-direction:column;}
+.mp-mh{padding:12px 15px;color:#fff;}
+.mp-mh-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px;}
+.mp-mh-name{font-size:14px;font-weight:800;}
+.mp-mh-code{font-size:10px;font-family:'DM Mono',monospace;opacity:0.85;}
+.mp-mh-sub{font-size:10px;opacity:0.85;margin-top:2px;}
+.mp-mb{padding:12px 15px;flex:1;display:flex;flex-direction:column;}
+.mp-tutor{font-size:11px;color:var(--text2);margin-bottom:10px;}
+.mp-tutor b{color:var(--text);}
+.mp-ass-stack{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;}
+.mp-ass-item{border-radius:7px;padding:8px 10px;border:1px solid var(--border);background:var(--surface2);}
+.mp-ass-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;}
+.mp-ass-code{font-size:11px;font-weight:700;color:var(--text);}
+.mp-ass-badge{font-size:9px;font-weight:700;padding:1px 7px;border-radius:20px;}
+.mp-ass-badge.released{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border);}
+.mp-ass-badge.pending{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-border);}
+.mp-ass-title{font-size:11px;color:var(--text2);}
+.mp-ass-dl{font-size:10px;color:var(--text3);margin-top:2px;}
+.mp-btn-mod{margin-top:auto;width:100%;padding:9px;border-radius:8px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;background:var(--red-bg);color:var(--red);border:1px solid var(--red-border);}
+.mp-btn-mod:hover{background:var(--red);color:#fff;}
+.mp-mod-actions{margin-top:auto;display:flex;gap:8px;}
+.mp-mod-actions .mp-btn-mod{margin-top:0;width:auto;flex:1;}
+.mp-btn-mod.exp{background:var(--accent-light);color:var(--accent);border-color:var(--accent-border);}
+.mp-btn-mod.exp:hover{background:var(--accent);color:#fff;}
+.mp-acf{background:#fff;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow-sm);margin-bottom:14px;}
+.mp-acf-head{padding:13px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:10px;}
+.mp-acf-title{font-size:13px;font-weight:800;}
+.mp-acf-meta{font-size:11px;color:var(--text2);}
+.mp-acf-body{padding:14px 16px;}
+.mp-info{background:var(--accent-light);border:1px solid var(--accent-border);border-radius:8px;padding:11px 14px;font-size:12px;color:#1e3a8a;margin-bottom:14px;}
+.mp-btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:4px;}
+.mp-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:8px;border:none;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;background:var(--accent);color:#fff;}
+.mp-btn:hover{background:#1d4ed8;}
+.mp-btn.ghost{background:#fff;color:var(--text2);border:1.5px solid var(--border2);}
+.mp-btn.ghost:hover{background:var(--surface3);color:var(--text);}
+.mp-panel{margin-top:12px;border:1px dashed var(--border2);border-radius:8px;padding:14px;background:var(--surface2);}
+.mp-msheet{margin-top:12px;border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+.mp-msheet table{width:100%;border-collapse:collapse;font-size:12px;}
+.mp-msheet thead tr{background:var(--sb-bg);}
+.mp-msheet th{padding:8px 12px;color:#fff;font-weight:600;font-size:11px;text-align:left;}
+.mp-msheet td{padding:7px 12px;border-top:1px solid var(--surface3);}
+.mp-cap{padding:9px 12px;background:var(--surface2);font-size:11px;font-weight:700;color:var(--text2);border-bottom:1px solid var(--border);}
+.mp-subpill{font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;}
+.mp-subpill.sub{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border);}
+.mp-subpill.ns{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border);}
+
 /* MOBILE BLOCK */
 #mobile-block{display:none;position:fixed;inset:0;z-index:99999;background:#0f1e3d;flex-direction:column;align-items:center;justify-content:center;padding:32px;text-align:center;}
 #mobile-block .mb-icon{font-size:48px;margin-bottom:20px;}
@@ -829,6 +896,7 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
         <button class="nav-item active" onclick="showPage('dashboard',this)"><span class="icon">🏠</span> Dashboard</button>
         <button class="nav-item" onclick="showPage('profile',this)"><span class="icon">👤</span> My Profile</button>
         <button class="nav-item" id="nav-reports-btn" onclick="showPage('admin-reports',this)" style="display:none;color:#fbbf24;"><span class="icon">📊</span> Admin Reports</button>
+        <button class="nav-item" id="nav-myprograms-btn" onclick="showPage('myprograms',this)" style="display:none;color:#fbbf24;"><span class="icon">📚</span> My Programs</button>
         <div class="nav-section-label">Records</div>
         <!-- SRS menu hidden — accessible via Current Students drill-down only -->
         <!-- <button class="nav-item" onclick="showPage('sps',this)"><span class="icon">📄</span> SRS</button> -->
@@ -1079,6 +1147,26 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
       </div><!-- /page-sps -->
 
       <!-- ALL STUDENTS -->
+      <!-- ═══ MY PROGRAMS (Programme Leader) ═══ -->
+      <div id="page-myprograms" class="page">
+        <div id="mp-view-picker">
+          <div class="page-header"><h1>My Programs</h1><p id="mp-picker-sub">Programme Leader access</p></div>
+          <div class="mp-prog-grid" id="mp-prog-grid"></div>
+        </div>
+        <div id="mp-view-modules" style="display:none;">
+          <button class="btn-sm" onclick="mpShowView('picker')">← My Programs</button>
+          <div class="page-header" style="margin-top:12px;"><h1 id="mp-mod-prog"></h1><p id="mp-mod-sub"></p></div>
+          <div class="mp-pl-banner">🎓 <span>You are acting as <b>Programme Leader</b>. Any marks you release are saved and emailed <b>under the assigned tutor's name</b>, exactly as if they uploaded them.</span></div>
+          <div id="mp-year-sections"></div>
+        </div>
+        <div id="mp-view-assess" style="display:none;">
+          <button class="btn-sm" id="mp-assess-back" onclick="mpShowView('modules')">← Back</button>
+          <div class="page-header" style="margin-top:12px;"><h1 id="mp-assess-name"></h1><p id="mp-assess-sub"></p></div>
+          <div class="mp-pl-banner">🎓 <span>Acting as <b>Programme Leader</b> for <span id="mp-assess-tutor"></span>'s module. Assessment marks only — no attendance.</span></div>
+          <div id="mp-assess-cards"></div>
+        </div>
+      </div>
+
       <!-- ═══ STUDENTS RECORDS PAGE ═══ -->
       <div id="page-studentrecords" class="page">
         <div class="page-header" style="flex-shrink:0;">
@@ -3268,6 +3356,7 @@ async function enterPortal(){
       if(rBtnFe) rBtnFe.style.display='';
       if(rBtn)   rBtn.style.display='';
     }
+    try { mpInitGate(loginEmail); } catch(ex){ console.warn('mpInitGate error:', ex); }
     if(window._readOnly) applyReadOnlyMode();
     try { renderDashboard(); } catch(ex){ console.warn('renderDashboard error:', ex); }
     try { loadCampusTodayCount(); } catch(ex){ console.warn('campusToday error:', ex); }
@@ -4610,6 +4699,7 @@ function showPage(id, btn){
   if(id==='reports-alumni')   renderAlumniReportSections();
   if(id==='studybreak') { if(!_sbLoaded) loadSbData(); else renderSbTable(); }
   if(id==='studentrecords') initStudentRecords();
+  if(id==='myprograms') mpRenderPicker();
   if(id==='alerts') renderAlertsPanel();
   if(id==='acadcalendar'){ loadAdminAcadCalendar(); initCalSemesterSelect(); }
   if(id==='announcements') loadAnnouncements();
@@ -5439,6 +5529,418 @@ function srKeyNav(e){
   else if(e.key==='ArrowLeft') srStep(-1);
   else if(e.key==='Escape') srCloseViewer();
 }
+
+// ═══════════════════════════════════════════════════════════════
+// MY PROGRAMS — Programme Leader (assessment marks on behalf of tutors)
+// ═══════════════════════════════════════════════════════════════
+const PROGRAMME_LEADERS = [
+  { programme:'BSc (Hons) Creative Computing',                name:'Mr Iftikhar Alam Khan', email:'iftikhar@bathspa.ae' },
+  { programme:'BA (Hons) Business & Management (Accounting)', name:'Ms Arooj Baig',         email:'arooj@bathspa.ae' },
+  { programme:'BA (Hons) Business & Management (HRM)',        name:'Ms Arooj Baig',         email:'arooj@bathspa.ae' },
+  { programme:'BA (Hons) Business & Management (Marketing)',  name:'Ms Arooj Baig',         email:'arooj@bathspa.ae' },
+  { programme:'BSc (Hons) Cyber Security',                    name:'Ms Arshiya Subhani',    email:'arshiya@bathspa.ae' },
+  { programme:'BSc (Hons) Psychology',                        name:'Dr. Jamal Magantor',    email:'jamal@bathspa.ae' },
+  { programme:'BA (Hons) Creative Media',                     name:'Mr Iftikhar Alam Khan', email:'iftikhar@bathspa.ae' },
+];
+const MP_COLORS = ['#2563eb','#7818AE','#0891b2','#15803d','#b45309','#be123c','#0d9488','#9333ea'];
+let _mpProgrammes = [];
+let _mpLeaderName = '';
+let _mpCurProg = null;
+let _mpCurMod  = null;
+let _mpPending   = {};
+let _mpPendingRA = {};
+
+async function mpPostFull(action, body){
+  const res = await fetch(API, { method:'POST', headers:{'Content-Type':'text/plain'},
+    body: JSON.stringify(Object.assign({action:action}, body)), redirect:'follow' });
+  return await res.json(); // full {status,data,message} envelope
+}
+
+function mpInitGate(email){
+  const e = (email||'').toLowerCase().trim();
+  _mpProgrammes = PROGRAMME_LEADERS.filter(p => p.email.toLowerCase()===e).map(p=>p.programme);
+  const leader = PROGRAMME_LEADERS.find(p => p.email.toLowerCase()===e);
+  _mpLeaderName = leader ? leader.name : '';
+  if(_mpProgrammes.length){
+    const btn = document.getElementById('nav-myprograms-btn');
+    if(btn) btn.style.display='';
+  }
+}
+
+function mpShowView(v){
+  document.getElementById('mp-view-picker').style.display  = v==='picker' ?'':'none';
+  document.getElementById('mp-view-modules').style.display = v==='modules'?'':'none';
+  document.getElementById('mp-view-assess').style.display  = v==='assess' ?'':'none';
+}
+
+function mpRenderPicker(){
+  mpShowView('picker');
+  document.getElementById('mp-picker-sub').textContent =
+    'Programme Leader access — '+(_mpLeaderName||'')+' · upload assessment marks on behalf of any tutor in these programmes.';
+  const grid = document.getElementById('mp-prog-grid');
+  if(!_mpProgrammes.length){ grid.innerHTML='<div style="color:var(--text3);padding:30px;">No programmes are assigned to you as Programme Leader.</div>'; return; }
+  grid.innerHTML = _mpProgrammes.map((name,i)=>{
+    const mods = (_programs||[]).filter(p=>p.programme===name);
+    const stuCount = (_students||[]).filter(s=>s.status!=='Alumni' && s.programme===name).length;
+    const years = [...new Set(mods.map(m=>m.year))].sort();
+    const yrRange = years.length ? years[0].replace('Year ','')+'–'+years[years.length-1].replace('Year ','') : '—';
+    const col = MP_COLORS[i%MP_COLORS.length];
+    const icon = name.indexOf('Creative Media')>=0?'🎬':name.indexOf('Cyber')>=0?'🛡️':name.indexOf('Psych')>=0?'🧠':name.indexOf('Comput')>=0?'💻':name.indexOf('Business')>=0?'💼':'🎓';
+    return '<div class="mp-prog-card" onclick="mpOpenProgramme(\''+name.replace(/'/g,"\\'")+'\')">'
+      +'<div class="mp-prog-top" style="background:'+col+';"><span class="mp-prog-ic">'+icon+'</span>'
+      +'<div><div class="mp-prog-name">'+name+'</div><div class="mp-prog-tag">Programme Leader access</div></div></div>'
+      +'<div class="mp-prog-body"><div class="mp-prog-stats">'
+      +'<div class="mp-pstat"><div class="v">'+stuCount+'</div><div class="l">Students</div></div>'
+      +'<div class="mp-pstat"><div class="v">'+mods.length+'</div><div class="l">Modules</div></div>'
+      +'<div class="mp-pstat"><div class="v">'+yrRange+'</div><div class="l">Years</div></div>'
+      +'</div><div class="mp-prog-open">Open Programme →</div></div></div>';
+  }).join('');
+}
+
+function mpOpenProgramme(name){
+  _mpCurProg = name;
+  const mods = (_programs||[]).filter(p=>p.programme===name);
+  document.getElementById('mp-mod-prog').textContent = name;
+  document.getElementById('mp-mod-sub').textContent = mods.length+' modules · grouped by year and semester';
+  const years = [...new Set(mods.map(m=>m.year))].sort();
+  document.getElementById('mp-year-sections').innerHTML = years.map(yr=>{
+    const ym = mods.filter(m=>m.year===yr);
+    const sems = [...new Set(ym.map(m=>m.semester))].sort();
+    return '<div class="mp-year-sec"><div class="mp-year-head">'+yr+' <span class="meta">· '+ym.length+' modules</span></div>'
+      + sems.map(sem=>'<div class="mp-sem-label">'+sem+'</div><div class="mp-mod-grid">'
+          + ym.filter(m=>m.semester===sem).map((m,idx)=>mpModuleCard(m,idx)).join('') + '</div>').join('')
+      + '</div>';
+  }).join('');
+  mpShowView('modules');
+}
+
+function mpPct(w){ var n=parseFloat(w); if(isNaN(n)) return null; return n<=1?Math.round(n*100):Math.round(n); }
+
+function mpModuleCard(m, idx){
+  const col = MP_COLORS[idx%MP_COLORS.length];
+  const short = _mpCurProg.replace('BSc (Hons) ','').replace('BA (Hons) ','');
+  const code = m.moduleCode||'';
+  const hasSA2 = !!(m.sa2Title) && (mpPct(m.sa2Weight)||0)>0;
+  function ai(label,t,w,dl){
+    var wp=mpPct(w);
+    return '<div class="mp-ass-item"><div class="mp-ass-top"><span class="mp-ass-code">'+label+' · '+(wp!==null?wp:'—')+'%</span></div>'
+      +'<div class="mp-ass-title">'+(t||'—')+'</div>'+(dl?'<div class="mp-ass-dl">Deadline: <strong>'+dl+'</strong></div>':'')+'</div>';
+  }
+  var saBlocks = ai('SA1',m.sa1Title,m.sa1Weight,m.sa1Deadline) + (hasSA2?ai('SA2',m.sa2Title,m.sa2Weight,m.sa2Deadline):'');
+  return '<div class="mp-module-card"><div class="mp-mh" style="background:'+col+';">'
+    +'<div class="mp-mh-top"><span class="mp-mh-name">'+(m.moduleName||'—')+'</span><span class="mp-mh-code">'+code+'</span></div>'
+    +'<div class="mp-mh-sub">'+short+' · '+m.year+' · '+m.semester+'</div></div>'
+    +'<div class="mp-mb"><div class="mp-tutor">Tutor: <b>'+(m.tutor||'—')+'</b></div>'
+    +'<div class="mp-ass-stack">'+saBlocks+'</div>'
+    +'<div class="mp-mod-actions">'
+    +'<button class="mp-btn-mod" onclick="mpOpenAssess(\''+code+'\')">📝 Upload Grades</button>'
+    +'<button class="mp-btn-mod exp" onclick="mpExportFull(\''+code+'\')">📊 Export Marksheet</button>'
+    +'</div></div></div>';
+}
+
+function mpOpenAssess(code){
+  const m = (_programs||[]).find(p=>p.moduleCode===code && p.programme===_mpCurProg);
+  if(!m) return;
+  _mpCurMod = m;
+  document.getElementById('mp-assess-back').textContent = '← '+_mpCurProg.replace('BSc (Hons) ','').replace('BA (Hons) ','');
+  document.getElementById('mp-assess-name').textContent = (m.moduleName||'')+' · '+(m.moduleCode||'');
+  document.getElementById('mp-assess-sub').textContent  = _mpCurProg+' · '+m.year+' · '+m.semester;
+  document.getElementById('mp-assess-tutor').textContent = m.tutor||'the tutor';
+  var hasSA2 = !!(m.sa2Title) && (mpPct(m.sa2Weight)||0)>0;
+  document.getElementById('mp-assess-cards').innerHTML =
+      mpSaCard('SA1', m.sa1Title, m.sa1Weight)
+    + (hasSA2?mpSaCard('SA2', m.sa2Title, m.sa2Weight):'')
+    + mpReassessCard('SA1', m.sa1Title)
+    + (hasSA2?mpReassessCard('SA2', m.sa2Title):'');
+  mpShowView('assess');
+}
+
+function mpSaCard(label, title, weight){
+  const id = label;
+  var wp = mpPct(weight);
+  return '<div class="mp-acf"><div class="mp-acf-head"><div><div class="mp-acf-title">'+label+' — '+(title||'—')+'</div>'
+    +'<div class="mp-acf-meta">Weight '+(wp!==null?wp:'—')+'%</div></div></div>'
+    +'<div class="mp-acf-body"><div class="mp-btn-row">'
+    +'<button class="mp-btn" onclick="mpOpenPanel(\''+id+'\')">📊 Upload Assessment Marks &amp; Release Results</button>'
+    +'<button class="mp-btn ghost" onclick="mpViewMarksheet(\''+id+'\')">📋 View Marksheet</button></div>'
+    +'<div id="mp-msheet-'+id+'"></div>'
+    +'<div class="mp-panel" id="mp-panel-'+id+'" style="display:none;">'
+    +'<div class="mp-info">ℹ️ Upload the Blackboard gradebook file (UTF-16). Marks read from <b>Column G</b>; BSU ID matched from the <b>Username column</b>. Max mark 100; weighting applied automatically.</div>'
+    +'<label class="mp-btn" style="cursor:pointer;">📊 Choose Gradebook File'
+    +'<input type="file" accept=".xls,.csv" style="display:none;" onchange="mpParseGradebook(this,\''+id+'\')"></label>'
+    +'<div id="mp-prev-'+id+'" style="margin-top:12px;"></div></div></div></div>';
+}
+
+function mpReassessCard(label, title){
+  const id = 'RA'+label;
+  return '<div class="mp-acf"><div class="mp-acf-head"><div><div class="mp-acf-title">Re-Assessment '+label+' — '+(title||'—')+'</div>'
+    +'<div class="mp-acf-meta">Only original fails / non-submitters · capped at 40 · no emails</div></div>'
+    +'<span class="mp-ass-badge pending">Optional</span></div>'
+    +'<div class="mp-acf-body">'
+    +'<div class="mp-info">ℹ️ Upload the re-assessment gradebook for <b>'+label+' — '+(title||'')+'</b>. Only students who originally <b>failed or did not submit</b> are updated. Marks capped at 40. No parent emails sent.</div>'
+    +'<label class="mp-btn ghost" style="cursor:pointer;color:#7c3aed;border-color:#c4b5fd;">📋 Choose Re-Assessment Gradebook'
+    +'<input type="file" accept=".xls,.csv" style="display:none;" onchange="mpParseReassess(this,\''+id+'\',\''+label+'\')"></label>'
+    +'<div id="mp-prev-'+id+'" style="margin-top:12px;"></div></div></div>';
+}
+
+function mpOpenPanel(id){ const p=document.getElementById('mp-panel-'+id); if(p) p.style.display='block'; mpClearPrev(id); }
+function mpCancelPanel(id){ const p=document.getElementById('mp-panel-'+id); if(p) p.style.display='none'; mpClearPrev(id); }
+function mpClearPrev(id){ const el=document.getElementById('mp-prev-'+id); if(el) el.innerHTML=''; }
+
+function mpCalcGrade(mark){
+  if(mark===null||mark===undefined||isNaN(mark)) return '—';
+  if(mark===0) return 'NS';
+  if(mark>=70) return 'A'; if(mark>=60) return 'B'; if(mark>=50) return 'C'; if(mark>=40) return 'D'; return 'F';
+}
+function mpGradeColor(g){ return g==='A'?'#16a34a':g==='B'?'#2563eb':g==='C'?'#d97706':g==='D'?'#ea580c':g==='F'?'#dc2626':g==='NS'?'#9ca3af':'var(--text2)'; }
+
+// ── Parse Blackboard gradebook (UTF-16 TSV) — ported from tutor portal ──
+function mpParseGradebook(input, id){
+  if(!input.files||!input.files[0]) return;
+  const m=_mpCurMod; if(!m) return;
+  const sa=id;
+  const title  = (sa==='SA1'?m.sa1Title:m.sa2Title)||'';
+  const weight = parseFloat(sa==='SA1'?m.sa1Weight:m.sa2Weight)||0;
+  const prev=document.getElementById('mp-prev-'+id);
+  prev.innerHTML='<div style="font-size:13px;color:var(--text2);padding:8px 0;">⏳ Reading file…</div>';
+  const reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      const bytes=new Uint8Array(e.target.result);
+      const text=new TextDecoder('utf-16le').decode(bytes);
+      const lines=text.split('\n').filter(l=>l.trim());
+      const records=[];
+      for(let i=1;i<lines.length;i++){
+        const cols=lines[i].replace(/^\uFEFF/,'').split('\t').map(c=>c.replace(/^"|"$/g,'').trim());
+        if(cols.length<7) continue;
+        const bsuId=cols[2], lastName=cols[0], firstName=cols[1], markRaw=cols[6];
+        if(!bsuId||!bsuId.match(/^\d+$/)) continue;
+        const mark=(markRaw===''||markRaw==='—'||markRaw===null)?null:parseFloat(markRaw);
+        const grade=mpCalcGrade(mark);
+        let studentName=firstName+' '+lastName;
+        const found=(_students||[]).find(s=>String(s.bsuId)===String(bsuId));
+        if(found) studentName=found.name||studentName;
+        records.push({bsuId:bsuId, studentName:studentName, mark:mark, grade:grade, inCurrent:!!found});
+      }
+      if(!records.length){ prev.innerHTML='<div style="color:var(--red);font-size:13px;padding:8px 0;">⚠️ No valid records found. Check the file format (Blackboard UTF-16 export).</div>'; return; }
+      _mpPending[id]={code:m.moduleCode, name:m.moduleName, sa:sa, title:title, weight:weight, records:records};
+      mpRenderPreview(id, records);
+    }catch(err){ prev.innerHTML='<div style="color:var(--red);font-size:13px;padding:8px 0;">⚠️ Error reading file: '+err.message+'</div>'; }
+  };
+  reader.readAsArrayBuffer(input.files[0]);
+}
+
+function mpRenderPreview(id, records){
+  const prev=document.getElementById('mp-prev-'+id);
+  const warnings=records.filter(r=>!r.inCurrent);
+  const valid=records.filter(r=>r.mark!==null&&!isNaN(r.mark)&&r.mark!==0);
+  const avg=valid.length?(valid.reduce((s,r)=>s+r.mark,0)/valid.length).toFixed(1):'—';
+  let html='';
+  if(warnings.length) html+='<div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:7px;padding:10px 14px;font-size:12px;color:#92400e;margin-bottom:12px;">⚠️ '+warnings.length+' BSU ID(s) not found in CURRENT — shown in amber. Review before releasing.</div>';
+  html+='<div style="display:flex;gap:16px;margin-bottom:10px;font-size:12px;color:var(--text2);"><div>📋 <b>'+records.length+'</b> students</div><div>📊 Avg: <b>'+avg+'</b></div></div>';
+  html+='<div style="overflow-x:auto;margin-bottom:14px;border-radius:8px;border:1px solid var(--border);"><table style="width:100%;border-collapse:collapse;font-size:12px;"><thead><tr style="background:var(--sb-bg);"><th style="padding:8px 12px;text-align:left;color:#fff;">BSU ID</th><th style="padding:8px 12px;text-align:left;color:#fff;">Student Name</th><th style="padding:8px 12px;text-align:center;color:#fff;">Mark /100</th><th style="padding:8px 12px;text-align:center;color:#fff;">Grade</th></tr></thead><tbody>';
+  records.forEach((r,idx)=>{
+    const bg=!r.inCurrent?'#fef3c7':(idx%2===0?'#fff':'#f9fafb');
+    html+='<tr style="background:'+bg+';"><td style="padding:7px 12px;border-bottom:1px solid #f0f0f0;font-family:monospace;">'+r.bsuId+(r.inCurrent?'':' ⚠️')+'</td><td style="padding:7px 12px;border-bottom:1px solid #f0f0f0;">'+r.studentName+'</td><td style="padding:7px 12px;border-bottom:1px solid #f0f0f0;text-align:center;font-weight:700;">'+(r.mark===0?'0':r.mark!==null?r.mark:'—')+'</td><td style="padding:7px 12px;border-bottom:1px solid #f0f0f0;text-align:center;font-weight:700;color:'+mpGradeColor(r.grade)+';">'+r.grade+'</td></tr>';
+  });
+  html+='</tbody></table></div>';
+  html+='<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:7px;padding:10px 14px;font-size:12px;color:#15803d;margin-bottom:12px;">✅ Releasing saves marks to RESULTS, sets Published = Yes, and emails parents — under the tutor\u2019s name (\''+(_mpCurMod&&_mpCurMod.tutor||'tutor')+'\'). Save Only stores marks without emailing.</div>';
+  html+='<div style="display:flex;gap:8px;flex-wrap:wrap;">';
+  html+='<button class="btn-sm primary" onclick="mpConfirm(\''+id+'\',false)">✅ Confirm &amp; Release Results + Email Parents</button>';
+  html+='<button class="btn-sm" style="color:var(--accent);border-color:var(--accent);" onclick="mpConfirm(\''+id+'\',true)">💾 Save Only (No Emails)</button>';
+  html+='<button class="btn-sm" onclick="mpCancelPanel(\''+id+'\')">Cancel</button></div>';
+  prev.innerHTML=html;
+}
+
+function mpConfirm(id, saveOnly){
+  const pm=_mpPending[id];
+  if(!pm){ showToast('No marks data found. Please re-upload.','error'); return; }
+  const m=_mpCurMod||{};
+  const tutorName=m.tutor||''; const tutorEmail=m.tutorEmail||'';
+  const records=pm.records.map(r=>({bsuId:r.bsuId, studentName:r.studentName, mark:r.mark!==null?r.mark:''}));
+  showToast('⏳ Saving…','info');
+  mpPostFull('saveResultsBatch',{ moduleCode:pm.code, moduleName:pm.name, sa:pm.sa, saTitle:pm.title, saWeight:pm.weight, maxScore:100, uploadedBy:tutorEmail, records:records })
+  .then(function(res){
+    if(!res||res.status!=='ok') throw new Error((res&&res.message)||'Save failed');
+    if(saveOnly){
+      showToast('💾 Marks saved to RESULTS. No emails sent.','success');
+      mpCancelPanel(id); mpViewMarksheet(id,true); delete _mpPending[id]; return null;
+    }
+    return mpPostFull('publishResults',{ moduleCode:pm.code, moduleName:pm.name, sa:pm.sa, saTitle:pm.title, saWeight:pm.weight, semester:String(m.semester||''), publishedBy:tutorName, tutorName:tutorName, tutorEmail:tutorEmail });
+  }).then(function(res){
+    if(!res) return;
+    if(res.status!=='ok') throw new Error((res&&res.message)||'Publish failed');
+    const d=res.data||{}; const sent=d.sent||0; const already=d.alreadySent||0;
+    let msg='✅ '+pm.sa+' released. '+sent+' parent email(s) sent under '+(m.tutor||'tutor')+'.';
+    if(sent===0&&already>0) msg='ℹ️ '+pm.sa+' already released — '+already+' emails were sent earlier.';
+    showToast(msg,'success');
+    mpCancelPanel(id); mpViewMarksheet(id,true); delete _mpPending[id];
+  }).catch(function(err){ showToast('Error: '+(err.message||err),'error'); });
+}
+
+function mpViewMarksheet(id, forceShow){
+  const m=_mpCurMod; if(!m) return;
+  const sa=id;
+  const host=document.getElementById('mp-msheet-'+id);
+  if(!host) return;
+  if(!forceShow && host.getAttribute('data-open')==='1'){ host.innerHTML=''; host.removeAttribute('data-open'); return; }
+  host.innerHTML='<div class="mp-msheet"><div class="mp-cap">⏳ Loading marksheet…</div></div>';
+  apiFetch({action:'getResults', moduleCode:m.moduleCode, sa:sa}).then(function(rows){
+    rows=rows||[];
+    const hasMarks=rows.some(r=>r.mark!==null&&r.mark!==undefined&&r.mark!=='');
+    let body=rows.map((r,i)=>{
+      if(r.mark!==null&&r.mark!==undefined&&r.mark!==''){ const mk=Number(r.mark); const g=mpCalcGrade(mk);
+        return '<tr><td>'+(i+1)+'</td><td style="font-family:monospace;">'+r.bsuId+'</td><td>'+(r.studentName||'')+'</td><td style="text-align:center;"><b>'+mk+'</b></td><td style="text-align:center;font-weight:700;color:'+mpGradeColor(g)+';">'+g+'</td></tr>'; }
+      const sub=(r.submissionStatus||'').toUpperCase();
+      const pill=sub==='SUBMITTED'?'<span class="mp-subpill sub">Submitted</span>':sub==='NOT_SUBMITTED'?'<span class="mp-subpill ns">Not Submitted</span>':'—';
+      return '<tr><td>'+(i+1)+'</td><td style="font-family:monospace;">'+r.bsuId+'</td><td>'+(r.studentName||'')+'</td><td style="text-align:center;">'+pill+'</td><td style="text-align:center;color:var(--text3);">—</td></tr>';
+    }).join('');
+    if(!rows.length) body='<tr><td colspan="5" style="text-align:center;color:var(--text3);padding:16px;">No marks or submission data yet for this assessment.</td></tr>';
+    host.innerHTML='<div class="mp-msheet"><div class="mp-cap">'+(hasMarks?'📋 Gradebook':'📥 Submission Status')+' — '+rows.length+' students</div><table><thead><tr><th>#</th><th>BSU ID</th><th>Name</th><th style="text-align:center;">Mark /100</th><th style="text-align:center;">Grade</th></tr></thead><tbody>'+body+'</tbody></table></div>';
+    host.setAttribute('data-open','1');
+  }).catch(function(err){ host.innerHTML='<div class="mp-msheet"><div class="mp-cap" style="color:var(--red);">Error loading: '+(err.message||err)+'</div></div>'; });
+}
+
+function mpExportFull(code){
+  var m = (_programs||[]).find(function(p){ return p.moduleCode===code && p.programme===_mpCurProg; }) || _mpCurMod || {};
+  var name=m.moduleName||code, programme=m.programme||_mpCurProg||'', year=m.year||'', semester=m.semester||'';
+  showToast('⏳ Preparing marksheet…','info');
+  Promise.all([
+    apiFetch({action:'getResults', moduleCode:code}),
+    apiFetch({action:'getStudents', programme:programme, year:year})
+  ]).then(function(res){
+    var results=res[0]||[], students=res[1]||[];
+    var w1raw=parseFloat(String(m.sa1Weight||'1').replace('%',''));
+    var w2raw=parseFloat(String(m.sa2Weight||'0').replace('%',''));
+    var w1=w1raw<=1?Math.round(w1raw*100):Math.round(w1raw);
+    var w2=w2raw<=1?Math.round(w2raw*100):Math.round(w2raw);
+    var hasSA2=!!(m.sa2Title && w2>0);
+    var acYear=(_config&&_config.academic_year)||'2025/2026';
+    var semLabel=semester.indexOf('1')>-1?'Semester 1':'Semester 2';
+    var today=new Date().toLocaleDateString('en-GB');
+    var resMap={};
+    results.forEach(function(r){ var id=r.bsuId||''; if(!id) return; if(!resMap[id]) resMap[id]={}; var sa=String(r.sa||'').replace(/[^0-9]/g,''); if(sa==='1') resMap[id].sa1=r.mark!==null&&r.mark!==undefined?Number(r.mark):null; if(sa==='2') resMap[id].sa2=r.mark!==null&&r.mark!==undefined?Number(r.mark):null; });
+    var sorted=(students||[]).slice().sort(function(a,b){ return (a.name||'').localeCompare(b.name||''); });
+    var fname=name.replace(/[^a-zA-Z0-9 ]/g,'').replace(/\s+/g,'_')+'_'+code+'_'+acYear.replace('/','_')+'_'+semLabel.replace(' ','_')+'_'+today.replace(/\//g,'-')+'.xlsx';
+    var wb=new ExcelJS.Workbook(); wb.creator='CampusCore'; wb.created=new Date();
+    var ws=wb.addWorksheet('Marksheet',{views:[{showGridLines:false}]});
+    var NAVY='0F1E3D',WHITE='FFFFFF',LGREY='F1F5F9',HDRGREY='334155',RED='DC2626',REDLITE='FEF2F2',DARKGREEN='15803D',TEXT='1E293B',SUB='64748B',MGREY='E2E8F0';
+    function fi(h){ return {type:'pattern',pattern:'solid',fgColor:{argb:'FF'+h}}; }
+    function fo(sz,bold,col){ return {name:'Calibri',size:sz,bold:!!bold,color:{argb:'FF'+col}}; }
+    function al(h){ return {horizontal:h||'center',vertical:'middle'}; }
+    function bd(){ var s={style:'thin',color:{argb:'FF'+MGREY}}; return {left:s,right:s,top:s,bottom:s}; }
+    var cols=[{width:8},{width:12},{width:32},{width:16}];
+    if(hasSA2) cols.push({width:16});
+    cols.push({width:16}); cols.push({width:9});
+    ws.columns=cols; var ncols=cols.length;
+    ws.mergeCells(1,1,1,ncols); var r1=ws.getRow(1); r1.height=28; var c1=r1.getCell(1); c1.value='Bath Spa University - RAK Campus'; c1.font=fo(15,true,WHITE); c1.fill=fi(NAVY); c1.alignment=al('center');
+    ws.mergeCells(2,1,2,ncols); var r2=ws.getRow(2); r2.height=18; var c2=r2.getCell(1); c2.value='Module Marksheet  —  '+name+' · '+code+' · '+programme+' · '+year+' · '+semLabel; c2.font={name:'Calibri',size:10,color:{argb:'FF93C5FD'}}; c2.fill=fi(NAVY); c2.alignment=al('center');
+    ws.mergeCells(3,1,3,ncols); var r3=ws.getRow(3); r3.height=15; var c3=r3.getCell(1); c3.value='CampusCore   ·   Generated: '+today+'   ·   '+sorted.length+' students   ·   '+(hasSA2?'SA1: '+w1+'%  |  SA2: '+w2+'%':'SA1 only: '+w1+'%'); c3.font=fo(9,false,SUB); c3.fill=fi(LGREY); c3.alignment=al('center');
+    ws.addRow([]); ws.getRow(4).height=6;
+    var headers=['#','BSU ID','Student Name','SA1 ('+w1+'%)']; if(hasSA2) headers.push('SA2 ('+w2+'%)'); headers.push('Weighted Overall','Grade');
+    var rh=ws.getRow(5); rh.height=16; headers.forEach(function(h,i){ var c=rh.getCell(i+1); c.value=h; c.font=fo(9,true,WHITE); c.fill=fi(HDRGREY); c.alignment=al(i>=3?'center':'left'); c.border=bd(); });
+    ws.views=[{state:'frozen',ySplit:5}];
+    sorted.forEach(function(s,si){
+      var rm=resMap[s.bsuId]||{};
+      var sa1=rm.sa1!==undefined&&rm.sa1!==null?rm.sa1:null;
+      var sa2=hasSA2&&rm.sa2!==undefined&&rm.sa2!==null?rm.sa2:null;
+      var ov=null;
+      if(!hasSA2&&sa1!==null) ov=sa1;
+      else if(hasSA2&&sa1!==null&&sa2!==null) ov=Math.round(sa1*w1/100+sa2*w2/100);
+      var grade='—';
+      if(ov!==null){ if(ov===0) grade='NS (No Submission)'; else if(ov>=70)grade='A (Distinction)'; else if(ov>=60)grade='B (Merit)'; else if(ov>=50)grade='C (Pass)'; else if(ov>=40)grade='D (Pass)'; else grade='F (Fail)'; }
+      else grade='NS (No Submission)';
+      var sa1Display=sa1!==null?(sa1===0?0:sa1):'—';
+      var sa2Display=sa2!==null?(sa2===0?0:sa2):'—';
+      var ovDisplay=ov!==null?(ov===0?0:ov):'—';
+      var rowVals=[si+1,s.bsuId,s.name||'',sa1Display]; if(hasSA2) rowVals.push(sa2Display); rowVals.push(ovDisplay,grade);
+      var row=ws.addRow(rowVals); row.height=13; var fill=fi(si%2===0?WHITE:'F8FAFC');
+      row.eachCell(function(c){ c.font=fo(9,false,TEXT); c.fill=fill; c.border=bd(); c.alignment=al('center'); });
+      row.getCell(1).alignment=al('left'); row.getCell(1).font=fo(9,false,SUB);
+      row.getCell(2).alignment=al('left'); row.getCell(2).font=fo(9,false,SUB);
+      row.getCell(3).alignment=al('left');
+      function colourMark(cell,val){ if(val===0){ cell.font=fo(9,true,'6B7280'); cell.fill=fi('F1F5F9'); return; } if(typeof val!=='number') return; if(val<40){ cell.font=fo(9,true,RED); cell.fill=fi(REDLITE); } else if(val>=70){ cell.font=fo(9,true,DARKGREEN); cell.fill=fi('F0FDF4'); } }
+      colourMark(row.getCell(4),sa1); if(hasSA2) colourMark(row.getCell(5),sa2);
+      var ovCell=row.getCell(hasSA2?6:5);
+      if(ov===null||ov===0){ ovCell.font=fo(9,true,'6B7280'); } else if(ov>=70){ ovCell.font=fo(9,true,DARKGREEN); } else if(ov<40){ ovCell.font=fo(9,true,RED); } else { ovCell.font=fo(9,true,'92400E'); }
+    });
+    wb.xlsx.writeBuffer().then(function(buf){
+      var blob=new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+      var url=URL.createObjectURL(blob); var a=document.createElement('a'); a.href=url; a.download=fname; a.click(); URL.revokeObjectURL(url);
+      showToast('✅ '+fname+' downloaded','success');
+    }).catch(function(e){ showToast('❌ Export failed: '+e.message,'error'); });
+  }).catch(function(e){ showToast('❌ Export failed: '+(e.message||'unknown'),'error'); });
+}
+
+// ── Re-assessment (ported from tutor portal) ──
+function mpParseReassess(input, id, saLetter){
+  if(!input.files||!input.files[0]) return;
+  const m=_mpCurMod; if(!m) return;
+  const code=m.moduleCode, sa=saLetter;
+  const title=(saLetter==='SA1'?m.sa1Title:m.sa2Title)||'', weight=parseFloat(saLetter==='SA1'?m.sa1Weight:m.sa2Weight)||0;
+  const prev=document.getElementById('mp-prev-'+id);
+  prev.innerHTML='<div style="font-size:13px;color:var(--text2);padding:8px 0;">⏳ Reading file…</div>';
+  apiFetch({action:'getResults', moduleCode:code, sa:sa}).then(function(existing){
+    const failedMap={};
+    (existing||[]).forEach(function(r){ const mk=(r.mark!==null&&r.mark!==undefined&&r.mark!=='')?Number(r.mark):null; if(mk===null||mk<40) failedMap[String(r.bsuId)]=r; });
+    if(!Object.keys(failedMap).length){ prev.innerHTML='<div style="color:var(--amber);font-size:13px;padding:8px 0;">⚠️ No failed or NS students found for this assessment.</div>'; return; }
+    const reader=new FileReader();
+    reader.onload=function(e){
+      try{
+        const bytes=new Uint8Array(e.target.result); const text=new TextDecoder('utf-16le').decode(bytes);
+        const lines=text.split('\n').filter(l=>l.trim()); const gbMap={};
+        for(let i=1;i<lines.length;i++){
+          const cols=lines[i].replace(/^\uFEFF/,'').split('\t').map(c=>c.replace(/^"|"$/g,'').trim());
+          if(cols.length<7) continue;
+          const bsuId=cols[2], markRaw=cols[6];
+          if(!bsuId||!bsuId.match(/^\d+$/)) continue;
+          if(markRaw===''||markRaw===null||markRaw==='—') continue;
+          const mk=parseFloat(markRaw); if(isNaN(mk)) continue; gbMap[String(bsuId)]=mk;
+        }
+        const toUpdate=[], skipped=[];
+        Object.keys(failedMap).forEach(function(bsuId){
+          const ex=failedMap[bsuId];
+          if(gbMap[bsuId]!==undefined){ const raw=gbMap[bsuId]; const capped=Math.min(raw,40); toUpdate.push({bsuId:bsuId, studentName:ex.studentName||'', markRaw:raw, mark:capped, wasCapped:raw>40}); }
+          else skipped.push(ex);
+        });
+        _mpPendingRA[id]={code:code, name:m.moduleName, sa:sa, title:title, weight:weight, toUpdate:toUpdate, skipped:skipped};
+        mpRenderReassessPreview(id, toUpdate, skipped);
+      }catch(err){ prev.innerHTML='<div style="color:var(--red);font-size:13px;padding:8px 0;">⚠️ Error: '+err.message+'</div>'; }
+    };
+    reader.readAsArrayBuffer(input.files[0]);
+  }).catch(function(err){ prev.innerHTML='<div style="color:var(--red);font-size:13px;padding:8px 0;">⚠️ Error: '+(err.message||err)+'</div>'; });
+}
+
+function mpRenderReassessPreview(id, toUpdate, skipped){
+  const prev=document.getElementById('mp-prev-'+id);
+  const capped=toUpdate.filter(r=>r.wasCapped).length;
+  let html='<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px;padding:12px 14px;background:#f5f3ff;border-radius:8px;border:1px solid #c4b5fd;font-size:12px;"><div style="color:#7c3aed;font-weight:700;">📋 Re-Assessment Preview</div><div>Will update <b>'+toUpdate.length+'</b> · Unchanged <b>'+skipped.length+'</b></div>'+(capped?'<div style="color:#dc2626;">⚠️ '+capped+' capped to 40</div>':'')+'</div>';
+  if(toUpdate.length){
+    html+='<div style="overflow-x:auto;margin-bottom:14px;border-radius:8px;border:1px solid #c4b5fd;"><table style="width:100%;border-collapse:collapse;font-size:12px;"><thead><tr style="background:#7c3aed;"><th style="padding:7px 12px;color:#fff;text-align:left;">#</th><th style="padding:7px 12px;color:#fff;text-align:left;">BSU ID</th><th style="padding:7px 12px;color:#fff;text-align:left;">Name</th><th style="padding:7px 12px;color:#fff;text-align:center;">Raw</th><th style="padding:7px 12px;color:#fff;text-align:center;">Saved As</th></tr></thead><tbody>';
+    toUpdate.forEach((r,i)=>{ const saved=r.wasCapped?'<span style="color:#dc2626;font-weight:700;">40</span> <span style="font-size:10px;color:#dc2626;">(capped)</span>':'<b>'+r.mark+'</b>';
+      html+='<tr style="background:'+(i%2===0?'#fff':'#faf5ff')+';"><td style="padding:6px 12px;border-bottom:1px solid #f0f0f0;">'+(i+1)+'</td><td style="padding:6px 12px;border-bottom:1px solid #f0f0f0;font-family:monospace;">'+r.bsuId+'</td><td style="padding:6px 12px;border-bottom:1px solid #f0f0f0;">'+r.studentName+'</td><td style="padding:6px 12px;border-bottom:1px solid #f0f0f0;text-align:center;">'+r.markRaw+'</td><td style="padding:6px 12px;border-bottom:1px solid #f0f0f0;text-align:center;">'+saved+'</td></tr>';
+    });
+    html+='</tbody></table></div>';
+  }
+  html+='<div style="display:flex;gap:8px;"><button class="btn-sm" style="background:#7c3aed;color:#fff;border-color:#7c3aed;" onclick="mpSaveReassess(\''+id+'\')">💾 Save Re-Assessment Marks (No Emails)</button><button class="btn-sm" onclick="mpClearPrev(\''+id+'\')">Cancel</button></div>';
+  prev.innerHTML=html;
+}
+
+function mpSaveReassess(id){
+  const p=_mpPendingRA[id]; if(!p){ showToast('No re-assessment data found.','error'); return; }
+  const m=_mpCurMod||{}; const by=m.tutorEmail||'';
+  const records=p.toUpdate.map(r=>({bsuId:r.bsuId, studentName:r.studentName, mark:r.mark}));
+  showToast('⏳ Saving…','info');
+  mpPostFull('saveResultsBatch',{ moduleCode:p.code, moduleName:p.name, sa:p.sa, saTitle:p.title, saWeight:p.weight, maxScore:100, uploadedBy:by, reAssess:true, records:records })
+  .then(function(res){
+    if(!res||res.status!=='ok') throw new Error((res&&res.message)||'Save failed');
+    showToast('✅ Re-assessment marks saved for '+records.length+' student(s). No emails.','success');
+    const el=document.getElementById('mp-prev-'+id);
+    if(el) el.innerHTML='<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px 14px;font-size:12px;color:#166534;">✅ Re-assessment marks saved ('+records.length+' student(s)) · no emails sent.</div>';
+    delete _mpPendingRA[id];
+  }).catch(function(err){ showToast('Error: '+(err.message||err),'error'); });
+}
+
 
 // ═══════════════════════════════════════════════════════════════
 // ALUMNI TABLE
@@ -7293,6 +7795,8 @@ function fillSpsSkeleton(bundle){
     var raw2=(r.sa2&&r.sa2.saWeight!==null&&r.sa2.saWeight!==undefined)?r.sa2.saWeight:(p.sa2Weight||0.5);
     var w1=parseFloat(raw1); if(w1<=1) w1=w1*100;
     var w2=parseFloat(raw2); if(w2<=1) w2=w2*100;
+    var hasSA2=!!(p.sa2Weight||p.sa2Title);
+    if(!hasSA2) return isNaN(m1)?null:Math.round(m1);          // single-SA module → overall = SA1 mark (0 for NS after upload)
     if(!isNaN(m1)&&!isNaN(m2)) return Math.round(m1*w1/100+m2*w2/100);
     return null;
   }
@@ -7361,7 +7865,7 @@ function fillSpsSkeleton(bundle){
         var t1=(r.sa1&&r.sa1.saTitle)?r.sa1.saTitle:(p.sa1Title||'—');
         var t2=(r.sa2&&r.sa2.saTitle)?r.sa2.saTitle:(p.sa2Title||'');
         var hasSA2=!!(p.sa2Weight||p.sa2Title);
-        var ovHtml=ov!==null?'<span style="font-size:12px;font-weight:800;font-family:\'DM Mono\',monospace;color:'+(ov>=70?'#16a34a':ov>=40?'#d97706':'#dc2626')+';">'+ov+'</span>':'<span style="font-size:9px;color:#94a3b8;">Awaiting</span>';
+        var ovHtml=ov!==null?'<span style="font-size:12px;font-weight:800;font-family:\'DM Mono\',monospace;color:#2563eb;">'+ov+'</span>':'<span style="font-size:9px;color:#94a3b8;">Awaiting</span>';
         var attHtml=pct!==null?'<span style="font-size:11px;font-weight:700;font-family:\'DM Mono\',monospace;color:'+(pct>=75?'#16a34a':pct>=60?'#d97706':'#dc2626')+';">'+pct+'%</span>':'—';
         html+='<tr><td style="font-weight:600;font-size:10.5px;">'+name+'</td>'
           +'<td class="wt dvd">'+w1+'</td><td class="ttl">'+t1+'</td><td class="tc">'+mPill(isNaN(m1)?null:m1, r.sa1&&r.sa1.submissionStatus)+'</td>'
