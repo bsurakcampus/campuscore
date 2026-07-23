@@ -228,6 +228,32 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
 .btn-mod.red{background:var(--red);border-color:var(--red);color:#fff;}
 .btn-mod.red:hover{background:#b91c1c;}
 .btn-mod.green{background:var(--green);border-color:var(--green);color:#fff;}
+.btn-mod.amber{background:var(--amber);border-color:var(--amber);color:#fff;}
+/* Re-Assessments page */
+.ra-page-h{margin-bottom:12px;}
+.ra-page-h .ra-t{font-size:19px;font-weight:800;color:var(--text);letter-spacing:-0.3px;}
+.ra-page-h .ra-s{font-size:12px;color:var(--text2);}
+.ra-dl{display:flex;align-items:center;gap:10px;background:var(--amber-bg);border:1px solid var(--amber-border);border-radius:8px;padding:10px 14px;font-size:12px;color:#92400e;margin-bottom:12px;}
+.ra-dl b{color:#78350f;}
+.ra-info{background:var(--accent-light,#eff6ff);border:1px solid var(--accent-border,#bfdbfe);border-radius:8px;padding:10px 14px;font-size:12px;color:#1e3a8a;margin-bottom:16px;}
+.ra-sec{margin-bottom:18px;}
+.ra-sec-h{display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid var(--navy,#0F1E3D);padding-bottom:6px;margin-bottom:10px;}
+.ra-sec-t{font-size:13px;font-weight:800;color:var(--navy,#0F1E3D);}
+.ra-cnt{font-size:11px;font-weight:700;color:var(--red);background:var(--red-bg,#fef2f2);border:1px solid var(--red-border,#fecaca);border-radius:20px;padding:1px 9px;}
+.ra-tbl{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed;}
+.ra-tbl th{background:var(--surface3);text-align:left;padding:7px 12px;font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;}
+.ra-tbl td{padding:8px 12px;border-top:1px solid var(--surface3);}
+.ra-pill{font-size:10px;font-weight:700;padding:1px 8px;border-radius:20px;}
+.ra-pill.f{background:var(--red-bg,#fef2f2);color:var(--red);border:1px solid var(--red-border,#fecaca);}
+.ra-pill.ns{background:#f1f5f9;color:#475569;border:1px solid #cbd5e1;}
+.ra-cons{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:16px;}
+.ra-cons-h{font-size:12px;font-weight:800;color:var(--navy,#0F1E3D);margin-bottom:10px;}
+.ra-stud{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--border);}
+.ra-stud:first-of-type{border-top:none;}
+.ra-nm{font-size:12px;font-weight:600;flex:1;}
+.ra-items{display:flex;gap:6px;flex-wrap:wrap;}
+.ra-itag{font-size:10px;font-weight:700;background:var(--purple,#7818AE);color:#fff;border-radius:5px;padding:2px 7px;}
+.ra-sendbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:24px;}
 .btn-mod.green:hover{background:#15803d;}
 
 /* ALERT BANNER */
@@ -1113,6 +1139,28 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
         </div>
         </div><!-- /scrollable content -->
       </div><!-- /attendance -->
+
+      <!-- RE-ASSESSMENTS PAGE -->
+      <div id="page-reassess" class="page">
+          <button class="att-back-btn" onclick="showPage('dashboard')">← Dashboard</button>
+          <div class="ra-page-h" style="margin-top:12px;">
+            <div class="ra-t" id="ra-title">🔁 Re-Assessments</div>
+            <div class="ra-s" id="ra-sub"></div>
+          </div>
+          <div class="ra-dl" id="ra-dl-banner"></div>
+          <div class="ra-info">ℹ️ Lists only students whose released result is below 40 (fail or no-submission). Each student receives one notice covering all their re-assessments, emailed to the student and copied to the parent, with replies coming back to you.</div>
+          <div id="ra-sections"></div>
+          <div class="ra-cons" id="ra-consolidated" style="display:none;"></div>
+          <div class="ra-sendbar" id="ra-sendbar" style="display:none;">
+            <button class="btn-sm" id="ra-send-btn" onclick="raSend()" style="background:var(--green);color:#fff;border-color:var(--green);">📧 Send Re-Assessment Notices (Student + Parent)</button>
+            <div id="ra-confirm" style="display:none;align-items:center;gap:10px;">
+              <span style="font-size:12px;color:var(--red);font-weight:600;">Send notices to all listed students?</span>
+              <button class="btn-sm" onclick="raSendConfirm()" style="background:var(--green);color:#fff;border-color:var(--green);">Yes, send</button>
+              <button class="btn-sm" onclick="raSendCancel()">Cancel</button>
+            </div>
+          </div>
+          <div id="ra-sent-note" style="display:none;font-size:12px;color:#15803d;font-weight:600;background:var(--green-bg,#f0fdf4);border:1px solid var(--green-border,#bbf7d0);border-radius:8px;padding:9px 14px;margin-bottom:20px;"></div>
+      </div><!-- /reassess -->
 
 
       <!-- ASSESSMENTS PAGE -->
@@ -2469,6 +2517,19 @@ function renderDashboardModules(){
           e.stopPropagation();
           exportMarksheet(m.moduleCode, m.moduleName, m.programme, m.year, m.semester);
         };})(mod);
+      }
+
+      // Re Assessments button (new — sits after Attendance & Export Marksheet)
+      var modActionsEl = card.querySelector('.mod-actions');
+      if(modActionsEl && !modActionsEl.querySelector('.btn-mod.amber')){
+        var raBtn = document.createElement('button');
+        raBtn.className = 'btn-mod amber';
+        raBtn.innerHTML = '🔁 Re Assessments';
+        raBtn.onclick = (function(m){ return function(e){
+          e.stopPropagation();
+          showReassess(m.moduleCode, m.moduleName, m.programme, m.year, m.semester);
+        };})(mod);
+        modActionsEl.appendChild(raBtn);
       }
     });
 
@@ -5672,7 +5733,7 @@ function parseGradebook(input, code, name, sa, title, weight){
         var firstName = cols[1];
         var markRaw = cols[6];
         if(!bsuId||!bsuId.match(/^\d+$/)) continue;
-        var mark = markRaw===''||markRaw==='—'||markRaw===null ? null : parseFloat(markRaw);
+        var mark = markRaw===''||markRaw==='—'||markRaw===null ? 0 : parseFloat(markRaw);  // blank = NS (0)
         // mark 0 kept as 0 — shown as F in table, NS count tracked separately on card
         var grade = calcGradeJS(mark);
         // Try to find student name in _students
@@ -7018,6 +7079,123 @@ function generateSps(){
   }).catch(function(e){
     status.textContent = '❌ Error: '+(e.message||'unknown');
   });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// RE-ASSESSMENTS (tutor) — list fails per SA, notify student + parent
+// ═══════════════════════════════════════════════════════════════
+var _raCtx = null;
+function showReassess(code, name, programme, year, semester){
+  showPage('reassess');
+  var isSem1 = String(semester||'').indexOf('1') > -1;
+  var deadline   = String((isSem1 ? (_config.reassess_fall_deadline||'') : (_config.reassess_spring_deadline||''))).trim();
+  var resultDate = String((isSem1 ? (_config.fall_result||'') : (_config.spring_result||''))).trim();
+  var semBadge = isSem1 ? 'Fall Semester' : 'Spring Semester';
+  _raCtx = { code:code, name:name, programme:programme, year:year, semester:semester, isSem1:isSem1, deadline:deadline, resultDate:resultDate, semBadge:semBadge, students:[] };
+  document.getElementById('ra-title').textContent = '🔁 Re-Assessments — ' + name;
+  document.getElementById('ra-sub').textContent = code + ' · ' + programme + ' · ' + year + ' · ' + semester;
+  document.getElementById('ra-dl-banner').innerHTML = '⏳ <span><b>' + semBadge + ' Re-Assessment Deadline: ' + (deadline||'— (set in KEY)') + '</b> &nbsp;·&nbsp; from the KEY sheet</span>';
+  document.getElementById('ra-sections').innerHTML = '<div style="padding:24px;color:var(--text3);">⏳ Loading results…</div>';
+  document.getElementById('ra-consolidated').style.display = 'none';
+  document.getElementById('ra-sendbar').style.display = 'none';
+  document.getElementById('ra-confirm').style.display = 'none';
+  var _sn = document.getElementById('ra-sent-note'); if (_sn) _sn.style.display = 'none';
+  apiPost('getReassessStatus', {moduleCode:code}).then(function(sres){
+    if (sres && sres.status === 'ok' && sres.data) raShowSentNote(sres.data.lastSent, sres.data.sentBy, sres.data.count);
+  }).catch(function(){});
+  apiFetch({action:'getResults', moduleCode:code}).then(function(rows){
+    renderReassess(rows||[]);
+  }).catch(function(e){
+    document.getElementById('ra-sections').innerHTML = '<div style="padding:24px;color:var(--red);">Error loading results: ' + (e.message||e) + '</div>';
+  });
+}
+
+function raEffMark(r){
+  // Effective mark for re-assessment. A real number is used as-is.
+  // A blank/empty mark (col G) is read as NS = 0 so a forgotten zero is still caught,
+  // UNLESS the row is explicitly marked Submitted (submitted but not yet graded, not a re-sit).
+  if (r.mark!==null && r.mark!==undefined && r.mark!=='' && !isNaN(Number(r.mark))) return Number(r.mark);
+  if (String(r.submissionStatus||'').toUpperCase() === 'SUBMITTED') return null;
+  return 0;
+}
+function renderReassess(rows){
+  // fails = released results below 40 (numeric fail, or blank read as NS = 0)
+  var fails = rows.filter(function(r){
+    var m = raEffMark(r);
+    return m !== null && m < 40;
+  });
+  var bySa = {};
+  fails.forEach(function(r){ var sa = 'SA' + String(r.sa||'').replace(/[^0-9]/g,''); (bySa[sa] = bySa[sa] || []).push(r); });
+  var secHtml = '';
+  ['SA1','SA2'].forEach(function(sa){
+    var list = bySa[sa]; if(!list || !list.length) return;
+    var title = (list[0].saTitle || '');
+    secHtml += '<div class="ra-sec"><div class="ra-sec-h"><span class="ra-sec-t">' + sa + (title ? ' — ' + title : '') + '</span><span class="ra-cnt">' + list.length + ' to re-assess</span></div>'
+      + '<table class="ra-tbl"><colgroup><col style="width:150px"><col><col style="width:150px"><col style="width:120px"></colgroup><thead><tr><th>BSU ID</th><th>Student</th><th>Original Mark</th><th>Grade</th></tr></thead><tbody>'
+      + list.map(function(r){ var m=raEffMark(r); return '<tr><td class="mono">' + r.bsuId + '</td><td>' + (r.studentName||'') + '</td><td><b>' + m + '</b></td><td><span class="ra-pill ' + (m===0?'ns':'f') + '">' + (m===0?'NS':'F') + '</span></td></tr>'; }).join('')
+      + '</tbody></table></div>';
+  });
+  document.getElementById('ra-sections').innerHTML = secHtml || '<div style="padding:24px;color:var(--green);font-weight:600;">✅ No students require re-assessment in this module.</div>';
+  var byStu = {};
+  fails.forEach(function(r){
+    var id = r.bsuId; if(!id) return;
+    if(!byStu[id]){
+      var s = (_students||[]).find(function(x){ return String(x.bsuId)===String(id); }) || {};
+      byStu[id] = { bsuId:id, name:(r.studentName||s.name||''), programme:(s.programme||_raCtx.programme||''), year:(s.year||_raCtx.year||''), items:[] };
+    }
+    byStu[id].items.push({ sa:'SA'+String(r.sa||'').replace(/[^0-9]/g,''), saTitle:(r.saTitle||''), mark:raEffMark(r) });
+  });
+  var studs = Object.keys(byStu).map(function(k){ return byStu[k]; });
+  _raCtx.students = studs;
+  if(!studs.length){ document.getElementById('ra-consolidated').style.display='none'; document.getElementById('ra-sendbar').style.display='none'; return; }
+  var consHtml = '<div class="ra-cons-h">📧 Notices to send — ' + studs.length + ' student(s), one email each (CC parent)</div>'
+    + studs.map(function(s){
+        return '<div class="ra-stud"><span class="ra-nm">' + s.name + ' <span class="mono" style="color:var(--text3);">· ' + s.bsuId + '</span> <span style="color:var(--text3);font-size:11px;">· ' + (s.programme||'') + ' · ' + (s.year||'') + '</span></span>'
+          + '<span class="ra-items">' + s.items.map(function(it){ return '<span class="ra-itag">' + it.sa + ' (' + (it.mark===0?'NS':it.mark) + ')</span>'; }).join('') + '</span></div>';
+      }).join('');
+  document.getElementById('ra-consolidated').innerHTML = consHtml;
+  document.getElementById('ra-consolidated').style.display = 'block';
+  document.getElementById('ra-sendbar').style.display = 'flex';
+}
+
+function raSend(){
+  if(!_raCtx || !_raCtx.students || !_raCtx.students.length){ showToast('No students to notify.','warning'); return; }
+  document.getElementById('ra-send-btn').style.display = 'none';
+  document.getElementById('ra-confirm').style.display = 'flex';
+}
+function raSendCancel(){
+  document.getElementById('ra-confirm').style.display = 'none';
+  document.getElementById('ra-send-btn').style.display = '';
+}
+function raSendConfirm(){
+  document.getElementById('ra-confirm').style.display = 'none';
+  var btn = document.getElementById('ra-send-btn');
+  btn.style.display = ''; btn.disabled = true; var orig = btn.innerHTML; btn.innerHTML = '⏳ Sending…';
+  var students = _raCtx.students.map(function(s){
+    return { bsuId:s.bsuId, items:s.items.map(function(it){ return { sa:it.sa, saTitle:it.saTitle, mark:it.mark }; }) };
+  });
+  apiPost('sendReassessNoticesBatch', {
+    moduleName: _raCtx.name, moduleCode: _raCtx.code, semester: _raCtx.semester,
+    tutorName: (_tutor?_tutor.name:''), tutorEmail: (_tutor?_tutor.email:''), sentBy: (_tutor?_tutor.email:''),
+    students: students
+  }).then(function(res){
+    btn.disabled = false; btn.innerHTML = orig;
+    if(!res || res.status !== 'ok') throw new Error((res&&res.message)||'Send failed');
+    var d = res.data || {};
+    showToast('✅ ' + (d.sent||0) + ' notice(s) sent (student + parent).' + (d.skipped? ' ' + d.skipped + ' skipped (no email).':''), 'success');
+    raShowSentNote(d.lastSent || '', (_tutor?_tutor.name:''), d.sent);
+  }).catch(function(e){
+    btn.disabled = false; btn.innerHTML = orig;
+    showToast('Error: ' + (e.message||e), 'error');
+  });
+}
+
+function raShowSentNote(when, by, count){
+  var el = document.getElementById('ra-sent-note');
+  if (!el) return;
+  if (!when){ el.style.display = 'none'; return; }
+  el.innerHTML = '✅ Full notice last sent on <b>' + when + '</b>' + (count ? (' to ' + count + ' student(s)') : '') + (by ? (' &middot; by ' + by) : '') + '. Use the re-assessment submission report path for follow-ups.';
+  el.style.display = 'block';
 }
 
 function exportMarksheet(code, name, programme, year, semester){
