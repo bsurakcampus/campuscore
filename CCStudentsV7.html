@@ -3,12 +3,13 @@
 <head>
 <script>
 (function(){
-  try{
-    var s=JSON.parse(localStorage.getItem('cc_session')||sessionStorage.getItem('cc_session')||'null');
-    if(s&&s.credential&&s.role==='student'){
-      document.documentElement.classList.add('cc-has-session');
-    }
-  }catch(e){}
+  var ROLE='student';
+  function sess(){ try{ return JSON.parse(localStorage.getItem('cc_session')||sessionStorage.getItem('cc_session')||'null'); }catch(_){ return null; } }
+  function valid(){ var s=sess(); return !!(s && s.credential && s.role===ROLE); }
+  if(valid()){ document.documentElement.classList.add('cc-has-session'); }
+  else { try{ window.location.replace('index.html'); }catch(_){ } }
+  // bfcache: after Sign Out + browser Back, re-check session so a logged-out page can't linger
+  window.addEventListener('pageshow', function(e){ if(e.persisted && !valid()){ try{ window.location.replace('index.html'); }catch(_){ } } });
 })();
 </script>
 
@@ -1163,6 +1164,7 @@ function loadStudentData(bsuId){
 
     var s = bundle.student;
     _student      = s;
+    try { localStorage.setItem('cc_session', JSON.stringify({ credential: bsuId, role: 'student' })); } catch(e){}
     _config       = bundle.config       || {};
     _staffMap     = bundle.staffMap     || {};
     _assessments  = bundle.assessments  || [];
