@@ -190,11 +190,26 @@ var _maskedEmail = '';
 })();
 
 function getSession(){
-  try { return JSON.parse(localStorage.getItem('cc_session') || 'null'); }
+  var s = null;
+  try { s = JSON.parse(localStorage.getItem('cc_session') || sessionStorage.getItem('cc_session') || 'null'); }
   catch(e){ return null; }
+  if(s && s.exp && Date.now() > s.exp){
+    try { localStorage.removeItem('cc_session'); sessionStorage.removeItem('cc_session'); } catch(_){ }
+    return null;
+  }
+  return s;
 }
 function saveSession(obj){
-  localStorage.setItem('cc_session', JSON.stringify(obj));
+  try {
+    var raw = JSON.stringify(obj);
+    if(obj && obj.remember){
+      localStorage.setItem('cc_session', raw);
+      sessionStorage.removeItem('cc_session');
+    } else {
+      sessionStorage.setItem('cc_session', raw);
+      localStorage.removeItem('cc_session');
+    }
+  } catch(e){ }
 }
 
 // ── Role selection ──
@@ -210,8 +225,8 @@ function openLogin(role){
   document.getElementById('login-input').placeholder  = cfg.ph;
   document.getElementById('login-input').value        = '';
   document.getElementById('remember-wrap').style.display = cfg.remember ? 'flex' : 'none';
-  document.getElementById('remember-check').checked   = false;
-  document.getElementById('security-note').style.display = 'none';
+  document.getElementById('remember-check').checked   = (role === 'student' || role === 'parent');
+  document.getElementById('security-note').style.display = (role === 'student' || role === 'parent') ? 'block' : 'none';
   document.getElementById('login-err').style.display  = 'none';
   showWhite('screen-login');
   setTimeout(function(){ document.getElementById('login-input').focus(); }, 50);
@@ -299,13 +314,24 @@ function verifyCode(){
   if(entered !== _otp){ errEl.textContent='Incorrect code. Please try again.'; errEl.style.display='block'; return; }
   // OTP correct — save session and redirect
   var remember = document.getElementById('remember-check').checked;
-  saveSession({ role:_role, credential:_credential, remember:remember, ts:Date.now() });
+  var sess = { role:_role, credential:_credential, remember:remember, ts:Date.now() };
+  if(!remember){ sess.exp = Date.now() + 60*60*1000; }   // no "remember me": expires in 1 hour
+  saveSession(sess);
   var btn = document.getElementById('verify-btn');
   btn.disabled = true; btn.textContent = 'Signing in…';
   window.location.href = PORTALS[_role];
 }
 
 document.getElementById('login-input').addEventListener('keydown',function(e){ if(e.key==='Enter') sendCode(); });
+
+// Fix bfcache: if this page is restored from history (e.g. Sign Out then browser Back),
+// re-check the session so a stale login/OTP screen can't linger.
+window.addEventListener('pageshow', function(e){
+  if(!e.persisted) return;
+  var s = getSession();
+  if(s && s.role && s.credential){ window.location.href = PORTALS[s.role] || 'index.html'; }
+  else if(typeof goBack === 'function'){ goBack(); }
+});
 
 // Show/hide security note based on Remember Me checkbox
 document.getElementById('remember-check').addEventListener('change', function(){

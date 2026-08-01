@@ -5,11 +5,19 @@
 (function(){
   var ROLE='parent';
   function sess(){ try{ return JSON.parse(localStorage.getItem('cc_session')||sessionStorage.getItem('cc_session')||'null'); }catch(_){ return null; } }
-  function valid(){ var s=sess(); return !!(s && s.credential && s.role===ROLE); }
-  if(valid()){ document.documentElement.classList.add('cc-has-session'); }
-  else { try{ window.location.replace('index.html'); }catch(_){ } }
+  function expired(s){ return !!(s && s.exp && Date.now() > s.exp); }
+  function clearSess(){ try{ localStorage.removeItem('cc_session'); sessionStorage.removeItem('cc_session'); }catch(_){ } }
+  function valid(){ var s=sess(); return !!(s && s.credential && s.role===ROLE && !expired(s)); }
+  var s0=sess();
+  if(valid()){
+    document.documentElement.classList.add('cc-has-session');
+    if(s0 && s0.exp){ setTimeout(function(){ clearSess(); window.location.replace('index.html'); }, Math.max(1000, s0.exp - Date.now())); }
+  } else {
+    if(expired(s0)) clearSess();
+    try{ window.location.replace('index.html'); }catch(_){ }
+  }
   // bfcache: after Sign Out + browser Back, re-check session so a logged-out page can't linger
-  window.addEventListener('pageshow', function(e){ if(e.persisted && !valid()){ try{ window.location.replace('index.html'); }catch(_){ } } });
+  window.addEventListener('pageshow', function(e){ if(e.persisted && !valid()){ clearSess(); try{ window.location.replace('index.html'); }catch(_){ } } });
 })();
 </script>
 
