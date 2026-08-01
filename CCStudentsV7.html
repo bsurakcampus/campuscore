@@ -3,21 +3,12 @@
 <head>
 <script>
 (function(){
-  var ROLE='student';
-  function sess(){ try{ return JSON.parse(localStorage.getItem('cc_session')||sessionStorage.getItem('cc_session')||'null'); }catch(_){ return null; } }
-  function expired(s){ return !!(s && s.exp && Date.now() > s.exp); }
-  function clearSess(){ try{ localStorage.removeItem('cc_session'); sessionStorage.removeItem('cc_session'); }catch(_){ } }
-  function valid(){ var s=sess(); return !!(s && s.credential && s.role===ROLE && !expired(s)); }
-  var s0=sess();
-  if(valid()){
-    document.documentElement.classList.add('cc-has-session');
-    if(s0 && s0.exp){ setTimeout(function(){ clearSess(); window.location.replace('index.html'); }, Math.max(1000, s0.exp - Date.now())); }
-  } else {
-    if(expired(s0)) clearSess();
-    try{ window.location.replace('index.html'); }catch(_){ }
-  }
-  // bfcache: after Sign Out + browser Back, re-check session so a logged-out page can't linger
-  window.addEventListener('pageshow', function(e){ if(e.persisted && !valid()){ clearSess(); try{ window.location.replace('index.html'); }catch(_){ } } });
+  try{
+    var s=JSON.parse(localStorage.getItem('cc_session')||sessionStorage.getItem('cc_session')||'null');
+    if(s&&s.credential&&s.role==='student'){
+      document.documentElement.classList.add('cc-has-session');
+    }
+  }catch(e){}
 })();
 </script>
 
@@ -1172,7 +1163,6 @@ function loadStudentData(bsuId){
 
     var s = bundle.student;
     _student      = s;
-    try { localStorage.setItem('cc_session', JSON.stringify({ credential: bsuId, role: 'student' })); } catch(e){}
     _config       = bundle.config       || {};
     _staffMap     = bundle.staffMap     || {};
     _assessments  = bundle.assessments  || [];
@@ -4365,7 +4355,7 @@ function dismissBirthday(){
     setTimeout(function(){
       var app = document.getElementById('screen-app');
       if(!app || !app.classList.contains('active')){
-        localStorage.removeItem('cc_session'); sessionStorage.removeItem('cc_session');
+        localStorage.removeItem('cc_session');
         ccHideLoading();
         // session may still be valid — don't redirect
       }
@@ -4382,11 +4372,8 @@ function ccHideLoading(){
 setTimeout(ccHideLoading, 10000);
 
 function ccSignOut(){
-  try { localStorage.removeItem('cc_session'); sessionStorage.removeItem('cc_session'); } catch(_){}
-  // Safest on shared devices: try to close the tab. Browsers only allow closing
-  // script-opened tabs, so if it's blocked we fall through to the login page.
-  try { window.close(); } catch(_){}
-  window.location.replace('index.html');
+  localStorage.removeItem('cc_session');
+  window.location.href = 'index.html';
 }
 </script>
 </body>

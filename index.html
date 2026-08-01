@@ -190,26 +190,11 @@ var _maskedEmail = '';
 })();
 
 function getSession(){
-  var s = null;
-  try { s = JSON.parse(localStorage.getItem('cc_session') || sessionStorage.getItem('cc_session') || 'null'); }
+  try { return JSON.parse(localStorage.getItem('cc_session') || 'null'); }
   catch(e){ return null; }
-  if(s && s.exp && Date.now() > s.exp){
-    try { localStorage.removeItem('cc_session'); sessionStorage.removeItem('cc_session'); } catch(_){ }
-    return null;
-  }
-  return s;
 }
 function saveSession(obj){
-  try {
-    var raw = JSON.stringify(obj);
-    if(obj && obj.remember){
-      localStorage.setItem('cc_session', raw);
-      sessionStorage.removeItem('cc_session');
-    } else {
-      sessionStorage.setItem('cc_session', raw);
-      localStorage.removeItem('cc_session');
-    }
-  } catch(e){ }
+  localStorage.setItem('cc_session', JSON.stringify(obj));
 }
 
 // ── Role selection ──
@@ -225,8 +210,8 @@ function openLogin(role){
   document.getElementById('login-input').placeholder  = cfg.ph;
   document.getElementById('login-input').value        = '';
   document.getElementById('remember-wrap').style.display = cfg.remember ? 'flex' : 'none';
-  document.getElementById('remember-check').checked   = (role === 'student' || role === 'parent');
-  document.getElementById('security-note').style.display = (role === 'student' || role === 'parent') ? 'block' : 'none';
+  document.getElementById('remember-check').checked   = false;
+  document.getElementById('security-note').style.display = 'none';
   document.getElementById('login-err').style.display  = 'none';
   showWhite('screen-login');
   setTimeout(function(){ document.getElementById('login-input').focus(); }, 50);
@@ -264,40 +249,31 @@ function sendCode(){
   var body = { action: ROLE_CONFIG[_role].action, otp: _otp };
   if(_role === 'student' || _role === 'parent') body.bsuId = val;
   else body.email = val;
-  var done = false;
-  function goToOtp(masked){
-    if(done) return; done = true;
-    btn.disabled = false; btn.textContent = 'Send Sign-In Code →';
-    _maskedEmail = masked || _maskedEmail || val;
-    var cfg = ROLE_CONFIG[_role];
-    var otpBadge = document.getElementById('otp-badge');
-    otpBadge.textContent = cfg.badge;
-    otpBadge.className   = 'login-portal-badge ' + cfg.badgeCls;
-    document.getElementById('otp-sent-to').innerHTML = 'A 6-digit code was sent to <strong>' + _maskedEmail + '</strong>. Enter it below.';
-    [0,1,2,3,4,5].forEach(function(i){ document.getElementById('o'+i).value=''; });
-    document.getElementById('otp-err').style.display = 'none';
-    showWhite('screen-otp');
-    setTimeout(function(){ document.getElementById('o0').focus(); }, 100);
-  }
-  // Safety net: the code is generated here and emailed by the server. Some networks or
-  // Google accounts delay/block the server's REPLY even though the email is sent, which
-  // would leave the button stuck on 'Sending…'. If no reply within 8s, proceed anyway.
-  var fallback = setTimeout(function(){ goToOtp(''); }, 8000);
   fetch(API, { method:'POST', body: JSON.stringify(body) })
     .then(function(r){ return r.json(); })
     .then(function(d){
-      clearTimeout(fallback);
+      btn.disabled = false; btn.textContent = 'Send Sign-In Code →';
       var data = d.data || d;
-      if(d.status === 'error' || (data && data.error)){
-        if(!done){ btn.disabled = false; btn.textContent = 'Send Sign-In Code →'; errEl.textContent = data.error || d.message || 'Error sending code.'; errEl.style.display = 'block'; }
-        return;
+      if(d.status === 'error' || data.error){
+        errEl.textContent = data.error || d.message || 'Error sending code.';
+        errEl.style.display = 'block'; return;
       }
-      goToOtp(data.maskedEmail || val);
+      _maskedEmail = data.maskedEmail || val;
+      // Switch to OTP screen
+      var cfg = ROLE_CONFIG[_role];
+      var otpBadge = document.getElementById('otp-badge');
+      otpBadge.textContent = cfg.badge;
+      otpBadge.className   = 'login-portal-badge ' + cfg.badgeCls;
+      document.getElementById('otp-sent-to').innerHTML = 'A 6-digit code was sent to <strong>' + _maskedEmail + '</strong>. Enter it below.';
+      [0,1,2,3,4,5].forEach(function(i){ document.getElementById('o'+i).value=''; });
+      document.getElementById('otp-err').style.display = 'none';
+      showWhite('screen-otp');
+      setTimeout(function(){ document.getElementById('o0').focus(); }, 100);
     })
     .catch(function(){
-      clearTimeout(fallback);
-      // The email may still have been sent; go to the code screen so the user isn't stuck.
-      goToOtp('');
+      btn.disabled = false; btn.textContent = 'Send Sign-In Code →';
+      errEl.textContent = 'Could not connect. Please try again.';
+      errEl.style.display = 'block';
     });
 }
 
@@ -323,24 +299,13 @@ function verifyCode(){
   if(entered !== _otp){ errEl.textContent='Incorrect code. Please try again.'; errEl.style.display='block'; return; }
   // OTP correct — save session and redirect
   var remember = document.getElementById('remember-check').checked;
-  var sess = { role:_role, credential:_credential, remember:remember, ts:Date.now() };
-  if(!remember){ sess.exp = Date.now() + 60*60*1000; }   // no "remember me": expires in 1 hour
-  saveSession(sess);
+  saveSession({ role:_role, credential:_credential, remember:remember, ts:Date.now() });
   var btn = document.getElementById('verify-btn');
   btn.disabled = true; btn.textContent = 'Signing in…';
   window.location.href = PORTALS[_role];
 }
 
 document.getElementById('login-input').addEventListener('keydown',function(e){ if(e.key==='Enter') sendCode(); });
-
-// Fix bfcache: if this page is restored from history (e.g. Sign Out then browser Back),
-// re-check the session so a stale login/OTP screen can't linger.
-window.addEventListener('pageshow', function(e){
-  if(!e.persisted) return;
-  var s = getSession();
-  if(s && s.role && s.credential){ window.location.href = PORTALS[s.role] || 'index.html'; }
-  else if(typeof goBack === 'function'){ goBack(); }
-});
 
 // Show/hide security note based on Remember Me checkbox
 document.getElementById('remember-check').addEventListener('change', function(){

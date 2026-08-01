@@ -3,21 +3,12 @@
 <head>
 <script>
 (function(){
-  var ROLE='tutor';
-  function sess(){ try{ return JSON.parse(localStorage.getItem('cc_session')||sessionStorage.getItem('cc_session')||'null'); }catch(_){ return null; } }
-  function expired(s){ return !!(s && s.exp && Date.now() > s.exp); }
-  function clearSess(){ try{ localStorage.removeItem('cc_session'); sessionStorage.removeItem('cc_session'); }catch(_){ } }
-  function valid(){ var s=sess(); return !!(s && s.credential && s.role===ROLE && !expired(s)); }
-  var s0=sess();
-  if(valid()){
-    document.documentElement.classList.add('cc-has-session');
-    if(s0 && s0.exp){ setTimeout(function(){ clearSess(); window.location.replace('index.html'); }, Math.max(1000, s0.exp - Date.now())); }
-  } else {
-    if(expired(s0)) clearSess();
-    try{ window.location.replace('index.html'); }catch(_){ }
-  }
-  // bfcache: after Sign Out + browser Back, re-check session so a logged-out page can't linger
-  window.addEventListener('pageshow', function(e){ if(e.persisted && !valid()){ clearSess(); try{ window.location.replace('index.html'); }catch(_){ } } });
+  try{
+    var s=JSON.parse(localStorage.getItem('cc_session')||sessionStorage.getItem('cc_session')||'null');
+    if(s&&s.credential&&s.role==='tutor'){
+      document.documentElement.classList.add('cc-has-session');
+    }
+  }catch(e){}
 })();
 </script>
 
@@ -699,7 +690,6 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
         <h2>Welcome back</h2>
         <p>Enter your BSU staff email to receive your sign-in link</p>
         <div class="form-group"><label>BSU Email Address</label><input type="email" id="email-input" placeholder="yourname@bathspa.ae"></div>
-        <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2);margin:2px 0 18px;cursor:pointer;font-weight:500;"><input type="checkbox" id="keep-signed-in" style="width:16px;height:16px;cursor:pointer;accent-color:var(--accent);"> Keep me signed in on this device</label>
         <button class="btn-primary" onclick="doLogin()">Send Sign-in Link →</button>
         <div class="login-help">&#x26A0;&#xFE0F; Not receiving the sign-in email? Write to <strong><a href="#" onclick="window.location.href='mailto:records@bathspa.ae';return false;" style="color:var(--accent);font-weight:600;">records@bathspa.ae</a></strong> to verify your bathspa.ae account is registered.</div>
       </div>
@@ -1962,8 +1952,6 @@ async function enterPortal(){
     // Now switch to app — data is ready
     document.getElementById('screen-emailsent').classList.remove('active');
     document.getElementById('screen-app').classList.add('active');
-    // Persist session so a refresh skips the login (completes the cc_session mechanism)
-    try { var _keep = document.getElementById('keep-signed-in'); if(_tutor && _keep && _keep.checked){ localStorage.setItem('cc_session', JSON.stringify({ credential: email, role: 'tutor' })); } } catch(e){}
   ccHideLoading();
     populateTutor();
     renderDashboardModules();
@@ -7804,7 +7792,7 @@ function ecEmailSelected(){
     setTimeout(function(){
       var app = document.getElementById('screen-app');
       if(!app || !app.classList.contains('active')){
-        localStorage.removeItem('cc_session'); sessionStorage.removeItem('cc_session');
+        localStorage.removeItem('cc_session');
         ccHideLoading();
         // session may still be valid — don't redirect
       }
@@ -7821,11 +7809,8 @@ function ccHideLoading(){
 setTimeout(ccHideLoading, 10000);
 
 function ccSignOut(){
-  try { localStorage.removeItem('cc_session'); sessionStorage.removeItem('cc_session'); } catch(_){}
-  // Safest on shared devices: try to close the tab. Browsers only allow closing
-  // script-opened tabs, so if it's blocked we fall through to the login page.
-  try { window.close(); } catch(_){}
-  window.location.replace('index.html');
+  localStorage.removeItem('cc_session');
+  window.location.href = 'index.html';
 }
 </script>
 </body>

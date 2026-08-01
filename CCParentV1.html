@@ -3,21 +3,12 @@
 <head>
 <script>
 (function(){
-  var ROLE='parent';
-  function sess(){ try{ return JSON.parse(localStorage.getItem('cc_session')||sessionStorage.getItem('cc_session')||'null'); }catch(_){ return null; } }
-  function expired(s){ return !!(s && s.exp && Date.now() > s.exp); }
-  function clearSess(){ try{ localStorage.removeItem('cc_session'); sessionStorage.removeItem('cc_session'); }catch(_){ } }
-  function valid(){ var s=sess(); return !!(s && s.credential && s.role===ROLE && !expired(s)); }
-  var s0=sess();
-  if(valid()){
-    document.documentElement.classList.add('cc-has-session');
-    if(s0 && s0.exp){ setTimeout(function(){ clearSess(); window.location.replace('index.html'); }, Math.max(1000, s0.exp - Date.now())); }
-  } else {
-    if(expired(s0)) clearSess();
-    try{ window.location.replace('index.html'); }catch(_){ }
-  }
-  // bfcache: after Sign Out + browser Back, re-check session so a logged-out page can't linger
-  window.addEventListener('pageshow', function(e){ if(e.persisted && !valid()){ clearSess(); try{ window.location.replace('index.html'); }catch(_){ } } });
+  try{
+    var s=JSON.parse(localStorage.getItem('cc_session')||sessionStorage.getItem('cc_session')||'null');
+    if(s&&s.credential&&s.role==='parent'){
+      document.documentElement.classList.add('cc-has-session');
+    }
+  }catch(e){}
 })();
 </script>
 
@@ -560,7 +551,6 @@ function loadStudentById(bsuId){
       _bundle=bundle; _student=bundle.student;
       buildPortal(); _curPanel=0; switchPanel(0);
       ccHideLoading(); showScreen('screen-portal');
-      try { localStorage.setItem('cc_session', JSON.stringify({ credential: (_parentEmail||'') + '||' + bsuId, role: 'parent' })); } catch(e){}
     })
     .catch(function(){ ccHideLoading(); alert('Could not load student data.'); });
 }
@@ -665,7 +655,6 @@ function loadStudent(){
       switchPanel(0);
       ccHideLoading();
       showScreen('screen-portal');
-      try { localStorage.setItem('cc_session', JSON.stringify({ credential: (_parentEmail||'') + '||' + bsuId, role: 'parent' })); } catch(e){}
     })
     .catch(function(e){
       errEl.textContent = (e && e.message ? e.message : 'Could not load data. Please write to records@bathspa.ae for help.');
@@ -1365,21 +1354,13 @@ document.getElementById('bsuid-input').addEventListener('keydown', function(e){ 
   try {
     var s = JSON.parse(localStorage.getItem('cc_session') || 'null');
     if(s && s.role === 'parent' && s.credential){
-      // credential = "email||bsuId" (portal login) OR "bsuId" (unified index.html login)
+      // credential = "email||bsuId"
       var parts = s.credential.split('||');
       if(parts.length === 2){
         window._parentEmail = parts[0];
         if(typeof loadStudent === 'function'){
           document.getElementById('bsuid-input').value = parts[1];
           loadStudent(); return;
-        }
-      } else if(parts.length === 1 && parts[0]){
-        var _bsu = parts[0];
-        if(typeof apiFetch === 'function'){
-          apiFetch({action:'getParentEmailByBsuId', bsuId:_bsu}).then(function(d){
-            if(d && d.parentEmail){ window._parentEmail = d.parentEmail; var bi=document.getElementById('bsuid-input'); if(bi) bi.value=_bsu; if(typeof loadStudent==='function') loadStudent(); }
-          });
-          return;
         }
       }
     }
@@ -1396,11 +1377,8 @@ function ccHideLoading(){
 setTimeout(ccHideLoading, 10000);
 
 function ccSignOut(){
-  try { localStorage.removeItem('cc_session'); sessionStorage.removeItem('cc_session'); } catch(_){}
-  // Safest on shared devices: try to close the tab. Browsers only allow closing
-  // script-opened tabs, so if it's blocked we fall through to the login page.
-  try { window.close(); } catch(_){}
-  window.location.replace('index.html');
+  localStorage.removeItem('cc_session');
+  window.location.href = 'index.html';
 }
 </script>
 </body>
