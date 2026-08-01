@@ -11387,7 +11387,7 @@ function sendAtRiskNoticeNow(){
     setTimeout(function(){
       var app = document.getElementById('screen-app');
       if(!app || !app.classList.contains('active')){
-        localStorage.removeItem('cc_session');
+        localStorage.removeItem('cc_session'); sessionStorage.removeItem('cc_session');
         ccHideLoading();
         // session may still be valid — don't redirect
       }
@@ -11520,8 +11520,11 @@ function _qsShowStaff(m){
   r.style.display='flex';
 }
 function ccSignOut(){
-  localStorage.removeItem('cc_session');
-  window.location.href = 'index.html';
+  try { localStorage.removeItem('cc_session'); sessionStorage.removeItem('cc_session'); } catch(_){}
+  // Safest on shared devices: try to close the tab. Browsers only allow closing
+  // script-opened tabs, so if it's blocked we fall through to the login page.
+  try { window.close(); } catch(_){}
+  window.location.replace('index.html');
 }
 </script><!-- ═══ STUDENTS RECORDS — DOCUMENT VIEWER ═══ -->
 <div class="sr-viewer" id="sr-viewer" onclick="if(event.target===this)srCloseViewer()">
