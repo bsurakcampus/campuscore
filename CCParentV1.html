@@ -509,12 +509,17 @@ function showToast(msg, duration){
 
 function apiFetch(params){
   var url = API_URL + '?' + new URLSearchParams(params).toString();
-  return fetch(url)
-    .then(function(r){ return r.json(); })
-    .then(function(d){
+  function attempt(n){
+    return fetch(url).then(function(r){ return r.text(); }).then(function(text){
+      var d; try{ d = JSON.parse(text); }catch(_){ throw new Error('non-json'); }
       if(d.status && d.status !== 'ok') throw new Error(d.message || 'API error');
       return d.data !== undefined ? d.data : d;
+    }).catch(function(e){
+      if(n<2){ return new Promise(function(res){ setTimeout(res,700*(n+1)); }).then(function(){ return attempt(n+1); }); }
+      throw e;
     });
+  }
+  return attempt(0);
 }
 
 function driveImgUrl(url){

@@ -1103,9 +1103,16 @@ async function apiFetch(params){
   var url = API + '?' + Object.entries(params).map(function(kv){
     return encodeURIComponent(kv[0])+'='+encodeURIComponent(kv[1]);
   }).join('&');
-  var r = await fetch(url, {method:'GET', redirect:'follow'});
-  var j = await r.json();
-  return j.data !== undefined ? j.data : j;
+  var lastErr;
+  for(var a=0;a<3;a++){
+    try{
+      var r = await fetch(url, {method:'GET', redirect:'follow'});
+      var text = await r.text();
+      var j; try{ j = JSON.parse(text); }catch(_){ throw new Error('non-json'); }
+      return j.data !== undefined ? j.data : j;
+    }catch(e){ lastErr=e; if(a<2){ await new Promise(function(res){ setTimeout(res,700*(a+1)); }); } }
+  }
+  throw lastErr || new Error('API error');
 }
 
 async function apiPost(action, body){

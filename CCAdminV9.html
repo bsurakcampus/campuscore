@@ -3269,10 +3269,17 @@ let _adminUser = null;
 // ── API helpers ──────────────────────────────────────────────
 async function apiFetch(params) {
   const url = API + '?' + new URLSearchParams(params);
-  const res = await fetch(url);
-  const json = await res.json();
-  if (json.status !== 'ok') throw new Error(json.message || 'API error');
-  return json.data;
+  let lastErr;
+  for (let a = 0; a < 3; a++) {
+    try {
+      const res = await fetch(url);
+      const text = await res.text();
+      let json; try { json = JSON.parse(text); } catch(_) { throw new Error('non-json'); }
+      if (json.status !== 'ok') throw new Error(json.message || 'API error');
+      return json.data;
+    } catch(e) { lastErr = e; if (a < 2) { await new Promise(r=>setTimeout(r,700*(a+1))); } }
+  }
+  throw lastErr || new Error('API error');
 }
 async function apiPost(body) {
   const res = await fetch(API, {
@@ -3399,6 +3406,21 @@ function ccPortalError(msg){
     +'<button onclick="ccSignOut()" style="background:transparent;color:#93c5fd;border:1px solid rgba(147,197,253,0.4);border-radius:9px;padding:12px 22px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">Sign out</button>'
     +'</div>';
 }
+// Keep admins inside the portal: once the dashboard is shown, the browser Back button
+// no longer navigates out to the previous site. To leave, they use Sign Out.
+function ccTrapBack(){
+  if(window._ccBackTrapped) return;
+  window._ccBackTrapped = true;
+  try{
+    history.pushState(null, '', location.href);
+    window.addEventListener('popstate', function(){
+      var live = false;
+      try{ var s = JSON.parse(localStorage.getItem('cc_session')||sessionStorage.getItem('cc_session')||'null'); live = !!(s && s.credential); }catch(_){}
+      if(live){ history.pushState(null, '', location.href); }
+      else { window.location.replace('index.html'); }
+    });
+  }catch(_){}
+}
 async function enterPortal(){
   // Stay on emailsent screen while loading — switch to app only after data arrives
   try {
@@ -3408,15 +3430,23 @@ async function enterPortal(){
       window.location.replace('index.html'); return;
     }
     ccPortalLoading();
-    const [students, alumni, staff, alerts, programs, rkData, configData] = await Promise.all([
-      apiFetch({action:'getStudents'}),
-      apiFetch({action:'getAlumni'}),
-      apiFetch({action:'getStaff'}),
-      apiFetch({action:'getAlerts'}),
-      apiFetch({action:'getPrograms'}),
-      apiFetch({action:'getRkData'}),
-      apiFetch({action:'getConfig'})
-    ]);
+    let students, alumni, staff, alerts, programs, rkData, configData;
+    try {
+      const _b = await apiFetch({action:'getAdminBundle'});
+      if (!_b || _b.students === undefined) throw new Error('bundle-empty');
+      students = _b.students; alumni = _b.alumni; staff = _b.staff; alerts = _b.alerts;
+      programs = _b.programs; rkData = _b.rkData; configData = _b.config;
+    } catch(_be) {
+      [students, alumni, staff, alerts, programs, rkData, configData] = await Promise.all([
+        apiFetch({action:'getStudents'}),
+        apiFetch({action:'getAlumni'}),
+        apiFetch({action:'getStaff'}),
+        apiFetch({action:'getAlerts'}),
+        apiFetch({action:'getPrograms'}),
+        apiFetch({action:'getRkData'}),
+        apiFetch({action:'getConfig'})
+      ]);
+    }
     _students = students;
     _alumni   = alumni;
     _config   = configData || {};
@@ -3453,6 +3483,7 @@ async function enterPortal(){
     // Data ready — switch to app
     document.getElementById('screen-emailsent').classList.remove('active');
     document.getElementById('screen-app').classList.add('active');
+    ccTrapBack();  // once on the dashboard, the browser Back button stays in the portal (use Sign Out to leave)
     ccPortalHide();
     // Persist session so a refresh skips the login (completes the cc_session mechanism)
     try { var _keep = document.getElementById('keep-signed-in'); if(_keep && _keep.checked){ localStorage.setItem('cc_session', JSON.stringify({ credential: loginEmail, role: 'admin' })); } } catch(e){}
