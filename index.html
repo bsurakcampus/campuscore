@@ -181,7 +181,7 @@ var _maskedEmail = '';
   if(s && s.role && s.credential){
     // Valid session — redirect to portal directly
     saveSession(s); // refresh storage
-    window.location.href = PORTALS[s.role] || 'index.html';
+    window.location.replace(PORTALS[s.role] || 'index.html');
   }
 })();
 
@@ -321,7 +321,7 @@ function finishSignIn(){
     sess.exp = Date.now() + 60*60*1000;      // tutors & admins: 1-hour + tab-close unless Remember me
   }
   saveSession(sess);
-  window.location.href = PORTALS[_role];
+  window.location.replace(PORTALS[_role]);
 }
 
 // ── Verify OTP ──
@@ -344,7 +344,7 @@ document.getElementById('login-input').addEventListener('keydown',function(e){ i
 window.addEventListener('pageshow', function(e){
   if(!e.persisted) return;
   var s = getSession();
-  if(s && s.role && s.credential){ window.location.href = PORTALS[s.role] || 'index.html'; }
+  if(s && s.role && s.credential){ window.location.replace(PORTALS[s.role] || 'index.html'); }
   else if(typeof goBack === 'function'){ goBack(); }
 });
 
