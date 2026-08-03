@@ -8,14 +8,11 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html,body{height:100%;}
-body{font-family:'Sora',sans-serif;background:#0f1e3d;display:flex;align-items:center;justify-content:center;min-height:100vh;overflow:hidden;transition:background 0.25s;}
+body{font-family:'Sora',sans-serif;background:radial-gradient(circle at 16% 22%, rgba(37,99,235,0.28), transparent 42%),radial-gradient(circle at 84% 78%, rgba(124,58,237,0.22), transparent 42%),radial-gradient(circle at 60% 8%, rgba(14,165,233,0.14), transparent 40%),#0b1730;display:flex;align-items:center;justify-content:center;min-height:100vh;overflow:hidden;transition:background 0.25s;}
 body.login-open{background:#fff;}
-body.login-open .orb{display:none;}
+body.login-open #cc-net{display:none;}
 body.login-open .wrapper{opacity:0;pointer-events:none;}
-.orb{position:fixed;border-radius:50%;pointer-events:none;z-index:0;}
-.orb1{width:520px;height:520px;top:-160px;left:-160px;background:rgba(37,99,235,0.22);}
-.orb2{width:380px;height:380px;bottom:-120px;right:-80px;background:rgba(37,99,235,0.14);}
-.orb3{width:280px;height:280px;top:30%;right:-60px;background:rgba(99,102,241,0.10);}
+#cc-net{position:fixed;inset:0;z-index:0;pointer-events:none;}
 .wrapper{position:relative;z-index:1;width:100%;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px 20px;}
 .screen{display:none;flex-direction:column;align-items:center;width:100%;max-width:460px;animation:fadeUp 0.3s ease both;}
 .screen.active{display:flex;}
@@ -24,8 +21,9 @@ body.login-open .wrapper{opacity:0;pointer-events:none;}
 .logo-mark{width:48px;height:48px;background:#2563eb;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:800;color:#fff;box-shadow:0 0 28px rgba(37,99,235,0.45);}
 .logo-text{font-size:26px;font-weight:700;color:#fff;letter-spacing:-0.5px;}
 .logo-text span{color:#93c5fd;}
-.logo-sub{font-size:12px;color:rgba(255,255,255,0.3);margin-bottom:36px;letter-spacing:0.3px;text-align:center;}
-.portal-label{font-size:10px;font-weight:700;color:rgba(255,255,255,0.28);text-transform:uppercase;letter-spacing:1px;align-self:flex-start;margin-bottom:10px;}
+.logo-sub{font-size:16px;font-weight:600;color:#fff;margin-bottom:34px;letter-spacing:0.2px;text-align:center;}
+.portal-label{font-size:10px;font-weight:700;color:rgba(255,255,255,0.32);text-transform:uppercase;letter-spacing:1px;align-self:flex-start;margin-bottom:11px;}
+.portal-label .sub{display:block;font-size:12px;font-weight:400;color:rgba(255,255,255,0.4);text-transform:none;letter-spacing:normal;margin-top:3px;}
 .role-list{display:flex;flex-direction:column;gap:8px;width:100%;}
 .role-btn{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:12px;padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:14px;width:100%;text-align:left;transition:background 0.15s,border-color 0.15s,transform 0.1s;font-family:'Sora',sans-serif;}
 .role-btn:hover{background:rgba(255,255,255,0.13);border-color:rgba(255,255,255,0.22);}
@@ -77,9 +75,7 @@ body.login-open .wrapper{opacity:0;pointer-events:none;}
 </head>
 <body>
 
-<div class="orb orb1"></div>
-<div class="orb orb2"></div>
-<div class="orb orb3"></div>
+<canvas id="cc-net"></canvas>
 
 <div class="wrapper">
   <div class="screen active" id="screen-roles">
@@ -87,8 +83,8 @@ body.login-open .wrapper{opacity:0;pointer-events:none;}
       <div class="logo-mark">CC</div>
       <div class="logo-text">Campus<span>Core</span></div>
     </div>
-    <p class="logo-sub">Bath Spa University · RAK Campus<br>Select your portal to continue</p>
-    <p class="portal-label">Portal Access</p>
+    <p class="logo-sub">Bath Spa University · RAK Campus</p>
+    <p class="portal-label">Portal Access<span class="sub">Select your portal to continue</span></p>
     <div class="role-list">
       <button class="role-btn" onclick="openLogin('student')">
         <span class="role-icon">🎓</span>
@@ -226,7 +222,7 @@ function openLogin(role){
   document.getElementById('login-input').value        = '';
   document.getElementById('remember-wrap').style.display = cfg.remember ? 'flex' : 'none';
   document.getElementById('remember-check').checked   = (role === 'student' || role === 'parent');
-  document.getElementById('security-note').style.display = (role === 'student' || role === 'parent') ? 'block' : 'none';
+  updateSecurityNote();
   document.getElementById('login-err').style.display  = 'none';
   showWhite('screen-login');
   setTimeout(function(){ document.getElementById('login-input').focus(); }, 50);
@@ -258,6 +254,7 @@ function sendCode(){
   errEl.style.display = 'none';
   if(!val){ errEl.textContent='Please enter your '+ROLE_CONFIG[_role].label.toLowerCase()+'.'; errEl.style.display='block'; return; }
   _credential = val;
+  if(location.protocol === 'file:'){ finishSignIn(); return; }   // LOCAL: no code, straight in
   _otp = Math.floor(100000 + Math.random() * 900000).toString();
   var btn = document.getElementById('send-btn');
   btn.disabled = true; btn.textContent = 'Sending…';
@@ -314,14 +311,8 @@ function sendCode(){
   });
 });
 
-// ── Verify OTP ──
-function verifyCode(){
-  var entered = [0,1,2,3,4,5].map(function(i){ return document.getElementById('o'+i).value; }).join('');
-  var errEl = document.getElementById('otp-err');
-  errEl.style.display = 'none';
-  if(entered.length < 6){ errEl.textContent='Please enter all 6 digits.'; errEl.style.display='block'; return; }
-  if(entered !== _otp){ errEl.textContent='Incorrect code. Please try again.'; errEl.style.display='block'; return; }
-  // OTP correct — save session and redirect
+// Saves the session (role-aware rules) and enters the portal — used by live OTP and local skip.
+function finishSignIn(){
   var remember = document.getElementById('remember-check').checked;
   var sess = { role:_role, credential:_credential, remember:remember, ts:Date.now() };
   if(_role === 'student' || _role === 'parent'){
@@ -330,9 +321,20 @@ function verifyCode(){
     sess.exp = Date.now() + 60*60*1000;      // tutors & admins: 1-hour + tab-close unless Remember me
   }
   saveSession(sess);
+  window.location.href = PORTALS[_role];
+}
+
+// ── Verify OTP ──
+function verifyCode(){
+  var entered = [0,1,2,3,4,5].map(function(i){ return document.getElementById('o'+i).value; }).join('');
+  var errEl = document.getElementById('otp-err');
+  errEl.style.display = 'none';
+  if(entered.length < 6){ errEl.textContent='Please enter all 6 digits.'; errEl.style.display='block'; return; }
+  if(entered !== _otp){ errEl.textContent='Incorrect code. Please try again.'; errEl.style.display='block'; return; }
+  // OTP correct — save session and redirect
   var btn = document.getElementById('verify-btn');
   btn.disabled = true; btn.textContent = 'Signing in…';
-  window.location.href = PORTALS[_role];
+  finishSignIn();
 }
 
 document.getElementById('login-input').addEventListener('keydown',function(e){ if(e.key==='Enter') sendCode(); });
@@ -347,9 +349,21 @@ window.addEventListener('pageshow', function(e){
 });
 
 // Show/hide security note based on Remember Me checkbox
-document.getElementById('remember-check').addEventListener('change', function(){
-  document.getElementById('security-note').style.display = this.checked ? 'block' : 'none';
-});
+document.getElementById('remember-check').addEventListener('change', updateSecurityNote);
+
+// Role + Remember-me aware security note (tutors/admins get the public-device warning)
+function updateSecurityNote(){
+  var note = document.getElementById('security-note'); if(!note) return;
+  var remember = document.getElementById('remember-check').checked;
+  if(_role === 'student' || _role === 'parent'){
+    note.innerHTML = '<strong>&#128274; You will stay signed in on this device</strong> until you sign out. On a shared or public computer, please sign out after each session.';
+  } else if(remember){
+    note.innerHTML = '<strong>&#128274; You will stay signed in on this device</strong> until you sign out. Only tick this on your own device.';
+  } else {
+    note.innerHTML = '<strong>&#9888;&#65039; On a public or shared device, remember to sign out.</strong> For your security this session ends automatically after 1 hour, and when you close the tab.';
+  }
+  note.style.display = 'block';
+}
 
 // ── Live footer text from KEY sheet ───────────────────────────────────────
 // Fetches `index_footer` from KEY at page load and updates all .cc-footer
@@ -369,6 +383,27 @@ document.getElementById('remember-check').addEventListener('change', function(){
       });
     })
     .catch(function(){ /* silent — fallback hardcoded text remains */ });
+})();
+
+// ── Constellation background ──
+(function(){
+  var c=document.getElementById('cc-net'); if(!c||!c.getContext) return;
+  var x=c.getContext('2d'), W, H, pts=[];
+  function size(){ W=c.width=window.innerWidth; H=c.height=window.innerHeight; }
+  size(); window.addEventListener('resize', size);
+  var N=Math.max(34, Math.min(85, Math.round(W*H/20000)));
+  for(var i=0;i<N;i++) pts.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.35,vy:(Math.random()-.5)*.35});
+  (function loop(){
+    if(!document.body.classList.contains('login-open')){
+      x.clearRect(0,0,W,H);
+      for(var i=0;i<pts.length;i++){var p=pts[i];p.x+=p.vx;p.y+=p.vy;
+        if(p.x<0||p.x>W)p.vx*=-1; if(p.y<0||p.y>H)p.vy*=-1;
+        x.fillStyle='rgba(191,219,254,.9)';x.beginPath();x.arc(p.x,p.y,2,0,7);x.fill();
+        for(var j=i+1;j<pts.length;j++){var q=pts[j],dx=p.x-q.x,dy=p.y-q.y,d=Math.sqrt(dx*dx+dy*dy);
+          if(d<130){x.strokeStyle='rgba(96,165,250,'+(1-d/130)*.45+')';x.lineWidth=1;x.beginPath();x.moveTo(p.x,p.y);x.lineTo(q.x,q.y);x.stroke();}}}
+    }
+    requestAnimationFrame(loop);
+  })();
 })();
 </script>
 </body>
