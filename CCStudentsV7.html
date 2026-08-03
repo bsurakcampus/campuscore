@@ -3,27 +3,16 @@
 <head>
 <script>
 (function(){
-  var ROLE='student';
-  function sess(){ try{ return JSON.parse(localStorage.getItem('cc_session')||sessionStorage.getItem('cc_session')||'null'); }catch(_){ return null; } }
-  function expired(s){ return !!(s && s.exp && Date.now() > s.exp); }
-  function clearSess(){ try{ localStorage.removeItem('cc_session'); sessionStorage.removeItem('cc_session'); }catch(_){ } }
-  function valid(){ var s=sess(); return !!(s && s.credential && s.role===ROLE && !expired(s)); }
-  var s0=sess();
-  if(valid()){
-    document.documentElement.classList.add('cc-has-session');
-    if(s0 && s0.exp){ setTimeout(function(){ clearSess(); window.location.replace('index.html'); }, Math.max(1000, s0.exp - Date.now())); }
-  } else {
-    if(expired(s0)) clearSess();
-    try{ window.location.replace('index.html'); }catch(_){ }
-  }
-  // bfcache: after Sign Out + browser Back, re-check session so a logged-out page can't linger
-  window.addEventListener('pageshow', function(e){ if(e.persisted && !valid()){ clearSess(); try{ window.location.replace('index.html'); }catch(_){ } } });
+  try{
+    var s=JSON.parse(localStorage.getItem('cc_session')||sessionStorage.getItem('cc_session')||'null');
+    if(s&&s.credential&&s.role==='student'){
+      document.documentElement.classList.add('cc-has-session');
+    }
+  }catch(e){}
 })();
 </script>
 
 <style>
-/* cc-hide-login-ui */
-#screen-login,#screen-emailsent{display:none!important;}
 .cc-has-session #screen-login{display:none!important;}
 .cc-has-session #screen-emailsent{display:none!important;}
 
@@ -477,7 +466,7 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
 </div>
 
 <!-- LOGIN -->
-<div id="screen-login" class="screen">
+<div id="screen-login" class="screen active">
   <div class="login-wrap">
     <div class="login-art">
       <div class="login-logo">
@@ -1099,36 +1088,13 @@ var _bundleLmsAccess  = [];
 var _bundleNotes      = [];
 var _surveyQuestions  = {};  // configId → [{qnum, section, text}]
 
-// Wake the Apps Script instance with one light call before the heavy batch, so a cold
-// start can't make the first data call return HTML. Uses the base /exec (instant, reliable).
-async function ccWarmup(){
-  try{
-    for(var i=0;i<3;i++){
-      try{ var r=await fetch(API); var t=await r.text(); JSON.parse(t); return true; }
-      catch(_){ await new Promise(function(res){ setTimeout(res,500*(i+1)); }); }
-    }
-  }catch(_){}
-  return false;
-}
 async function apiFetch(params){
   var url = API + '?' + Object.entries(params).map(function(kv){
     return encodeURIComponent(kv[0])+'='+encodeURIComponent(kv[1]);
   }).join('&');
-  // Auto-retry: cold-start can return HTML instead of JSON; retry that call before failing.
-  var lastErr;
-  for(var attempt=0; attempt<3; attempt++){
-    try{
-      var r = await fetch(url, {method:'GET', redirect:'follow'});
-      var text = await r.text();
-      var j;
-      try{ j = JSON.parse(text); } catch(_){ throw new Error('non-json'); }
-      return j.data !== undefined ? j.data : j;
-    }catch(e){
-      lastErr = e;
-      if(attempt<2){ await new Promise(function(res){ setTimeout(res,700*(attempt+1)); }); continue; }
-    }
-  }
-  throw lastErr || new Error('API error');
+  var r = await fetch(url, {method:'GET', redirect:'follow'});
+  var j = await r.json();
+  return j.data !== undefined ? j.data : j;
 }
 
 async function apiPost(action, body){
@@ -1156,33 +1122,7 @@ function enterPortal(){
   initStarWidgets();
 }
 
-function ccPortalLoading(){
-  var el=document.getElementById('cc-portal-overlay');
-  if(!el){ el=document.createElement('div'); el.id='cc-portal-overlay';
-    el.style.cssText='position:fixed;inset:0;z-index:2147483646;background:#0f1e3d;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;font-family:Segoe UI,system-ui,Arial,sans-serif;text-align:center;padding:24px;';
-    document.body.appendChild(el); }
-  el.style.display='flex';
-  el.innerHTML='<div style="position:relative;width:82px;height:82px;display:flex;align-items:center;justify-content:center;">'
-    +'<div style="position:absolute;inset:0;border-radius:50%;border:3px solid rgba(59,130,246,0.18);border-top-color:#3b82f6;animation:ccspin 0.9s linear infinite;"></div>'
-    +'<div style="width:50px;height:50px;background:#2563eb;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:800;color:#fff;box-shadow:0 0 30px rgba(37,99,235,0.5);">CC</div>'
-    +'</div>'
-    +'<div style="font-size:13px;color:rgba(255,255,255,0.6);">Loading your data\u2026</div>'
-    +'<style>@keyframes ccspin{to{transform:rotate(360deg)}}</style>';
-}
-function ccPortalHide(){ var el=document.getElementById('cc-portal-overlay'); if(el) el.style.display='none'; }
-function ccPortalError(msg){
-  var el=document.getElementById('cc-portal-overlay'); if(!el){ ccPortalLoading(); el=document.getElementById('cc-portal-overlay'); }
-  el.style.display='flex';
-  el.innerHTML='<div style="max-width:440px;color:#fff;">'
-    +'<div style="font-size:40px;margin-bottom:8px;">\u26a0\ufe0f</div>'
-    +'<div style="font-size:20px;font-weight:700;margin-bottom:10px;">Could not load the portal</div>'
-    +'<div style="font-size:13px;line-height:1.7;color:rgba(255,255,255,0.6);margin-bottom:20px;">'+String(msg||'').replace(/</g,"&lt;")+'</div>'
-    +'<button onclick="location.reload()" style="background:#2563eb;color:#fff;border:none;border-radius:9px;padding:12px 22px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;margin-right:8px;">Retry</button>'
-    +'<button onclick="ccSignOut()" style="background:transparent;color:#93c5fd;border:1px solid rgba(147,197,253,0.4);border-radius:9px;padding:12px 22px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">Sign out</button>'
-    +'</div>';
-}
 function loadStudentData(bsuId){
-  ccPortalLoading();
   apiFetch({action:'getStudentBundle', bsuId:bsuId}).then(function(bundle){
 
     // Block portal if student not found or API returned an error
@@ -1199,7 +1139,6 @@ function loadStudentData(bsuId){
       if(sub)     sub.style.display = 'none';
       if(demoBtn) demoBtn.style.display = 'none';
       if(errBox)  errBox.style.display = 'block';
-      ccPortalError('That BSU ID was not found. Please sign in again.');
       return;
     }
 
@@ -1221,11 +1160,9 @@ function loadStudentData(bsuId){
     document.getElementById('screen-login').classList.remove('active');
     document.getElementById('screen-emailsent').classList.remove('active');
     document.getElementById('screen-app').classList.add('active');
-    ccPortalHide();
 
     var s = bundle.student;
     _student      = s;
-    try { localStorage.setItem('cc_session', JSON.stringify({ credential: bsuId, role: 'student' })); } catch(e){}
     _config       = bundle.config       || {};
     _staffMap     = bundle.staffMap     || {};
     _assessments  = bundle.assessments  || [];
@@ -1252,7 +1189,7 @@ function loadStudentData(bsuId){
     updateEvalNavBadges();
     renderHolidayGreeting();
 
-  }).catch(function(e){ console.error('loadStudentData error:', e); ccPortalError('Could not reach the server. '+(e.message||'')); var btn=document.querySelector('#screen-login .btn-primary'); if(btn){btn.textContent='Load Portal →';btn.disabled=false;} });
+  }).catch(function(e){ console.error('loadStudentData error:', e); var btn=document.querySelector('#screen-login .btn-primary'); if(btn){btn.textContent='Load Portal →';btn.disabled=false;} });
 }
 
 // ── Holiday Greeting ──────────────────────────────────────────────────────
@@ -4418,7 +4355,7 @@ function dismissBirthday(){
     setTimeout(function(){
       var app = document.getElementById('screen-app');
       if(!app || !app.classList.contains('active')){
-        localStorage.removeItem('cc_session'); sessionStorage.removeItem('cc_session');
+        localStorage.removeItem('cc_session');
         ccHideLoading();
         // session may still be valid — don't redirect
       }
@@ -4435,23 +4372,8 @@ function ccHideLoading(){
 setTimeout(ccHideLoading, 10000);
 
 function ccSignOut(){
-  try { localStorage.removeItem('cc_session'); sessionStorage.removeItem('cc_session'); } catch(_){}
-  try { window.close(); } catch(_){}   // closes only if this tab was opened by a script
-  ccShowSignedOut();                    // otherwise show a signed-out notice
-}
-function ccShowSignedOut(){
-  if(document.getElementById('cc-signout-screen')) return;
-  var ov = document.createElement('div');
-  ov.id = 'cc-signout-screen';
-  ov.style.cssText = 'position:fixed;inset:0;z-index:2147483647;background:#0f1e3d;display:flex;align-items:center;justify-content:center;padding:24px;font-family:Segoe UI,system-ui,Arial,sans-serif;';
-  ov.innerHTML = '<div style="max-width:420px;width:100%;text-align:center;color:#fff;">'
-    + '<div style="width:56px;height:56px;margin:0 auto 20px;background:#2563eb;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;box-shadow:0 0 28px rgba(37,99,235,0.45);">CC</div>'
-    + '<div style="font-size:22px;font-weight:700;margin-bottom:10px;">You&#39;ve signed out</div>'
-    + '<div style="font-size:15px;line-height:1.7;color:rgba(255,255,255,0.8);margin-bottom:6px;">You can now <b style="color:#fff;">close this tab</b>.</div>'
-    + '<div style="font-size:12px;line-height:1.6;color:rgba(255,255,255,0.4);margin-bottom:24px;">Please close it for security if you are on a public or shared system.</div>'
-    + '<button onclick="window.location.replace(\'index.html\')" style="background:#2563eb;color:#fff;border:none;border-radius:9px;padding:12px 26px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">Return to sign-in</button>'
-    + '</div>';
-  document.body.appendChild(ov);
+  localStorage.removeItem('cc_session');
+  window.location.href = 'index.html';
 }
 </script>
 </body>

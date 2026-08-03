@@ -3381,25 +3381,15 @@ async function enterPortal(){
       errEl0.textContent = 'Could not detect your sign-in email. Please try again.';
       return;
     }
-    // ONE bundled call instead of 7 — far more reliable (survives one redirect, not seven) and faster.
-    // Falls back to the original 7 parallel calls if the bundle endpoint isn't available yet.
-    let students, alumni, staff, alerts, programs, rkData, configData;
-    try {
-      const _b = await apiFetch({action:'getAdminBundle'});
-      if (!_b || _b.students === undefined) throw new Error('bundle-empty');
-      students = _b.students; alumni = _b.alumni; staff = _b.staff; alerts = _b.alerts;
-      programs = _b.programs; rkData = _b.rkData; configData = _b.config;
-    } catch(_bundleErr) {
-      [students, alumni, staff, alerts, programs, rkData, configData] = await Promise.all([
-        apiFetch({action:'getStudents'}),
-        apiFetch({action:'getAlumni'}),
-        apiFetch({action:'getStaff'}),
-        apiFetch({action:'getAlerts'}),
-        apiFetch({action:'getPrograms'}),
-        apiFetch({action:'getRkData'}),
-        apiFetch({action:'getConfig'})
-      ]);
-    }
+    const [students, alumni, staff, alerts, programs, rkData, configData] = await Promise.all([
+      apiFetch({action:'getStudents'}),
+      apiFetch({action:'getAlumni'}),
+      apiFetch({action:'getStaff'}),
+      apiFetch({action:'getAlerts'}),
+      apiFetch({action:'getPrograms'}),
+      apiFetch({action:'getRkData'}),
+      apiFetch({action:'getConfig'})
+    ]);
     _students = students;
     _alumni   = alumni;
     _config   = configData || {};
