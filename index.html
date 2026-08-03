@@ -84,7 +84,7 @@ body.login-open .wrapper{opacity:0;pointer-events:none;}
       <div class="logo-text">Campus<span>Core</span></div>
     </div>
     <p class="logo-sub">Bath Spa University · RAK Campus</p>
-    <p class="portal-label">Portal Access<span class="sub">Select your portal to continue</span></p>
+    <p class="portal-label">Portal Access<span class="sub">Select your role to continue</span></p>
     <div class="role-list">
       <button class="role-btn" onclick="openLogin('student')">
         <span class="role-icon">🎓</span>
@@ -316,10 +316,10 @@ function sendCode(){
 function finishSignIn(){
   var remember = document.getElementById('remember-check').checked;
   var sess = { role:_role, credential:_credential, remember:remember, ts:Date.now() };
-  if(_role === 'student' || _role === 'parent'){
-    sess.remember = true;                    // students & parents stay in until they Sign Out
-  } else if(!remember){
-    sess.exp = Date.now() + 60*60*1000;      // tutors & admins: 1-hour + tab-close unless Remember me
+  // students/parents: no time limit — Remember me picks persist vs. end-on-browser-close.
+  // tutors/admins: 1-hour + tab-close unless Remember me is ticked.
+  if(_role !== 'student' && _role !== 'parent' && !remember){
+    sess.exp = Date.now() + 60*60*1000;
   }
   saveSession(sess);
   window.location.replace(PORTALS[_role]);
@@ -357,7 +357,11 @@ function updateSecurityNote(){
   var note = document.getElementById('security-note'); if(!note) return;
   var remember = document.getElementById('remember-check').checked;
   if(_role === 'student' || _role === 'parent'){
-    note.innerHTML = '<strong>&#128274; You will stay signed in on this device</strong> until you sign out. On a shared or public computer, please sign out after each session.';
+    if(remember){
+      note.innerHTML = '<strong>&#128274; You will stay signed in on this device</strong> until you sign out. On a shared or public computer, please sign out after each session.';
+    } else {
+      note.innerHTML = '<strong>&#128275; You will be signed out when you close your browser.</strong> Recommended on a shared or public computer.';
+    }
   } else if(remember){
     note.innerHTML = '<strong>&#128274; You will stay signed in on this device</strong> until you sign out. Only tick this on your own device.';
   } else {

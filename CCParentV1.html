@@ -3,16 +3,27 @@
 <head>
 <script>
 (function(){
-  try{
-    var s=JSON.parse(localStorage.getItem('cc_session')||sessionStorage.getItem('cc_session')||'null');
-    if(s&&s.credential&&s.role==='parent'){
-      document.documentElement.classList.add('cc-has-session');
-    }
-  }catch(e){}
+  var ROLE='parent';
+  function sess(){ try{ return JSON.parse(localStorage.getItem('cc_session')||sessionStorage.getItem('cc_session')||'null'); }catch(_){ return null; } }
+  function expired(s){ return !!(s && s.exp && Date.now() > s.exp); }
+  function clearSess(){ try{ localStorage.removeItem('cc_session'); sessionStorage.removeItem('cc_session'); }catch(_){ } }
+  function valid(){ var s=sess(); return !!(s && s.credential && s.role===ROLE && !expired(s)); }
+  var s0=sess();
+  if(valid()){
+    document.documentElement.classList.add('cc-has-session');
+    if(s0 && s0.exp){ setTimeout(function(){ clearSess(); window.location.replace('index.html'); }, Math.max(1000, s0.exp - Date.now())); }
+  } else {
+    if(expired(s0)) clearSess();
+    try{ window.location.replace('index.html'); }catch(_){ }
+  }
+  // bfcache: after Sign Out + browser Back, re-check session so a logged-out page can't linger
+  window.addEventListener('pageshow', function(e){ if(e.persisted && !valid()){ clearSess(); try{ window.location.replace('index.html'); }catch(_){ } } });
 })();
 </script>
 
 <style>
+/* cc-hide-login-ui */
+#screen-login{display:none!important;}
 .cc-has-session #screen-login{display:none!important;}
 .cc-has-session #screen-emailsent{display:none!important;}
 
@@ -319,7 +330,7 @@ body{font-family:'Sora',sans-serif;color:var(--text);display:flex;flex-direction
 <div id="app-shell">
 
   <!-- ══ SCREEN: LOGIN ══ -->
-  <div class="screen active" id="screen-login">
+  <div class="screen" id="screen-login">
     <div class="orb1"></div><div class="orb2"></div><div class="orb3"></div>
     <div class="login-logo">
       <div class="login-logo-mark">CC</div>
@@ -551,6 +562,7 @@ function loadStudentById(bsuId){
       _bundle=bundle; _student=bundle.student;
       buildPortal(); _curPanel=0; switchPanel(0);
       ccHideLoading(); showScreen('screen-portal');
+      try { localStorage.setItem('cc_session', JSON.stringify({ credential: (_parentEmail||'') + '||' + bsuId, role: 'parent' })); } catch(e){}
     })
     .catch(function(){ ccHideLoading(); alert('Could not load student data.'); });
 }
@@ -633,6 +645,31 @@ function verifyOtp(){
 // ══════════════════════════════════════════════════
 // LOAD STUDENT
 // ══════════════════════════════════════════════════
+function ccPortalLoading(){
+  var el=document.getElementById('cc-portal-overlay');
+  if(!el){ el=document.createElement('div'); el.id='cc-portal-overlay';
+    el.style.cssText='position:fixed;inset:0;z-index:2147483646;background:#0f1e3d;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;font-family:Segoe UI,system-ui,Arial,sans-serif;text-align:center;padding:24px;';
+    document.body.appendChild(el); }
+  el.style.display='flex';
+  el.innerHTML='<div style="position:relative;width:82px;height:82px;display:flex;align-items:center;justify-content:center;">'
+    +'<div style="position:absolute;inset:0;border-radius:50%;border:3px solid rgba(59,130,246,0.18);border-top-color:#3b82f6;animation:ccspin 0.9s linear infinite;"></div>'
+    +'<div style="width:50px;height:50px;background:#2563eb;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:800;color:#fff;box-shadow:0 0 30px rgba(37,99,235,0.5);">CC</div>'
+    +'</div>'
+    +'<div style="font-size:13px;color:rgba(255,255,255,0.6);">Loading your data\u2026</div>'
+    +'<style>@keyframes ccspin{to{transform:rotate(360deg)}}</style>';
+}
+function ccPortalHide(){ var el=document.getElementById('cc-portal-overlay'); if(el) el.style.display='none'; }
+function ccPortalError(msg){
+  var el=document.getElementById('cc-portal-overlay'); if(!el){ ccPortalLoading(); el=document.getElementById('cc-portal-overlay'); }
+  el.style.display='flex';
+  el.innerHTML='<div style="max-width:440px;color:#fff;">'
+    +'<div style="font-size:40px;margin-bottom:8px;">\u26a0\ufe0f</div>'
+    +'<div style="font-size:20px;font-weight:700;margin-bottom:10px;">Could not load the portal</div>'
+    +'<div style="font-size:13px;line-height:1.7;color:rgba(255,255,255,0.6);margin-bottom:20px;">'+String(msg||'').replace(/</g,"&lt;")+'</div>'
+    +'<button onclick="location.reload()" style="background:#2563eb;color:#fff;border:none;border-radius:9px;padding:12px 22px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;margin-right:8px;">Retry</button>'
+    +'<button onclick="ccSignOut()" style="background:transparent;color:#93c5fd;border:1px solid rgba(147,197,253,0.4);border-radius:9px;padding:12px 22px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">Sign out</button>'
+    +'</div>';
+}
 function loadStudent(){
   var bsuId = document.getElementById('bsuid-input').value.trim();
   var errEl = document.getElementById('bsuid-error');
@@ -640,13 +677,14 @@ function loadStudent(){
   if(!bsuId){ errEl.textContent = 'Please enter a BSU ID.'; errEl.style.display = 'block'; return; }
 
   errEl.textContent = '⏳ Loading…'; errEl.style.display = 'block'; errEl.style.color = '#93c5fd';
+  ccPortalLoading();
 
   apiFetch({action:'getStudentBundle', bsuId:bsuId})
     .then(function(bundle){
       errEl.style.color = '#f87171';
       if(!bundle || bundle.error){
         errEl.textContent = bundle && bundle.error ? bundle.error : 'Student not found or access denied.';
-        errEl.style.display = 'block'; return;
+        errEl.style.display = 'block'; ccPortalError(bundle && bundle.error ? bundle.error : 'Student not found or access denied.'); return;
       }
       _bundle  = bundle;
       _student = bundle.student;
@@ -654,11 +692,14 @@ function loadStudent(){
       _curPanel = 0;
       switchPanel(0);
       ccHideLoading();
+      ccPortalHide();
       showScreen('screen-portal');
+      try { localStorage.setItem('cc_session', JSON.stringify({ credential: (_parentEmail||'') + '||' + bsuId, role: 'parent' })); } catch(e){}
     })
     .catch(function(e){
       errEl.textContent = (e && e.message ? e.message : 'Could not load data. Please write to records@bathspa.ae for help.');
       errEl.style.color = '#f87171'; errEl.style.display = 'block';
+      ccPortalError('Could not reach the server. '+((e&&e.message)||''));
     });
 }
 
@@ -1352,15 +1393,25 @@ document.getElementById('bsuid-input').addEventListener('keydown', function(e){ 
 <script>
 (function(){
   try {
-    var s = JSON.parse(localStorage.getItem('cc_session') || 'null');
+    var s = JSON.parse(localStorage.getItem('cc_session') || sessionStorage.getItem('cc_session') || 'null');
     if(s && s.role === 'parent' && s.credential){
-      // credential = "email||bsuId"
+      if(typeof ccPortalLoading==='function') ccPortalLoading();
+      // credential = "email||bsuId" (portal login) OR "bsuId" (unified index.html login)
       var parts = s.credential.split('||');
       if(parts.length === 2){
         window._parentEmail = parts[0];
         if(typeof loadStudent === 'function'){
           document.getElementById('bsuid-input').value = parts[1];
           loadStudent(); return;
+        }
+      } else if(parts.length === 1 && parts[0]){
+        var _bsu = parts[0];
+        if(typeof apiFetch === 'function'){
+          apiFetch({action:'getParentEmailByBsuId', bsuId:_bsu}).then(function(d){
+            if(d && d.parentEmail){ window._parentEmail = d.parentEmail; var bi=document.getElementById('bsuid-input'); if(bi) bi.value=_bsu; if(typeof loadStudent==='function') loadStudent(); }
+            else { if(typeof ccPortalError==='function') ccPortalError('Could not find your record. Please sign in again.'); }
+          }).catch(function(e){ if(typeof ccPortalError==='function') ccPortalError('Could not reach the server. '+((e&&e.message)||'')); });
+          return;
         }
       }
     }
@@ -1377,8 +1428,23 @@ function ccHideLoading(){
 setTimeout(ccHideLoading, 10000);
 
 function ccSignOut(){
-  localStorage.removeItem('cc_session');
-  window.location.href = 'index.html';
+  try { localStorage.removeItem('cc_session'); sessionStorage.removeItem('cc_session'); } catch(_){}
+  try { window.close(); } catch(_){}   // closes only if this tab was opened by a script
+  ccShowSignedOut();                    // otherwise show a signed-out notice
+}
+function ccShowSignedOut(){
+  if(document.getElementById('cc-signout-screen')) return;
+  var ov = document.createElement('div');
+  ov.id = 'cc-signout-screen';
+  ov.style.cssText = 'position:fixed;inset:0;z-index:2147483647;background:#0f1e3d;display:flex;align-items:center;justify-content:center;padding:24px;font-family:Segoe UI,system-ui,Arial,sans-serif;';
+  ov.innerHTML = '<div style="max-width:420px;width:100%;text-align:center;color:#fff;">'
+    + '<div style="width:56px;height:56px;margin:0 auto 20px;background:#2563eb;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;box-shadow:0 0 28px rgba(37,99,235,0.45);">CC</div>'
+    + '<div style="font-size:22px;font-weight:700;margin-bottom:10px;">You&#39;ve signed out</div>'
+    + '<div style="font-size:15px;line-height:1.7;color:rgba(255,255,255,0.8);margin-bottom:6px;">You can now <b style="color:#fff;">close this tab</b>.</div>'
+    + '<div style="font-size:12px;line-height:1.6;color:rgba(255,255,255,0.4);margin-bottom:24px;">Please close it for security if you are on a public or shared system.</div>'
+    + '<button onclick="window.location.replace(\'index.html\')" style="background:#2563eb;color:#fff;border:none;border-radius:9px;padding:12px 26px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">Return to sign-in</button>'
+    + '</div>';
+  document.body.appendChild(ov);
 }
 </script>
 </body>
