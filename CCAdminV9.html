@@ -3267,12 +3267,37 @@ let _programs = [];
 let _adminUser = null;
 
 // ── API helpers ──────────────────────────────────────────────
+// Wake the Apps Script instance with one light call before the heavy batch, so a cold
+// start can't make the first data call return HTML. Uses the base /exec (instant, reliable).
+async function ccWarmup(){
+  try{
+    for(var i=0;i<3;i++){
+      try{ var r=await fetch(API); var t=await r.text(); JSON.parse(t); return true; }
+      catch(_){ await new Promise(function(res){ setTimeout(res,500*(i+1)); }); }
+    }
+  }catch(_){}
+  return false;
+}
 async function apiFetch(params) {
   const url = API + '?' + new URLSearchParams(params);
-  const res = await fetch(url);
-  const json = await res.json();
-  if (json.status !== 'ok') throw new Error(json.message || 'API error');
-  return json.data;
+  // Auto-retry: Apps Script can briefly return an HTML page (cold start) instead of JSON.
+  // Retry that one call a few times before giving up so a blip doesn't fail the whole load.
+  let lastErr;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      const res  = await fetch(url);
+      const text = await res.text();
+      let json;
+      try { json = JSON.parse(text); }
+      catch(_) { throw new Error('non-json'); }   // HTML/cold-start -> retry
+      if (json.status !== 'ok') throw new Error(json.message || 'API error');
+      return json.data;
+    } catch(e) {
+      lastErr = e;
+      if (attempt < 2) { await new Promise(r => setTimeout(r, 700 * (attempt + 1))); continue; }
+    }
+  }
+  throw lastErr || new Error('API error');
 }
 async function apiPost(body) {
   const res = await fetch(API, {
@@ -3408,6 +3433,7 @@ async function enterPortal(){
       window.location.replace('index.html'); return;
     }
     ccPortalLoading();
+    await ccWarmup();
     const [students, alumni, staff, alerts, programs, rkData, configData] = await Promise.all([
       apiFetch({action:'getStudents'}),
       apiFetch({action:'getAlumni'}),

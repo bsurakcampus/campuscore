@@ -507,14 +507,32 @@ function showToast(msg, duration){
   setTimeout(function(){ t.classList.remove('show'); }, duration||2500);
 }
 
+// Wake the Apps Script instance before the heavy call (cold-start guard).
+function ccWarmup(){
+  function tryOnce(n){
+    return fetch(API_URL).then(function(r){return r.text();}).then(function(t){ JSON.parse(t); return true; })
+      .catch(function(){ if(n<2){ return new Promise(function(res){setTimeout(res,500*(n+1));}).then(function(){return tryOnce(n+1);}); } return false; });
+  }
+  return tryOnce(0);
+}
 function apiFetch(params){
   var url = API_URL + '?' + new URLSearchParams(params).toString();
-  return fetch(url)
-    .then(function(r){ return r.json(); })
-    .then(function(d){
-      if(d.status && d.status !== 'ok') throw new Error(d.message || 'API error');
-      return d.data !== undefined ? d.data : d;
-    });
+  // Auto-retry: cold-start can return HTML instead of JSON; retry that call before failing.
+  function attempt(n){
+    return fetch(url)
+      .then(function(r){ return r.text(); })
+      .then(function(text){
+        var d;
+        try{ d = JSON.parse(text); } catch(_){ throw new Error('non-json'); }
+        if(d.status && d.status !== 'ok') throw new Error(d.message || 'API error');
+        return d.data !== undefined ? d.data : d;
+      })
+      .catch(function(e){
+        if(n < 2){ return new Promise(function(res){ setTimeout(res,700*(n+1)); }).then(function(){ return attempt(n+1); }); }
+        throw e;
+      });
+  }
+  return attempt(0);
 }
 
 function driveImgUrl(url){

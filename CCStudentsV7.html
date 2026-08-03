@@ -1099,13 +1099,36 @@ var _bundleLmsAccess  = [];
 var _bundleNotes      = [];
 var _surveyQuestions  = {};  // configId → [{qnum, section, text}]
 
+// Wake the Apps Script instance with one light call before the heavy batch, so a cold
+// start can't make the first data call return HTML. Uses the base /exec (instant, reliable).
+async function ccWarmup(){
+  try{
+    for(var i=0;i<3;i++){
+      try{ var r=await fetch(API); var t=await r.text(); JSON.parse(t); return true; }
+      catch(_){ await new Promise(function(res){ setTimeout(res,500*(i+1)); }); }
+    }
+  }catch(_){}
+  return false;
+}
 async function apiFetch(params){
   var url = API + '?' + Object.entries(params).map(function(kv){
     return encodeURIComponent(kv[0])+'='+encodeURIComponent(kv[1]);
   }).join('&');
-  var r = await fetch(url, {method:'GET', redirect:'follow'});
-  var j = await r.json();
-  return j.data !== undefined ? j.data : j;
+  // Auto-retry: cold-start can return HTML instead of JSON; retry that call before failing.
+  var lastErr;
+  for(var attempt=0; attempt<3; attempt++){
+    try{
+      var r = await fetch(url, {method:'GET', redirect:'follow'});
+      var text = await r.text();
+      var j;
+      try{ j = JSON.parse(text); } catch(_){ throw new Error('non-json'); }
+      return j.data !== undefined ? j.data : j;
+    }catch(e){
+      lastErr = e;
+      if(attempt<2){ await new Promise(function(res){ setTimeout(res,700*(attempt+1)); }); continue; }
+    }
+  }
+  throw lastErr || new Error('API error');
 }
 
 async function apiPost(action, body){
