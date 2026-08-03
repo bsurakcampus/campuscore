@@ -125,6 +125,12 @@ fetch(API+'?action=getFeeCollectionLog')
       document.getElementById('loading').textContent='No fee collection data found.';
       return;
     }
+    // Order months chronologically, then treat the FIRST recorded month as the baseline:
+    // it has no prior month to open from, so its opening = its closing and nothing was
+    // "collected" that month (prevents a false large negative on the first row/chart/total).
+    var _MO = {January:0,February:1,March:2,April:3,May:4,June:5,July:6,August:7,September:8,October:9,November:10,December:11};
+    DATA.sort(function(a,b){ return (a.year-b.year) || ((_MO[a.month]||0)-(_MO[b.month]||0)); });
+    DATA[0] = Object.assign({}, DATA[0], { opening: DATA[0].closing, collected: 0 });
     document.getElementById('loading').style.display='none';
     document.getElementById('main-content').style.display='';
 
