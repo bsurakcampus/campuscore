@@ -1826,6 +1826,7 @@ async function apiPost(action, body){
     redirect: 'follow'
   });
   const j = await r.json();
+  try { _modCache = {}; } catch(_){}   // a write happened -> drop cached module marks/attendance so they reload fresh
   return j;
 }
 
@@ -1908,20 +1909,21 @@ function ccTrapBack(){
     });
   }catch(_){}
 }
-// Data loader: always fetch the LATEST on login (fast: parallel reads + keep-warm), and keep a
-// copy in this browser used ONLY as a fallback if the network/endpoint fails (offline or a blip).
-// So users always see current data on login, and the portal still works during a hiccup.
+// Data loader: opens INSTANTLY from the copy saved on this machine, then quietly re-fetches
+// in the background and saves it for next time. First ever open fetches (no copy yet). This makes
+// every return open instant; data shown is from the last sync and refreshes for the next open.
 async function ccCached(cacheKey, source){
   var CK = 'cc_cache_' + cacheKey;
   function run(){ return (typeof source === 'function') ? source() : apiFetch(source); }
-  try {
-    var fresh = await run();
-    try{ localStorage.setItem(CK, JSON.stringify({t:Date.now(), d:fresh})); }catch(_){}
-    return fresh;
-  } catch(e){
-    try{ var c=localStorage.getItem(CK); if(c){ return JSON.parse(c).d; } }catch(_){}
-    throw e;
+  var cached=null;
+  try{ var c=localStorage.getItem(CK); if(c){ cached=JSON.parse(c).d; } }catch(_){}
+  if(cached!==null && cached!==undefined){
+    Promise.resolve(run()).then(function(fresh){ try{ localStorage.setItem(CK, JSON.stringify({t:Date.now(), d:fresh})); }catch(_){} }).catch(function(){});
+    return cached;
   }
+  var fresh = await run();
+  try{ localStorage.setItem(CK, JSON.stringify({t:Date.now(), d:fresh})); }catch(_){}
+  return fresh;
 }
 async function enterPortal(){
   // Keep emailsent screen visible while loading — switch to app only after data arrives
@@ -2630,6 +2632,13 @@ function renderDashboardModules(){
   if(s2sub) s2sub.textContent = 'Feb – May '+(yrStart+1)+' · '+(curSem.indexOf('2')>-1?'Active teaching period':'Upcoming');
 }
 
+// Per-module in-memory cache for marks + attendance. First open fetches; returning to the same
+// module in the session shows instantly (no blank re-load). Cleared automatically on any save.
+var _modCache = {};
+function ccModCache(key, params){
+  if(Object.prototype.hasOwnProperty.call(_modCache, key)){ return Promise.resolve(_modCache[key]); }
+  return apiFetch(params).then(function(d){ _modCache[key] = d; return d; }).catch(function(){ return []; });
+}
 function openModuleDetail(code, name, prog, year, sem){
   sTxt('md-module-name', name);
   sTxt('md-module-code', code);
@@ -2679,7 +2688,7 @@ function openModuleDetail(code, name, prog, year, sem){
   showPage('module-detail');
 
   // Load LMS access state and set data-bsuid/data-code on all pills
-  apiFetch({action:'getLmsAccess', moduleCode:code}).then(function(records){
+  ccModCache('lms_'+code, {action:'getLmsAccess', moduleCode:code}).then(function(records){
     var granted = {};
     (records||[]).forEach(function(r){ if(r.status==='Granted') granted[r.bsuId]=r.dateGranted||''; else delete granted[r.bsuId]; });
     document.querySelectorAll('#detail-student-table .lms-td').forEach(function(td){
@@ -2714,8 +2723,8 @@ function openModuleDetail(code, name, prog, year, sem){
 
   // Load SA1/SA2 results and attendance % live
   Promise.all([
-    apiFetch({action:'getResults', moduleCode:code}).catch(()=>[]),
-    apiFetch({action:'getAttendance', moduleCode:code}).catch(()=>[])
+    ccModCache('results_'+code, {action:'getResults', moduleCode:code}),
+    ccModCache('att_'+code, {action:'getAttendance', moduleCode:code})
   ]).then(function(res){
     var results  = res[0]||[];
     var attRecs  = res[1]||[];
@@ -3148,7 +3157,7 @@ function loadLeaveApplications(forceReload){
   if(_leaveLoaded && !forceReload){ renderLeaveApplications(_leaveData); return; }
   var container = document.getElementById('leave-container');
   var email = _tutor ? _tutor.email : '';
-  apiFetch({action:'getLeaveRequests', tutorEmail:email}).then(function(data){
+  ccModCache('leaves_'+email, {action:'getLeaveRequests', tutorEmail:email}).then(function(data){
     _leaveLoaded = true;
     _leaveData   = data || [];
     renderLeaveApplications(_leaveData);
@@ -7116,7 +7125,7 @@ function generateSps(){
   status.textContent = '⏳ Loading…';
   _spsBsuId = null;
 
-  apiFetch({action:'getStudentBundle', bsuId:bsuId, fields:'core'}).then(function(bundle){
+  ccModCache('sps_'+bsuId, {action:'getStudentBundle', bsuId:bsuId, fields:'core'}).then(function(bundle){
     if(!bundle || !bundle.student){
       status.textContent = '❌ BSU ID not found: '+bsuId;
       return;
