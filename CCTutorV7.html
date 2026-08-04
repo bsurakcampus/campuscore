@@ -1908,6 +1908,21 @@ function ccTrapBack(){
     });
   }catch(_){}
 }
+// Data loader: always fetch the LATEST on login (fast: parallel reads + keep-warm), and keep a
+// copy in this browser used ONLY as a fallback if the network/endpoint fails (offline or a blip).
+// So users always see current data on login, and the portal still works during a hiccup.
+async function ccCached(cacheKey, source){
+  var CK = 'cc_cache_' + cacheKey;
+  function run(){ return (typeof source === 'function') ? source() : apiFetch(source); }
+  try {
+    var fresh = await run();
+    try{ localStorage.setItem(CK, JSON.stringify({t:Date.now(), d:fresh})); }catch(_){}
+    return fresh;
+  } catch(e){
+    try{ var c=localStorage.getItem(CK); if(c){ return JSON.parse(c).d; } }catch(_){}
+    throw e;
+  }
+}
 async function enterPortal(){
   // Keep emailsent screen visible while loading — switch to app only after data arrives
   const email = document.getElementById('email-sent-display').textContent.trim() || '';
@@ -1916,13 +1931,8 @@ async function enterPortal(){
     // ONE bundled call instead of 7 — much faster and far more reliable (survives one
     // redirect, not seven). Falls back to the 7 parallel calls if the bundle isn't deployed yet.
     let staffData, modulesData, studentsData, rkData, annData, configData, ukCountData;
-    try {
-      const _b = await apiFetch({action:'getTutorBundle', email});
-      if (!_b || _b.staff === undefined) throw new Error('bundle-empty');
-      staffData = _b.staff; modulesData = _b.modules; studentsData = _b.students;
-      rkData = _b.rkData; annData = _b.announcements; configData = _b.config; ukCountData = _b.ukCount;
-    } catch(_be) {
-      [staffData, modulesData, studentsData, rkData, annData, configData, ukCountData] = await Promise.all([
+    const _b = await ccCached('tutor_'+email.toLowerCase(), function(){
+      return Promise.all([
         apiFetch({action:'getStaffMember', email}),
         apiFetch({action:'getTutorModules', email}),
         apiFetch({action:'getStudents'}),
@@ -1930,8 +1940,10 @@ async function enterPortal(){
         apiFetch({action:'getAnnouncements'}),
         apiFetch({action:'getConfig'}),
         apiFetch({action:'getUkCount'})
-      ]);
-    }
+      ]).then(function(r){ return {staff:r[0],modules:r[1],students:r[2],rkData:r[3],announcements:r[4],config:r[5],ukCount:r[6]}; });
+    });
+    staffData = _b.staff; modulesData = _b.modules; studentsData = _b.students;
+    rkData = _b.rkData; annData = _b.announcements; configData = _b.config; ukCountData = _b.ukCount;
 
     // Block if staff not found
     if(!staffData || staffData.status === 'error' || !staffData.email){

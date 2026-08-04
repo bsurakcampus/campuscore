@@ -675,6 +675,21 @@ function ccPortalError(msg){
     +'<button onclick="ccSignOut()" style="background:transparent;color:#93c5fd;border:1px solid rgba(147,197,253,0.4);border-radius:9px;padding:12px 22px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">Sign out</button>'
     +'</div>';
 }
+// Data loader: always fetch the LATEST on login (fast: parallel reads + keep-warm), and keep a
+// copy in this browser used ONLY as a fallback if the network/endpoint fails (offline or a blip).
+// So users always see current data on login, and the portal still works during a hiccup.
+async function ccCached(cacheKey, source){
+  var CK = 'cc_cache_' + cacheKey;
+  function run(){ return (typeof source === 'function') ? source() : apiFetch(source); }
+  try {
+    var fresh = await run();
+    try{ localStorage.setItem(CK, JSON.stringify({t:Date.now(), d:fresh})); }catch(_){}
+    return fresh;
+  } catch(e){
+    try{ var c=localStorage.getItem(CK); if(c){ return JSON.parse(c).d; } }catch(_){}
+    throw e;
+  }
+}
 function loadStudent(){
   var bsuId = document.getElementById('bsuid-input').value.trim();
   var errEl = document.getElementById('bsuid-error');
@@ -684,7 +699,7 @@ function loadStudent(){
   errEl.textContent = '⏳ Loading…'; errEl.style.display = 'block'; errEl.style.color = '#93c5fd';
   ccPortalLoading();
 
-  apiFetch({action:'getStudentBundle', bsuId:bsuId})
+  ccCached('parent_'+bsuId, {action:'getStudentBundle', bsuId:bsuId})
     .then(function(bundle){
       errEl.style.color = '#f87171';
       if(!bundle || bundle.error){

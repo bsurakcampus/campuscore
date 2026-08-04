@@ -3281,6 +3281,16 @@ async function apiFetch(params) {
   }
   throw lastErr || new Error('API error');
 }
+
+// Per-page in-memory cache: the FIRST time a (static) page is opened it fetches; every RETURN
+// to that page in the same session is instant. Resets on reload/re-login (so it re-fetches then).
+// Used only for rarely-changing pages (calendars, policies). Dynamic pages stay always-fresh.
+var _ccPageCache = {};
+function ccPage(params){
+  var k = JSON.stringify(params);
+  if(Object.prototype.hasOwnProperty.call(_ccPageCache, k)){ return Promise.resolve(_ccPageCache[k]); }
+  return apiFetch(params).then(function(d){ _ccPageCache[k] = d; return d; });
+}
 async function apiPost(body) {
   const res = await fetch(API, {
     method:'POST', headers:{'Content-Type':'text/plain'},
@@ -3421,6 +3431,33 @@ function ccTrapBack(){
     });
   }catch(_){}
 }
+// Data loader: always fetch the LATEST on login (fast: parallel reads + keep-warm), and keep a
+// copy in this browser used ONLY as a fallback if the network/endpoint fails (offline or a blip).
+// So users always see current data on login, and the portal still works during a hiccup.
+async function ccCached(cacheKey, source){
+  var CK = 'cc_cache_' + cacheKey;
+  function run(){ return (typeof source === 'function') ? source() : apiFetch(source); }
+  try {
+    var fresh = await run();
+    try{ localStorage.setItem(CK, JSON.stringify({t:Date.now(), d:fresh})); }catch(_){}
+    return fresh;
+  } catch(e){
+    try{ var c=localStorage.getItem(CK); if(c){ return JSON.parse(c).d; } }catch(_){}
+    throw e;
+  }
+}
+// Gentle background preload: after the dashboard is up, quietly warm the STABLE pages
+// (calendars, policies) one at a time (2.5s apart) so opening them is instant. Volatile pages
+// (attendance, results, tasks) are left on-demand so their data is always current when opened.
+function ccAdminPreload(){
+  var tasks = [
+    function(){ try{ if(typeof loadAdminAcadCalendar==='function') loadAdminAcadCalendar(); }catch(_){} },
+    function(){ try{ if(typeof loadUCalendarEvents==='function')   loadUCalendarEvents();   }catch(_){} },
+    function(){ try{ if(typeof loadPolicies==='function')          loadPolicies();          }catch(_){} }
+  ];
+  var i=0;
+  (function next(){ if(i>=tasks.length) return; try{ tasks[i++](); }catch(_){} setTimeout(next, 2500); })();
+}
 async function enterPortal(){
   // Stay on emailsent screen while loading — switch to app only after data arrives
   try {
@@ -3431,13 +3468,8 @@ async function enterPortal(){
     }
     ccPortalLoading();
     let students, alumni, staff, alerts, programs, rkData, configData;
-    try {
-      const _b = await apiFetch({action:'getAdminBundle'});
-      if (!_b || _b.students === undefined) throw new Error('bundle-empty');
-      students = _b.students; alumni = _b.alumni; staff = _b.staff; alerts = _b.alerts;
-      programs = _b.programs; rkData = _b.rkData; configData = _b.config;
-    } catch(_be) {
-      [students, alumni, staff, alerts, programs, rkData, configData] = await Promise.all([
+    const _b = await ccCached('admin_'+loginEmail.toLowerCase(), function(){
+      return Promise.all([
         apiFetch({action:'getStudents'}),
         apiFetch({action:'getAlumni'}),
         apiFetch({action:'getStaff'}),
@@ -3445,8 +3477,10 @@ async function enterPortal(){
         apiFetch({action:'getPrograms'}),
         apiFetch({action:'getRkData'}),
         apiFetch({action:'getConfig'})
-      ]);
-    }
+      ]).then(function(r){ return {students:r[0],alumni:r[1],staff:r[2],alerts:r[3],programs:r[4],rkData:r[5],config:r[6]}; });
+    });
+    students = _b.students; alumni = _b.alumni; staff = _b.staff; alerts = _b.alerts;
+    programs = _b.programs; rkData = _b.rkData; configData = _b.config;
     _students = students;
     _alumni   = alumni;
     _config   = configData || {};
@@ -3484,6 +3518,7 @@ async function enterPortal(){
     document.getElementById('screen-emailsent').classList.remove('active');
     document.getElementById('screen-app').classList.add('active');
     ccTrapBack();  // once on the dashboard, the browser Back button stays in the portal (use Sign Out to leave)
+    setTimeout(ccAdminPreload, 4000);  // gently warm stable pages in the background
     ccPortalHide();
     // Persist session so a refresh skips the login (completes the cc_session mechanism)
     try { var _keep = document.getElementById('keep-signed-in'); if(_keep && _keep.checked){ localStorage.setItem('cc_session', JSON.stringify({ credential: loginEmail, role: 'admin' })); } } catch(e){}
@@ -6711,7 +6746,7 @@ function loadUCalendarEvents(forceReload){
     renderUCalEvents(_uCalEvents);
     return;
   }
-  apiFetch({action:'getAnnualCalendar'}).then(function(events){
+  ccPage({action:'getAnnualCalendar'}).then(function(events){
     _uCalEvents = events || [];
     renderUCalEvents(_uCalEvents);
   }).catch(function(){});
@@ -7307,7 +7342,7 @@ var _uCalLoaded = false;
 
 function loadUCalendar(){
   if(_uCalLoaded) return;
-  apiFetch({action:'getAnnualCalendar'}).then(function(events){
+  ccPage({action:'getAnnualCalendar'}).then(function(events){
     _uCalLoaded = true;
     renderUCalendarLive(events||[]);
   }).catch(function(e){ console.warn('UCalendar load error:', e.message); });
@@ -7391,7 +7426,7 @@ function loadPolicies(forceReload){
     renderPoliciesList();
     return;
   }
-  apiFetch({action:'getPolicies'}).then(function(data){
+  ccPage({action:'getPolicies'}).then(function(data){
     _policies = data || [];
     _policiesLoaded = true;
     renderPoliciesList();
@@ -7507,7 +7542,7 @@ function loadAdminAcadCalendar(forceReload){
     return;
   }
   if(container) container.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text3);font-size:13px;">⏳ Loading calendar…</div>';
-  apiFetch({action:'getAcadCalendar'}).then(function(events){
+  ccPage({action:'getAcadCalendar'}).then(function(events){
     _acadCalAdminEvents = events || [];
     _acadCalLoaded = true;
     renderAdminAcadCalendar(_acadCalAdminEvents);

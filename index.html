@@ -410,6 +410,16 @@ function updateSecurityNote(){
     requestAnimationFrame(loop);
   })();
 })();
+
+// Deep-link (used by the desktop app): ?role=tutor / ?role=admin opens straight to that sign-in.
+(function(){
+  try{
+    var role = new URLSearchParams(location.search).get('role');
+    if(role && ['student','parent','tutor','admin'].indexOf(role)!==-1 && !getSession()){
+      openLogin(role);
+    }
+  }catch(_){}
+})();
 </script>
 </body>
 </html>
