@@ -1826,7 +1826,7 @@ async function apiPost(action, body){
     redirect: 'follow'
   });
   const j = await r.json();
-  try { _modCache = {}; } catch(_){}   // a write happened -> drop cached module marks/attendance so they reload fresh
+  try { _modCache = {}; Object.keys(localStorage).forEach(function(k){ if(k.indexOf('cc_mod_')===0) localStorage.removeItem(k); }); } catch(_){}   // a write happened -> drop cached module marks/attendance (memory + storage) so they reload fresh
   return j;
 }
 
@@ -2636,8 +2636,15 @@ function renderDashboardModules(){
 // module in the session shows instantly (no blank re-load). Cleared automatically on any save.
 var _modCache = {};
 function ccModCache(key, params){
+  var SK = 'cc_mod_' + key;
+  // in-memory first (fastest), then localStorage (survives refresh)
   if(Object.prototype.hasOwnProperty.call(_modCache, key)){ return Promise.resolve(_modCache[key]); }
-  return apiFetch(params).then(function(d){ _modCache[key] = d; return d; }).catch(function(){ return []; });
+  try{ var ls = localStorage.getItem(SK); if(ls){ var v = JSON.parse(ls); _modCache[key] = v; return Promise.resolve(v); } }catch(_){}
+  return apiFetch(params).then(function(d){
+    _modCache[key] = d;
+    try{ localStorage.setItem(SK, JSON.stringify(d)); }catch(_){}
+    return d;
+  }).catch(function(){ return []; });
 }
 function openModuleDetail(code, name, prog, year, sem){
   sTxt('md-module-name', name);
