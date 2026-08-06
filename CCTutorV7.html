@@ -39,6 +39,9 @@
 #cc-loading .cc-bar{height:100%;background:#3b82f6;border-radius:2px;animation:cc-bar-fill 2s ease-in-out infinite;}
 @keyframes cc-bar-fill{0%{width:0%;opacity:1;}70%{width:85%;opacity:1;}90%{width:85%;opacity:0.5;}100%{width:0%;opacity:0;}}
 #cc-loading .cc-msg{font-size:12px;color:rgba(255,255,255,0.3);letter-spacing:0.3px;position:relative;z-index:1;}
+
+/* Hide Overall % column on the attendance page (kept in data, removed from view) */
+#att-tbody tr td:nth-child(5){display:none !important;}
 </style>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -755,11 +758,11 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
         <button class="nav-item active" onclick="showPage('dashboard',this)"><span class="icon">🏠</span> Dashboard</button>
         <button class="nav-item" onclick="showPage('announcements',this)"><span class="icon">📢</span> Announcements </button>
         <div class="nav-section-label">Teaching</div>
-        <button class="nav-item" onclick="showPage('leave',this)"><span class="icon">📋</span> Leave Applications <span id="leave-nav-badge" style="display:none;background:var(--amber);color:#fff;font-size:10px;font-weight:700;padding:1px 7px;border-radius:10px;margin-left:4px;">0</span></button>
-        <button class="nav-item" onclick="showPage('sps',this)"><span class="icon">🎓</span> Students ARS</button>
-        <button class="nav-item" onclick="showPage('emailcohort',this)"><span class="icon">✉️</span> Email Cohort</button>
+        <button class="nav-item" id="nav-leave" onclick="showPage('leave',this)"><span class="icon">📋</span> Leave Applications <span id="leave-nav-badge" style="display:none;background:var(--amber);color:#fff;font-size:10px;font-weight:700;padding:1px 7px;border-radius:10px;margin-left:4px;">0</span></button>
+        <button class="nav-item" id="nav-sps" onclick="showPage('sps',this)"><span class="icon">🎓</span> Students ARS</button>
+        <button class="nav-item" id="nav-emailcohort" onclick="showPage('emailcohort',this)"><span class="icon">✉️</span> Email Cohort</button>
         <div class="nav-section-label">Account</div>
-        <button class="nav-item" onclick="showPage('profile',this)"><span class="icon">👤</span> My Profile</button>
+        <button class="nav-item" id="nav-profile" onclick="showPage('profile',this)"><span class="icon">👤</span> My Profile</button>
         <div class="nav-section-label">University</div>
         <button class="nav-item" onclick="showPage('timetable',this)"><span class="icon">🕐</span> My Timetable</button>
         <button class="nav-item" onclick="showPage('acadcalendar',this)"><span class="icon">🗓️</span> Academic Calendar</button>
@@ -1135,7 +1138,7 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
                 <th onclick="sortAttTable(1)" style="cursor:pointer;position:sticky;top:0;z-index:5;background:var(--sb-bg);min-width:90px;width:90px;">BSU ID <span id="att-sort-1">↕</span></th>
                 <th onclick="sortAttTable(2)" style="cursor:pointer;text-align:center;position:sticky;top:0;z-index:5;background:var(--sb-bg);min-width:110px;width:110px;">Registration <span id="att-sort-2">↕</span></th>
                 <th onclick="sortAttTable(3)" style="cursor:pointer;text-align:center;position:sticky;top:0;z-index:5;background:var(--sb-bg);min-width:140px;width:140px;">Accounts Status <span id="att-sort-3">↕</span></th>
-                <th onclick="sortAttTable(4)" style="cursor:pointer;text-align:center;position:sticky;top:0;z-index:5;background:var(--sb-bg);min-width:90px;width:90px;">Overall % <span id="att-sort-4">↕</span></th>
+                <th onclick="sortAttTable(4)" style="display:none;">Overall % <span id="att-sort-4">↕</span></th>
                 <th onclick="sortAttTable(5)" style="cursor:pointer;text-align:center;position:sticky;top:0;z-index:5;background:var(--sb-bg);min-width:110px;width:110px;">This Module % <span id="att-sort-5">↕</span></th>
                 <th onclick="sortAttTable(6)" style="cursor:pointer;text-align:center;position:sticky;top:0;z-index:5;background:var(--sb-bg);min-width:100px;width:100px;">Today <span id="att-sort-6">↕</span></th>
               </tr>
@@ -1826,7 +1829,13 @@ async function apiPost(action, body){
     redirect: 'follow'
   });
   const j = await r.json();
-  try { _modCache = {}; Object.keys(localStorage).forEach(function(k){ if(k.indexOf('cc_mod_')===0) localStorage.removeItem(k); }); } catch(_){}   // a write happened -> drop cached module marks/attendance (memory + storage) so they reload fresh
+  // Only clear the cached module marks/attendance when the action ACTUALLY changes that data.
+  // (Read-style POSTs like getReassessStatus must NOT wipe the cache - that caused marks to
+  //  disappear mid-session when visiting the re-assessment page.)
+  var _clears = ['saveResultsBatch','saveAttendanceSession','publishResults','saveSubmissionStatus'];
+  if(_clears.indexOf(action) !== -1){
+    try { _modCache = {}; Object.keys(localStorage).forEach(function(k){ if(k.indexOf('cc_mod_')===0) localStorage.removeItem(k); }); } catch(_){}
+  }
   return j;
 }
 
@@ -1925,6 +1934,22 @@ async function ccCached(cacheKey, source){
   try{ localStorage.setItem(CK, JSON.stringify({t:Date.now(), d:fresh})); }catch(_){}
   return fresh;
 }
+// Classroom mode: when the tutor did NOT tick "Remember me" (shared classroom PC), hide the
+// pages that show marks / student records / personal data. Attendance still works fully.
+// Remember me ON (own device) = full portal.
+function ccApplyClassroomMode(){
+  try{
+    var s = sess();
+    if(s && s.remember === false){
+      ['nav-leave','nav-sps','nav-emailcohort','nav-profile'].forEach(function(id){
+        var el = document.getElementById(id); if(el) el.style.display = 'none';
+      });
+      window._ccClassroom = true;
+    } else {
+      window._ccClassroom = false;
+    }
+  }catch(_){}
+}
 async function enterPortal(){
   // Keep emailsent screen visible while loading — switch to app only after data arrives
   const email = document.getElementById('email-sent-display').textContent.trim() || '';
@@ -2012,6 +2037,7 @@ async function enterPortal(){
     // Now switch to app — data is ready
     document.getElementById('screen-emailsent').classList.remove('active');
     document.getElementById('screen-app').classList.add('active');
+    ccApplyClassroomMode();  // Remember me OFF (classroom) -> hide marks/ARS/leave/email/profile nav
     ccTrapBack();  // once on the dashboard, the browser Back button stays in the portal (use Sign Out to leave)
     ccPortalHide();
     // Persist session so a refresh skips the login (completes the cc_session mechanism)
@@ -7182,7 +7208,7 @@ function showReassess(code, name, programme, year, semester){
   apiPost('getReassessStatus', {moduleCode:code}).then(function(sres){
     if (sres && sres.status === 'ok' && sres.data) raShowSentNote(sres.data.lastSent, sres.data.sentBy, sres.data.count);
   }).catch(function(){});
-  apiFetch({action:'getResults', moduleCode:code}).then(function(rows){
+  ccModCache('results_'+code, {action:'getResults', moduleCode:code}).then(function(rows){
     renderReassess(rows||[]);
   }).catch(function(e){
     document.getElementById('ra-sections').innerHTML = '<div style="padding:24px;color:var(--red);">Error loading results: ' + (e.message||e) + '</div>';
