@@ -1939,24 +1939,23 @@ async function ccCached(cacheKey, source){
 // Remember me ON (own device) = full portal.
 function ccApplyClassroomMode(){
   try{
-    // Reliable signal for BOTH login paths: "Remember me / Keep signed in" ON stores the session in
-    // localStorage; OFF stores it in sessionStorage (or not persisted). So: session NOT in localStorage
-    // = classroom mode (shared PC) -> hide marks / student records / personal pages.
+    // Determine "classroom" from the EXPLICIT Remember-me / Keep-signed-in choice at THIS login,
+    // not from whether a session lingers in localStorage (old sessions can persist and mislead).
+    // Priority: (1) the unified login's remember boolean; (2) the tutor portal's keep-signed-in box.
+    var classroom;
     var s = sess();
-    var classroom = !localStorage.getItem('cc_session');
-    if(s && s.remember === true) classroom = false;   // explicit full mode
-    if(s && s.remember === false) classroom = true;    // explicit classroom
-    if(classroom){
-      ['nav-leave','nav-sps','nav-emailcohort','nav-profile'].forEach(function(id){
-        var el = document.getElementById(id); if(el) el.style.display = 'none';
-      });
-      window._ccClassroom = true;
+    if(s && typeof s.remember === 'boolean'){
+      classroom = (s.remember === false);           // remember OFF = classroom
     } else {
-      ['nav-leave','nav-sps','nav-emailcohort','nav-profile'].forEach(function(id){
-        var el = document.getElementById(id); if(el) el.style.display = '';
-      });
-      window._ccClassroom = false;
+      var keep = document.getElementById('keep-signed-in');
+      classroom = keep ? !keep.checked : true;       // keep OFF / absent = classroom
     }
+    var hidden = ['nav-leave','nav-sps','nav-emailcohort','nav-profile'];
+    hidden.forEach(function(id){
+      var el = document.getElementById(id);
+      if(el) el.style.display = classroom ? 'none' : '';
+    });
+    window._ccClassroom = !!classroom;
   }catch(_){}
 }
 async function enterPortal(){
