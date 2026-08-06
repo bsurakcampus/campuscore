@@ -1939,13 +1939,22 @@ async function ccCached(cacheKey, source){
 // Remember me ON (own device) = full portal.
 function ccApplyClassroomMode(){
   try{
+    // Reliable signal for BOTH login paths: "Remember me / Keep signed in" ON stores the session in
+    // localStorage; OFF stores it in sessionStorage (or not persisted). So: session NOT in localStorage
+    // = classroom mode (shared PC) -> hide marks / student records / personal pages.
     var s = sess();
-    if(s && s.remember === false){
+    var classroom = !localStorage.getItem('cc_session');
+    if(s && s.remember === true) classroom = false;   // explicit full mode
+    if(s && s.remember === false) classroom = true;    // explicit classroom
+    if(classroom){
       ['nav-leave','nav-sps','nav-emailcohort','nav-profile'].forEach(function(id){
         var el = document.getElementById(id); if(el) el.style.display = 'none';
       });
       window._ccClassroom = true;
     } else {
+      ['nav-leave','nav-sps','nav-emailcohort','nav-profile'].forEach(function(id){
+        var el = document.getElementById(id); if(el) el.style.display = '';
+      });
       window._ccClassroom = false;
     }
   }catch(_){}
