@@ -1939,11 +1939,12 @@ async function ccCached(cacheKey, source){
 // Remember me ON (own device) = full portal.
 function ccApplyClassroomMode(){
   try{
-    // Determine "classroom" from the EXPLICIT Remember-me / Keep-signed-in choice at THIS login,
-    // not from whether a session lingers in localStorage (old sessions can persist and mislead).
-    // Priority: (1) the unified login's remember boolean; (2) the tutor portal's keep-signed-in box.
+    // NOTE: sess() lives in a different <script> closure and is NOT reachable here, so read the
+    // session storage directly. Determine "classroom" from the EXPLICIT Remember-me / Keep-signed-in
+    // choice at THIS login (remember boolean from the unified login, else the keep-signed-in box).
+    var s = null;
+    try{ s = JSON.parse(localStorage.getItem('cc_session') || sessionStorage.getItem('cc_session') || 'null'); }catch(_){ s = null; }
     var classroom;
-    var s = sess();
     if(s && typeof s.remember === 'boolean'){
       classroom = (s.remember === false);           // remember OFF = classroom
     } else {
@@ -1958,6 +1959,7 @@ function ccApplyClassroomMode(){
     window._ccClassroom = !!classroom;
   }catch(_){}
 }
+window.ccApplyClassroomMode = ccApplyClassroomMode;
 async function enterPortal(){
   // Keep emailsent screen visible while loading — switch to app only after data arrives
   const email = document.getElementById('email-sent-display').textContent.trim() || '';
@@ -2046,6 +2048,7 @@ async function enterPortal(){
     document.getElementById('screen-emailsent').classList.remove('active');
     document.getElementById('screen-app').classList.add('active');
     ccApplyClassroomMode();  // Remember me OFF (classroom) -> hide marks/ARS/leave/email/profile nav
+    setTimeout(function(){ try{ ccApplyClassroomMode(); }catch(_){ } }, 400);  // fallback in case first call raced the render
     ccTrapBack();  // once on the dashboard, the browser Back button stays in the portal (use Sign Out to leave)
     ccPortalHide();
     // Persist session so a refresh skips the login (completes the cc_session mechanism)
@@ -2943,6 +2946,11 @@ function initDateFmt(){
 }
 
 function showPage(id, btn){
+  // Enforce classroom mode on every navigation (belt-and-braces: also hides the nav here).
+  try{ ccApplyClassroomMode(); }catch(_){}
+  if(window._ccClassroom && ['leave','sps','emailcohort','profile'].indexOf(id) !== -1){
+    id = 'dashboard'; btn = null;   // block sensitive pages in classroom mode -> send to dashboard
+  }
   // Save dashboard scroll position before leaving
   if(document.getElementById('page-dashboard') && document.getElementById('page-dashboard').classList.contains('active')){
     savedDashScroll = mc.scrollTop;
