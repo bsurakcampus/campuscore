@@ -1971,17 +1971,10 @@ function ccApplyClassroomMode(){
     // choice at THIS login (remember boolean from the unified login, else the keep-signed-in box).
     var s = null;
     try{ s = JSON.parse(localStorage.getItem('cc_session') || sessionStorage.getItem('cc_session') || 'null'); }catch(_){ s = null; }
-    var classroom;
-    // PRIMARY signal: explicit ?mode=classroom in the URL (set by the Classroom login on staff.html).
-    // This is unambiguous and reliable. Fallbacks: remember flag, then keep-signed-in checkbox.
-    if(/[?&]mode=classroom/i.test(location.search)){
-      classroom = true;
-    } else if(s && typeof s.remember === 'boolean'){
-      classroom = (s.remember === false);
-    } else {
-      var keep = document.getElementById('keep-signed-in');
-      classroom = keep ? !keep.checked : true;
-    }
+    // Classroom mode is triggered ONLY by the Classroom page (?mode=classroom in the URL, or a
+    // session saved with mode:'classroom'). Tutors logging in via staff.html - with or without
+    // Remember me - always see the FULL menu. (Remember-me only governs the idle logout.)
+    var classroom = /[?&]mode=classroom/i.test(location.search) || (s && s.mode === 'classroom');
     // Hide sensitive pages AND their now-empty section headers (Teaching, Account).
     var hidden = ['nav-leave','nav-sps','nav-emailcohort','nav-profile','navsec-teaching','navsec-account','navsec-overview','navsec-university'];
     hidden.forEach(function(id){
