@@ -8,10 +8,37 @@
   function expired(s){ return !!(s && s.exp && Date.now() > s.exp); }
   function clearSess(){ try{ localStorage.removeItem('cc_session'); sessionStorage.removeItem('cc_session'); }catch(_){ } }
   function valid(){ var s=sess(); return !!(s && s.credential && s.role===ROLE && !expired(s)); }
+  function saveSess(o){ try{ var raw=JSON.stringify(o); if(o&&o.remember){ localStorage.setItem('cc_session',raw); sessionStorage.removeItem('cc_session'); } else { sessionStorage.setItem('cc_session',raw); localStorage.removeItem('cc_session'); } }catch(_){ } }
   var s0=sess();
   if(valid()){
     document.documentElement.classList.add('cc-has-session');
-    if(s0 && s0.exp){ setTimeout(function(){ clearSess(); window.location.replace('index.html'); }, Math.max(1000, s0.exp - Date.now())); }
+    // IDLE LOGOUT: when "Remember me" was NOT ticked (remember:false), staff are signed out after
+    // 15 minutes of INACTIVITY. Any click/keypress/scroll/touch resets the 15-minute timer.
+    // Remember me ON = stays signed in (no idle logout). Classroom mode uses its own expiry.
+    if(s0 && s0.remember === false && s0.mode !== 'classroom'){
+      var IDLE_MS = 15*60*1000, _idleT;
+      window.__ccIdleLogout = function(){
+        clearSess();
+        var o=document.createElement('div');
+        o.style.cssText='position:fixed;inset:0;z-index:99999;background:#0b1730;display:flex;align-items:center;justify-content:center;font-family:Sora,system-ui,sans-serif;padding:24px;';
+        o.innerHTML='<div style="max-width:400px;text-align:center;color:#fff;">'
+          +'<div style="font-size:40px;margin-bottom:14px;">&#128274;</div>'
+          +'<div style="font-size:20px;font-weight:700;margin-bottom:8px;">Signed out due to inactivity</div>'
+          +'<div style="font-size:13px;color:rgba(255,255,255,0.6);line-height:1.6;margin-bottom:22px;">For your security you were signed out after 15 minutes of inactivity. Please sign in again to continue.</div>'
+          +'<button onclick="window.location.replace(\'staff.html\')" style="background:#2563eb;color:#fff;border:none;border-radius:9px;padding:12px 26px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">Sign in again</button></div>';
+        document.body.appendChild(o);
+      };
+      var _idleReset = function(){
+        clearTimeout(_idleT);
+        _idleT = setTimeout(function(){ window.__ccIdleLogout(); }, IDLE_MS);
+        var cur=sess(); if(cur){ cur.exp = Date.now()+IDLE_MS; saveSess(cur); }
+      };
+      ['click','keydown','mousemove','scroll','touchstart'].forEach(function(ev){ document.addEventListener(ev,_idleReset,{passive:true}); });
+      _idleReset();
+    } else if(s0 && s0.exp){
+      // other cases with a fixed expiry (e.g. classroom 2h): plain timeout
+      setTimeout(function(){ clearSess(); window.location.replace('index.html'); }, Math.max(1000, s0.exp - Date.now()));
+    }
   } else {
     if(expired(s0)) clearSess();
     try{ window.location.replace('index.html'); }catch(_){ }
@@ -754,16 +781,16 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
         </div>
       </div>
       <div class="sidebar-nav">
-        <div class="nav-section-label">Overview</div>
+        <div class="nav-section-label" id="navsec-overview">Overview</div>
         <button class="nav-item active" onclick="showPage('dashboard',this)"><span class="icon">🏠</span> Dashboard</button>
         <button class="nav-item" onclick="showPage('announcements',this)"><span class="icon">📢</span> Announcements </button>
-        <div class="nav-section-label">Teaching</div>
+        <div class="nav-section-label" id="navsec-teaching">Teaching</div>
         <button class="nav-item" id="nav-leave" onclick="showPage('leave',this)"><span class="icon">📋</span> Leave Applications <span id="leave-nav-badge" style="display:none;background:var(--amber);color:#fff;font-size:10px;font-weight:700;padding:1px 7px;border-radius:10px;margin-left:4px;">0</span></button>
         <button class="nav-item" id="nav-sps" onclick="showPage('sps',this)"><span class="icon">🎓</span> Students ARS</button>
         <button class="nav-item" id="nav-emailcohort" onclick="showPage('emailcohort',this)"><span class="icon">✉️</span> Email Cohort</button>
-        <div class="nav-section-label">Account</div>
+        <div class="nav-section-label" id="navsec-account">Account</div>
         <button class="nav-item" id="nav-profile" onclick="showPage('profile',this)"><span class="icon">👤</span> My Profile</button>
-        <div class="nav-section-label">University</div>
+        <div class="nav-section-label" id="navsec-university">University</div>
         <button class="nav-item" onclick="showPage('timetable',this)"><span class="icon">🕐</span> My Timetable</button>
         <button class="nav-item" onclick="showPage('acadcalendar',this)"><span class="icon">🗓️</span> Academic Calendar</button>
         <button class="nav-item" onclick="showPage('ucalendar',this)"><span class="icon">📅</span> Annual Calendar</button>
@@ -1945,13 +1972,18 @@ function ccApplyClassroomMode(){
     var s = null;
     try{ s = JSON.parse(localStorage.getItem('cc_session') || sessionStorage.getItem('cc_session') || 'null'); }catch(_){ s = null; }
     var classroom;
-    if(s && typeof s.remember === 'boolean'){
-      classroom = (s.remember === false);           // remember OFF = classroom
+    // PRIMARY signal: explicit ?mode=classroom in the URL (set by the Classroom login on staff.html).
+    // This is unambiguous and reliable. Fallbacks: remember flag, then keep-signed-in checkbox.
+    if(/[?&]mode=classroom/i.test(location.search)){
+      classroom = true;
+    } else if(s && typeof s.remember === 'boolean'){
+      classroom = (s.remember === false);
     } else {
       var keep = document.getElementById('keep-signed-in');
-      classroom = keep ? !keep.checked : true;       // keep OFF / absent = classroom
+      classroom = keep ? !keep.checked : true;
     }
-    var hidden = ['nav-leave','nav-sps','nav-emailcohort','nav-profile'];
+    // Hide sensitive pages AND their now-empty section headers (Teaching, Account).
+    var hidden = ['nav-leave','nav-sps','nav-emailcohort','nav-profile','navsec-teaching','navsec-account','navsec-overview','navsec-university'];
     hidden.forEach(function(id){
       var el = document.getElementById(id);
       if(el) el.style.display = classroom ? 'none' : '';

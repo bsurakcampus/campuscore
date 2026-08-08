@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CampusCore · Bath Spa University RAK Campus</title>
+<title>CampusCore Classroom Attendance · Bath Spa University RAK Campus</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -14,7 +14,7 @@ body.login-open #cc-net{display:none;}
 body.login-open .wrapper{opacity:0;pointer-events:none;}
 #cc-net{position:fixed;inset:0;z-index:0;pointer-events:none;}
 .wrapper{position:relative;z-index:1;width:100%;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px 20px;}
-.screen{display:none;flex-direction:column;align-items:center;width:100%;max-width:460px;animation:fadeUp 0.3s ease both;}
+.screen{display:none;flex-direction:column;align-items:center;width:100%;max-width:420px;animation:fadeUp 0.3s ease both;}
 .screen.active{display:flex;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
 .logo-row{display:flex;align-items:center;gap:14px;margin-bottom:8px;align-self:flex-start;}
@@ -22,19 +22,26 @@ body.login-open .wrapper{opacity:0;pointer-events:none;}
 .logo-text{font-size:26px;font-weight:700;color:#fff;letter-spacing:-0.5px;}
 .logo-text span{color:#93c5fd;}
 .logo-sub{font-size:16px;font-weight:600;color:#fff;margin-bottom:30px;letter-spacing:0.2px;align-self:flex-start;text-align:left;}
-.portal-label{font-size:10px;font-weight:700;color:rgba(255,255,255,0.32);text-transform:uppercase;letter-spacing:1px;align-self:flex-start;margin-bottom:11px;}
-.portal-label .sub{display:block;font-size:12px;font-weight:400;color:rgba(255,255,255,0.4);text-transform:none;letter-spacing:normal;margin-top:3px;}
-.role-list{display:flex;flex-direction:column;gap:8px;width:100%;}
-.role-btn{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:12px;padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:14px;width:100%;text-align:left;transition:background 0.15s,border-color 0.15s,transform 0.1s;font-family:'Sora',sans-serif;}
-.role-btn:hover{background:rgba(255,255,255,0.13);border-color:rgba(255,255,255,0.22);}
-.role-btn:active{transform:scale(0.99);}
-.role-icon{font-size:18px;width:26px;text-align:center;flex-shrink:0;}
-.role-name{color:#fff;font-size:14px;font-weight:600;flex:1;}
-.role-desc{font-size:11px;color:rgba(255,255,255,0.3);margin-top:1px;}
-.role-arrow{color:rgba(255,255,255,0.22);font-size:18px;}
-/* Manager role removed — University Management portal section retired */
-.footer-text{font-size:11px;color:rgba(255,255,255,0.14);margin-top:28px;text-align:center;line-height:1.8;}
-/* LOGIN & OTP SCREENS */
+.access-label{font-size:15px;font-weight:700;color:#fff;align-self:flex-start;margin-top:18px;}
+.access-sub{font-size:12.5px;font-weight:400;color:rgba(255,255,255,0.5);align-self:flex-start;margin-bottom:16px;}
+/* top row: admin | tutor */
+.staff-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%;}
+.staff-card{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:12px;padding:18px 14px;cursor:pointer;text-align:center;transition:background 0.15s,border-color 0.15s,transform 0.1s;font-family:'Sora',sans-serif;}
+.staff-card:hover{background:rgba(255,255,255,0.13);border-color:rgba(255,255,255,0.22);}
+.staff-card:active{transform:scale(0.99);}
+.staff-card .ic{font-size:24px;margin-bottom:8px;}
+.staff-card .nm{font-size:14px;font-weight:700;color:#fff;}
+.staff-card .ds{font-size:11px;color:rgba(255,255,255,0.5);margin-top:3px;}
+/* classroom: full width, red */
+.class-card{width:100%;margin-top:12px;background:rgba(220,38,38,0.16);border:1px solid rgba(220,38,38,0.45);border-radius:12px;padding:16px 14px;cursor:pointer;display:flex;align-items:center;gap:14px;text-align:left;transition:background 0.15s,border-color 0.15s,transform 0.1s;font-family:'Sora',sans-serif;}
+.class-card:hover{background:rgba(220,38,38,0.24);border-color:rgba(220,38,38,0.6);}
+.class-card:active{transform:scale(0.99);}
+.class-card .ic{font-size:24px;}
+.class-card .nm{font-size:14px;font-weight:700;color:#fff;}
+.class-card .ds{font-size:11px;color:rgba(255,255,255,0.6);margin-top:3px;}
+.class-card .ar{font-size:18px;color:#f87171;}
+.footer-text{font-size:11px;color:rgba(255,255,255,0.2);margin-top:24px;text-align:center;line-height:1.8;align-self:center;}
+/* LOGIN & OTP SCREENS (white) */
 #screen-login,#screen-otp{position:fixed;inset:0;z-index:10;background:#fff;display:none;align-items:center;justify-content:center;padding:40px 20px;animation:fadeIn 0.2s ease both;}
 #screen-login.active,#screen-otp.active{display:flex;}
 @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
@@ -59,11 +66,12 @@ body.login-open .wrapper{opacity:0;pointer-events:none;}
 .send-btn:hover{background:#1d4ed8;}
 .send-btn:active{transform:scale(0.99);}
 .send-btn:disabled{background:#93c5fd;cursor:not-allowed;}
+.send-btn.red{background:#dc2626;}
+.send-btn.red:hover{background:#b91c1c;}
 .security-note{background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:11px 14px;font-size:11px;color:#92400e;line-height:1.7;}
-.security-note strong{color:#92400e;}
+.security-note.red{background:#fef2f2;border-color:#fecaca;color:#b91c1c;}
 .login-footer{margin-top:16px;font-size:11px;color:#94a3b8;text-align:center;line-height:1.7;}
 .err-msg{background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:10px 14px;font-size:12px;color:#dc2626;margin-bottom:12px;display:none;}
-/* OTP screen */
 .otp-inputs{display:flex;gap:10px;justify-content:flex-start;margin-bottom:14px;}
 .otp-box{width:48px;height:54px;text-align:center;font-size:22px;font-weight:700;font-family:'DM Mono',monospace;border:1.5px solid #d1d5db;border-radius:9px;color:#0f172a;outline:none;transition:border-color 0.2s,box-shadow 0.2s;}
 .otp-box:focus{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,0.1);}
@@ -71,6 +79,21 @@ body.login-open .wrapper{opacity:0;pointer-events:none;}
 .otp-sent-to strong{color:#0f172a;}
 .resend-link{font-size:12px;color:#2563eb;cursor:pointer;text-decoration:none;background:none;border:none;font-family:'Sora',sans-serif;padding:0;}
 .resend-link:hover{text-decoration:underline;}
+
+.role-list{display:flex;flex-direction:column;gap:8px;width:100%;}
+.role-btn{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:12px;padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:14px;width:100%;text-align:left;transition:background 0.15s,border-color 0.15s,transform 0.1s;font-family:'Sora',sans-serif;}
+.role-btn:hover{background:rgba(255,255,255,0.13);border-color:rgba(255,255,255,0.22);}
+.role-btn:active{transform:scale(0.99);}
+.role-btn.red{background:rgba(220,38,38,0.16);border-color:rgba(220,38,38,0.45);}
+.role-btn.red:hover{background:rgba(220,38,38,0.24);border-color:rgba(220,38,38,0.6);}
+.role-icon{font-size:18px;width:26px;text-align:center;flex-shrink:0;}
+.role-name{color:#fff;font-size:14px;font-weight:600;flex:1;}
+.role-desc{font-size:11px;color:rgba(255,255,255,0.3);margin-top:1px;}
+.role-btn.red .role-desc{color:rgba(255,255,255,0.55);}
+.role-arrow{color:rgba(255,255,255,0.22);font-size:18px;}
+.role-btn.red .role-arrow{color:#f87171;}
+.portal-label{font-size:10px;font-weight:700;color:rgba(255,255,255,0.32);text-transform:uppercase;letter-spacing:1px;align-self:flex-start;margin-bottom:11px;}
+.portal-label .sub{display:block;font-size:12px;font-weight:400;color:rgba(255,255,255,0.4);text-transform:none;letter-spacing:normal;margin-top:3px;}
 </style>
 </head>
 <body>
@@ -84,41 +107,38 @@ body.login-open .wrapper{opacity:0;pointer-events:none;}
       <div class="logo-text">Campus<span>Core</span></div>
     </div>
     <p class="logo-sub">Bath Spa University · RAK Campus</p>
-    <p class="portal-label">Portal Access<span class="sub">Select your role to continue</span></p>
+    <p class="portal-label">Classroom Attendance<span class="sub">For shared classroom PCs. Take attendance, then sign out.</span></p>
+
     <div class="role-list">
-      <button class="role-btn" onclick="openLogin('student')">
-        <span class="role-icon">🎓</span>
-        <div style="flex:1"><div class="role-name">Students</div><div class="role-desc">View results, attendance &amp; announcements</div></div>
-        <span class="role-arrow">›</span>
-      </button>
-      <button class="role-btn" onclick="openLogin('parent')">
-        <span class="role-icon">👨‍👩‍👧</span>
-        <div style="flex:1"><div class="role-name">Parents</div><div class="role-desc">Track your child's academic progress</div></div>
+      <button class="role-btn red" onclick="openLogin('classroom')">
+        <span class="role-icon">🏫</span>
+        <div style="flex:1"><div class="role-name">Classroom</div><div class="role-desc">Attendance only · signs out when the browser closes</div></div>
         <span class="role-arrow">›</span>
       </button>
     </div>
-    <p class="footer-text cc-footer">© 2025–2026 Bath Spa University - RAK Campus</p>
+
+    <p class="footer-text cc-footer">© 2025–2026 Bath Spa University · RAK Campus</p>
   </div>
 </div>
 
 <!-- LOGIN SCREEN -->
 <div id="screen-login">
   <div class="login-card">
-    <button class="back-btn" onclick="goBack()">‹ Back to Portal Selection</button>
-    <div class="login-portal-badge badge-blue" id="login-badge">🎓 Student Portal</div>
-    <div class="login-title" id="login-title">Student Sign In</div>
-    <p class="login-sub" id="login-sub">Enter your BSU Student ID to receive a sign-in code.</p>
-    <label class="field-label" id="field-label">BSU Student ID</label>
-    <input class="login-input" type="text" id="login-input" placeholder="e.g. 638149" autocomplete="off">
-    <p class="field-note" id="field-note">Not registered? Write to <a href="mailto:records@bathspa.ae">records@bathspa.ae</a></p>
+    <button class="back-btn" onclick="goBack()">‹ Back</button>
+    <div class="login-portal-badge badge-blue" id="login-badge">👨‍🏫 Tutor Portal</div>
+    <div class="login-title" id="login-title">Tutor Sign In</div>
+    <p class="login-sub" id="login-sub">Enter your BSU staff email address to receive a sign-in code.</p>
+    <label class="field-label" id="field-label">BSU Staff Email</label>
+    <input class="login-input" type="text" id="login-input" placeholder="yourname@bathspa.ae" autocomplete="off">
+    <p class="field-note" id="field-note">Staff only. Not recognised? Write to <a href="mailto:records@bathspa.ae">records@bathspa.ae</a></p>
     <div class="remember-wrap" id="remember-wrap" style="display:none;">
       <input type="checkbox" id="remember-check">
-      <label class="remember-label" for="remember-check">Remember me on this device</label>
+      <label class="remember-label" for="remember-check">Keep me signed in on this device</label>
     </div>
     <div class="err-msg" id="login-err"></div>
     <button class="send-btn" id="send-btn" onclick="sendCode()">Send Sign-In Code →</button>
-    <div class="security-note" id="security-note" style="display:none;"><strong>🔒 This device will stay signed in</strong> until you manually sign out. If this is a shared or public device, please sign out after each session to protect your account.</div>
-    <p class="login-footer cc-footer">© 2025–2026 Bath Spa University - RAK Campus</p>
+    <div class="security-note" id="security-note" style="display:none;"></div>
+    <p class="login-footer cc-footer">© 2025–2026 Bath Spa University · RAK Campus</p>
   </div>
 </div>
 
@@ -126,7 +146,7 @@ body.login-open .wrapper{opacity:0;pointer-events:none;}
 <div id="screen-otp">
   <div class="login-card">
     <button class="back-btn" onclick="backToLogin()">‹ Back</button>
-    <div class="login-portal-badge badge-blue" id="otp-badge">🎓 Student Portal</div>
+    <div class="login-portal-badge badge-blue" id="otp-badge">👨‍🏫 Tutor Portal</div>
     <div class="login-title">Enter Sign-In Code</div>
     <p class="otp-sent-to" id="otp-sent-to">A 6-digit code was sent to your registered email.</p>
     <label class="field-label">6-Digit Code</label>
@@ -141,39 +161,49 @@ body.login-open .wrapper{opacity:0;pointer-events:none;}
     <div class="err-msg" id="otp-err"></div>
     <button class="send-btn" id="verify-btn" onclick="verifyCode()">Verify &amp; Sign In →</button>
     <p style="font-size:12px;color:#64748b;">Didn't receive it? <button class="resend-link" onclick="sendCode()">Resend code</button></p>
-    <p class="login-footer cc-footer" style="margin-top:16px;">© 2025–2026 Bath Spa University - RAK Campus</p>
+    <p class="login-footer cc-footer" style="margin-top:16px;">© 2025–2026 Bath Spa University · RAK Campus</p>
   </div>
 </div>
 
 <script>
 var API = 'https://script.google.com/macros/s/AKfycbycKFnbEm2aXY6JJ8QS-x-vUQMAcqp800afJhejux9UofP1YfK49AxoTG8cXMORzZby/exec';
+
+// Where each selection lands. Classroom = tutor portal in classroom mode (attendance only).
 var PORTALS = {
-  student: 'CCStudentsV7.html',
-  parent:  'CCParentV1.html',
-  tutor:   'CCTutorV7.html',
-  admin:   'CCAdminV9.html'
-};
-var ROLE_CONFIG = {
-  student: { badge:'🎓 Student Portal',  title:'Student Sign In',  sub:'Enter your BSU Student ID to receive a sign-in code on your registered email.', label:'BSU Student ID', ph:'e.g. 638149',           remember:true,  badgeCls:'badge-blue', action:'sendStudentOtp' },
-  parent:  { badge:'👨‍👩‍👧 Parent Portal',  title:'Parent Sign In',   sub:'Enter your child\'s BSU Student ID. A sign-in code will be sent to your registered parent email.', label:'BSU Student ID',  ph:'e.g. 638149',          remember:true,  badgeCls:'badge-blue', action:'sendParentOtp'  },
-  tutor:   { badge:'👨‍🏫 Tutor Portal',   title:'Tutor Sign In',    sub:'Enter your BSU staff email address to receive a sign-in code.',                  label:'BSU Staff Email', ph:'yourname@bathspa.ae',  remember:true,  badgeCls:'badge-blue', action:'sendTutorOtp'   },
-  admin:   { badge:'🛡️ Admin Portal',    title:'Admin Sign In',    sub:'Enter your BSU staff email address to receive a sign-in code.',                  label:'BSU Staff Email', ph:'yourname@bathspa.ae',  remember:true,  badgeCls:'badge-blue', action:'sendAdminOtp'   }
+  admin:     'CCAdminV9.html',
+  tutor:     'CCTutorV7.html',
+  classroom: 'CCTutorV7.html?mode=classroom'
 };
 
-var _role = null;
-var _credential = '';   // email or bsuId
+// All three use the same OTP mechanism. Admin/Tutor authenticate as staff; Classroom uses the
+// tutor OTP (so it loads the signed-in tutor's own modules) but routes to classroom mode.
+var ROLE_CONFIG = {
+  admin:     { badge:'🛡️ Admin Portal',   title:'Admin Sign In',     sub:'Enter your BSU staff email address to receive a sign-in code.', label:'BSU Staff Email', ph:'yourname@bathspa.ae', badgeCls:'badge-blue', action:'sendAdminOtp',  remember:true,  sessionRole:'admin' },
+  tutor:     { badge:'👨‍🏫 Tutor Portal',  title:'Tutor Sign In',     sub:'Enter your BSU staff email address to receive a sign-in code.', label:'BSU Staff Email', ph:'yourname@bathspa.ae', badgeCls:'badge-blue', action:'sendTutorOtp',  remember:true,  sessionRole:'tutor' },
+  classroom: { badge:'🏫 Classroom Attendance', title:'Classroom Sign In', sub:'Enter your BSU staff email to receive a sign-in code. This is the classroom attendance view for shared PCs - it signs out when the browser closes.', label:'BSU Staff Email', ph:'yourname@bathspa.ae', badgeCls:'badge-red', action:'sendTutorOtp', remember:false, sessionRole:'tutor' }
+};
+
+// Classroom session lifetime (also clears on browser close because it lives in sessionStorage).
+var CLASSROOM_EXP_MS = 2 * 60 * 60 * 1000;  // 2 hours
+
+var _role = null;          // 'admin' | 'tutor' | 'classroom'
+var _credential = '';
 var _otp = '';
 var _maskedEmail = '';
 
-// ── Check existing session on load ──
+// ── Existing session on load → go straight to the portal ──
 (function(){
   var s = getSession();
   if(s && s.role && s.credential){
-    // Valid session — redirect to portal directly
-    saveSession(s); // refresh storage
-    window.location.replace(PORTALS[s.role] || 'index.html');
+    saveSession(s);
+    window.location.replace(portalFor(s));
   }
 })();
+
+function portalFor(s){
+  if(s.mode === 'classroom') return PORTALS.classroom;
+  return PORTALS[s.role] || 'CCTutorV7.html';
+}
 
 function getSession(){
   var s = null;
@@ -192,28 +222,31 @@ function saveSession(obj){
       localStorage.setItem('cc_session', raw);
       sessionStorage.removeItem('cc_session');
     } else {
-      sessionStorage.setItem('cc_session', raw);
+      sessionStorage.setItem('cc_session', raw);   // clears when the browser closes
       localStorage.removeItem('cc_session');
     }
   } catch(e){ }
 }
 
-// ── Role selection ──
+// ── Selection ──
 function openLogin(role){
   _role = role;
   var cfg = ROLE_CONFIG[role];
   var badge = document.getElementById('login-badge');
   badge.textContent = cfg.badge;
   badge.className   = 'login-portal-badge ' + cfg.badgeCls;
-  document.getElementById('login-title').textContent  = cfg.title;
-  document.getElementById('login-sub').textContent    = cfg.sub;
-  document.getElementById('field-label').textContent  = cfg.label;
-  document.getElementById('login-input').placeholder  = cfg.ph;
-  document.getElementById('login-input').value        = '';
+  document.getElementById('login-title').textContent = cfg.title;
+  document.getElementById('login-sub').textContent   = cfg.sub;
+  document.getElementById('field-label').textContent = cfg.label;
+  document.getElementById('login-input').placeholder = cfg.ph;
+  document.getElementById('login-input').value       = '';
+  // Remember me: available for admin/tutor (own device); hidden for classroom.
   document.getElementById('remember-wrap').style.display = cfg.remember ? 'flex' : 'none';
-  document.getElementById('remember-check').checked   = (role === 'student' || role === 'parent');
+  document.getElementById('remember-check').checked = false;
+  document.getElementById('send-btn').className = 'send-btn' + (role === 'classroom' ? ' red' : '');
+  document.getElementById('verify-btn').className = 'send-btn' + (role === 'classroom' ? ' red' : '');
   updateSecurityNote();
-  document.getElementById('login-err').style.display  = 'none';
+  document.getElementById('login-err').style.display = 'none';
   showWhite('screen-login');
   setTimeout(function(){ document.getElementById('login-input').focus(); }, 50);
 }
@@ -224,12 +257,10 @@ function goBack(){
   document.getElementById('screen-otp').classList.remove('active');
   _role = null; _credential = ''; _otp = '';
 }
-
 function backToLogin(){
   document.getElementById('screen-otp').classList.remove('active');
   document.getElementById('screen-login').classList.add('active');
 }
-
 function showWhite(screenId){
   document.getElementById('screen-login').classList.remove('active');
   document.getElementById('screen-otp').classList.remove('active');
@@ -237,20 +268,37 @@ function showWhite(screenId){
   document.body.classList.add('login-open');
 }
 
+function updateSecurityNote(){
+  var note = document.getElementById('security-note'); if(!note) return;
+  if(_role === 'classroom'){
+    note.className = 'security-note red';
+    note.innerHTML = '<strong>&#128275; Classroom mode.</strong> Attendance only. This signs out automatically when the browser is closed, and after 2 hours. Do not use on a personal device.';
+    note.style.display = 'block';
+    return;
+  }
+  note.className = 'security-note';
+  var remember = document.getElementById('remember-check').checked;
+  if(remember){
+    note.innerHTML = '<strong>&#128274; You will stay signed in on this device</strong> until you sign out. Only tick this on your own device.';
+  } else {
+    note.innerHTML = '<strong>&#9888;&#65039; On a public or shared device, remember to sign out.</strong> For your security this session ends automatically after 1 hour, and when you close the tab.';
+  }
+  note.style.display = 'block';
+}
+document.getElementById('remember-check').addEventListener('change', updateSecurityNote);
+
 // ── Send OTP ──
 function sendCode(){
   var val = document.getElementById('login-input').value.trim();
   var errEl = document.getElementById('login-err');
   errEl.style.display = 'none';
-  if(!val){ errEl.textContent='Please enter your '+ROLE_CONFIG[_role].label.toLowerCase()+'.'; errEl.style.display='block'; return; }
+  if(!val || val.indexOf('@') === -1){ errEl.textContent='Please enter your BSU staff email.'; errEl.style.display='block'; return; }
   _credential = val;
-  if(location.protocol === 'file:'){ finishSignIn(); return; }   // LOCAL: no code, straight in
+  if(location.protocol === 'file:'){ finishSignIn(); return; }   // LOCAL: skip OTP
   _otp = Math.floor(100000 + Math.random() * 900000).toString();
   var btn = document.getElementById('send-btn');
   btn.disabled = true; btn.textContent = 'Sending…';
-  var body = { action: ROLE_CONFIG[_role].action, otp: _otp };
-  if(_role === 'student' || _role === 'parent') body.bsuId = val;
-  else body.email = val;
+  var body = { action: ROLE_CONFIG[_role].action, otp: _otp, email: val };
   var done = false;
   function goToOtp(masked){
     if(done) return; done = true;
@@ -266,9 +314,6 @@ function sendCode(){
     showWhite('screen-otp');
     setTimeout(function(){ document.getElementById('o0').focus(); }, 100);
   }
-  // Safety net: the code is generated here and emailed by the server. Some networks or
-  // Google accounts delay/block the server's REPLY even though the email is sent, which
-  // would leave the button stuck on 'Sending…'. If no reply within 8s, proceed anyway.
   var fallback = setTimeout(function(){ goToOtp(''); }, 8000);
   fetch(API, { method:'POST', body: JSON.stringify(body) })
     .then(function(r){ return r.json(); })
@@ -281,14 +326,10 @@ function sendCode(){
       }
       goToOtp(data.maskedEmail || val);
     })
-    .catch(function(){
-      clearTimeout(fallback);
-      // The email may still have been sent; go to the code screen so the user isn't stuck.
-      goToOtp('');
-    });
+    .catch(function(){ clearTimeout(fallback); goToOtp(''); });
 }
 
-// OTP box auto-advance
+// OTP auto-advance
 [0,1,2,3,4,5].forEach(function(i){
   var inp = document.getElementById('o'+i);
   if(!inp) return;
@@ -302,27 +343,28 @@ function sendCode(){
   });
 });
 
-// Saves the session (role-aware rules) and enters the portal — used by live OTP and local skip.
+// ── Save session + enter portal ──
 function finishSignIn(){
-  var remember = document.getElementById('remember-check').checked;
-  var sess = { role:_role, credential:_credential, remember:remember, ts:Date.now() };
-  // students/parents: no time limit — Remember me picks persist vs. end-on-browser-close.
-  // tutors/admins: 1-hour + tab-close unless Remember me is ticked.
-  if(_role !== 'student' && _role !== 'parent' && !remember){
-    sess.exp = Date.now() + 60*60*1000;
+  var cfg = ROLE_CONFIG[_role];
+  var remember = (_role !== 'classroom') && document.getElementById('remember-check').checked;
+  var sess = { role: cfg.sessionRole, credential:_credential, remember:remember, ts:Date.now() };
+  if(_role === 'classroom'){
+    sess.mode = 'classroom';
+    sess.remember = false;                        // never persist a classroom login
+    sess.exp = Date.now() + CLASSROOM_EXP_MS;     // 2-hour expiry (also clears on browser close)
+  } else if(!remember){
+    sess.exp = Date.now() + 60*60*1000;           // staff without keep-signed-in: 1-hour
   }
   saveSession(sess);
-  window.location.replace(PORTALS[_role]);
+  window.location.replace(portalFor(sess));
 }
 
-// ── Verify OTP ──
 function verifyCode(){
   var entered = [0,1,2,3,4,5].map(function(i){ return document.getElementById('o'+i).value; }).join('');
   var errEl = document.getElementById('otp-err');
   errEl.style.display = 'none';
   if(entered.length < 6){ errEl.textContent='Please enter all 6 digits.'; errEl.style.display='block'; return; }
   if(entered !== _otp){ errEl.textContent='Incorrect code. Please try again.'; errEl.style.display='block'; return; }
-  // OTP correct — save session and redirect
   var btn = document.getElementById('verify-btn');
   btn.disabled = true; btn.textContent = 'Signing in…';
   finishSignIn();
@@ -330,57 +372,27 @@ function verifyCode(){
 
 document.getElementById('login-input').addEventListener('keydown',function(e){ if(e.key==='Enter') sendCode(); });
 
-// Fix bfcache: if this page is restored from history (e.g. Sign Out then browser Back),
-// re-check the session so a stale login/OTP screen can't linger.
 window.addEventListener('pageshow', function(e){
   if(!e.persisted) return;
   var s = getSession();
-  if(s && s.role && s.credential){ window.location.replace(PORTALS[s.role] || 'index.html'); }
+  if(s && s.role && s.credential){ window.location.replace(portalFor(s)); }
   else if(typeof goBack === 'function'){ goBack(); }
 });
 
-// Show/hide security note based on Remember Me checkbox
-document.getElementById('remember-check').addEventListener('change', updateSecurityNote);
-
-// Role + Remember-me aware security note (tutors/admins get the public-device warning)
-function updateSecurityNote(){
-  var note = document.getElementById('security-note'); if(!note) return;
-  var remember = document.getElementById('remember-check').checked;
-  if(_role === 'student' || _role === 'parent'){
-    if(remember){
-      note.innerHTML = '<strong>&#128274; You will stay signed in on this device</strong> until you sign out. On a shared or public computer, please sign out after each session.';
-    } else {
-      note.innerHTML = '<strong>&#128275; You will be signed out when you close your browser.</strong> Recommended on a shared or public computer.';
-    }
-  } else if(remember){
-    note.innerHTML = '<strong>&#128274; You will stay signed in on this device</strong> until you sign out. Only tick this on your own device.';
-  } else {
-    note.innerHTML = '<strong>&#9888;&#65039; On a public or shared device, remember to sign out.</strong> For your security this session ends automatically after 1 hour, and when you close the tab.';
-  }
-  note.style.display = 'block';
-}
-
-// ── Live footer text from KEY sheet ───────────────────────────────────────
-// Fetches `index_footer` from KEY at page load and updates all .cc-footer
-// elements. The hardcoded HTML acts as a fallback if the API is unreachable
-// (no flash, no broken layout). To change the footer wording or year, just
-// update the `index_footer` value in the KEY sheet — no code change needed.
+// Live footer from KEY sheet (fallback: hardcoded text)
 (function loadFooterFromKey(){
   fetch(API+'?action=getConfig')
     .then(function(r){ return r.json(); })
     .then(function(j){
       var cfg = (j && j.data) || {};
-      var txt = cfg['index_footer'] || cfg['Index footer'];   // accept either key style
+      var txt = cfg['index_footer'] || cfg['Index footer'];
       if(!txt) return;
-      document.querySelectorAll('.cc-footer').forEach(function(el){
-        // Preserve existing <br> linebreaks if present in the value
-        el.innerHTML = String(txt).replace(/\n/g,'<br>');
-      });
+      document.querySelectorAll('.cc-footer').forEach(function(el){ el.innerHTML = String(txt).replace(/\n/g,'<br>'); });
     })
-    .catch(function(){ /* silent — fallback hardcoded text remains */ });
+    .catch(function(){});
 })();
 
-// ── Constellation background ──
+// Constellation background
 (function(){
   var c=document.getElementById('cc-net'); if(!c||!c.getContext) return;
   var x=c.getContext('2d'), W, H, pts=[];
@@ -401,13 +413,11 @@ function updateSecurityNote(){
   })();
 })();
 
-// Deep-link (used by the desktop app): ?role=tutor / ?role=admin opens straight to that sign-in.
+// Optional deep-link: ?login=classroom opens straight to the sign-in (otherwise land on the card).
 (function(){
   try{
-    var role = new URLSearchParams(location.search).get('role');
-    if(role && ['student','parent','tutor','admin'].indexOf(role)!==-1 && !getSession()){
-      if(['student','parent'].indexOf(role)!==-1){ openLogin(role); }
-    }
+    var q = new URLSearchParams(location.search).get('login');
+    if(q === 'classroom' && !getSession()){ openLogin('classroom'); }
   }catch(_){}
 })();
 </script>

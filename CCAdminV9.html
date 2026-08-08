@@ -8,10 +8,37 @@
   function expired(s){ return !!(s && s.exp && Date.now() > s.exp); }
   function clearSess(){ try{ localStorage.removeItem('cc_session'); sessionStorage.removeItem('cc_session'); }catch(_){ } }
   function valid(){ var s=sess(); return !!(s && s.credential && s.role===ROLE && !expired(s)); }
+  function saveSess(o){ try{ var raw=JSON.stringify(o); if(o&&o.remember){ localStorage.setItem('cc_session',raw); sessionStorage.removeItem('cc_session'); } else { sessionStorage.setItem('cc_session',raw); localStorage.removeItem('cc_session'); } }catch(_){ } }
   var s0=sess();
   if(valid()){
     document.documentElement.classList.add('cc-has-session');
-    if(s0 && s0.exp){ setTimeout(function(){ clearSess(); window.location.replace('index.html'); }, Math.max(1000, s0.exp - Date.now())); }
+    // IDLE LOGOUT: when "Remember me" was NOT ticked (remember:false), staff are signed out after
+    // 15 minutes of INACTIVITY. Any click/keypress/scroll/touch resets the 15-minute timer.
+    // Remember me ON = stays signed in (no idle logout). Classroom mode uses its own expiry.
+    if(s0 && s0.remember === false && s0.mode !== 'classroom'){
+      var IDLE_MS = 15*60*1000, _idleT;
+      window.__ccIdleLogout = function(){
+        clearSess();
+        var o=document.createElement('div');
+        o.style.cssText='position:fixed;inset:0;z-index:99999;background:#0b1730;display:flex;align-items:center;justify-content:center;font-family:Sora,system-ui,sans-serif;padding:24px;';
+        o.innerHTML='<div style="max-width:400px;text-align:center;color:#fff;">'
+          +'<div style="font-size:40px;margin-bottom:14px;">&#128274;</div>'
+          +'<div style="font-size:20px;font-weight:700;margin-bottom:8px;">Signed out due to inactivity</div>'
+          +'<div style="font-size:13px;color:rgba(255,255,255,0.6);line-height:1.6;margin-bottom:22px;">For your security you were signed out after 15 minutes of inactivity. Please sign in again to continue.</div>'
+          +'<button onclick="window.location.replace(\'staff.html\')" style="background:#2563eb;color:#fff;border:none;border-radius:9px;padding:12px 26px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">Sign in again</button></div>';
+        document.body.appendChild(o);
+      };
+      var _idleReset = function(){
+        clearTimeout(_idleT);
+        _idleT = setTimeout(function(){ window.__ccIdleLogout(); }, IDLE_MS);
+        var cur=sess(); if(cur){ cur.exp = Date.now()+IDLE_MS; saveSess(cur); }
+      };
+      ['click','keydown','mousemove','scroll','touchstart'].forEach(function(ev){ document.addEventListener(ev,_idleReset,{passive:true}); });
+      _idleReset();
+    } else if(s0 && s0.exp){
+      // other cases with a fixed expiry (e.g. classroom 2h): plain timeout
+      setTimeout(function(){ clearSess(); window.location.replace('index.html'); }, Math.max(1000, s0.exp - Date.now()));
+    }
   } else {
     if(expired(s0)) clearSess();
     try{ window.location.replace('index.html'); }catch(_){ }
@@ -3431,20 +3458,21 @@ function ccTrapBack(){
     });
   }catch(_){}
 }
-// Data loader: always fetch the LATEST on login (fast: parallel reads + keep-warm), and keep a
-// copy in this browser used ONLY as a fallback if the network/endpoint fails (offline or a blip).
-// So users always see current data on login, and the portal still works during a hiccup.
+// Data loader: opens INSTANTLY from the copy saved on this machine, then quietly re-fetches
+// in the background and saves it for next time. First ever open fetches (no copy yet). Your own
+// writes clear the relevant caches so you always see your changes correctly.
 async function ccCached(cacheKey, source){
   var CK = 'cc_cache_' + cacheKey;
   function run(){ return (typeof source === 'function') ? source() : apiFetch(source); }
-  try {
-    var fresh = await run();
-    try{ localStorage.setItem(CK, JSON.stringify({t:Date.now(), d:fresh})); }catch(_){}
-    return fresh;
-  } catch(e){
-    try{ var c=localStorage.getItem(CK); if(c){ return JSON.parse(c).d; } }catch(_){}
-    throw e;
+  var cached=null;
+  try{ var c=localStorage.getItem(CK); if(c){ cached=JSON.parse(c).d; } }catch(_){}
+  if(cached!==null && cached!==undefined){
+    Promise.resolve(run()).then(function(fresh){ try{ localStorage.setItem(CK, JSON.stringify({t:Date.now(), d:fresh})); }catch(_){} }).catch(function(){});
+    return cached;
   }
+  var fresh = await run();
+  try{ localStorage.setItem(CK, JSON.stringify({t:Date.now(), d:fresh})); }catch(_){}
+  return fresh;
 }
 // Gentle background preload: after the dashboard is up, quietly warm the STABLE pages
 // (calendars, policies) one at a time (2.5s apart) so opening them is instant. Volatile pages
