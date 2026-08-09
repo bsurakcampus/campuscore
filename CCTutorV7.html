@@ -3937,6 +3937,21 @@ function showAssessments(code, name, saNum){
       var allPublished = rows.length && rows.every(function(r){ return r.published==='Yes'; });
       if(allPublished) markResultReleased(saId);
 
+      // ── Status lines under the 4 SA action buttons (real data, honest) ──
+      // 1) Submission Report: any row carrying a submission status = report uploaded.
+      var subRows = rows.filter(function(r){ return r.submissionStatus === 'SUBMITTED' || r.submissionStatus === 'NOT_SUBMITTED'; });
+      _ccSetSaStatus('sastat-sub-'+saId, subRows.length > 0, _ccLatestDate(subRows), 'Last Uploaded');
+      // 2) Marks & Release: any row with a mark = marks uploaded. published=Yes -> Released, else Saved (no emails).
+      var markRows = rows.filter(function(r){ return r.mark!==null && r.mark!==undefined && r.mark!==''; });
+      if(markRows.length){
+        var released = markRows.every(function(r){ return r.published==='Yes'; });
+        _ccSetSaStatus('sastat-marks-'+saId, true, _ccLatestDate(markRows),
+          released ? 'Last Uploaded &amp; Released' : 'Last Uploaded &amp; Saved: No Emails');
+      } else { _ccSetSaStatus('sastat-marks-'+saId, false); }
+      // 4) Re-Assessment Marks: rows carrying the re-assessment date stamp.
+      var raMarkRows = rows.filter(function(r){ return r.reassessDate && String(r.reassessDate).trim() && r.reassessDate!=='—'; });
+      _ccSetSaStatus('sastat-reassessmarks-'+saId, raMarkRows.length > 0, _ccLatestDate(raMarkRows, 'reassessDate'), 'Last Uploaded &amp; Saved');
+
       // Render persistent marks table
       renderMarksTable(saId, rows);
     });
@@ -4112,11 +4127,23 @@ function renderAsmCards(code, name, saArr, enrolled, sem){
             '<div class="asc-stat"><div class="av" style="color:#9ca3af;" id="asm-grade-ns-'+saId+'">—</div><div class="al">Not Sub</div></div>' +
             '<div class="asc-stat"><div class="av amber" id="asm-avgmark-'+saId+'">—</div><div class="al">Avg Mark</div></div>' +
           '</div>' +
-          '<div class="asc-actions" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;align-items:center;">' +
-            '<button class="btn-sm" data-opensub="'+saId+'">📤 Upload Assessment Submission Report</button>' +
-            '<button class="btn-sm" data-openmarks="'+saId+'">📊 Upload Assessment Marks &amp; Release Results</button>' +
-            '<button class="btn-sm" style="color:#7c3aed;border-color:#c4b5fd;" data-openreassess="'+saId+'">🔄 Upload Re-Assessment Submission Report</button>' +
-            '<button class="btn-sm" style="color:#7c3aed;border-color:#c4b5fd;" data-openreassessmarks="'+saId+'">📋 Upload Re-Assessment Marks</button>' +
+          '<div class="asc-actions" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">' +
+            '<div>' +
+              '<button class="btn-sm" style="width:100%;color:#15803d;border-color:#86efac;" data-opensub="'+saId+'">📤 Upload Assessment Submission Report</button>' +
+              '<div id="sastat-sub-'+saId+'" style="margin-top:6px;font-size:11px;color:#94a3b8;font-weight:500;">○ Not uploaded yet</div>' +
+            '</div>' +
+            '<div>' +
+              '<button class="btn-sm" style="width:100%;color:#15803d;border-color:#86efac;" data-openmarks="'+saId+'">📊 Upload Assessment Marks &amp; Release Results</button>' +
+              '<div id="sastat-marks-'+saId+'" style="margin-top:6px;font-size:11px;color:#94a3b8;font-weight:500;">○ Not uploaded yet</div>' +
+            '</div>' +
+            '<div>' +
+              '<button class="btn-sm" style="width:100%;color:#b91c1c;border-color:#fecaca;" data-openreassess="'+saId+'">🔄 Upload Re-Assessment Submission Report</button>' +
+              '<div id="sastat-reassess-'+saId+'" style="margin-top:6px;font-size:11px;color:#94a3b8;font-weight:500;">○ Not uploaded yet</div>' +
+            '</div>' +
+            '<div>' +
+              '<button class="btn-sm" style="width:100%;color:#b91c1c;border-color:#fecaca;" data-openreassessmarks="'+saId+'">📋 Upload Re-Assessment Marks</button>' +
+              '<div id="sastat-reassessmarks-'+saId+'" style="margin-top:6px;font-size:11px;color:#94a3b8;font-weight:500;">○ Not uploaded yet</div>' +
+            '</div>' +
           '</div>' +
         '</div>' +
       '</div>' +
@@ -4168,8 +4195,6 @@ function renderAsmCards(code, name, saArr, enrolled, sem){
         '<div style="font-size:11px;color:var(--text3);margin-bottom:14px;">Same Blackboard gradebook format · UTF-16 · Only re-assessment candidates updated · Marks capped at 40 · No emails</div>' +
         '<div id="ram-preview-'+saId+'" style="display:none;"></div>' +
       '</div>' +
-      // Persistent marks table (populated from RESULTS sheet on load / after confirm)
-      '<div id="marks-table-'+saId+'" style="display:none;margin-top:4px;margin-bottom:12px;"></div>' +
       // Submission upload panel
       '<div id="panel-sub-'+saId+'" style="display:none;background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;margin-top:-6px;margin-bottom:12px;box-shadow:var(--shadow);border-top:none;">' +
         '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">' +
@@ -4183,11 +4208,57 @@ function renderAsmCards(code, name, saArr, enrolled, sem){
         '</label>' +
         '<div style="font-size:11px;color:var(--text3);margin-bottom:14px;">Blackboard submission export · CSV · Columns: First Name, Last Name, Submitted</div>' +
         '<div id="sub-preview-'+saId+'" style="display:none;"></div>' +
-      '</div>';
+      '</div>' +
+      // Persistent marks table (populated from RESULTS sheet on load / after confirm)
+      '<div id="marks-table-'+saId+'" style="display:none;margin-top:4px;margin-bottom:12px;"></div>';
     container.appendChild(card);
   });
+  // Re-Assessment Report status (from REASSESS_NOTICES lastSent) for each SA on this module.
+  try{ _ccLoadReassessReportStatus(code, saArr.map(function(sa){ return sa.sa.toLowerCase().replace(' ',''); })); }catch(_){}
 }
 
+// ── SA action status-line helpers ──────────────────────────────────────────
+// Set a status line: green tick + label + date when done, grey "Not uploaded yet" when pending.
+function _ccSetSaStatus(elId, done, dateStr, label){
+  var el = document.getElementById(elId); if(!el) return;
+  if(done){
+    el.style.color = '#15803d'; el.style.fontWeight = '600';
+    el.innerHTML = '✓ ' + (label||'Last Uploaded') + (dateStr ? ' · ' + dateStr : '');
+  } else {
+    el.style.color = '#94a3b8'; el.style.fontWeight = '500';
+    el.innerHTML = '○ Not uploaded yet';
+  }
+}
+// Most recent date among rows (field defaults to dateUploaded). Returns '' if none parseable.
+function _ccLatestDate(rows, field){
+  field = field || 'dateUploaded';
+  var best = null, bestStr = '';
+  (rows||[]).forEach(function(r){
+    var v = r[field]; if(!v || v==='—') return;
+    var d = new Date(v);
+    if(!isNaN(d.getTime())){ if(!best || d > best){ best = d; bestStr = v; } }
+    else if(!bestStr){ bestStr = v; }   // keep a non-parseable string as a fallback
+  });
+  return bestStr;
+}
+// Re-Assessment Report status comes from getReassessStatus (REASSESS_NOTICES lastSent).
+function _ccLoadReassessReportStatus(code, saIds){
+  apiPost('getReassessStatus', {moduleCode:code}).then(function(res){
+    var data = (res && res.data) || res || null;
+    var lastSent = data && data.lastSent ? String(data.lastSent) : '';
+    // The notice is per-module (covers its SAs); reflect it on each SA's re-assessment report line.
+    (saIds||[]).forEach(function(saId){
+      _ccSetSaStatus('sastat-reassess-'+saId, !!lastSent, lastSent, 'Last Uploaded');
+    });
+  }).catch(function(){ /* leave as "Not uploaded yet" */ });
+}
+
+// Close all 4 SA action panels for a given saId (accordion: opening one closes the others).
+function _ccCloseSaPanels(saId){
+  ['panel-sub-','panel-marks-','panel-reassess-','panel-reassess-marks-'].forEach(function(pre){
+    var el = document.getElementById(pre+saId); if(el) el.style.display='none';
+  });
+}
 // ── Event delegation for assessment card buttons ──────────────────────────
 document.addEventListener('DOMContentLoaded', function(){
 document.addEventListener('click', function(e){
@@ -4253,6 +4324,7 @@ document.addEventListener('click', function(e){
     var panelS = document.getElementById('panel-sub-'+saId2);
     if(!panelS) return;
     var visS = panelS.style.display==='block';
+    _ccCloseSaPanels(saId2);
     panelS.style.display = visS ? 'none' : 'block';
     if(!visS) setTimeout(function(){ panelS.scrollIntoView({behavior:'smooth',block:'nearest'}); },50);
     return;
@@ -4262,6 +4334,7 @@ document.addEventListener('click', function(e){
     var panelM = document.getElementById('panel-marks-'+saIdM);
     if(!panelM) return;
     var visM = panelM.style.display==='block';
+    _ccCloseSaPanels(saIdM);
     panelM.style.display = visM ? 'none' : 'block';
     if(!visM) setTimeout(function(){ panelM.scrollIntoView({behavior:'smooth',block:'nearest'}); },50);
     return;
@@ -4271,6 +4344,7 @@ document.addEventListener('click', function(e){
     var panelR = document.getElementById('panel-reassess-'+saIdR);
     if(!panelR) return;
     var visR = panelR.style.display==='block';
+    _ccCloseSaPanels(saIdR);
     panelR.style.display = visR ? 'none' : 'block';
     if(!visR) setTimeout(function(){ panelR.scrollIntoView({behavior:'smooth',block:'nearest'}); },50);
     return;
@@ -4280,6 +4354,7 @@ document.addEventListener('click', function(e){
     var panelRM = document.getElementById('panel-reassess-marks-'+saIdRM);
     if(!panelRM) return;
     var visRM = panelRM.style.display==='block';
+    _ccCloseSaPanels(saIdRM);
     panelRM.style.display = visRM ? 'none' : 'block';
     if(!visRM) setTimeout(function(){ panelRM.scrollIntoView({behavior:'smooth',block:'nearest'}); },50);
     return;
