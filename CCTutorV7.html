@@ -4223,6 +4223,55 @@ function renderAsmCards(code, name, saArr, enrolled, sem){
   try{ _ccLoadReassessReportStatus(code, saArr.map(function(sa){ return sa.sa.toLowerCase().replace(' ',''); })); }catch(_){}
 }
 
+// ── IndexedDB store for heavy SARS snapshots ───────────────────────────────
+// localStorage is only ~5MB (fits ~30 snapshots). IndexedDB holds hundreds of MB, so the whole
+// cohort can be cached. Used ONLY for the large per-student bundles; small page caches stay in
+// localStorage. Falls back gracefully to a fetch if IndexedDB is unavailable.
+var _idb = null, _idbTried = false;
+function _idbOpen(){
+  if(_idb) return Promise.resolve(_idb);
+  if(_idbTried && !_idb) return Promise.reject(new Error('no idb'));
+  return new Promise(function(resolve, reject){
+    try{
+      var req = indexedDB.open('campuscore', 1);
+      req.onupgradeneeded = function(e){ var db=e.target.result; if(!db.objectStoreNames.contains('sars')) db.createObjectStore('sars'); };
+      req.onsuccess = function(e){ _idb = e.target.result; _idbTried = true; resolve(_idb); };
+      req.onerror   = function(){ _idbTried = true; reject(req.error || new Error('idb open failed')); };
+    }catch(e){ _idbTried = true; reject(e); }
+  });
+}
+function idbGet(key){
+  return _idbOpen().then(function(db){ return new Promise(function(resolve){
+    try{ var r=db.transaction('sars','readonly').objectStore('sars').get(key);
+         r.onsuccess=function(){ resolve(r.result!==undefined?r.result:null); }; r.onerror=function(){ resolve(null); }; }
+    catch(_){ resolve(null); }
+  }); }).catch(function(){ return null; });
+}
+function idbSet(key, val){
+  return _idbOpen().then(function(db){ return new Promise(function(resolve){
+    try{ var tx=db.transaction('sars','readwrite'); tx.objectStore('sars').put(val, key);
+         tx.oncomplete=function(){ resolve(true); }; tx.onerror=function(){ resolve(false); }; }
+    catch(_){ resolve(false); }
+  }); }).catch(function(){ return false; });
+}
+function idbHas(key){ return idbGet(key).then(function(v){ return v!==null; }); }
+function idbCount(){
+  return _idbOpen().then(function(db){ return new Promise(function(resolve){
+    try{ var r=db.transaction('sars','readonly').objectStore('sars').count();
+         r.onsuccess=function(){ resolve(r.result||0); }; r.onerror=function(){ resolve(0); }; }
+    catch(_){ resolve(0); }
+  }); }).catch(function(){ return 0; });
+}
+// Cache-first SARS bundle via IndexedDB. in-memory → IndexedDB → fetch. Drop-in for ccModCache.
+function ccSarsCache(bsuId, params){
+  var key = 'sps_'+bsuId;
+  if(Object.prototype.hasOwnProperty.call(_modCache, key)){ return Promise.resolve(_modCache[key]); }
+  return idbGet(key).then(function(cached){
+    if(cached !== null && cached !== undefined){ _modCache[key] = cached; return cached; }
+    return apiFetch(params).then(function(d){ _modCache[key] = d; idbSet(key, d); return d; });
+  });
+}
+
 // ── Gentle SARS trickle preload ────────────────────────────────────────────
 // Quietly warms student snapshots into the same cache the SARS reads, one at a time, well spaced,
 // lowest priority. Backs off while the user is active so their work always takes priority. Skips
@@ -4258,16 +4307,16 @@ function ccStartSarsTrickle(role){
     if(i >= list.length){ return; }               // done — whole cohort warmed
     // Back off while the user is active (resume when idle > 4s).
     if(Date.now() - _ccLastActive < 4000){ setTimeout(step, 2000); return; }
-    if(_ccStorageNearFull()){ return; }            // storage budget reached — stop quietly
     var s = list[i++]; if(!s || !s.bsuId){ setTimeout(step, 50); return; }
-    var key = 'sps_'+s.bsuId, SK = 'cc_mod_'+key;
-    var already = false;
-    try{ already = (Object.prototype.hasOwnProperty.call(_modCache, key)) || !!localStorage.getItem(SK); }catch(_){}
-    if(already){ setTimeout(step, 30); return; }    // skip what's already cached
-    // Warm it (populates the SARS cache). Errors are ignored — this is best-effort background work.
-    ccModCache(key, {action:'getStudentBundle', bsuId:s.bsuId, fields:'core'})
-      .then(function(){ setTimeout(step, GAP); })
-      .catch(function(){ setTimeout(step, GAP); });
+    var key = 'sps_'+s.bsuId;
+    if(Object.prototype.hasOwnProperty.call(_modCache, key)){ setTimeout(step, 30); return; }
+    // Skip if already in IndexedDB; else warm it (best-effort background work).
+    idbHas(key).then(function(has){
+      if(has){ setTimeout(step, 30); return; }
+      ccSarsCache(s.bsuId, {action:'getStudentBundle', bsuId:s.bsuId, fields:'core'})
+        .then(function(){ setTimeout(step, GAP); })
+        .catch(function(){ setTimeout(step, GAP); });
+    });
   }
   setTimeout(step, GAP);
 }
@@ -7329,7 +7378,7 @@ function generateSps(){
   status.textContent = '⏳ Loading…';
   _spsBsuId = null;
 
-  ccModCache('sps_'+bsuId, {action:'getStudentBundle', bsuId:bsuId, fields:'core'}).then(function(bundle){
+  ccSarsCache(bsuId, {action:'getStudentBundle', bsuId:bsuId, fields:'core'}).then(function(bundle){
     if(!bundle || !bundle.student){
       status.textContent = '❌ BSU ID not found: '+bsuId;
       return;
