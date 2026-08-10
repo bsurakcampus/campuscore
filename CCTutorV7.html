@@ -844,7 +844,7 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
 
         <!-- STUDENT SEARCH — find any of your students, click a name to open their SARS -->
         <div id="tutor-stu-search-wrap" style="margin-bottom:18px;position:relative;">
-          <input type="text" id="tutor-stu-search" autocomplete="off" placeholder="\U0001F50D  Search any student by name or BSU ID\u2026"
+          <input type="text" id="tutor-stu-search" autocomplete="off" placeholder="🔍  Search any student by name or BSU ID…"
             oninput="tutorStuSearch(this.value)" onfocus="tutorStuSearch(this.value)"
             style="width:100%;box-sizing:border-box;padding:13px 16px;border:1.5px solid var(--border2);border-radius:12px;font-family:'Sora',sans-serif;font-size:14px;background:#fff;color:var(--text);outline:none;">
           <div id="tutor-stu-results" style="display:none;position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:40;background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);overflow:hidden;max-height:340px;overflow-y:auto;"></div>
@@ -4259,7 +4259,7 @@ function tutorStuSearch(q){
              '<div style="width:32px;height:32px;border-radius:8px;background:'+col+';color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;">'+_tsAvatar(s.name)+'</div>'+
              '<div style="flex:1;min-width:0;">'+
                '<div style="font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+(s.name||'')+'</div>'+
-               '<div style="font-size:11px;color:var(--text3);">'+(s.bsuId||'')+' \u00b7 '+(s.programme||'')+' \u00b7 '+(s.year||'')+'</div>'+
+               '<div style="font-size:11px;color:var(--text3);">'+(s.bsuId||'')+' · '+(s.programme||'')+' · '+(s.year||'')+'</div>'+
              '</div>'+
            '</div>';
   }).join('');
@@ -7746,7 +7746,7 @@ function spsSendEmail(){
     bsuId:   _spsBsuId,
     sentBy: (_tutor && (_tutor.name||_tutor.email)) || 'Tutor Portal'
   }).then(function(r){
-    showToast('✅ SARS emailed to parent (CC: student) successfully.','success');
+    showToast('✅ SARS emailed to student (CC: parent) successfully.','success');
     if(btn) btn.innerHTML = '✉️ &nbsp;Email Student &amp; Parent';
   }).catch(function(e){
     showToast('❌ Email failed: '+(e.message||'unknown error'),'error');
