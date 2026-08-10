@@ -1860,7 +1860,7 @@ async function apiPost(action, body){
   // Only clear the cached module marks/attendance when the action ACTUALLY changes that data.
   // (Read-style POSTs like getReassessStatus must NOT wipe the cache - that caused marks to
   //  disappear mid-session when visiting the re-assessment page.)
-  var _clears = ['saveResultsBatch','saveAttendanceSession','publishResults','saveSubmissionStatus'];
+  var _clears = ['saveResultsBatch','saveAttendanceSession','publishResults','saveSubmissionStatus','saveNote','saveCriticalNote'];
   if(_clears.indexOf(action) !== -1){
     try { _modCache = {}; Object.keys(localStorage).forEach(function(k){ if(k.indexOf('cc_mod_')===0) localStorage.removeItem(k); }); } catch(_){}
   }
@@ -2588,7 +2588,7 @@ function renderDashboardModules(){
       // uploaded marks count as released (most tutors upload + release in one go).
       // CRITICAL: must check r.mark is a real number — submission-status-only rows
       // (uploaded via saveSubmissionStatus) have mark=null and don't count as graded.
-      apiFetch({action:'getResults', moduleCode:mod.moduleCode}).then(function(rows){
+      ccModCache('results_'+mod.moduleCode, {action:'getResults', moduleCode:mod.moduleCode}).then(function(rows){
         if(!Array.isArray(rows) || !rows.length) return; // No rows → keep Pending
         // sa field is stored as "SA1"/"SA2" in the RESULTS sheet. Normalize: strip leading "SA".
         ['1','2'].forEach(function(saNum){
@@ -2923,7 +2923,7 @@ function openStudentRecord(bsuId){
   const notesList = document.getElementById('notes-list');
   if(notesList){
     notesList.innerHTML = '<div style="padding:12px 16px;color:var(--text3);font-size:12px;">Loading notes...</div>';
-    apiFetch({action:'getNotes', bsuId}).then(notes => {
+    ccModCache('notes_'+bsuId, {action:'getNotes', bsuId:bsuId}).then(notes => {
       renderNotesList(notes, notesList);
     }).catch(() => {
       notesList.innerHTML = '<div style="padding:12px 16px;color:var(--text3);font-size:12px;">Could not load notes.</div>';
@@ -3338,7 +3338,7 @@ function loadTimetable(){
   if(_timetableLoaded) return;
   var container = document.getElementById('timetable-container');
   var email = _tutor ? _tutor.email : '';
-  apiFetch({action:'getTimetable', email:email}).then(function(data){
+  ccModCache('timetable_'+email, {action:'getTimetable', email:email}).then(function(data){
     _timetableLoaded = true;
     _timetableData = data||[];
     renderTimetable(_timetableData);
@@ -3730,7 +3730,7 @@ var _tutorPolLoaded = false;
 function loadTutorPolicies(){
   if(_tutorPolLoaded) return;
   var container = document.getElementById('policies-tutor-container');
-  apiFetch({action:'getPolicies'}).then(function(data){
+  ccModCache('policies', {action:'getPolicies'}).then(function(data){
     _tutorPolLoaded = true;
     renderTutorPolicies(data||[]);
   }).catch(function(e){
@@ -3809,7 +3809,7 @@ function showAttendance(code, name){
   activeSession = 0;
   _cachedAttRecords = [];
   renderSessionStrip(); // clear strip immediately, no flash from previous module
-  apiFetch({action:'getAttendance', moduleCode:code}).then(function(records){
+  ccModCache('att_'+code, {action:'getAttendance', moduleCode:code}).then(function(records){
     _cachedAttRecords = records || [];
     if(_cachedAttRecords.length){
       // Build unique sessions from records (by sessionNum + date)
@@ -3891,8 +3891,10 @@ function showAssessments(code, name, saNum){
   renderAsmCards(code, name, saToRender, enrolled, sem);
   showPage('assessments');
 
-  // Load existing results from RESULTS sheet to populate card stats
-  apiFetch({action:'getResults', moduleCode:code}).then(function(results){
+  // Load existing results from RESULTS sheet to populate card stats.
+  // Cache-first (ccModCache): instant from cache on return, refreshes in the background - same as
+  // the other pages. Shares the 'results_<code>' cache key used elsewhere.
+  ccModCache('results_'+code, {action:'getResults', moduleCode:code}).then(function(results){
     if(!results || !results.length) return;
     // Group by SA
     var bySA = {};
@@ -5226,7 +5228,7 @@ function parseReassessSubmission(input, saId, code, name, sa, title, weight){
   if(preview){ preview.innerHTML='<div style="font-size:13px;color:var(--text2);padding:8px 0;">⏳ Reading file…</div>'; preview.style.display='block'; }
 
   // Step 1: get existing results to identify re-assessment candidates
-  apiFetch({action:'getResults', moduleCode:code, sa:sa}).then(function(existingResults){
+  ccModCache('results_'+code+'_'+sa, {action:'getResults', moduleCode:code, sa:sa}).then(function(existingResults){
     var failedMap = {};
     (existingResults||[]).forEach(function(r){
       var m = (r.mark!==null && r.mark!==undefined && r.mark!=='') ? Number(r.mark) : null;
@@ -5658,7 +5660,7 @@ function finishReassess(saId, pending){
   var panel = document.getElementById('panel-reassess-'+saId);
   if(panel) panel.style.display='none';
   window._pendingRA[saId] = null;
-  apiFetch({action:'getResults', moduleCode:pending.code, sa:pending.sa}).then(function(rows){
+  ccModCache('results_'+pending.code+'_'+pending.sa, {action:'getResults', moduleCode:pending.code, sa:pending.sa}).then(function(rows){
     if(rows && rows.length) renderMarksTable(saId, rows);
   });
 }
@@ -5724,7 +5726,7 @@ function parseReassessGradebook(input, saId, code, name, sa, title, weight){
   var preview = document.getElementById('ram-preview-'+saId);
   if(preview){ preview.innerHTML='<div style="font-size:13px;color:var(--text2);padding:8px 0;">⏳ Reading file…</div>'; preview.style.display='block'; }
 
-  apiFetch({action:'getResults', moduleCode:code, sa:sa}).then(function(existingResults){
+  ccModCache('results_'+code+'_'+sa, {action:'getResults', moduleCode:code, sa:sa}).then(function(existingResults){
     var failedMap = {};
     (existingResults||[]).forEach(function(r){
       var m = (r.mark!==null && r.mark!==undefined && r.mark!=='') ? Number(r.mark) : null;
@@ -5852,7 +5854,7 @@ function saveReassessGradebook(saId, btn){
     var failedCount = (pending.failedStudents || []).length;
     showToast('✅ Re-assessment marks saved for '+records.length+' student(s). No emails sent.','success');
     // Refresh the marks table in the background
-    apiFetch({action:'getResults', moduleCode:pending.code, sa:pending.sa}).then(function(rows){
+    ccModCache('results_'+pending.code+'_'+pending.sa, {action:'getResults', moduleCode:pending.code, sa:pending.sa}).then(function(rows){
       if(rows && rows.length) renderMarksTable(saId, rows);
     });
     // Swap preview UI to a saved-state with optional "Send Fail Notices" button (Option B)
@@ -6893,7 +6895,7 @@ function saveModalNote(){
     if(j.status==='ok'){
       var list = document.getElementById('notes-list');
       if(list){
-        apiFetch({action:'getNotes', bsuId:window._noteModalBsuId}).then(function(notes){
+        ccModCache('notes_'+window._noteModalBsuId, {action:'getNotes', bsuId:window._noteModalBsuId}).then(function(notes){
           renderNotesList(notes, list);
         });
       }
@@ -6950,7 +6952,7 @@ function spsLoadNotes(bsuId){
   var list = document.getElementById('sps-notes-list');
   if(!list) return;
   list.innerHTML = '<div style="padding:14px 16px;font-size:12px;color:var(--text3);">Loading notes…</div>';
-  apiFetch({action:'getNotes', bsuId:bsuId}).then(function(notes){
+  ccModCache('notes_'+bsuId, {action:'getNotes', bsuId:bsuId}).then(function(notes){
     if(!notes || !notes.length){
       list.innerHTML = '<div style="padding:18px 16px;text-align:center;font-size:12px;color:var(--text3);font-style:italic;">No critical notes for this student.</div>';
       return;
@@ -7423,8 +7425,8 @@ function raShowSentNote(when, by, count){
 function exportMarksheet(code, name, programme, year, semester){
   showToast('⏳ Preparing marksheet…','info');
   Promise.all([
-    apiFetch({action:'getResults', moduleCode:code}),
-    apiFetch({action:'getStudents', programme:programme, year:year})
+    ccModCache('results_'+code, {action:'getResults', moduleCode:code}),
+    ccModCache('students_'+programme+'_'+year, {action:'getStudents', programme:programme, year:year})
   ]).then(function(res){
     var results  = res[0] || [];
     var students = res[1] || [];
