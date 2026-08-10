@@ -4156,10 +4156,10 @@ function renderAsmCards(code, name, saArr, enrolled, sem){
       // Marks upload panel
       '<div id="panel-marks-'+saId+'" style="display:none;background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;margin-top:-6px;margin-bottom:12px;box-shadow:var(--shadow);border-top:none;">' +
         '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">' +
-          '<div style="font-size:14px;font-weight:700;" id="marks-panel-title-'+saId+'">Upload Marks — '+sa.sa+'</div>' +
+          '<div style="font-size:14px;font-weight:700;color:#15803d;" id="marks-panel-title-'+saId+'">📊 Upload Marks — '+sa.sa+'</div>' +
           '<button class="btn-sm" data-closepanel="panel-marks-'+saId+'">✕ Close</button>' +
         '</div>' +
-        '<div style="background:var(--accent-light);border:1px solid var(--accent-border);border-radius:8px;padding:11px 14px;font-size:12px;color:#1e3a8a;margin-bottom:14px;">ℹ️ Upload the Blackboard gradebook file. Marks are read from <strong>Column G</strong>. BSU ID matched from <strong>Username column</strong>.</div>' +
+        '<div style="background:#f0fdf4;border:1px solid #86efac;border-radius:8px;padding:11px 14px;font-size:12px;color:#166534;margin-bottom:14px;">ℹ️ Upload the Blackboard gradebook file. Marks are read from <strong>Column G</strong>. BSU ID matched from <strong>Username column</strong>.</div>' +
         '<label style="display:inline-flex;align-items:center;gap:8px;padding:9px 16px;background:var(--accent-light);border:1.5px solid var(--accent-border);border-radius:var(--radius);color:var(--accent);font-size:13px;font-weight:600;cursor:pointer;margin-bottom:8px;">' +
           '📊 Choose Gradebook File' +
           '<input type="file" id="gb-input-'+saId+'" accept=".xls,.csv" style="display:none;" data-parsegb="'+saId+'">' +
@@ -4168,16 +4168,16 @@ function renderAsmCards(code, name, saArr, enrolled, sem){
         '<div id="marks-preview-'+saId+'" style="display:none;"></div>' +
       '</div>' +
       // Re-assessment upload panel
-      '<div id="panel-reassess-'+saId+'" style="display:none;background:#fff;border:1px solid #c4b5fd;border-radius:var(--radius-lg);padding:20px;margin-top:-6px;margin-bottom:12px;box-shadow:var(--shadow);border-top:none;">' +
+      '<div id="panel-reassess-'+saId+'" style="display:none;background:#fff;border:1px solid #fecaca;border-radius:var(--radius-lg);padding:20px;margin-top:-6px;margin-bottom:12px;box-shadow:var(--shadow);border-top:none;">' +
         '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">' +
-          '<div style="font-size:14px;font-weight:700;color:#7c3aed;">🔄 Upload Re-Assessment Submission Report — '+sa.sa+'</div>' +
+          '<div style="font-size:14px;font-weight:700;color:#b91c1c;">🔄 Upload Re-Assessment Submission Report — '+sa.sa+'</div>' +
           '<button class="btn-sm" data-closepanel="panel-reassess-'+saId+'">✕ Close</button>' +
         '</div>' +
-        '<div style="background:#f5f3ff;border:1px solid #c4b5fd;border-radius:8px;padding:11px 14px;font-size:12px;color:#5b21b6;margin-bottom:14px;">' +
+        '<div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:11px 14px;font-size:12px;color:#991b1b;margin-bottom:14px;">' +
           'ℹ️ Upload the Blackboard re-assessment submission CSV. The system will check only students who <strong>originally failed or did not submit</strong>. ' +
           'Students who submitted → marked <strong>40</strong> automatically (re-assessment cap). Students who have not submitted → receive a <strong>2-Day Re-Assessment Notice</strong> email.' +
         '</div>' +
-        '<label style="display:inline-flex;align-items:center;gap:8px;padding:9px 16px;background:#f5f3ff;border:1.5px solid #c4b5fd;border-radius:var(--radius);color:#7c3aed;font-size:13px;font-weight:600;cursor:pointer;margin-bottom:8px;">' +
+        '<label style="display:inline-flex;align-items:center;gap:8px;padding:9px 16px;background:#fef2f2;border:1.5px solid #fecaca;border-radius:var(--radius);color:#b91c1c;font-size:13px;font-weight:600;cursor:pointer;margin-bottom:8px;">' +
           '🔄 Choose Re-Assessment Submission CSV' +
           '<input type="file" id="ra-input-'+saId+'" accept=".csv" style="display:none;" data-parsera="'+saId+'">' +
         '</label>' +
@@ -4185,16 +4185,16 @@ function renderAsmCards(code, name, saArr, enrolled, sem){
         '<div id="ra-preview-'+saId+'" style="display:none;"></div>' +
       '</div>' +
       // Re-assessment MARKS upload panel (silent save, no emails, no publish)
-      '<div id="panel-reassess-marks-'+saId+'" style="display:none;background:#fff;border:1px solid #c4b5fd;border-radius:var(--radius-lg);padding:20px;margin-top:-6px;margin-bottom:12px;box-shadow:var(--shadow);border-top:none;">' +
+      '<div id="panel-reassess-marks-'+saId+'" style="display:none;background:#fff;border:1px solid #fecaca;border-radius:var(--radius-lg);padding:20px;margin-top:-6px;margin-bottom:12px;box-shadow:var(--shadow);border-top:none;">' +
         '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">' +
-          '<div style="font-size:14px;font-weight:700;color:#7c3aed;">📋 Upload Re-Assessment Marks — '+sa.sa+'</div>' +
+          '<div style="font-size:14px;font-weight:700;color:#b91c1c;">📋 Upload Re-Assessment Marks — '+sa.sa+'</div>' +
           '<button class="btn-sm" data-closepanel="panel-reassess-marks-'+saId+'">✕ Close</button>' +
         '</div>' +
-        '<div style="background:#f5f3ff;border:1px solid #c4b5fd;border-radius:8px;padding:11px 14px;font-size:12px;color:#5b21b6;margin-bottom:14px;">' +
+        '<div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:11px 14px;font-size:12px;color:#991b1b;margin-bottom:14px;">' +
           'ℹ️ Upload the Blackboard re-assessment gradebook. Only students who <strong>originally failed or did not submit</strong> will be updated. ' +
           'All marks are <strong>capped at 40</strong> per university policy. No emails will be sent.' +
         '</div>' +
-        '<label style="display:inline-flex;align-items:center;gap:8px;padding:9px 16px;background:#f5f3ff;border:1.5px solid #c4b5fd;border-radius:var(--radius);color:#7c3aed;font-size:13px;font-weight:600;cursor:pointer;margin-bottom:8px;">' +
+        '<label style="display:inline-flex;align-items:center;gap:8px;padding:9px 16px;background:#fef2f2;border:1.5px solid #fecaca;border-radius:var(--radius);color:#b91c1c;font-size:13px;font-weight:600;cursor:pointer;margin-bottom:8px;">' +
           '📋 Choose Re-Assessment Gradebook' +
           '<input type="file" id="ram-input-'+saId+'" accept=".xls,.csv" style="display:none;" data-parseram="'+saId+'">' +
         '</label>' +
@@ -4204,11 +4204,11 @@ function renderAsmCards(code, name, saArr, enrolled, sem){
       // Submission upload panel
       '<div id="panel-sub-'+saId+'" style="display:none;background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;margin-top:-6px;margin-bottom:12px;box-shadow:var(--shadow);border-top:none;">' +
         '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">' +
-          '<div style="font-size:14px;font-weight:700;">Upload Submission Report — '+sa.sa+'</div>' +
+          '<div style="font-size:14px;font-weight:700;color:#15803d;">📤 Upload Submission Report — '+sa.sa+'</div>' +
           '<button class="btn-sm" data-closepanel="panel-sub-'+saId+'">✕ Close</button>' +
         '</div>' +
-        '<div style="background:var(--accent-light);border:1px solid var(--accent-border);border-radius:8px;padding:11px 14px;font-size:12px;color:#1e3a8a;margin-bottom:14px;">ℹ️ Upload the Blackboard submission CSV. Non-submitters are identified and listed at the top. Use the notice buttons to email them directly.</div>' +
-        '<label style="display:inline-flex;align-items:center;gap:8px;padding:9px 16px;background:var(--accent-light);border:1.5px solid var(--accent-border);border-radius:var(--radius);color:var(--accent);font-size:13px;font-weight:600;cursor:pointer;margin-bottom:8px;">' +
+        '<div style="background:#f0fdf4;border:1px solid #86efac;border-radius:8px;padding:11px 14px;font-size:12px;color:#166534;margin-bottom:14px;">ℹ️ Upload the Blackboard submission CSV. Non-submitters are identified and listed at the top. Use the notice buttons to email them directly.</div>' +
+        '<label style="display:inline-flex;align-items:center;gap:8px;padding:9px 16px;background:#f0fdf4;border:1.5px solid #86efac;border-radius:var(--radius);color:#15803d;font-size:13px;font-weight:600;cursor:pointer;margin-bottom:8px;">' +
           '📤 Choose Submission CSV' +
           '<input type="file" accept=".csv" style="display:none;" data-parsesub="'+saId+'">' +
         '</label>' +
@@ -5379,8 +5379,8 @@ function renderReassessPreview(saId, toMark40, toEmail, manualQueue){
   if(!preview) return;
   manualQueue = manualQueue || [];
 
-  var html = '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px;padding:12px 14px;background:#f5f3ff;border-radius:8px;border:1px solid #c4b5fd;">';
-  html += '<div style="font-size:12px;color:#7c3aed;font-weight:700;">🔄 Re-Assessment Report</div>';
+  var html = '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px;padding:12px 14px;background:#fef2f2;border-radius:8px;border:1px solid #fecaca;">';
+  html += '<div style="font-size:12px;color:#b91c1c;font-weight:700;">🔄 Re-Assessment Report</div>';
   html += '<div style="font-size:12px;"><span style="color:#16a34a;">✅ Submitted</span> → <strong>Mark 40</strong> &nbsp;<strong data-ra-submitted="'+saId+'">'+toMark40.length+'</strong> student(s)</div>';
   html += '<div style="font-size:12px;"><span style="color:#dc2626;">❌ Not Submitted</span> → <strong>2-Day Notice email</strong> &nbsp;<strong data-ra-notsub="'+saId+'">'+toEmail.length+'</strong> student(s)</div>';
   if(manualQueue.length){
@@ -5848,16 +5848,16 @@ function renderReassessGradebookPreview(saId, toUpdate, skipped){
   if(!preview) return;
   var cappedCount = toUpdate.filter(function(r){ return r.wasCapped; }).length;
 
-  var html = '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px;padding:12px 14px;background:#f5f3ff;border-radius:8px;border:1px solid #c4b5fd;">';
-  html += '<div style="font-size:12px;color:#7c3aed;font-weight:700;">📋 Re-Assessment Marks Preview</div>';
+  var html = '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px;padding:12px 14px;background:#fef2f2;border-radius:8px;border:1px solid #fecaca;">';
+  html += '<div style="font-size:12px;color:#b91c1c;font-weight:700;">📋 Re-Assessment Marks Preview</div>';
   html += '<div style="font-size:12px;">Will update <strong>'+toUpdate.length+'</strong> · Unchanged <strong>'+skipped.length+'</strong></div>';
   if(cappedCount) html += '<div style="font-size:12px;color:#dc2626;">⚠️ '+cappedCount+' mark(s) capped to 40</div>';
   html += '</div>';
 
   if(toUpdate.length){
-    html += '<div style="overflow-x:auto;margin-bottom:14px;border-radius:8px;border:1px solid #c4b5fd;">';
+    html += '<div style="overflow-x:auto;margin-bottom:14px;border-radius:8px;border:1px solid #fecaca;">';
     html += '<table style="width:100%;border-collapse:collapse;font-size:12px;">';
-    html += '<thead><tr style="background:#7c3aed;"><th style="padding:7px 12px;color:#fff;text-align:left;">#</th><th style="padding:7px 12px;color:#fff;text-align:left;">BSU ID</th><th style="padding:7px 12px;color:#fff;text-align:left;">Name</th><th style="padding:7px 12px;color:#fff;text-align:center;">Raw</th><th style="padding:7px 12px;color:#fff;text-align:center;">Saved As</th><th style="padding:7px 12px;color:#fff;text-align:center;">Grade</th></tr></thead><tbody>';
+    html += '<thead><tr style="background:#b91c1c;"><th style="padding:7px 12px;color:#fff;text-align:left;">#</th><th style="padding:7px 12px;color:#fff;text-align:left;">BSU ID</th><th style="padding:7px 12px;color:#fff;text-align:left;">Name</th><th style="padding:7px 12px;color:#fff;text-align:center;">Raw</th><th style="padding:7px 12px;color:#fff;text-align:center;">Saved As</th><th style="padding:7px 12px;color:#fff;text-align:center;">Grade</th></tr></thead><tbody>';
     toUpdate.forEach(function(r,i){
       var saved = r.wasCapped ? '<span style="color:#dc2626;font-weight:700;">40</span> <span style="font-size:10px;color:#dc2626;">(capped)</span>' : '<strong>'+r.mark+'</strong>';
       var grade = calcGradeJS(r.mark);
@@ -5876,7 +5876,7 @@ function renderReassessGradebookPreview(saId, toUpdate, skipped){
   if(cappedCount) html += '<div style="background:#fef2f2;border:1px solid #fecaca;border-radius:7px;padding:10px 14px;font-size:12px;color:#dc2626;margin-bottom:10px;">⚠️ '+cappedCount+' mark(s) above 40 have been capped per university re-assessment policy.</div>';
 
   html += '<div style="display:flex;gap:8px;">';
-  html += '<button class="btn-sm" style="background:#7c3aed;color:#fff;border-color:#7c3aed;" data-saveram="'+saId+'">💾 Save Re-Assessment Marks (No Emails)</button>';
+  html += '<button class="btn-sm" style="background:#b91c1c;color:#fff;border-color:#b91c1c;" data-saveram="'+saId+'">💾 Save Re-Assessment Marks (No Emails)</button>';
   html += '<button class="btn-sm" data-cancelpanel="ram-preview-'+saId+'">Cancel</button>';
   html += '</div>';
 
@@ -6273,7 +6273,7 @@ function applyManualMatch(select, moduleStudents){
 
   // Update row background
   var row = document.getElementById('mrow-'+saId+'-'+idx);
-  if(row) row.style.background = '#f5f3ff';
+  if(row) row.style.background = '#fef2f2';
 
   // Store the manual match in _pendingSub so confirmSubReport picks it up
   var pending = window._pendingSub && window._pendingSub[saId];
