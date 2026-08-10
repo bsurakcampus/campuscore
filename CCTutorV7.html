@@ -2094,6 +2094,9 @@ async function enterPortal(){
       loadTutorUCal();
       if(!_tutorPolLoaded)  loadTutorPolicies();
     }, 1500);
+    // Gentle SARS trickle — quietly warm this tutor's own cohort snapshots in the background,
+    // slow and steady, lowest priority, backing off whenever the tutor is active. Skips classroom.
+    setTimeout(function(){ try{ ccStartSarsTrickle('tutor'); }catch(_){} }, 8000);
   } catch(e){
     console.warn('API error:', e.message);
     ccPortalError('Could not reach the server. ' + (e.message||''));
@@ -4218,6 +4221,55 @@ function renderAsmCards(code, name, saArr, enrolled, sem){
   });
   // Re-Assessment Report status (from REASSESS_NOTICES lastSent) for each SA on this module.
   try{ _ccLoadReassessReportStatus(code, saArr.map(function(sa){ return sa.sa.toLowerCase().replace(' ',''); })); }catch(_){}
+}
+
+// ── Gentle SARS trickle preload ────────────────────────────────────────────
+// Quietly warms student snapshots into the same cache the SARS reads, one at a time, well spaced,
+// lowest priority. Backs off while the user is active so their work always takes priority. Skips
+// students already cached, and stops if browser storage is nearly full. Slow and steady by design.
+var _ccTrickleOn = false, _ccLastActive = Date.now();
+['click','keydown','mousemove','scroll','touchstart'].forEach(function(ev){
+  try{ document.addEventListener(ev, function(){ _ccLastActive = Date.now(); }, {passive:true}); }catch(_){}
+});
+function _ccStorageNearFull(){
+  try{
+    var used = 0; for(var i=0;i<localStorage.length;i++){ var k=localStorage.key(i); used += (localStorage.getItem(k)||'').length + k.length; }
+    return used > 4200000;   // ~4.2MB of ~5MB budget — stop before the browser throws
+  }catch(_){ return false; }
+}
+function ccStartSarsTrickle(role){
+  if(_ccTrickleOn) return; _ccTrickleOn = true;
+  if(window._ccClassroom) return;                 // never trickle on a shared classroom PC
+  var GAP = 3000;                                 // slow and steady: ~3s between students
+  // Build the list of students to warm.
+  var list = (_students||[]).slice();
+  if(role === 'tutor'){
+    // Only this tutor's own cohort (students in the programmes/years of their modules).
+    var mods = (typeof _modules !== 'undefined' && _modules) ? _modules : [];
+    if(mods.length){
+      var want = {};
+      mods.forEach(function(m){ (_students||[]).forEach(function(s){ if(s.programme===m.programme && s.year===m.year) want[s.bsuId]=s; }); });
+      var scoped = Object.keys(want).map(function(k){ return want[k]; });
+      if(scoped.length) list = scoped;
+    }
+  }
+  var i = 0;
+  function step(){
+    if(i >= list.length){ return; }               // done — whole cohort warmed
+    // Back off while the user is active (resume when idle > 4s).
+    if(Date.now() - _ccLastActive < 4000){ setTimeout(step, 2000); return; }
+    if(_ccStorageNearFull()){ return; }            // storage budget reached — stop quietly
+    var s = list[i++]; if(!s || !s.bsuId){ setTimeout(step, 50); return; }
+    var key = 'sps_'+s.bsuId, SK = 'cc_mod_'+key;
+    var already = false;
+    try{ already = (Object.prototype.hasOwnProperty.call(_modCache, key)) || !!localStorage.getItem(SK); }catch(_){}
+    if(already){ setTimeout(step, 30); return; }    // skip what's already cached
+    // Warm it (populates the SARS cache). Errors are ignored — this is best-effort background work.
+    ccModCache(key, {action:'getStudentBundle', bsuId:s.bsuId, fields:'core'})
+      .then(function(){ setTimeout(step, GAP); })
+      .catch(function(){ setTimeout(step, GAP); });
+  }
+  setTimeout(step, GAP);
 }
 
 // ── SA action status-line helpers ──────────────────────────────────────────

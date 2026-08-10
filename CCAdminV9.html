@@ -3485,6 +3485,41 @@ function ccAdminPreload(){
   ];
   var i=0;
   (function next(){ if(i>=tasks.length) return; try{ tasks[i++](); }catch(_){} setTimeout(next, 2500); })();
+  // Gentle SARS trickle — quietly warm ALL student snapshots into the SARS cache over the session,
+  // slow and steady, lowest priority, backing off while the admin is active. Slow is fine (hours).
+  setTimeout(function(){ try{ ccStartSarsTrickle(); }catch(_){} }, 12000);
+}
+// Quietly warms student snapshots into the same cache the SARS reads (ccCached 'bundle_<id>'),
+// one at a time, well spaced, backing off while the admin is active. Skips already-cached students
+// and stops if browser storage is nearly full.
+var _ccTrickleOn = false, _ccLastActive = Date.now();
+['click','keydown','mousemove','scroll','touchstart'].forEach(function(ev){
+  try{ document.addEventListener(ev, function(){ _ccLastActive = Date.now(); }, {passive:true}); }catch(_){}
+});
+function _ccStorageNearFull(){
+  try{
+    var used = 0; for(var i=0;i<localStorage.length;i++){ var k=localStorage.key(i); used += (localStorage.getItem(k)||'').length + k.length; }
+    return used > 4200000;   // ~4.2MB of ~5MB budget — stop before the browser throws
+  }catch(_){ return false; }
+}
+function ccStartSarsTrickle(){
+  if(_ccTrickleOn) return; _ccTrickleOn = true;
+  var GAP = 3000;                                  // slow and steady: ~3s between students
+  var list = (_students||[]).filter(function(s){ return s && s.status !== 'Alumni' && s.bsuId; });
+  var i = 0;
+  function step(){
+    if(i >= list.length){ return; }                // done — whole cohort warmed
+    if(Date.now() - _ccLastActive < 4000){ setTimeout(step, 2000); return; }   // back off while active
+    if(_ccStorageNearFull()){ return; }            // storage budget reached — stop quietly
+    var s = list[i++]; if(!s || !s.bsuId){ setTimeout(step, 50); return; }
+    var CK = 'cc_cache_bundle_'+s.bsuId, already = false;
+    try{ already = !!localStorage.getItem(CK); }catch(_){}
+    if(already){ setTimeout(step, 30); return; }    // skip what's already cached
+    ccCached('bundle_'+s.bsuId, {action:'getStudentBundle', bsuId:s.bsuId})
+      .then(function(){ setTimeout(step, GAP); })
+      .catch(function(){ setTimeout(step, GAP); });
+  }
+  setTimeout(step, GAP);
 }
 async function enterPortal(){
   // Stay on emailsent screen while loading — switch to app only after data arrives
@@ -5757,7 +5792,7 @@ function otLoad(){
   _otAdmins = (_staff||[]).filter(function(s){ return s.email && /admin/i.test(s.portalRole||''); });
   if(!_otAdmins.length) _otAdmins = (_staff||[]).filter(function(s){ return s.email; });
   document.getElementById('ot-tbody').innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--text3);padding:24px;">⏳ Loading tasks…</td></tr>';
-  apiFetch({action:'getTasks'}).then(function(rows){ _otTasks = rows||[]; otRender(); })
+  ccCached('tasks', {action:'getTasks'}).then(function(rows){ _otTasks = rows||[]; otRender(); })
     .catch(function(e){ document.getElementById('ot-tbody').innerHTML = '<tr><td colspan="8" style="color:var(--red);padding:20px;">Error loading tasks: '+(e.message||e)+'</td></tr>'; });
 }
 
@@ -7246,7 +7281,7 @@ function loadAnnouncements(forceReload){
     renderAnnouncementsList();
     return;
   }
-  apiFetch({action:'getAnnouncements'}).then(function(data){
+  ccCached('announcements', {action:'getAnnouncements'}).then(function(data){
     _announcements = data || [];
     _announcementsLoaded = true;
     renderAnnouncementsList();
@@ -7959,7 +7994,7 @@ function generateSps(){
   status.style.display = 'block';
   status.textContent = '⏳ Loading…';
   _spsBsuId = null;
-  apiFetch({action:'getStudentBundle', bsuId:bsuId}).then(function(bundle){
+  ccCached('bundle_'+bsuId, {action:'getStudentBundle', bsuId:bsuId}).then(function(bundle){
     if(!bundle || !bundle.student){
       status.textContent = '❌ BSU ID not found: '+bsuId;
       return;
@@ -8198,7 +8233,7 @@ function spsLoadNotes(bsuId){
   var list = document.getElementById('sps-notes-list');
   if(!list) return;
   list.innerHTML = '<div style="padding:14px 16px;font-size:12px;color:var(--text3);">Loading notes…</div>';
-  apiFetch({action:'getNotes', bsuId:bsuId}).then(function(notes){
+  ccCached('notes_'+bsuId, {action:'getNotes', bsuId:bsuId}).then(function(notes){
     if(!notes || !notes.length){ list.innerHTML = '<div style="padding:18px 16px;text-align:center;font-size:12px;color:var(--text3);font-style:italic;">No critical notes for this student.</div>'; return; }
     var _cu = (_adminUser && (_adminUser.name || _adminUser.email)) || '';
     list.innerHTML = notes.map(function(n){
@@ -8503,7 +8538,7 @@ var _svRows=[], _svFiltered=[], _svProg='', _svYear='';
 
 function initSurveyReport(){
   if(_svConfigs.length){ _renderSvChips(); return; }
-  apiFetch({action:'getSurveyConfigs'}).then(function(d){
+  ccCached('surveyconfigs', {action:'getSurveyConfigs'}).then(function(d){
     _svConfigs=d||[]; _renderSvChips();
   }).catch(function(){ showToast('Could not load surveys.','error'); });
 }
@@ -8534,7 +8569,7 @@ function setSvYear(btn,val){ _svYear=val; var p=btn.parentElement; if(p) p.query
 function _loadSvResults(){
   var area=document.getElementById('sv-results-area');
   if(area) area.innerHTML='<div style="padding:40px;text-align:center;color:var(--text3);font-size:13px;background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);">⏳ Loading results…</div>';
-  apiFetch({action:'getSurveyResults',configId:_svConfigId}).then(function(res){
+  ccCached('surveyresults_'+_svConfigId, {action:'getSurveyResults',configId:_svConfigId}).then(function(res){
     _svType   = res.type    || _svType;
     _svQCount = res.qCount  || _svQCount;
     _svRows   = res.rows    || [];
@@ -8818,7 +8853,7 @@ var _sbData = [], _sbLoaded = false;
 
 function loadSbData(){
   if(_sbLoaded) return;
-  apiFetch({action:'getStudyBreak'}).then(function(data){
+  ccCached('studybreak', {action:'getStudyBreak'}).then(function(data){
     _sbData = data||[];
     _sbLoaded = true;
     renderSbTable();
@@ -8948,8 +8983,8 @@ function loadAttData(){
   var status=document.getElementById('att-status');
   if(status) status.textContent='Loading attendance data…';
   Promise.all([
-    apiFetch({action:'getAttendanceAll'}).catch(function(){return [];}),
-    apiFetch({action:'getPrograms'}).catch(function(){return [];})
+    ccCached('attendance_all', {action:'getAttendanceAll'}).catch(function(){return [];}),
+    ccCached('programs', {action:'getPrograms'}).catch(function(){return [];})
   ]).then(function(res){
     _attData = res[0]||[];
     if(res[1]&&res[1].length) _programs = res[1];
@@ -9272,8 +9307,8 @@ function loadRaData(){
   var status=document.getElementById('ra-status');
   if(status) status.textContent='Loading…';
   Promise.all([
-    apiFetch({action:'getResults'}).catch(function(){return [];}),
-    apiFetch({action:'getPrograms'}).catch(function(){return [];})
+    ccCached('results_all', {action:'getResults'}).catch(function(){return [];}),
+    ccCached('programs', {action:'getPrograms'}).catch(function(){return [];})
   ]).then(function(res){
     _raData = res[0]||[];
     if(res[1]&&res[1].length) _programs = res[1];
@@ -9943,7 +9978,7 @@ var _sbData = [], _sbLoaded = false;
 
 function loadSbData(){
   if(_sbLoaded) return;
-  apiFetch({action:'getStudyBreak'}).then(function(data){
+  ccCached('studybreak', {action:'getStudyBreak'}).then(function(data){
     _sbData = data||[];
     _sbLoaded = true;
     renderSbTable();
@@ -10073,8 +10108,8 @@ function loadAttData(){
   var status=document.getElementById('att-status');
   if(status) status.textContent='Loading attendance data…';
   Promise.all([
-    apiFetch({action:'getAttendanceAll'}).catch(function(){return [];}),
-    apiFetch({action:'getPrograms'}).catch(function(){return [];})
+    ccCached('attendance_all', {action:'getAttendanceAll'}).catch(function(){return [];}),
+    ccCached('programs', {action:'getPrograms'}).catch(function(){return [];})
   ]).then(function(res){
     _attData = res[0]||[];
     if(res[1]&&res[1].length) _programs = res[1];
@@ -10300,8 +10335,8 @@ function checkAprCompleteness(){
   var aprSem = String((_config&&_config.apr_semester)||'1').trim();
 
   Promise.all([
-    apiFetch({action:'getResults'}).catch(function(){return [];}),
-    apiFetch({action:'getAprLog'}).catch(function(){return [];})
+    ccCached('results_all', {action:'getResults'}).catch(function(){return [];}),
+    ccCached('aprlog', {action:'getAprLog'}).catch(function(){return [];})
   ]).then(function(res){ var allResults=res[0]||[]; var aprLog=res[1]||[];
   // Build log map: programme|year|semester|acYear -> sentOn
   var logMap={};
@@ -10525,8 +10560,8 @@ function loadRaData(){
   var status=document.getElementById('ra-status');
   if(status) status.textContent='Loading…';
   Promise.all([
-    apiFetch({action:'getResults'}).catch(function(){return [];}),
-    apiFetch({action:'getPrograms'}).catch(function(){return [];})
+    ccCached('results_all', {action:'getResults'}).catch(function(){return [];}),
+    ccCached('programs', {action:'getPrograms'}).catch(function(){return [];})
   ]).then(function(res){
     _raData = res[0]||[];
     if(res[1]&&res[1].length) _programs = res[1];
@@ -10899,8 +10934,8 @@ function initHelpDesk(){
   _hdState.loading = true;
   hdRender();
   Promise.all([
-    apiFetch({action:'getHelpDeskCategories'}),
-    apiFetch({action:'getHelpDeskTickets'})    // no bsuId = admin view
+    ccCached('helpdesk_cats', {action:'getHelpDeskCategories'}),
+    ccCached('helpdesk_tickets', {action:'getHelpDeskTickets'})    // no bsuId = admin view
   ]).then(function(results){
     var cats    = results[0];
     var tickets = results[1];
