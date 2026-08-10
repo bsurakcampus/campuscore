@@ -842,6 +842,14 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
 
 
 
+        <!-- STUDENT SEARCH — find any of your students, click a name to open their SARS -->
+        <div id="tutor-stu-search-wrap" style="margin-bottom:18px;position:relative;">
+          <input type="text" id="tutor-stu-search" autocomplete="off" placeholder="\U0001F50D  Search any student by name or BSU ID\u2026"
+            oninput="tutorStuSearch(this.value)" onfocus="tutorStuSearch(this.value)"
+            style="width:100%;box-sizing:border-box;padding:13px 16px;border:1.5px solid var(--border2);border-radius:12px;font-family:'Sora',sans-serif;font-size:14px;background:#fff;color:var(--text);outline:none;">
+          <div id="tutor-stu-results" style="display:none;position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:40;background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);overflow:hidden;max-height:340px;overflow-y:auto;"></div>
+        </div>
+
         <div class="tutor-sem-block collapsed" id="tsem1-block">
           <div class="tutor-sem-header" onclick="toggleTutorSem('tsem1-block')">
             <div class="tutor-sem-left"><div class="tutor-sem-bar" style="background:var(--text3);"></div><div><div class="tutor-sem-title">Semester 1</div><div class="tutor-sem-sub" id="tsem1-sub">Sep 2025 – Jan 2026 · Completed</div></div></div>
@@ -4222,6 +4230,55 @@ function renderAsmCards(code, name, saArr, enrolled, sem){
   // Re-Assessment Report status (from REASSESS_NOTICES lastSent) for each SA on this module.
   try{ _ccLoadReassessReportStatus(code, saArr.map(function(sa){ return sa.sa.toLowerCase().replace(' ',''); })); }catch(_){}
 }
+
+// ── Student search (dashboard) — find any of the tutor's students, click opens their SARS ──
+function _tsAvatar(name){
+  var parts=String(name||'').trim().split(/\s+/);
+  var ini=((parts[0]||'')[0]||'')+((parts.length>1?parts[parts.length-1]:'')[0]||'');
+  return ini.toUpperCase()||'?';
+}
+function _tsColor(bsuId){
+  var cols=['#7818ae','#2563eb','#0d9488','#b45309','#be123c','#4f46e5','#0891b2','#7c3aed'];
+  var n=0, str=String(bsuId||''); for(var i=0;i<str.length;i++){ n=(n+str.charCodeAt(i))%cols.length; }
+  return cols[n];
+}
+function tutorStuSearch(q){
+  var box=document.getElementById('tutor-stu-results'); if(!box) return;
+  q=String(q||'').trim().toLowerCase();
+  if(!q){ box.style.display='none'; box.innerHTML=''; return; }
+  var list=(_students||[]).filter(function(s){
+    return (String(s.name||'').toLowerCase().indexOf(q)!==-1) || (String(s.bsuId||'').toLowerCase().indexOf(q)!==-1);
+  }).slice(0,12);
+  if(!list.length){
+    box.innerHTML='<div style="padding:14px;font-size:13px;color:var(--text3);text-align:center;">No matching student.</div>';
+    box.style.display='block'; return;
+  }
+  box.innerHTML=list.map(function(s){
+    var col=_tsColor(s.bsuId);
+    return '<div onclick="tutorOpenSars(\''+String(s.bsuId).replace(/\'/g,"")+'\')" style="display:flex;align-items:center;gap:12px;padding:11px 14px;border-bottom:1px solid var(--border);cursor:pointer;" onmouseover="this.style.background=\'var(--surface2,#f8fafc)\'" onmouseout="this.style.background=\'\'">'+
+             '<div style="width:32px;height:32px;border-radius:8px;background:'+col+';color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;">'+_tsAvatar(s.name)+'</div>'+
+             '<div style="flex:1;min-width:0;">'+
+               '<div style="font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+(s.name||'')+'</div>'+
+               '<div style="font-size:11px;color:var(--text3);">'+(s.bsuId||'')+' \u00b7 '+(s.programme||'')+' \u00b7 '+(s.year||'')+'</div>'+
+             '</div>'+
+           '</div>';
+  }).join('');
+  box.style.display='block';
+}
+// Open the real SARS (sps page) for a BSU ID — same path as typing the ID + Give SARS.
+function tutorOpenSars(bsuId){
+  var results=document.getElementById('tutor-stu-results'); if(results){ results.style.display='none'; }
+  var searchInp=document.getElementById('tutor-stu-search'); if(searchInp){ searchInp.value=''; }
+  showPage('sps');
+  var inp=document.getElementById('sps-bsuid-input');
+  if(inp){ inp.value=String(bsuId||''); }
+  if(typeof generateSps==='function'){ generateSps(); }
+}
+// Close the results dropdown when clicking elsewhere.
+document.addEventListener('click', function(e){
+  var wrap=document.getElementById('tutor-stu-search-wrap');
+  if(wrap && !wrap.contains(e.target)){ var r=document.getElementById('tutor-stu-results'); if(r) r.style.display='none'; }
+});
 
 // ── IndexedDB store for heavy SARS snapshots ───────────────────────────────
 // localStorage is only ~5MB (fits ~30 snapshots). IndexedDB holds hundreds of MB, so the whole
