@@ -3557,7 +3557,6 @@ function ccStartSarsTrickle(){
   var i = 0;
   function step(){
     if(i >= list.length){ return; }                // done — whole cohort warmed
-    if(Date.now() - _ccLastActive < 4000){ setTimeout(step, 2000); return; }   // back off while active
     var s = list[i++]; if(!s || !s.bsuId){ setTimeout(step, 50); return; }
     var key = 'sps_'+s.bsuId;
     idbHas(key).then(function(has){

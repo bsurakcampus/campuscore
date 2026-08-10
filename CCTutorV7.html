@@ -4305,8 +4305,6 @@ function ccStartSarsTrickle(role){
   var i = 0;
   function step(){
     if(i >= list.length){ return; }               // done — whole cohort warmed
-    // Back off while the user is active (resume when idle > 4s).
-    if(Date.now() - _ccLastActive < 4000){ setTimeout(step, 2000); return; }
     var s = list[i++]; if(!s || !s.bsuId){ setTimeout(step, 50); return; }
     var key = 'sps_'+s.bsuId;
     if(Object.prototype.hasOwnProperty.call(_modCache, key)){ setTimeout(step, 30); return; }
