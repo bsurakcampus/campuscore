@@ -675,20 +675,21 @@ function ccPortalError(msg){
     +'<button onclick="ccSignOut()" style="background:transparent;color:#93c5fd;border:1px solid rgba(147,197,253,0.4);border-radius:9px;padding:12px 22px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">Sign out</button>'
     +'</div>';
 }
-// Data loader: always fetch the LATEST on login (fast: parallel reads + keep-warm), and keep a
-// copy in this browser used ONLY as a fallback if the network/endpoint fails (offline or a blip).
-// So users always see current data on login, and the portal still works during a hiccup.
+// Data loader: opens INSTANTLY from the copy saved on this machine, then quietly re-fetches
+// in the background and saves it for next time. First ever open fetches (no copy yet). Your own
+// writes clear the relevant caches so you always see your changes correctly.
 async function ccCached(cacheKey, source){
   var CK = 'cc_cache_' + cacheKey;
   function run(){ return (typeof source === 'function') ? source() : apiFetch(source); }
-  try {
-    var fresh = await run();
-    try{ localStorage.setItem(CK, JSON.stringify({t:Date.now(), d:fresh})); }catch(_){}
-    return fresh;
-  } catch(e){
-    try{ var c=localStorage.getItem(CK); if(c){ return JSON.parse(c).d; } }catch(_){}
-    throw e;
+  var cached=null;
+  try{ var c=localStorage.getItem(CK); if(c){ cached=JSON.parse(c).d; } }catch(_){}
+  if(cached!==null && cached!==undefined){
+    Promise.resolve(run()).then(function(fresh){ try{ localStorage.setItem(CK, JSON.stringify({t:Date.now(), d:fresh})); }catch(_){} }).catch(function(){});
+    return cached;
   }
+  var fresh = await run();
+  try{ localStorage.setItem(CK, JSON.stringify({t:Date.now(), d:fresh})); }catch(_){}
+  return fresh;
 }
 function loadStudent(){
   var bsuId = document.getElementById('bsuid-input').value.trim();
@@ -1142,8 +1143,10 @@ function buildYearPanel(yn){
 
   // Semester averages
   function semAvg(smods){
+    // Average only when EVERY module in the semester is marked — a partial average (one completed
+    // module standing in for the whole semester) is misleading.
     var ovs=[]; smods.forEach(function(m){ var o=calcOv(m.moduleCode||m.code||''); if(o!==null) ovs.push(o); });
-    return ovs.length ? Math.round(ovs.reduce(function(a,b){return a+b;},0)/ovs.length) : null;
+    return (smods.length>0 && ovs.length===smods.length) ? Math.round(ovs.reduce(function(a,b){return a+b;},0)/ovs.length) : null;
   }
   var s1Avg = semAvg(sem1), s2Avg = semAvg(sem2);
   var semDisplay = (s1Avg!==null?'<span style="color:#fff;font-weight:800;">'+s1Avg+'%</span>'+(s1Avg>=70?' 🥇':''):'—')+' / '+(s2Avg!==null?'<span style="color:#fff;font-weight:800;">'+s2Avg+'%</span>'+(s2Avg>=70?' 🥇':''):isCurrent?'In prog':'—');

@@ -1165,20 +1165,21 @@ function ccPortalError(msg){
     +'<button onclick="ccSignOut()" style="background:transparent;color:#93c5fd;border:1px solid rgba(147,197,253,0.4);border-radius:9px;padding:12px 22px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">Sign out</button>'
     +'</div>';
 }
-// Data loader: always fetch the LATEST on login (fast: parallel reads + keep-warm), and keep a
-// copy in this browser used ONLY as a fallback if the network/endpoint fails (offline or a blip).
-// So users always see current data on login, and the portal still works during a hiccup.
+// Data loader: opens INSTANTLY from the copy saved on this machine, then quietly re-fetches
+// in the background and saves it for next time. First ever open fetches (no copy yet). Your own
+// writes clear the relevant caches so you always see your changes correctly.
 async function ccCached(cacheKey, source){
   var CK = 'cc_cache_' + cacheKey;
   function run(){ return (typeof source === 'function') ? source() : apiFetch(source); }
-  try {
-    var fresh = await run();
-    try{ localStorage.setItem(CK, JSON.stringify({t:Date.now(), d:fresh})); }catch(_){}
-    return fresh;
-  } catch(e){
-    try{ var c=localStorage.getItem(CK); if(c){ return JSON.parse(c).d; } }catch(_){}
-    throw e;
+  var cached=null;
+  try{ var c=localStorage.getItem(CK); if(c){ cached=JSON.parse(c).d; } }catch(_){}
+  if(cached!==null && cached!==undefined){
+    Promise.resolve(run()).then(function(fresh){ try{ localStorage.setItem(CK, JSON.stringify({t:Date.now(), d:fresh})); }catch(_){} }).catch(function(){});
+    return cached;
   }
+  var fresh = await run();
+  try{ localStorage.setItem(CK, JSON.stringify({t:Date.now(), d:fresh})); }catch(_){}
+  return fresh;
 }
 function loadStudentData(bsuId){
   ccPortalLoading();
@@ -2145,8 +2146,11 @@ function renderYearBlockModules(s, body, yearLabel, isCurrent, allPrograms, attR
     }
     function semAvgHtml(r){
       if(!r) return null;
+      // Only show the average number when EVERY module in the semester is marked. A partial
+      // average (one completed module standing in for the whole semester) is misleading.
+      if(!r.complete) return '<span class="ys-val" style="color:rgba(255,255,255,0.55);font-weight:700;">In progress</span>';
       var cls = r.avg>=40?'':'red';
-      var medal = (r.complete && r.avg>=70)?' <span class="gold-medal">\uD83E\uDD47</span>':'';
+      var medal = (r.avg>=70)?' <span class="gold-medal">\uD83E\uDD47</span>':'';
       return '<span class="ys-val '+cls+'" style="color:#fff;font-weight:800;">'+r.avg+'%'+medal+'</span>';
     }
     var s1Avg = calcSemAvg(sem1);

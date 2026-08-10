@@ -8220,11 +8220,12 @@ function fillSpsSkeleton(bundle){
     var sem1=mods.filter(function(m){return (m.semester||'').indexOf('1')>-1;}), sem2=mods.filter(function(m){return (m.semester||'').indexOf('2')>-1;});
     var allP=[],s1A=[],s2A=[];
     mods.forEach(function(m){var a=attMap[m.moduleCode||m.code||''];if(a&&a.total)allP.push(Math.round(a.present/a.total*100));});
-    sem1.forEach(function(m){var o=calcOv(m.moduleCode||m.code||'');if(o!==null)s1A.push(o);});
-    sem2.forEach(function(m){var o=calcOv(m.moduleCode||m.code||'');if(o!==null)s2A.push(o);});
+    var s1Total=0, s2Total=0;
+    sem1.forEach(function(m){s1Total++;var o=calcOv(m.moduleCode||m.code||'');if(o!==null)s1A.push(o);});
+    sem2.forEach(function(m){s2Total++;var o=calcOv(m.moduleCode||m.code||'');if(o!==null)s2A.push(o);});
     var avgAtt=allP.length?Math.round(allP.reduce(function(a,b){return a+b;},0)/allP.length):null;
-    var s1Avg=s1A.length?Math.round(s1A.reduce(function(a,b){return a+b;},0)/s1A.length):null;
-    var s2Avg=s2A.length?Math.round(s2A.reduce(function(a,b){return a+b;},0)/s2A.length):null;
+    var s1Avg=(s1Total>0 && s1A.length===s1Total)?Math.round(s1A.reduce(function(a,b){return a+b;},0)/s1A.length):null;
+    var s2Avg=(s2Total>0 && s2A.length===s2Total)?Math.round(s2A.reduce(function(a,b){return a+b;},0)/s2A.length):null;
     var hdrBg=isCurrent?'#166534':'#1e3358';
     var attCol=avgAtt!==null?(avgAtt>=75?'#4ade80':avgAtt>=60?'#fbbf24':'#f87171'):'rgba(255,255,255,0.25)';
     html+='<div style="border:1px solid #e2e8f0;border-radius:7px;overflow:hidden;margin-bottom:9px;">'
@@ -8237,7 +8238,7 @@ function fillSpsSkeleton(bundle){
     [[sem1,'Semester 1','Sep '+yrStart+' – Jan '+(yrStart+1)],[sem2,'Semester 2','Feb – May '+(yrStart+1)]].forEach(function(p){
       var smods=p[0],slabel=p[1],sdates=p[2]; if(!smods.length) return;
       var sOvs=[]; smods.forEach(function(m){var o=calcOv(m.moduleCode||m.code||'');if(o!==null)sOvs.push(o);});
-      var sAvg=sOvs.length?Math.round(sOvs.reduce(function(a,b){return a+b;},0)/sOvs.length):null;
+      var sAvg=(smods.length>0 && sOvs.length===smods.length)?Math.round(sOvs.reduce(function(a,b){return a+b;},0)/sOvs.length):null;
       var inProg=isCurrent&&slabel.indexOf('2')>-1&&sAvg===null;
       html+='<table class="sps-mod-table"><colgroup><col style="width:18%"><col style="width:5%"><col style="width:13%"><col style="width:6%"><col style="width:5%"><col style="width:13%"><col style="width:6%"><col style="width:9%"><col style="width:7%"></colgroup>'
         +'<thead><tr>'
