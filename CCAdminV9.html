@@ -37,14 +37,14 @@
       _idleReset();
     } else if(s0 && s0.exp){
       // other cases with a fixed expiry (e.g. classroom 2h): plain timeout
-      setTimeout(function(){ clearSess(); window.location.replace('index.html'); }, Math.max(1000, s0.exp - Date.now()));
+      setTimeout(function(){ clearSess(); window.location.replace('staff.html'); }, Math.max(1000, s0.exp - Date.now()));
     }
   } else {
     if(expired(s0)) clearSess();
-    try{ window.location.replace('index.html'); }catch(_){ }
+    try{ window.location.replace('staff.html'); }catch(_){ }
   }
   // bfcache: after Sign Out + browser Back, re-check session so a logged-out page can't linger
-  window.addEventListener('pageshow', function(e){ if(e.persisted && !valid()){ clearSess(); try{ window.location.replace('index.html'); }catch(_){ } } });
+  window.addEventListener('pageshow', function(e){ if(e.persisted && !valid()){ clearSess(); try{ window.location.replace('staff.html'); }catch(_){ } } });
 })();
 </script>
 
@@ -3454,7 +3454,7 @@ function ccTrapBack(){
       var live = false;
       try{ var s = JSON.parse(localStorage.getItem('cc_session')||sessionStorage.getItem('cc_session')||'null'); live = !!(s && s.credential); }catch(_){}
       if(live){ history.pushState(null, '', location.href); }
-      else { window.location.replace('index.html'); }
+      else { window.location.replace('staff.html'); }
     });
   }catch(_){}
 }
@@ -3574,7 +3574,7 @@ async function enterPortal(){
     const loginEmail = (document.getElementById('email-sent-display')?.textContent || '').trim().toLowerCase();
     if(!loginEmail){
       // No email captured — send back to the unified sign-in
-      window.location.replace('index.html'); return;
+      window.location.replace('staff.html'); return;
     }
     ccPortalLoading();
     let students, alumni, staff, alerts, programs, rkData, configData;
