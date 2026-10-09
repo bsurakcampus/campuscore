@@ -83,8 +83,8 @@ p strong{color:#0f172a;}
 
 <script>
 var API = 'https://script.google.com/macros/s/AKfycbycKFnbEm2aXY6JJ8QS-x-vUQMAcqp800afJhejux9UofP1YfK49AxoTG8cXMORzZby/exec';
-var T = '';
-try { T = new URLSearchParams(location.search).get('t') || ''; } catch(e){}
+var T = '', C = '', E = '';
+try { var q = new URLSearchParams(location.search); T = q.get('t') || ''; C = q.get('c') || ''; E = q.get('e') || ''; } catch(e){}
 
 function show(id){
   ['v-load','v-ask','v-ok','v-denied','v-expired','v-fail'].forEach(function(v){
@@ -100,17 +100,24 @@ function byStatus(st){
 // Load: show the code first. Opening the link never approves anything by itself.
 (function(){
   if(!/^[a-f0-9]{40,80}$/i.test(T)){ show('v-expired'); return; }
+  // The code comes in the link, so the question shows at once; the server check below runs alongside.
+  if(/^\d{2}$/.test(C)){
+    document.getElementById('ask-email').textContent = E || 'your BSU email';
+    document.getElementById('ask-code').textContent = C;
+    show('v-ask');
+  }
   fetch(API + '?action=getLoginLink&t=' + encodeURIComponent(T))
     .then(function(r){ return r.json(); })
     .then(function(d){
       var data = d.data || d;
+      if(document.getElementById('btn-yes').disabled) return;   // already pressing Approve
       if(data && data.status === 'pending'){
         document.getElementById('ask-email').textContent = data.maskedEmail || '';
         document.getElementById('ask-code').textContent = data.code || '--';
         show('v-ask');
       } else byStatus(data && data.status);
     })
-    .catch(function(){ show('v-fail'); });
+    .catch(function(){ if(!/^\d{2}$/.test(C)) show('v-fail'); });
 })();
 
 function decide(action){
