@@ -929,7 +929,6 @@ button.circ:hover{transform:scale(1.12);}
     <button class="live-nav" id="liveNav" style="display:none" title="Back to the class in progress"><span class="lv-dot"></span><span><b>Live class</b><small id="liveNavTxt"></small></span></button>
     <div class="sidebar-nav" id="nav">
       <button class="nav-item active" data-p="dashboard"><span class="icon">🏠</span> Dashboard</button>
-      <button class="nav-item" data-p="live" id="navLive" style="display:none"><span class="icon">🔴</span> Live classes <span class="cnt" id="liveCnt"></span></button>
       <button class="nav-item" data-p="cover"><span class="icon">🔁</span> Cover a Class</button>
       <button class="nav-item" data-p="announcements"><span class="icon">📢</span> Announcements</button>
       <button class="nav-item" data-p="acadcalendar"><span class="icon">🗓️</span> Academic Calendar</button>
@@ -1017,19 +1016,6 @@ button.circ:hover{transform:scale(1.12);}
           <span style="margin-left:auto;">Student in class but not on this list? Please see your <b style="color:var(--text);">Programme Leader</b>.</span>
         </div>
       </div>
-    </div>
-
-    <!-- ADMIN: LIVE CLASSES (KEY classroom_admins only; checked on the server) -->
-    <div id="page-live" class="page">
-      <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;"><div><h1>Live classes</h1><p id="liveSub">Every class running now · updates every minute</p></div>
-        <input id="liveSearch" type="text" placeholder="Search module, tutor, room…" autocomplete="off" style="width:280px;padding:9px 12px;border:1.5px solid var(--border2);border-radius:9px;font-family:Sora,sans-serif;font-size:13px;outline:none;"></div>
-      <div id="liveList"><div style="padding:40px;text-align:center;color:var(--text3);font-size:13px;">⏳ Loading live classes…</div></div>
-      <p style="font-size:12px;color:var(--text3);margin-top:12px;">Only people in KEY classroom_admins see this page. The register opens read-only and updates as the tutor marks.</p>
-    </div>
-    <div id="page-liveview" class="page">
-      <div class="page-header" style="display:flex;align-items:center;gap:14px;"><button class="att-back-btn" onclick="go('live')">← Live classes</button><div><h1 id="lvTitle">—</h1><p id="lvSub">—</p></div></div>
-      <div class="ro-banner">Read-only view of a class in progress. It updates every 30 seconds.</div>
-      <div class="att-table-wrap" style="overflow:auto;max-height:calc(100vh - 210px);background:#fff;border:1px solid var(--border);border-radius:10px;"><table class="rg"><thead id="lvHead"></thead><tbody id="lvBody"></tbody></table></div>
     </div>
 
     <!-- COVER A CLASS -->
@@ -1121,7 +1107,7 @@ var LIVE_IDLE_MS = 4 * 60 * 60 * 1000;     // while a class is running it stays 
 var COLORS = ['c1','c2','c3','c4','c5','c6','c7','c8'];
 var _config = {};                          // used by the reused calendar code
 var PASS = '';                             // sign-in pass from the server (checked on every classroom request)
-var PASS_ACTIONS = { getClassroomBundle:1, getClassSession:1, classroomPing:1, getCoverList:1, getCoverClass:1, getClassRoster:1, getLiveClasses:1, getLiveRegister:1 };
+var PASS_ACTIONS = { getClassroomBundle:1, getClassSession:1, classroomPing:1, getCoverList:1, getCoverClass:1, getClassRoster:1 };
 var B = null, TUTOR = '', CLASSES = [], CUR = null, LIVE = null, VIEW = null;  // VIEW = session being edited (live or past)
 
 function $(id){ return document.getElementById(id); }
@@ -1334,7 +1320,7 @@ async function boot(){
   renderDashboard();
   $('cc-boot').style.display = 'none'; $('app').style.display = '';
   if(LIVE){ var i = CLASSES.findIndex(function(c){ return c.key === LIVE.key; }); if(i > -1){ openAtt(i); toast('Your class in progress has been reopened'); } }
-  setTimeout(function(){ try { loadAcadCalendar(); loadTutorUCal(); loadTutorPolicies(); } catch(_){} apiFetch({action:'getAnnouncements'}).then(renderAnnouncements).catch(function(){}); }, 1200);
+  setTimeout(function(){ try { loadAcadCalendar(); loadTutorUCal(); loadTutorPolicies(); } catch(_){} apiFetch({action:'getNotices'}).then(renderAnnouncements).catch(function(){}); }, 1200);
 }
 
 // ============================================================ dashboard
@@ -1937,11 +1923,9 @@ window.addEventListener('beforeunload', function(e){ if(!SIGNED_OUT && VIEW && V
 function go(p){
   if(p === 'dashboard'){ document.querySelectorAll('.tutor-sem-block').forEach(function(b){ b.classList.add('collapsed'); }); }
   document.querySelectorAll('.page').forEach(function(e){ e.classList.remove('active'); }); $('page-' + p).classList.add('active');
-  var navP = p === 'attendance' ? (CUR && CUR.cover ? 'cover' : 'dashboard') : p === 'liveview' ? 'live' : p;
+  var navP = p === 'attendance' ? (CUR && CUR.cover ? 'cover' : 'dashboard') : p;
   document.querySelectorAll('#nav .nav-item').forEach(function(b){ b.classList.toggle('active', b.dataset.p === navP); });
   if(p === 'cover') loadCoverList();
-  if(p === 'live') loadLive();
-  if(p !== 'liveview') LVID = null;
   $('main-content').scrollTop = 0; $('main-content').classList.toggle('att-mode', p === 'attendance');
 }
 document.querySelectorAll('#nav .nav-item').forEach(function(b){
@@ -2085,7 +2069,7 @@ function pickAnn(list){
 }
 if(NOT.annList) pickAnn(NOT.annList);
 function loadNotices(){
-  apiFetch({action:'getAnnouncements'}).then(function(list){ saveNotices('ann', list || []); pickAnn(list); refreshOpenNotices(); }).catch(function(){});
+  apiFetch({action:'getNotices'}).then(function(list){ saveNotices('ann', list || []); pickAnn(list); refreshOpenNotices(); }).catch(function(){});
   apiFetch({action:'getAcadCalendar'}).then(function(e){ NOT.acad = e || []; saveNotices('acad', NOT.acad); refreshOpenNotices(); }).catch(function(){});
   apiFetch({action:'getAnnualCalendar'}).then(function(e){ NOT.ucal = e || []; saveNotices('ucal', NOT.ucal); refreshOpenNotices(); }).catch(function(){});
 }
@@ -2132,52 +2116,6 @@ function fitNotice(){
 window.addEventListener('resize', fitNotice);
 document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeNotices(); });
 
-// ============================================================ admin: live classes (KEY classroom_admins; the server checks)
-var LIVEL = null, LVID = null;
-async function loadLive(){
-  if(!B || !B.isAdmin) return;
-  try { LIVEL = await apiFetch({action:'getLiveClasses'}); renderLive(); }
-  catch(e){ if($('page-live').classList.contains('active')) $('liveList').innerHTML = '<div style="padding:30px;text-align:center;color:var(--red);font-size:13px;">' + esc(e.message) + '</div>'; }
-}
-function renderLive(){
-  var L = (LIVEL && LIVEL.classes) || [], q = normKey($('liveSearch').value || '');
-  $('liveCnt').textContent = L.length || '';
-  $('liveSub').textContent = new Date().toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long' }) + ' · ' + hhmm(new Date()) + ' · ' + L.length + ' class' + (L.length === 1 ? '' : 'es') + ' running now · updates every minute';
-  var rows = L.filter(function(x){ return !q || normKey(x.module + ' ' + x.tutor + ' ' + x.room + ' ' + (x.groups || []).join(' ')).indexOf(q) > -1; });
-  $('liveList').innerHTML = rows.length ? rows.map(function(x){
-    var pc = x.size ? Math.round(x.marked / x.size * 100) : 0;
-    return '<div class="lv-row"><div class="m"><b>' + esc(x.module) + '</b><span>' + esc((x.groups || []).map(gShort).join('  +  ')) + '</span></div>'
-      + '<div class="t">' + esc(x.tutor) + '<span>Room ' + esc(x.room || '–') + ' · started ' + esc(x.start) + (x.today ? '' : ' · ' + esc(fmtD(x.date))) + (x.coverFor ? ' · cover' : '') + '</span></div>'
-      + '<div class="p"><div class="lv-bar"><i style="width:' + Math.min(100, pc) + '%"></i></div><span>' + x.marked + '/' + (x.size || '?') + ' marked</span></div>'
-      + '<button onclick="openLiveView(\'' + esc(x.id) + '\')">View live register</button></div>';
-  }).join('') : '<div style="padding:34px 20px;text-align:center;color:var(--text2);font-size:13px;background:#fff;border:1px solid var(--border);border-radius:10px;">' + (L.length ? 'No live class matches your search.' : 'No classes are running right now.') + '</div>';
-}
-$('liveSearch').addEventListener('input', renderLive);
-setInterval(function(){ if(!SIGNED_OUT && B && B.isAdmin) loadLive(); if(LVID && $('page-liveview').classList.contains('active')) loadLiveView(); }, 60000);
-setInterval(function(){ if(LVID && !SIGNED_OUT && $('page-liveview').classList.contains('active')) loadLiveView(); }, 30000);
-function openLiveView(sid){ LVID = sid; $('lvBody').innerHTML = '<tr><td style="padding:30px;color:var(--text3)">⏳ Loading…</td></tr>'; $('lvHead').innerHTML = ''; go('liveview'); LVID = sid; loadLiveView(); }
-async function loadLiveView(){
-  var sid = LVID; if(!sid) return;
-  try {
-    var d = await apiFetch({action:'getLiveRegister', sessionId: sid}); if(LVID !== sid) return;
-    var S = d.session, c = d.cls;
-    $('lvTitle').textContent = c.module;
-    $('lvSub').textContent = c.groups.map(gShort).join('  +  ') + ' · ' + (S.tutorName || S.tutor) + ' · Room ' + (S.room || '–') + ' · started ' + S.start + ' · Session ' + S.num;
-    $('lvHead').innerHTML = '<tr><th class="nm">Student</th><th class="ax">Accounts</th><th class="pc">Module %</th><th class="on">Today</th><th class="fill"></th></tr>';
-    var h = '', P = 0, T = 0;
-    c.groups.forEach(function(g){
-      if(c.groups.length > 1) h += '<tr class="grp-sep"><td colspan="5">' + esc(gShort(g)) + '</td></tr>';
-      (d.rosters[g] || []).slice().sort(function(a, b){ var x = d.pct[c.key + '||' + a.key], y = d.pct[c.key + '||' + b.key]; return (x == null ? 1000 : x) - (y == null ? 1000 : y) || (a.name < b.name ? -1 : 1); }).forEach(function(s){
-        var st = d.marks[s.key] || '', p = d.pct[c.key + '||' + s.key], reg = String(s.reg || ''); T++; if(st) P++;
-        h += '<tr><td class="nm"><div class="ncard' + (st ? ' st-' + st : '') + '" style="cursor:default"><span><span class="nn">' + esc(s.name) + '</span><span class="ni">' + esc(s.bsuId || (s.kind === 'new' ? 'New, no ID yet' : 'Not in records')) + '</span>' + (reg ? '<span class="nr' + (/not|drop/i.test(reg) ? ' no' : '') + '">' + esc(reg) + '</span>' : '') + '</span><span class="nt">' + (st ? LBL[st] : 'NOT MARKED') + '</span></div></td>'
-          + '<td class="ax">' + (/see\s*accounts/i.test(String(s.acc || '')) ? '<span class="accn"><span>Please see</span>Accounts!</span>' : '') + '</td>'
-          + '<td class="pc"><span class="pcv">' + (p == null ? '—' : p + '%') + '</span></td><td class="on"><span class="circ ' + (st || 'n') + '">' + (st || '–') + '</span></td><td class="fill"></td></tr>';
-      });
-    });
-    $('lvBody').innerHTML = h;
-    $('lvSub').textContent += ' · ' + P + '/' + T + ' marked';
-  } catch(e){ $('lvBody').innerHTML = '<tr><td style="padding:30px;color:var(--red)">' + esc(e.message) + '</td></tr>'; }
-}
 
 // ============================================================ reused unchanged from CCTutorV7.html
 function renderAnnouncements(anns){

@@ -420,7 +420,7 @@ loadInfo();
 setInterval(loadInfo, 30 * 60 * 1000);
 // fetch the notices while the tutor signs in, so the Notices screen opens complete at once
 function preloadNotices(){
-  [['ann','getAnnouncements'],['acad','getAcadCalendar'],['ucal','getAnnualCalendar']].forEach(function(x){
+  [['ann','getNotices'],['acad','getAcadCalendar'],['ucal','getAnnualCalendar']].forEach(function(x){
     fetch(API + '?action=' + x[1]).then(function(r){ return r.json(); }).then(function(j){
       if(!j || j.status !== 'ok') return;
       try { var c = JSON.parse(localStorage.getItem('cc_notices') || '{}') || {}; c[x[0]] = j.data || []; localStorage.setItem('cc_notices', JSON.stringify(c)); } catch(e){}
