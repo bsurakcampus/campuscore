@@ -886,6 +886,10 @@ button.circ:hover{transform:scale(1.12);}
 .nav-item .cnt{margin-left:auto;background:#dc2626;color:#fff;font-size:10px;font-weight:700;border-radius:10px;padding:1px 7px;}
 .ro-banner{background:#eff6ff;border:1px solid #bfdbfe;color:#1e3a8a;border-radius:9px;padding:6px 14px;font-size:12.5px;margin-bottom:6px;}
 
+/* notice screen: calendar event names must not take the register name-column style (.nm) */
+.ev .nm{position:static;left:auto;z-index:auto;min-width:0;width:auto;flex:1;text-align:left;font-weight:600;background:none;box-shadow:none;}
+.ev .dt{flex:none;}
+
 /* ===== Live-page additions ===== */
 #cc-boot{position:fixed;inset:0;z-index:2147483646;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-family:'Sora',system-ui,sans-serif;text-align:center;padding:24px;color:#0f1e3d;}
 #cc-boot .ring{position:relative;width:200px;height:200px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;}
@@ -905,7 +909,7 @@ button.circ:hover{transform:scale(1.12);}
 </style>
 </head>
 <body>
-<div id="cc-boot"><div class="ring"><img src="bsu-logo.png" alt="Bath Spa University" onerror="if(!this.dataset.f){this.dataset.f=1;this.src='https://lh3.googleusercontent.com/d/1QaE3IbVU-5nBihgSs2IPU54Sf6wjiaV0';}else{this.style.display='none';}"></div><div class="b1">Bath Spa University · RAK Campus</div><div class="b2" id="cc-boot-msg">Classroom Attendance · loading your classes…</div></div>
+<div id="cc-boot"><div class="ring"><img src="bsu-logo.png" alt="Bath Spa University" onerror="this.style.display='none';"></div><div class="b1">Bath Spa University · RAK Campus</div><div class="b2" id="cc-boot-msg">Classroom Attendance · loading your classes…</div></div>
 
 <div class="app-layout" id="app" style="display:none">
   <nav class="sidebar">
@@ -1450,11 +1454,10 @@ function openClass(i){
   $('offOv').classList.add('show');
 }
 $('offNo').onclick = function(){ $('offOv').classList.remove('show'); };
-// Sidebar logo: bsu-logo.png next to this page, else the Drive copy, else the old CC mark.
+// Sidebar logo: bsu-logo.png next to this page, else the old CC mark (no Drive links in page files).
 (function(){
   var img = $('sbLogo'), tried = false;
   function fail(){
-    if(!tried){ tried = true; img.src = 'https://lh3.googleusercontent.com/d/1QaE3IbVU-5nBihgSs2IPU54Sf6wjiaV0'; return; }
     img.style.display = 'none'; $('sbLogoSep').style.display = 'none'; $('sbLogoCC').style.display = 'flex';
   }
   img.onerror = fail; if(img.complete && !img.naturalWidth) fail();

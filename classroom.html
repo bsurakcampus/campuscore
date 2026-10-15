@@ -4,13 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CampusCore Classroom Attendance · Bath Spa University RAK Campus</title>
-<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
   --navy:#14213d; --navy2:#1f2f52; --ink:#0f172a; --muted:#5b6b86; --line:#d8dee9;
   --red:#c8102e; --red-dark:#a50d26; --red-soft:#fdecee; --green:#15803d;
-  --serif:'Source Serif 4',Georgia,serif; --sans:'IBM Plex Sans',system-ui,sans-serif; --mono:'IBM Plex Mono',ui-monospace,monospace;
+  --serif:'Source Serif 4',Georgia,serif; --display:'Fraunces',Georgia,serif; --sans:'IBM Plex Sans',system-ui,sans-serif; --mono:'IBM Plex Mono',ui-monospace,monospace;
 }
 html,body{height:100%;}
 body{font-family:var(--sans);color:var(--ink);background:var(--navy);min-height:100vh;display:flex;}
@@ -39,16 +39,17 @@ body{font-family:var(--sans);color:var(--ink);background:var(--navy);min-height:
 .ann-empty{font-family:var(--serif);font-style:italic;color:#7f91b3;font-size:18px;}
 /* today's date and the term (in place of the announcement, 16 Oct 2026) */
 .bigdate{padding:6px 0 30px;border-bottom:1px solid rgba(255,255,255,.15);}
-.bigdate .bd1{font:700 64px/1.05 var(--serif);color:#fff;letter-spacing:-1px;white-space:nowrap;}
-.bigdate .bd2{font:700 40px/1.1 var(--serif);color:#facc15;margin-top:14px;min-height:44px;}
-@media (max-width:1300px){.bigdate .bd1{font-size:48px;white-space:normal;}.bigdate .bd2{font-size:32px;}}
+.bigdate .bd0{font:500 13px var(--sans);letter-spacing:4px;text-transform:uppercase;color:#9fb0cf;margin-bottom:10px;min-height:16px;}
+.bigdate .bd1{font:300 56px/1.05 var(--display);color:#fff;letter-spacing:-.5px;white-space:nowrap;}
+.bigdate .bd2{font:italic 400 26px/1.2 var(--display);color:#facc15;margin-top:10px;min-height:32px;}
+@media (max-width:1300px){.bigdate .bd1{font-size:44px;white-space:normal;}.bigdate .bd2{font-size:22px;}}
 /* standing notice under the sessions */
 .rule-note{display:flex;align-items:center;gap:12px;margin-top:24px;font-size:18px;font-weight:600;line-height:1.4;color:#facc15;white-space:nowrap;}
 .rule-note .ico{flex-shrink:0;width:26px;height:26px;border-radius:50%;border:2px solid #facc15;color:#facc15;font:800 14px var(--sans);display:flex;align-items:center;justify-content:center;}
 @media (max-width:1400px){ .rule-note{white-space:normal;font-size:16px;} }
 .day{font-size:13px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#9fb0cf;}
-.clock{font:600 112px/1 var(--mono);letter-spacing:-4px;margin:10px 0 6px;}
-.greet{font:500 30px var(--serif);color:#dbe4f4;}
+.clock{font:300 84px/1 'DM Mono',var(--mono);letter-spacing:-2px;margin:10px 0 6px;}
+.greet{font:500 13px var(--sans);letter-spacing:4px;text-transform:uppercase;color:#9fb0cf;margin-top:14px;}
 .periods{display:flex;gap:6px;margin-top:36px;max-width:620px;}
 .period{flex:1;border-radius:6px;padding:8px 10px;font-size:11.5px;line-height:1.35;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#9fb0cf;}
 .period b{display:block;font-family:var(--mono);font-size:12.5px;white-space:nowrap;}
@@ -60,7 +61,7 @@ body{font-family:var(--sans);color:var(--ink);background:var(--navy);min-height:
 .pane{display:none;}
 .pane.active{display:block;animation:fade .25s ease both;}
 @keyframes fade{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
-h2{font:600 34px var(--serif);color:var(--navy);}
+h2{font:400 34px var(--display);color:var(--navy);}
 .lead{font-size:14.5px;color:var(--muted);margin:8px 0 28px;line-height:1.6;}
 .field-label{display:block;font-size:11px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--ink);margin-bottom:8px;}
 .email{display:flex;border:1.5px solid var(--line);border-radius:4px;overflow:hidden;background:#fff;transition:border-color .2s,box-shadow .2s;}
@@ -97,8 +98,7 @@ h2{font:600 34px var(--serif);color:var(--navy);}
   .left{padding:0 20px 28px;gap:26px;flex:none;}
   .logo-tile{padding:18px 16px 12px;gap:14px;min-width:0;height:auto;}
   .logo-tile img{height:84px;}
-  .clock{font-size:72px;letter-spacing:-2px;}
-  .greet{font-size:24px;}
+  .clock{font-size:60px;letter-spacing:-1px;}
   .periods{flex-wrap:wrap;margin-top:24px;}
   .period{min-width:45%;}
   .right{width:100%;padding:32px 20px 40px;}
@@ -114,7 +114,7 @@ h2{font:600 34px var(--serif);color:var(--navy);}
     <div class="logo-text" id="logo-text">Bath Spa<br>University</div>
     <div><div class="t0">Bath Spa University</div><div class="t1">RAK Campus</div><div class="rule"></div><div class="t2">Classroom Attendance</div></div>
   </div>
-  <div class="bigdate"><div class="bd1" id="bigDate">&nbsp;</div><div class="bd2" id="term"></div></div>
+  <div class="bigdate"><div class="bd0" id="bigDay">&nbsp;</div><div class="bd1" id="bigDate">&nbsp;</div><div class="bd2" id="term"></div></div>
   <div class="hello">
     <div class="day" id="day" style="display:none">&nbsp;</div>
     <div class="clock" id="clock">--:--</div>
@@ -163,7 +163,7 @@ h2{font:600 34px var(--serif);color:var(--navy);}
 <script>
 var API = 'https://script.google.com/macros/s/AKfycbycKFnbEm2aXY6JJ8QS-x-vUQMAcqp800afJhejux9UofP1YfK49AxoTG8cXMORzZby/exec';
 var PORTAL = 'CCClassroom.html';
-var LOGO_DRIVE = 'https://lh3.googleusercontent.com/d/1QaE3IbVU-5nBihgSs2IPU54Sf6wjiaV0';
+var LOGO_DRIVE = '';   // no Drive links in page files (logo is bsu-logo.png in the repository)
 var CLASSROOM_EXP_MS = 2 * 60 * 60 * 1000;   // 2 hours (also clears when the browser closes)
 var STAFF_DOMAIN = 'bathspa.ae';
 var SEND_LABEL = 'Email me a sign-in link';
@@ -179,7 +179,7 @@ function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(
 (function(){
   var img = $('logo'), tried = false;
   function fail(){
-    if(!tried){ tried = true; img.src = LOGO_DRIVE; return; }
+    if(!tried && LOGO_DRIVE){ tried = true; img.src = LOGO_DRIVE; return; }
     img.style.display = 'none'; $('logo-text').style.display = 'block';
   }
   img.onerror = fail;
@@ -194,7 +194,9 @@ function tick(){
   var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
   $('clock').textContent = String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
   $('day').textContent = (days[d.getDay()] + ' ' + d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear()).toUpperCase();
-  $('bigDate').textContent = days[d.getDay()] + ' ' + d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
+  var n = d.getDate(), th = (n % 100 >= 11 && n % 100 <= 13) ? 'th' : (['th','st','nd','rd'][n % 10] || 'th');
+  $('bigDay').textContent = days[d.getDay()];
+  $('bigDate').textContent = n + th + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
   var h = d.getHours();
   $('greet').textContent = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
   var now = h * 60 + d.getMinutes();
