@@ -1329,8 +1329,8 @@ async function boot(){
       LIVE.t0 = t0; setCloseTimes(LIVE, c0, t0, s.closeAt);
     } });
   });
-  if(B.isAdmin){ $('navLive').style.display = ''; setTimeout(loadLive, 1500); }
-  setTimeout(loadNotices, 800);
+  // Live classes moves to the Admin portal (not shown in the Classroom)
+  setTimeout(loadNotices, 300);
   renderDashboard();
   $('cc-boot').style.display = 'none'; $('app').style.display = '';
   if(LIVE){ var i = CLASSES.findIndex(function(c){ return c.key === LIVE.key; }); if(i > -1){ openAtt(i); toast('Your class in progress has been reopened'); } }
@@ -2073,15 +2073,21 @@ setInterval(function(){
 
 // ============================================================ notices (full screen)
 var NOT = { ann: null, acad: [], ucal: [] };
+// notices are cached in the browser (saved on the sign-in page too), so they show at once
+(function(){ try { var c = JSON.parse(localStorage.getItem('cc_notices') || 'null'); if(c){ NOT.acad = c.acad || []; NOT.ucal = c.ucal || []; if(c.ann) NOT.annList = c.ann; } } catch(e){} })();
+function saveNotices(k, v){ try { var c = JSON.parse(localStorage.getItem('cc_notices') || '{}') || {}; c[k] = v; localStorage.setItem('cc_notices', JSON.stringify(c)); } catch(e){} }
+function refreshOpenNotices(){ if($('notOv') && $('notOv').classList.contains('show')) openNotices(); }
 function annId(a){ return a ? String(a.title || '') + '|' + String(a.dateISO || a.date || '') : ''; }
-function loadNotices(){
-  apiFetch({action:'getAnnouncements'}).then(function(list){
+function pickAnn(list){
     var L = (list || []).filter(function(a){ var aud = String(a.audience || 'all').toLowerCase().trim().split(/[_\s\-]/)[0]; return ['all','general','students','student','everyone'].indexOf(aud) > -1; });
     L.sort(function(x, y){ return String(y.dateISO || '').localeCompare(String(x.dateISO || '')) || ((y.__row || 0) - (x.__row || 0)); });
     NOT.ann = L[0] || null; noticeBadge();
-  }).catch(function(){});
-  apiFetch({action:'getAcadCalendar'}).then(function(e){ NOT.acad = e || []; }).catch(function(){});
-  apiFetch({action:'getAnnualCalendar'}).then(function(e){ NOT.ucal = e || []; }).catch(function(){});
+}
+if(NOT.annList) pickAnn(NOT.annList);
+function loadNotices(){
+  apiFetch({action:'getAnnouncements'}).then(function(list){ saveNotices('ann', list || []); pickAnn(list); refreshOpenNotices(); }).catch(function(){});
+  apiFetch({action:'getAcadCalendar'}).then(function(e){ NOT.acad = e || []; saveNotices('acad', NOT.acad); refreshOpenNotices(); }).catch(function(){});
+  apiFetch({action:'getAnnualCalendar'}).then(function(e){ NOT.ucal = e || []; saveNotices('ucal', NOT.ucal); refreshOpenNotices(); }).catch(function(){});
 }
 setInterval(function(){ if(!SIGNED_OUT) loadNotices(); }, 10 * 60 * 1000);
 function noticeBadge(){

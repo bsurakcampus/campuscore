@@ -133,10 +133,6 @@ h2{font:600 34px var(--serif);color:var(--navy);}
     <p class="lead">Sign in with your BSU email to take attendance in this room.</p>
     <label class="field-label" for="login-input">Your BSU email</label>
     <div class="email"><input id="login-input" type="text" placeholder="your.name" autocomplete="off" autocapitalize="off" spellcheck="false"><span>@bathspa.ae</span></div>
-    <div id="pw-wrap" style="display:none;">
-      <label class="field-label" for="pw-input" style="margin-top:14px;">Classroom password</label>
-      <div class="email"><input id="pw-input" type="password" placeholder="password" autocomplete="off"></div>
-    </div>
     <div class="err-msg" id="login-err"></div>
     <button class="btn" id="send-btn" onclick="sendCode()">Email me a sign-in link</button>
     <div class="steps" id="link-steps">
@@ -170,7 +166,7 @@ var PORTAL = 'CCClassroom.html';
 var LOGO_DRIVE = 'https://lh3.googleusercontent.com/d/1QaE3IbVU-5nBihgSs2IPU54Sf6wjiaV0';
 var CLASSROOM_EXP_MS = 2 * 60 * 60 * 1000;   // 2 hours (also clears when the browser closes)
 var STAFF_DOMAIN = 'bathspa.ae';
-var SEND_LABEL = 'Email me a sign-in link';   // changes to "Sign in" when the classroom password is on
+var SEND_LABEL = 'Email me a sign-in link';
 var PERIODS = [['9:00','10:40'],['10:40','12:20'],['12:20','2:00'],['2:00','3:40']];   // from the timetable
 
 var _credential = '', _maskedEmail = '', _pass = '';
@@ -260,36 +256,8 @@ function staffEmail(v){
   if(v.indexOf('@') === -1) return v + '@' + STAFF_DOMAIN;
   return v.split('@')[1] === STAFF_DOMAIN ? v : '';
 }
-var _sendSeq = 0, _grace = 0, PW_MODE = false;
-// Optional shared classroom password (set in CampusCore): one step, no email or phone.
-function setPwMode(on){
-  PW_MODE = !!on;
-  $('pw-wrap').style.display = on ? 'block' : 'none';
-  $('link-steps').style.display = on ? 'none' : '';
-  $('send-btn').textContent = SEND_LABEL = on ? 'Sign in' : 'Email me a sign-in link';
-  try { localStorage.setItem('cc_pw_mode', on ? '1' : '0'); } catch(e){}
-}
-try { if(localStorage.getItem('cc_pw_mode') === '1') setPwMode(true); } catch(e){}
-fetch(API + '?action=classroomSignInMode').then(function(r){ return r.json(); }).then(function(j){ if(j && j.status === 'ok') setPwMode(j.data && j.data.password); }).catch(function(){});
-function pwSignIn(val){
-  var btn = $('send-btn'), e = $('login-err'), pw = $('pw-input').value;
-  if(!pw){ e.textContent = 'Please type the classroom password.'; e.style.display = 'block'; return; }
-  btn.disabled = true; btn.textContent = 'Signing in…';
-  fetch(API + '?action=passwordSignIn&email=' + encodeURIComponent(val) + '&pw=' + encodeURIComponent(pw))
-    .then(function(r){ return r.json(); })
-    .then(function(j){
-      var d = (j && j.data) || {};
-      if(!j || j.status !== 'ok' || !d.pass) throw new Error((j && j.message) || 'Could not sign in.');
-      _credential = d.email; _pass = d.pass; finishSignIn();
-    })
-    .catch(function(err){ btn.disabled = false; btn.textContent = SEND_LABEL; e.textContent = err.message || 'Could not reach CampusCore. Please try again.'; e.style.display = 'block'; });
-}
+var _sendSeq = 0, _grace = 0;
 function sendCode(){
-  if(PW_MODE){
-    var v0 = staffEmail($('login-input').value.trim()); $('login-err').style.display = 'none';
-    if(!v0){ $('login-err').textContent = 'Please type your BSU email name, for example iftikhar.'; $('login-err').style.display = 'block'; return; }
-    return pwSignIn(v0);
-  }
   var raw = $('login-input').value.trim(), val = staffEmail(raw);
   var onWait = $('screen-otp').classList.contains('active');
   $('login-err').style.display = 'none'; $('otp-err').style.display = 'none';
@@ -424,8 +392,7 @@ function finishSignIn(){
   window.location.replace(PORTAL);
 }
 
-$('login-input').addEventListener('keydown', function(e){ if(e.key === 'Enter'){ if(PW_MODE && !$('pw-input').value) $('pw-input').focus(); else sendCode(); } });
-$('pw-input').addEventListener('keydown', function(e){ if(e.key === 'Enter') sendCode(); });
+$('login-input').addEventListener('keydown', function(e){ if(e.key === 'Enter') sendCode(); });
 setTimeout(function(){ $('login-input').focus(); }, 100);
 
 window.addEventListener('pageshow', function(e){
@@ -451,6 +418,16 @@ function loadInfo(){
 }
 loadInfo();
 setInterval(loadInfo, 30 * 60 * 1000);
+// fetch the notices while the tutor signs in, so the Notices screen opens complete at once
+function preloadNotices(){
+  [['ann','getAnnouncements'],['acad','getAcadCalendar'],['ucal','getAnnualCalendar']].forEach(function(x){
+    fetch(API + '?action=' + x[1]).then(function(r){ return r.json(); }).then(function(j){
+      if(!j || j.status !== 'ok') return;
+      try { var c = JSON.parse(localStorage.getItem('cc_notices') || '{}') || {}; c[x[0]] = j.data || []; localStorage.setItem('cc_notices', JSON.stringify(c)); } catch(e){}
+    }).catch(function(){});
+  });
+}
+preloadNotices();
 </script>
 </body>
 </html>
