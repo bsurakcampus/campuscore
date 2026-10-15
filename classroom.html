@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CampusCore Classroom Attendance · Bath Spa University RAK Campus</title>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#14213d; --navy2:#1f2f52; --ink:#0f172a; --muted:#5b6b86; --line:#d8dee9;
+  --red:#c8102e; --red-dark:#a50d26; --red-soft:#fdecee; --green:#15803d;
+  --serif:'Source Serif 4',Georgia,serif; --sans:'IBM Plex Sans',system-ui,sans-serif; --mono:'IBM Plex Mono',ui-monospace,monospace;
+}
+html,body{height:100%;}
+body{font-family:var(--sans);color:var(--ink);background:var(--navy);min-height:100vh;display:flex;}
+
+/* ---------- left: the room display ---------- */
+.left{position:relative;flex:1.15;display:flex;flex-direction:column;justify-content:space-between;gap:30px;padding:0 64px 56px;color:#fff;overflow:hidden;}
+.left::before{content:"";position:absolute;inset:0;pointer-events:none;background:
+  repeating-linear-gradient(90deg,rgba(255,255,255,.035) 0 1px,transparent 1px 120px),
+  linear-gradient(180deg,rgba(255,255,255,.04),transparent 40%);}
+.logo-tile{position:relative;background:#fff;border-radius:0 0 10px 10px;padding:24px 22px 16px;display:inline-flex;align-items:center;gap:18px;align-self:flex-start;box-shadow:0 14px 40px rgba(0,0,0,.25);min-width:349px;height:164px;}
+.logo-tile img{display:block;height:124px;width:auto;}
+.logo-text{display:none;font:600 15px/1.25 var(--serif);color:var(--navy);text-align:center;border-right:1px solid var(--line);padding-right:20px;}
+.logo-tile .t0,.logo-tile .t1,.logo-tile .t2{white-space:nowrap;}
+.logo-tile .t0{font:600 12px var(--sans);letter-spacing:1.4px;text-transform:uppercase;color:var(--navy);margin-bottom:4px;}
+.logo-tile .t1{font:600 22px/1.1 var(--serif);color:var(--navy);}
+.logo-tile .rule{width:30px;height:2px;background:var(--red);margin:9px 0 8px;}
+.logo-tile .t2{font:600 11px var(--sans);letter-spacing:1.5px;text-transform:uppercase;color:var(--red);}
+.hello{position:relative;}
+/* latest announcement (from CampusCore announcements) */
+.ann{position:relative;width:100%;}
+.ann-h{display:flex;align-items:center;gap:10px;font-size:12.5px;font-weight:700;letter-spacing:2.6px;text-transform:uppercase;color:#9fb0cf;margin-bottom:12px;}
+.ann-bang{width:22px;height:22px;border-radius:50%;background:var(--red);color:#fff;font:700 13px var(--sans);letter-spacing:0;display:inline-flex;align-items:center;justify-content:center;}
+.ann-box{height:260px;border-top:1px solid rgba(255,255,255,.28);border-bottom:1px solid rgba(255,255,255,.28);padding:16px 0;overflow:hidden;display:flex;flex-direction:column;justify-content:center;}
+.ann-title{font:600 13px var(--sans);letter-spacing:.4px;color:#fff;margin-bottom:8px;}
+.ann-text{font-family:var(--serif);font-style:italic;font-weight:500;color:#e6ecf7;line-height:1.4;font-size:26px;white-space:pre-line;}
+.ann-empty{font-family:var(--serif);font-style:italic;color:#7f91b3;font-size:18px;}
+/* today's date and the term (in place of the announcement, 16 Oct 2026) */
+.bigdate{padding:6px 0 30px;border-bottom:1px solid rgba(255,255,255,.15);}
+.bigdate .bd1{font:700 64px/1.05 var(--serif);color:#fff;letter-spacing:-1px;white-space:nowrap;}
+.bigdate .bd2{font:700 40px/1.1 var(--serif);color:#facc15;margin-top:14px;min-height:44px;}
+@media (max-width:1300px){.bigdate .bd1{font-size:48px;white-space:normal;}.bigdate .bd2{font-size:32px;}}
+/* standing notice under the sessions */
+.rule-note{display:flex;align-items:center;gap:12px;margin-top:24px;font-size:18px;font-weight:600;line-height:1.4;color:#facc15;white-space:nowrap;}
+.rule-note .ico{flex-shrink:0;width:26px;height:26px;border-radius:50%;border:2px solid #facc15;color:#facc15;font:800 14px var(--sans);display:flex;align-items:center;justify-content:center;}
+@media (max-width:1400px){ .rule-note{white-space:normal;font-size:16px;} }
+.day{font-size:13px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#9fb0cf;}
+.clock{font:600 112px/1 var(--mono);letter-spacing:-4px;margin:10px 0 6px;}
+.greet{font:500 30px var(--serif);color:#dbe4f4;}
+.periods{display:flex;gap:6px;margin-top:36px;max-width:620px;}
+.period{flex:1;border-radius:6px;padding:8px 10px;font-size:11.5px;line-height:1.35;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#9fb0cf;}
+.period b{display:block;font-family:var(--mono);font-size:12.5px;white-space:nowrap;}
+.period.now{background:var(--red);border-color:var(--red);color:#fff;}
+.period.done{opacity:.45;}
+
+/* ---------- right: sign-in ---------- */
+.right{position:relative;width:500px;flex-shrink:0;background:#fff;display:flex;flex-direction:column;justify-content:center;padding:56px;}
+.pane{display:none;}
+.pane.active{display:block;animation:fade .25s ease both;}
+@keyframes fade{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+h2{font:600 34px var(--serif);color:var(--navy);}
+.lead{font-size:14.5px;color:var(--muted);margin:8px 0 28px;line-height:1.6;}
+.field-label{display:block;font-size:11px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--ink);margin-bottom:8px;}
+.email{display:flex;border:1.5px solid var(--line);border-radius:4px;overflow:hidden;background:#fff;transition:border-color .2s,box-shadow .2s;}
+.email:focus-within{border-color:var(--navy);box-shadow:0 0 0 3px rgba(20,33,61,.12);}
+.email input{flex:1;min-width:0;border:none;outline:none;padding:13px 14px;font:500 15px var(--sans);color:var(--ink);background:transparent;}
+.email span{display:flex;align-items:center;padding:0 14px;background:#eef1f6;color:var(--navy2);font:500 15px var(--sans);border-left:1.5px solid var(--line);}
+.btn{width:100%;border:none;border-radius:4px;padding:15px;font:600 15px var(--sans);cursor:pointer;color:#fff;background:var(--red);margin-top:18px;letter-spacing:.2px;transition:background .15s;}
+.btn:hover{background:var(--red-dark);}
+.btn:disabled{background:#e8a3ae;cursor:not-allowed;}
+.err-msg{display:none;background:var(--red-soft);border:1px solid #f3c2ca;border-radius:4px;padding:10px 12px;font-size:13px;color:var(--red-dark);margin-top:14px;line-height:1.5;}
+.steps{margin-top:30px;display:grid;gap:12px;}
+.step{display:flex;gap:12px;align-items:flex-start;font-size:13.5px;color:var(--navy2);line-height:1.5;}
+.step i{font-style:normal;flex-shrink:0;width:24px;height:24px;border-radius:50%;background:var(--red-soft);color:var(--red);font:700 12px var(--mono);display:flex;align-items:center;justify-content:center;}
+.small{margin-top:30px;font-size:11.5px;color:#94a3b8;line-height:1.6;border-top:1px solid #eef1f6;padding-top:16px;}
+.small a{color:var(--navy2);}
+/* waiting pane */
+.back{background:none;border:none;color:var(--muted);font:500 13px var(--sans);cursor:pointer;padding:0;margin-bottom:22px;}
+.back:hover{color:var(--navy);}
+.sent-to{font-size:14.5px;color:var(--muted);margin:8px 0 22px;line-height:1.6;}
+.sent-to strong{color:var(--ink);}
+.code-box{border:1.5px solid #f3c2ca;background:var(--red-soft);border-radius:8px;padding:16px 20px;display:flex;align-items:center;gap:20px;}
+.code-lbl{white-space:nowrap;font-size:10.5px;font-weight:700;color:var(--red-dark);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}
+.code-num{font:600 46px/1 var(--mono);color:var(--red);letter-spacing:6px;}
+.code-hint{font-size:13px;color:#7f1d1d;line-height:1.5;}
+.wait-row{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--navy2);font-weight:600;margin-top:22px;}
+.wait-row.done{color:var(--green);}
+.spin{width:18px;height:18px;border:2.5px solid #e2e8f0;border-top-color:var(--red);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.resend{margin-top:18px;font-size:13px;color:var(--muted);}
+.link-btn{background:none;border:none;color:var(--navy);font:600 13px var(--sans);text-decoration:underline;cursor:pointer;padding:0;}
+
+@media (max-width:900px){
+  body{flex-direction:column;}
+  .left{padding:0 20px 28px;gap:26px;flex:none;}
+  .logo-tile{padding:18px 16px 12px;gap:14px;min-width:0;height:auto;}
+  .logo-tile img{height:84px;}
+  .clock{font-size:72px;letter-spacing:-2px;}
+  .greet{font-size:24px;}
+  .periods{flex-wrap:wrap;margin-top:24px;}
+  .period{min-width:45%;}
+  .right{width:100%;padding:32px 20px 40px;}
+}
+</style>
+</head>
+<body>
+
+<!-- LEFT: what the room sees -->
+<section class="left">
+  <div class="logo-tile">
+    <img id="logo" alt="Bath Spa University RAK Campus" src="bsu-logo.png">
+    <div class="logo-text" id="logo-text">Bath Spa<br>University</div>
+    <div><div class="t0">Bath Spa University</div><div class="t1">RAK Campus</div><div class="rule"></div><div class="t2">Classroom Attendance</div></div>
+  </div>
+  <div class="bigdate"><div class="bd1" id="bigDate">&nbsp;</div><div class="bd2" id="term"></div></div>
+  <div class="hello">
+    <div class="day" id="day" style="display:none">&nbsp;</div>
+    <div class="clock" id="clock">--:--</div>
+    <div class="greet" id="greet">Welcome</div>
+    <div class="periods" id="periods"></div>
+    <div class="rule-note"><span class="ico">!</span><span id="ruleText">Students must maintain a minimum of 70% attendance in each module to qualify to submit their final assessment.</span></div>
+  </div>
+</section>
+
+<!-- RIGHT: sign-in -->
+<section class="right">
+
+  <!-- 1. enter email name -->
+  <div class="pane active" id="screen-login">
+    <h2>Start your class</h2>
+    <p class="lead">Sign in with your BSU email to take attendance in this room.</p>
+    <label class="field-label" for="login-input">Your BSU email</label>
+    <div class="email"><input id="login-input" type="text" placeholder="your.name" autocomplete="off" autocapitalize="off" spellcheck="false"><span>@bathspa.ae</span></div>
+    <div id="pw-wrap" style="display:none;">
+      <label class="field-label" for="pw-input" style="margin-top:14px;">Classroom password</label>
+      <div class="email"><input id="pw-input" type="password" placeholder="password" autocomplete="off"></div>
+    </div>
+    <div class="err-msg" id="login-err"></div>
+    <button class="btn" id="send-btn" onclick="sendCode()">Email me a sign-in link</button>
+    <div class="steps" id="link-steps">
+      <div class="step"><i>1</i><span>Open the email on your phone.</span></div>
+      <div class="step"><i>2</i><span>Check the code matches this screen and press <b>Approve</b>.</span></div>
+      <div class="step"><i>3</i><span>Your classes open here. Sign out when you finish.</span></div>
+    </div>
+    <p class="small cc-footer-note">Shared classroom PC. Signs out when the browser closes and after 2 hours without use. Not recognised? Write to <a href="mailto:academics@bathspa.ae">academics@bathspa.ae</a></p>
+  </div>
+
+  <!-- 2. waiting for approval on the phone -->
+  <div class="pane" id="screen-otp">
+    <button class="back" onclick="backToLogin()">‹ Back</button>
+    <h2>Check your email</h2>
+    <p class="sent-to" id="otp-sent-to">We sent a sign-in link to your email.</p>
+    <div class="code-box">
+      <div><div class="code-lbl">Your code</div><div class="code-num" id="wait-code">--</div></div>
+      <div class="code-hint">Your phone will show the same code. Only approve if they match.</div>
+    </div>
+    <div class="wait-row" id="wait-status"><span class="spin"></span><span id="wait-text">Waiting for approval…</span></div>
+    <div class="err-msg" id="otp-err"></div>
+    <p class="resend">No email after a minute? Check Junk, or <button class="link-btn" onclick="sendCode()">send a new link</button>.</p>
+    <p class="small cc-footer">© 2025–2026 Bath Spa University · RAK Campus</p>
+  </div>
+
+</section>
+
+<script>
+var API = 'https://script.google.com/macros/s/AKfycbycKFnbEm2aXY6JJ8QS-x-vUQMAcqp800afJhejux9UofP1YfK49AxoTG8cXMORzZby/exec';
+var PORTAL = 'CCClassroom.html';
+var LOGO_DRIVE = 'https://lh3.googleusercontent.com/d/1QaE3IbVU-5nBihgSs2IPU54Sf6wjiaV0';
+var CLASSROOM_EXP_MS = 2 * 60 * 60 * 1000;   // 2 hours (also clears when the browser closes)
+var STAFF_DOMAIN = 'bathspa.ae';
+var SEND_LABEL = 'Email me a sign-in link';   // changes to "Sign in" when the classroom password is on
+var PERIODS = [['9:00','10:40'],['10:40','12:20'],['12:20','2:00'],['2:00','3:40']];   // from the timetable
+
+var _credential = '', _maskedEmail = '', _pass = '';
+var _rid = null, _pollTimer = null, _pollUntil = 0;
+
+function $(id){ return document.getElementById(id); }
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+
+// ── Logo: bsu-logo.png next to this page, else the Drive copy, else the name in text ──
+(function(){
+  var img = $('logo'), tried = false;
+  function fail(){
+    if(!tried){ tried = true; img.src = LOGO_DRIVE; return; }
+    img.style.display = 'none'; $('logo-text').style.display = 'block';
+  }
+  img.onerror = fail;
+  if(img.complete && !img.naturalWidth) fail();
+})();
+
+// ── Clock, date, greeting and today's periods ──
+function mins(t){ var p = t.split(':'), h = +p[0]; if(h < 8) h += 12; return h * 60 + +p[1]; }
+function tick(){
+  var d = new Date();
+  var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  $('clock').textContent = String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+  $('day').textContent = (days[d.getDay()] + ' ' + d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear()).toUpperCase();
+  $('bigDate').textContent = days[d.getDay()] + ' ' + d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
+  var h = d.getHours();
+  $('greet').textContent = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+  var now = h * 60 + d.getMinutes();
+  $('periods').innerHTML = PERIODS.map(function(p, i){
+    var a = mins(p[0]), b = mins(p[1]), cls = now >= a && now < b ? 'now' : now >= b ? 'done' : '';
+    return '<div class="period ' + cls + '"><b>' + p[0] + '–' + p[1] + '</b>Session ' + (i + 1) + '</div>';
+  }).join('');
+}
+tick(); setInterval(tick, 15000);
+
+// ── Session (sessionStorage only, so it ends when the browser closes) ──
+function getSession(){
+  var s = null;
+  try { s = JSON.parse(sessionStorage.getItem('cc_session') || 'null'); } catch(e){ return null; }
+  if(s && s.exp && Date.now() > s.exp){ try { sessionStorage.removeItem('cc_session'); } catch(_){} return null; }
+  return s;
+}
+// already signed in with a valid pass -> straight to the classroom
+(function(){
+  var s = getSession();
+  if(s && s.mode === 'classroom' && s.credential && s.pass) window.location.replace(PORTAL);
+})();
+
+function show(id){
+  ['screen-login','screen-otp'].forEach(function(p){ $(p).classList.toggle('active', p === id); });
+}
+function backToLogin(){
+  stopPoll();
+  $('otp-err').style.display = 'none';
+  show('screen-login');
+  setTimeout(function(){ $('login-input').focus(); }, 50);
+}
+
+// ── Send sign-in link ──
+// "iftikhar" or "iftikhar@bathspa.ae" -> "iftikhar@bathspa.ae"; any other domain -> ''
+// Attendance, starts and closes from a classroom page that was closed before CampusCore confirmed
+// them are kept in this browser and sent again from here (the server ignores repeats).
+(function obReplay(){
+  var OBK = 'cc_outbox', MAX = 55 * 60 * 1000;
+  function rd(){ try { var a = JSON.parse(localStorage.getItem(OBK) || '[]'); return Array.isArray(a) ? a : []; } catch(e){ return []; } }
+  function wr(a){ try { localStorage.setItem(OBK, JSON.stringify(a)); } catch(e){} }
+  function run(){
+    var now = Date.now(), a = rd().filter(function(x){ return now - x.t < MAX && (x.n || 0) < 3; });
+    wr(a);
+    a.filter(function(x){ return now - x.t > 90000; }).forEach(function(x, i){
+      setTimeout(function(){
+        var all = rd(), me = all.find(function(y){ return y.id === x.id; }); if(!me) return;
+        me.n = (me.n || 0) + 1; wr(all);
+        fetch(API, { method:'POST', headers:{'Content-Type':'text/plain'}, body: x.payload, keepalive: x.payload.length < 60000 })
+          .then(function(r){ return r.text(); }).then(function(t){ JSON.parse(t); wr(rd().filter(function(y){ return y.id !== x.id; })); }).catch(function(){});
+      }, i * 1500);
+    });
+  }
+  setTimeout(run, 1500); setTimeout(run, 100000);
+})();
+function staffEmail(v){
+  v = String(v || '').trim().toLowerCase().replace(/\s+/g, '');
+  if(!v) return '';
+  if(v.indexOf('@') === -1) return v + '@' + STAFF_DOMAIN;
+  return v.split('@')[1] === STAFF_DOMAIN ? v : '';
+}
+var _sendSeq = 0, _grace = 0, PW_MODE = false;
+// Optional shared classroom password (set in CampusCore): one step, no email or phone.
+function setPwMode(on){
+  PW_MODE = !!on;
+  $('pw-wrap').style.display = on ? 'block' : 'none';
+  $('link-steps').style.display = on ? 'none' : '';
+  $('send-btn').textContent = SEND_LABEL = on ? 'Sign in' : 'Email me a sign-in link';
+  try { localStorage.setItem('cc_pw_mode', on ? '1' : '0'); } catch(e){}
+}
+try { if(localStorage.getItem('cc_pw_mode') === '1') setPwMode(true); } catch(e){}
+fetch(API + '?action=classroomSignInMode').then(function(r){ return r.json(); }).then(function(j){ if(j && j.status === 'ok') setPwMode(j.data && j.data.password); }).catch(function(){});
+function pwSignIn(val){
+  var btn = $('send-btn'), e = $('login-err'), pw = $('pw-input').value;
+  if(!pw){ e.textContent = 'Please type the classroom password.'; e.style.display = 'block'; return; }
+  btn.disabled = true; btn.textContent = 'Signing in…';
+  fetch(API + '?action=passwordSignIn&email=' + encodeURIComponent(val) + '&pw=' + encodeURIComponent(pw))
+    .then(function(r){ return r.json(); })
+    .then(function(j){
+      var d = (j && j.data) || {};
+      if(!j || j.status !== 'ok' || !d.pass) throw new Error((j && j.message) || 'Could not sign in.');
+      _credential = d.email; _pass = d.pass; finishSignIn();
+    })
+    .catch(function(err){ btn.disabled = false; btn.textContent = SEND_LABEL; e.textContent = err.message || 'Could not reach CampusCore. Please try again.'; e.style.display = 'block'; });
+}
+function sendCode(){
+  if(PW_MODE){
+    var v0 = staffEmail($('login-input').value.trim()); $('login-err').style.display = 'none';
+    if(!v0){ $('login-err').textContent = 'Please type your BSU email name, for example iftikhar.'; $('login-err').style.display = 'block'; return; }
+    return pwSignIn(v0);
+  }
+  var raw = $('login-input').value.trim(), val = staffEmail(raw);
+  var onWait = $('screen-otp').classList.contains('active');
+  $('login-err').style.display = 'none'; $('otp-err').style.display = 'none';
+  var errEl = $(onWait ? 'otp-err' : 'login-err');
+  if(!raw){ errEl.textContent = 'Please type your BSU email name, for example iftikhar.'; errEl.style.display = 'block'; return; }
+  if(!val){ errEl.textContent = 'Only @bathspa.ae staff emails can sign in here.'; errEl.style.display = 'block'; return; }
+  stopPoll();
+  // Show the code screen straight away; the email is sent in the background.
+  var seq = ++_sendSeq, rid = newRid(), code = String(10 + Math.floor(Math.random() * 90)), u = val.split('@');
+  showWait({ requestId: rid, code: code, maskedEmail: u[0].charAt(0) + '***@' + u[1], expiresIn: 600 }, true);
+  setWait('Sending the email to your phone…', false);
+  var resp = '';
+  // never wait for ever: after 25 seconds stop waiting and ask the server whether the link went out
+  var ctl = window.AbortController ? new AbortController() : null, slow = setTimeout(function(){ if(ctl) ctl.abort(); }, 25000);
+  setTimeout(function(){ if(seq === _sendSeq && _rid === rid && !_pollTimer) setWait('Still sending, please wait…', false); }, 8000);
+  _grace = Date.now() + 30000;                     // until the request is confirmed, "not found yet" just means wait
+  // fetch the classroom page now, while the tutor approves, so it opens straight from the browser cache
+  try { if(!document.getElementById('pf-portal')){ var lk = document.createElement('link'); lk.id = 'pf-portal'; lk.rel = 'prefetch'; lk.href = PORTAL; document.head.appendChild(lk); } } catch(e){}
+  _pollTimer = setTimeout(poll, 1200);
+  fetch(API + '?action=requestLoginLink&portal=classroom&email=' + encodeURIComponent(val) + '&rid=' + rid + '&code=' + code, { signal: ctl ? ctl.signal : undefined })
+    .then(function(r){ clearTimeout(slow); return r.text(); })
+    .then(function(t){ resp = t; try { return JSON.parse(t); } catch(e){ return { lost: true }; } })
+    .catch(function(){ return { lost: true }; })
+    .then(function(d){
+      // Google sometimes swaps the reply for one of its own pages even though the link was sent.
+      // We chose the request id ourselves, so ask the server whether it is waiting for approval.
+      return d.lost ? recoverRequest(rid) : d;
+    })
+    .then(function(d){
+      if(seq !== _sendSeq || _rid !== rid) return;              // the tutor went back or asked for a new link
+      var data = d.data || d;
+      if(d.status === 'error' || !data || data.error || !data.requestId){
+        var said = (data && data.error) || d.message || '';
+        failSend(said || ('Could not send the sign-in link. Please try again. (Server reply: ' + (String(resp).replace(/<(script|style)[^>]*>[\s\S]*?<\/\1>/gi,' ').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim().slice(0, 300) || 'empty') + ')'));
+        return;
+      }
+      if(data.code && String(data.code) !== code) $('wait-code').textContent = data.code;   // older server picks its own code
+      _grace = 0;
+      if(/sending/i.test($('wait-text').textContent)) setWait('Waiting for approval…', false);
+      if(!_pollTimer) _pollTimer = setTimeout(poll, 300);
+    })
+    .catch(function(){ if(seq === _sendSeq) failSend('Could not reach CampusCore. Check the internet connection and try again.'); });
+}
+// Sending failed: go back to the email box and say why.
+function failSend(msg){
+  stopPoll();
+  show('screen-login');
+  var e = $('login-err'); e.textContent = msg; e.style.display = 'block';
+}
+
+function newRid(){
+  var a = new Uint8Array(32); (window.crypto || window.msCrypto).getRandomValues(a);
+  return Array.prototype.map.call(a, function(b){ return ('0' + b.toString(16)).slice(-2); }).join('');
+}
+function recoverRequest(rid){
+  var tries = 0;
+  return new Promise(function(resolve){
+    (function again(){
+      fetch(API + '?action=checkLoginLink&rid=' + rid)
+        .then(function(r){ return r.json(); })
+        .then(function(d){
+          var x = (d && d.data) || {};
+          if(x.status === 'pending') resolve({ status:'ok', data:{ requestId: rid, code: x.code, maskedEmail: x.maskedEmail, expiresIn: 600 } });
+          else if(++tries < 5) setTimeout(again, 2000);
+          else resolve({ status:'error', message:'' });
+        })
+        .catch(function(){ if(++tries < 5) setTimeout(again, 2000); else resolve({ status:'error', message:'' }); });
+    })();
+  });
+}
+function showWait(data, noPoll){
+  _rid = data.requestId;
+  _maskedEmail = data.maskedEmail || '';
+  $('otp-sent-to').innerHTML = 'We sent a sign-in link to <strong>' + esc(_maskedEmail) + '</strong>. Open it on your phone and press <strong>Approve</strong>.';
+  $('wait-code').textContent = data.code || '--';
+  $('otp-err').style.display = 'none';
+  setWait('Waiting for approval…', false);
+  show('screen-otp');
+  _pollUntil = Date.now() + ((Number(data.expiresIn) || 600) + 30) * 1000;
+  if(!noPoll) _pollTimer = setTimeout(poll, 1000);
+}
+function setWait(text, done, hide){
+  var row = $('wait-status');
+  row.style.display = hide ? 'none' : 'flex';
+  row.className = 'wait-row' + (done ? ' done' : '');
+  row.firstChild.style.display = done ? 'none' : '';
+  $('wait-text').textContent = text;
+}
+function stopPoll(){ if(_pollTimer){ clearTimeout(_pollTimer); _pollTimer = null; } _rid = null; }
+function waitError(msg){
+  stopPoll(); setWait('', false, true);
+  var e = $('otp-err'); e.textContent = msg; e.style.display = 'block';
+}
+// Asks every second whether the phone has approved, without waiting for the previous answer
+// (Google sometimes takes a few seconds to reply), so approval is noticed as soon as it happens.
+var _inFlight = 0;
+function poll(){
+  _pollTimer = null;
+  var rid = _rid; if(!rid) return;
+  if(Date.now() > _pollUntil){ waitError('The sign-in link has expired. Please send a new link.'); return; }
+  _pollTimer = setTimeout(poll, 1000);
+  if(_inFlight >= 4) return;
+  _inFlight++;
+  fetch(API + '?action=checkLoginLink&rid=' + encodeURIComponent(rid) + '&_=' + Date.now(), { cache: 'no-store' })
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      _inFlight--;
+      if(rid !== _rid) return;                       // a newer link was requested, or already signed in
+      var data = d.data || d, st = data && data.status;
+      if(st === 'approved' && data.email){
+        stopPoll();
+        setWait('Approved. Signing in…', true);
+        _credential = data.email; _pass = data.pass || '';
+        // the classes came with the approval: hand them to the classroom page so it opens at once
+        try { if(data.bundle) sessionStorage.setItem('cc_boot_bundle', JSON.stringify({ e: data.email, t: Date.now(), b: data.bundle })); } catch(e){}
+        finishSignIn();
+        return;
+      }
+      if(st === 'denied'){ waitError('Sign-in was declined on the phone. If that was a mistake, send a new link.'); return; }
+      if(st === 'expired' && Date.now() < _grace) return;
+      if(st === 'pending' && /sending/i.test($('wait-text').textContent)) setWait('Waiting for approval…', false);
+      if(st === 'expired'){ waitError('The sign-in link has expired or was already used. Please send a new link.'); return; }
+    })
+    .catch(function(){ _inFlight--; });          // keep trying on a network blip
+}
+
+// ── Save session + enter the classroom ──
+function finishSignIn(){
+  var sess = { role:'tutor', credential:_credential, remember:false, ts:Date.now(),
+               mode:'classroom', pass:_pass, exp: Date.now() + CLASSROOM_EXP_MS };
+  try { sessionStorage.setItem('cc_session', JSON.stringify(sess)); localStorage.removeItem('cc_session'); } catch(e){}
+  window.location.replace(PORTAL);
+}
+
+$('login-input').addEventListener('keydown', function(e){ if(e.key === 'Enter'){ if(PW_MODE && !$('pw-input').value) $('pw-input').focus(); else sendCode(); } });
+$('pw-input').addEventListener('keydown', function(e){ if(e.key === 'Enter') sendCode(); });
+setTimeout(function(){ $('login-input').focus(); }, 100);
+
+window.addEventListener('pageshow', function(e){
+  if(!e.persisted) return;
+  var s = getSession();
+  if(s && s.mode === 'classroom' && s.credential && s.pass) window.location.replace(PORTAL);
+  else backToLogin();
+});
+
+// ── Term ("Fall 2026-27") from KEY current_semester and academic_year, plus the optional notice and footer ──
+// Shown at once from the last time, then refreshed. (getConfig is closed to the public since 15 Oct 2026.)
+try { var _t0 = localStorage.getItem('cc_term'); if(_t0) $('term').textContent = _t0; } catch(e){}
+function loadInfo(){
+  fetch(API + '?action=getClassroomInfo')
+    .then(function(r){ return r.json(); })
+    .then(function(j){
+      var d = (j && j.status === 'ok' && j.data) || {};
+      if(d.term){ $('term').textContent = d.term; try { localStorage.setItem('cc_term', d.term); } catch(e){} }
+      if(d.notice) $('ruleText').textContent = String(d.notice);
+      if(d.footer) document.querySelectorAll('.cc-footer').forEach(function(el){ el.textContent = String(d.footer); });
+    })
+    .catch(function(){});
+}
+loadInfo();
+setInterval(loadInfo, 30 * 60 * 1000);
+</script>
+</body>
+</html>
