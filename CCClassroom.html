@@ -890,6 +890,14 @@ button.circ:hover{transform:scale(1.12);}
 .ev .nm{position:static;left:auto;z-index:auto;min-width:0;width:auto;flex:1;text-align:left;font-weight:600;background:none;box-shadow:none;}
 .ev .dt{flex:none;}
 
+/* name cards: every name on ONE line so all cards are the same height (16 Oct). Long names end with "…";
+   the full name shows on hover. Name column a little wider so most names fit. */
+.rg th.nm,.rg td.nm{min-width:330px;width:330px;}
+.ncard{width:310px;height:62px;min-height:62px;}
+.ncard > span:first-child{flex:1;min-width:0;}
+.ncard .nn{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ncard .nt{flex:none;}
+
 /* ===== Live-page additions ===== */
 #cc-boot{position:fixed;inset:0;z-index:2147483646;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-family:'Sora',system-ui,sans-serif;text-align:center;padding:24px;color:#0f1e3d;}
 #cc-boot .ring{position:relative;width:200px;height:200px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;}
@@ -1620,7 +1628,7 @@ function renderTable(){
     var reg = String(s.reg || '').trim(), regNo = /not|drop/i.test(reg);
     var note = s.moved ? '<span class="nw out">Moved to another group</span>' : s.joined ? '<span class="nw">Joined this group</span>' : '';
     h += '<tr data-key="' + esc(s.key) + '" data-name="' + esc(s.name) + '" data-id="' + esc(s.bsuId || '') + '" data-group="' + esc(r.group) + '"' + (st ? ' data-att-status="' + st + '"' : '') + '>'
-      + '<td class="nm"><button type="button" class="ncard' + (st ? ' st-' + st : '') + (s.moved ? ' moved' : '') + '" data-key="' + esc(s.key) + '"><span><span class="nn">' + esc(s.name) + '</span><span class="ni">' + id + '</span>'
+      + '<td class="nm"><button type="button" class="ncard' + (st ? ' st-' + st : '') + (s.moved ? ' moved' : '') + '" data-key="' + esc(s.key) + '" title="' + esc(s.name) + '"><span><span class="nn">' + esc(s.name) + '</span><span class="ni">' + id + '</span>'
       + (reg ? '<span class="nr' + (regNo ? ' no' : '') + '">' + esc(reg) + '</span>' : '') + note + '</span>'
       + '<span class="nt">' + (st ? LBL[st] : (live ? 'NOT MARKED' : '')) + '</span></button></td>'
       + '<td class="ax">' + (/see\s*accounts/i.test(String(s.acc || '')) ? '<span class="accn"><span>Please see</span>Accounts!</span>' : '') + '</td>'
