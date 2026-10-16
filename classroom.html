@@ -214,10 +214,19 @@ function getSession(){
   if(s && s.exp && Date.now() > s.exp){ try { sessionStorage.removeItem('cc_session'); } catch(_){} return null; }
   return s;
 }
-// already signed in with a valid pass -> straight to the classroom
+// "Still here" mark written by the classroom page every 15 s. If it is older than 45 seconds, the browser was
+// closed or the PC restarted (Edge can restore the old sign-in with its tabs): sign in again.
+function aliveOk(s){
+  var A = null; try { A = JSON.parse(localStorage.getItem('cc_alive') || 'null'); } catch(e){}
+  return !!(A && A.p === String(s.pass).slice(0, 12) && Date.now() - A.t < 45 * 1000);
+}
+// already signed in with a valid pass (and the page was open a moment ago) -> straight to the classroom
 (function(){
   var s = getSession();
-  if(s && s.mode === 'classroom' && s.credential && s.pass) window.location.replace(PORTAL);
+  if(s && s.mode === 'classroom' && s.credential && s.pass){
+    if(aliveOk(s)){ window.location.replace(PORTAL); return; }
+    try { sessionStorage.removeItem('cc_session'); localStorage.removeItem('cc_alive'); localStorage.setItem('cc_closed_msg', '1'); } catch(e){}
+  }
 })();
 
 function show(id){
@@ -390,17 +399,21 @@ function poll(){
 function finishSignIn(){
   var sess = { role:'tutor', credential:_credential, remember:false, ts:Date.now(),
                mode:'classroom', pass:_pass, exp: Date.now() + CLASSROOM_EXP_MS };
-  try { sessionStorage.setItem('cc_session', JSON.stringify(sess)); localStorage.removeItem('cc_session'); } catch(e){}
+  try { sessionStorage.setItem('cc_session', JSON.stringify(sess)); localStorage.removeItem('cc_session'); localStorage.setItem('cc_alive', JSON.stringify({ p: String(_pass).slice(0, 12), t: Date.now() })); localStorage.removeItem('cc_closed_msg'); } catch(e){}
   window.location.replace(PORTAL);
 }
 
 $('login-input').addEventListener('keydown', function(e){ if(e.key === 'Enter') sendCode(); });
+// signed out because the browser was closed or the PC restarted: say so, and that the class is safe
+(function(){ var m = null; try { m = localStorage.getItem('cc_closed_msg'); localStorage.removeItem('cc_closed_msg'); } catch(e){}
+  if(m){ var e = $('login-err'); e.style.background = '#eef6ff'; e.style.borderColor = '#bfdbfe'; e.style.color = '#1e3a8a';
+    e.innerHTML = '<b>You were signed out because the browser was closed.</b> If your class was running, it is still running: sign in again and it opens where you left it, with your marks.'; e.style.display = 'block'; } })();
 setTimeout(function(){ $('login-input').focus(); }, 100);
 
 window.addEventListener('pageshow', function(e){
   if(!e.persisted) return;
   var s = getSession();
-  if(s && s.mode === 'classroom' && s.credential && s.pass) window.location.replace(PORTAL);
+  if(s && s.mode === 'classroom' && s.credential && s.pass && aliveOk(s)) window.location.replace(PORTAL);
   else backToLogin();
 });
 

@@ -1149,8 +1149,15 @@ function clearAll(){
   try {
     Object.keys(sessionStorage).forEach(function(k){ if(k.indexOf('cc_') === 0) sessionStorage.removeItem(k); });
     localStorage.removeItem('cc_session');
+    localStorage.removeItem('cc_alive');
   } catch(e){}
 }
+// "Still here" mark (16 Oct): written every 15 s while this page is open. If the page loads and the mark is
+// older than 45 seconds, the browser was closed or the PC restarted (Edge can restore tabs, and with them the
+// sign-in), so we sign out here. The class itself is NOT closed: signing in again reopens it where it was.
+var ALIVE_GAP_MS = 45 * 1000;
+function aliveTag(p){ return String(p || '').slice(0, 12); }
+function markAlive(){ if(SIGNED_OUT || !PASS) return; try { localStorage.setItem('cc_alive', JSON.stringify({ p: aliveTag(PASS), t: Date.now() })); } catch(e){} }
 function endPass(){
   if(!PASS) return;
   try { fetch(API, { method:'POST', headers:{'Content-Type':'text/plain'}, body: JSON.stringify({ action:'endClassroomPass', pass: PASS }), keepalive:true }).catch(function(){}); } catch(e){}
@@ -1170,8 +1177,16 @@ function signOut(title, msg){
 (function guard(){
   var s = readSess();
   if(!s || !s.credential || !s.pass || s.mode !== 'classroom' || (s.exp && Date.now() > s.exp)){ clearAll(); window.location.replace('classroom.html'); return; }
+  var A = null; try { A = JSON.parse(localStorage.getItem('cc_alive') || 'null'); } catch(e){}
+  if(!document.wasDiscarded && (!A || A.p !== aliveTag(s.pass) || Date.now() - A.t > ALIVE_GAP_MS)){
+    clearAll(); try { localStorage.setItem('cc_closed_msg', '1'); } catch(e){}
+    window.location.replace('classroom.html'); return;
+  }
   TUTOR = String(s.credential).toLowerCase();
   PASS = String(s.pass);
+  markAlive(); setInterval(markAlive, 15000);
+  window.addEventListener('pagehide', markAlive);
+  document.addEventListener('visibilitychange', markAlive);
   var t, lastPing = Date.now(), lastAct = Date.now();
   function idleCheck(){
     var lim = (typeof LIVE !== 'undefined' && LIVE) ? LIVE_IDLE_MS : IDLE_MS, left = lim - (Date.now() - lastAct);
