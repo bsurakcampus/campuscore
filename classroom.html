@@ -49,6 +49,7 @@ body{font-family:var(--sans);color:var(--ink);background:var(--navy);min-height:
 @media (max-width:1400px){ .rule-note{white-space:normal;font-size:16px;} }
 .day{font-size:13px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#9fb0cf;}
 .clock{font:300 84px/1 'DM Mono',var(--mono);letter-spacing:-2px;margin:10px 0 6px;}
+.clock .ampm{font:500 22px var(--sans);letter-spacing:3px;color:#9fb0cf;margin-left:14px;vertical-align:top;}
 .greet{font:500 13px var(--sans);letter-spacing:4px;text-transform:uppercase;color:#9fb0cf;margin-top:14px;}
 .periods{display:flex;gap:6px;margin-top:36px;max-width:620px;}
 .period{flex:1;border-radius:6px;padding:8px 10px;font-size:11.5px;line-height:1.35;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#9fb0cf;}
@@ -192,7 +193,8 @@ function tick(){
   var d = new Date();
   var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
   var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-  $('clock').textContent = String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+  var h12 = d.getHours() % 12 || 12;   // 12-hour clock, same as the session times below
+  $('clock').innerHTML = h12 + ':' + String(d.getMinutes()).padStart(2,'0') + '<span class="ampm">' + (d.getHours() < 12 ? 'AM' : 'PM') + '</span>';
   $('day').textContent = (days[d.getDay()] + ' ' + d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear()).toUpperCase();
   var n = d.getDate(), th = (n % 100 >= 11 && n % 100 <= 13) ? 'th' : (['th','st','nd','rd'][n % 10] || 'th');
   $('bigDay').textContent = days[d.getDay()];
