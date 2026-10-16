@@ -1133,6 +1133,27 @@ var COLORS = ['c1','c2','c3','c4','c5','c6','c7','c8'];
 var _config = {};                          // used by the reused calendar code
 var PASS = '';                             // sign-in pass from the server (checked on every classroom request)
 var PASS_ACTIONS = { getClassroomBundle:1, getClassSession:1, classroomPing:1, getCoverList:1, getCoverClass:1, getClassRoster:1 };
+// 17 Oct 2026: signed requests. The pass stays inside this tab. Each request carries the pass id (first 16
+// characters) and a signature made with the pass, never the pass itself, so it is not in any web address,
+// request or the outbox kept on this computer, and a copied request cannot be changed or reused later.
+var PID = '', CLOCK_OFF = 0, _hk = null, _hkFor = '';
+function passKey(){
+  if(!_hk || _hkFor !== PASS){ _hkFor = PASS; _hk = crypto.subtle.importKey('raw', new TextEncoder().encode(PASS), { name:'HMAC', hash:'SHA-256' }, false, ['sign']); }
+  return _hk;
+}
+function hmacHex(keyP, msg){
+  return keyP.then(function(k){ return crypto.subtle.sign('HMAC', k, new TextEncoder().encode(msg)); })
+    .then(function(b){ return Array.prototype.map.call(new Uint8Array(b), function(x){ return ('0' + x.toString(16)).slice(-2); }).join(''); });
+}
+function sealGet(params){
+  var q = Object.assign({}, params, { pid: PID, ts: String(Date.now() + CLOCK_OFF) }), keys = Object.keys(q).sort();
+  return hmacHex(passKey(), 'GET\n' + keys.map(function(k){ return k + '=' + String(q[k]); }).join('&')).then(function(sig){ q.sig = sig; return q; });
+}
+function sealPost(obj){
+  var p = JSON.stringify(obj), pid = PID;            // read now, so a sign-out straight after cannot change them
+  return hmacHex(passKey(), 'POST\n' + p).then(function(sig){ return JSON.stringify({ action: obj.action, pid: pid, sig: sig, p: p }); });
+}
+function saveClockOff(){ try { var cur = readSess(); if(cur){ cur.off = CLOCK_OFF; sessionStorage.setItem('cc_session', JSON.stringify(cur)); } } catch(e){} }
 var B = null, TUTOR = '', CLASSES = [], CUR = null, LIVE = null, VIEW = null;  // VIEW = session being edited (live or past)
 
 function $(id){ return document.getElementById(id); }
@@ -1160,7 +1181,7 @@ function aliveTag(p){ return String(p || '').slice(0, 12); }
 function markAlive(){ if(SIGNED_OUT || !PASS) return; try { localStorage.setItem('cc_alive', JSON.stringify({ p: aliveTag(PASS), t: Date.now() })); } catch(e){} }
 function endPass(){
   if(!PASS) return;
-  try { fetch(API, { method:'POST', headers:{'Content-Type':'text/plain'}, body: JSON.stringify({ action:'endClassroomPass', pass: PASS }), keepalive:true }).catch(function(){}); } catch(e){}
+  try { sealPost({ action:'endClassroomPass' }).then(function(payload){ return fetch(API, { method:'POST', headers:{'Content-Type':'text/plain'}, body: payload, keepalive:true }); }).catch(function(){}); } catch(e){}
   PASS = '';
 }
 var SIGNED_OUT = false;
@@ -1183,7 +1204,7 @@ function signOut(title, msg){
     window.location.replace('classroom.html'); return;
   }
   TUTOR = String(s.credential).toLowerCase();
-  PASS = String(s.pass);
+  PASS = String(s.pass); PID = PASS.slice(0, 16); CLOCK_OFF = Number(s.off) || 0;
   markAlive(); setInterval(markAlive, 15000);
   window.addEventListener('pagehide', markAlive);
   document.addEventListener('visibilitychange', markAlive);
@@ -1228,13 +1249,18 @@ function autoSignOut(){
 
 // ============================================================ API (same retry behaviour as the portals)
 async function apiFetch(params){
-  if(PASS_ACTIONS[params.action]) params = Object.assign({ pass: PASS }, params);
-  var url = API + '?' + Object.keys(params).map(function(k){ return k + '=' + encodeURIComponent(params[k]); }).join('&');
+  var signed = !!PASS_ACTIONS[params.action], clockFixed = false;
   var last;
   for(var a = 0; a < 3; a++){
     try {
+      var q = signed ? await sealGet(params) : params;
+      var url = API + '?' + Object.keys(q).map(function(k){ return k + '=' + encodeURIComponent(q[k]); }).join('&');
       var r = await fetch(url); var txt = await r.text(); var j;
       try { j = JSON.parse(txt); } catch(_){ throw new Error('non-json'); }
+      if(j.status !== 'ok' && signed && !clockFixed && /^CLOCK:\d+$/.test(String(j.message || ''))){
+        // this computer's clock is wrong: use CampusCore's time and ask again at once
+        clockFixed = true; CLOCK_OFF = Number(String(j.message).slice(6)) - Date.now(); saveClockOff(); a--; continue;
+      }
       if(j.status !== 'ok'){ var se = new Error(j.message || 'API error'); se.serverSaid = true; throw se; }
       return j.data;
     } catch(e){ last = e; if(e.serverSaid) break; if(a < 2) await new Promise(function(res){ setTimeout(res, 700 * (a + 1)); }); }
@@ -1269,7 +1295,7 @@ function postRaw(payload){
 async function apiPost(action, body, verify, ob){
   // a save that replaces an unconfirmed "Save & Email" keeps its emails
   if(ob && ob.sup && !ob.em && obRead().some(function(x){ return x.sup === ob.sup && x.em; })){ body.sendEmails = true; ob.em = true; }
-  var payload = JSON.stringify(Object.assign({action: action, pass: PASS}, body)), last;
+  var payload = await sealPost(Object.assign({ action: action }, body)), last;
   var item = { id: 'w' + Date.now() + Math.random().toString(36).slice(2, 7), t: Date.now(), payload: payload, sup: ob && ob.sup, em: !!(ob && ob.em), keys: ob && ob.keys, n: 0 };
   obAdd(item);
   for(var a = 0; a < 2; a++){
@@ -2248,8 +2274,8 @@ function renderAcadCalendar(events){
       months[key].forEach(function(e){
         var t = (e.type||'break').toLowerCase();
         s += '<div class="acal-chip '+t+'">';
-        s += '<span class="acal-chip-date">'+(e.date||e.startDate||'')+'</span>';
-        s += '<span class="acal-chip-label">'+e.event+'</span>';
+        s += '<span class="acal-chip-date">'+esc(e.date||e.startDate||'')+'</span>';
+        s += '<span class="acal-chip-label">'+esc(e.event)+'</span>';
         s += '</div>';
       });
       s += '</div></div>';
@@ -2280,7 +2306,7 @@ function loadTutorUCal(){
   apiFetch({action:'getAnnualCalendar'}).then(function(events){
     renderTutorUCal(events||[]);
   }).catch(function(e){
-    if(container) container.innerHTML = '<div style="padding:40px;text-align:center;color:var(--red);font-size:13px;">Error loading calendar: '+e.message+'</div>';
+    if(container) container.innerHTML = '<div style="padding:40px;text-align:center;color:var(--red);font-size:13px;">Error loading calendar: '+esc(e.message)+'</div>';
   });
 }
 
@@ -2345,7 +2371,7 @@ function renderTutorUCal(events){
         var label = en.fullStart.getTime() === en.fullEnd.getTime()
           ? fmtDay(en.fullStart)
           : fmtDay(en.fullStart) + ' – ' + fmtDay(en.fullEnd);
-        html+='<div style="display:flex;align-items:center;gap:7px;font-size:11px;"><div style="width:7px;height:7px;border-radius:50%;background:'+col+';flex-shrink:0;"></div><span><strong>'+label+'</strong> &mdash; '+e.event+'</span></div>';
+        html+='<div style="display:flex;align-items:center;gap:7px;font-size:11px;"><div style="width:7px;height:7px;border-radius:50%;background:'+col+';flex-shrink:0;"></div><span><strong>'+esc(label)+'</strong> · '+esc(e.event)+'</span></div>';
       });
     } else {
       html+='<div style="font-size:11px;color:var(--text3);font-style:italic;">No events</div>';
@@ -2454,16 +2480,17 @@ function renderTutorPolicies(policies){
   var html = '<div class="pol-list">';
   policies.forEach(function(p, i){
     html += '<div class="pol-item" data-i="' + i + '">';
-    html += '<button type="button" class="pol-head" data-pol="' + i + '"><span class="pol-t">' + p.title + '</span>'
-          + (p.category ? '<span class="pol-cat">' + p.category + '</span>' : '')
+    html += '<button type="button" class="pol-head" data-pol="' + i + '"><span class="pol-t">' + esc(p.title) + '</span>'
+          + (p.category ? '<span class="pol-cat">' + esc(p.category) + '</span>' : '')
           + '<svg class="pol-chev" width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 4.5L7 9.5L12 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>';
     html += '<div class="pol-snip"></div><div class="pol-body">';
     if(p.policy && (p.policy.startsWith('http')||p.policy.startsWith('www'))){
-      html += '<a href="'+p.policy+'" target="_blank" style="color:var(--accent);font-size:13px;font-weight:600;">📄 View Policy Document</a>';
+      var href = p.policy.startsWith('www') ? 'https://' + p.policy : p.policy;
+      if(/^https?:\/\//i.test(href)) html += '<a href="'+esc(href)+'" target="_blank" rel="noopener" style="color:var(--accent);font-size:13px;font-weight:600;">📄 View Policy Document</a>';
     } else {
-      html += '<div class="pol-text">'+(p.policy||'<em style="color:var(--text3);">No content added yet.</em>')+'</div>';
+      html += '<div class="pol-text">'+(p.policy ? esc(p.policy) : '<em style="color:var(--text3);">No content added yet.</em>')+'</div>';
     }
-    if(p.lastUpdated) html += '<div class="pol-upd">Last updated: '+p.lastUpdated+'</div>';
+    if(p.lastUpdated) html += '<div class="pol-upd">Last updated: '+esc(p.lastUpdated)+'</div>';
     html += '</div></div>';
   });
   html += '</div>';

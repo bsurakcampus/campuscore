@@ -170,7 +170,7 @@ var STAFF_DOMAIN = 'bathspa.ae';
 var SEND_LABEL = 'Email me a sign-in link';
 var PERIODS = [['9:00','10:40'],['10:40','12:20'],['12:20','2:00'],['2:00','3:40']];   // from the timetable
 
-var _credential = '', _maskedEmail = '', _pass = '';
+var _credential = '', _maskedEmail = '', _pass = '', _off = 0;
 var _rid = null, _pollTimer = null, _pollUntil = 0;
 
 function $(id){ return document.getElementById(id); }
@@ -383,7 +383,7 @@ function poll(){
       if(st === 'approved' && data.email){
         stopPoll();
         setWait('Approved. Signing in…', true);
-        _credential = data.email; _pass = data.pass || '';
+        _credential = data.email; _pass = data.pass || ''; _off = data.now ? Number(data.now) - Date.now() : 0;
         // the classes came with the approval: hand them to the classroom page so it opens at once
         try { if(data.bundle) sessionStorage.setItem('cc_boot_bundle', JSON.stringify({ e: data.email, t: Date.now(), b: data.bundle })); } catch(e){}
         finishSignIn();
@@ -400,7 +400,7 @@ function poll(){
 // ── Save session + enter the classroom ──
 function finishSignIn(){
   var sess = { role:'tutor', credential:_credential, remember:false, ts:Date.now(),
-               mode:'classroom', pass:_pass, exp: Date.now() + CLASSROOM_EXP_MS };
+               mode:'classroom', pass:_pass, off:_off, exp: Date.now() + CLASSROOM_EXP_MS };
   try { sessionStorage.setItem('cc_session', JSON.stringify(sess)); localStorage.removeItem('cc_session'); localStorage.setItem('cc_alive', JSON.stringify({ p: String(_pass).slice(0, 12), t: Date.now() })); localStorage.removeItem('cc_closed_msg'); } catch(e){}
   window.location.replace(PORTAL);
 }
