@@ -898,6 +898,19 @@ button.circ:hover{transform:scale(1.12);}
 .ncard .nn{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .ncard .nt{flex:none;}
 
+/* group cards: thin one-line cards, identical to the Tutor portal design (16 Oct).
+   Weekday white with a thin grey border; weekend dark grey with white text; the whole card opens the class. */
+.subs2{gap:4px;padding:8px 10px 10px;}
+.sub2{display:flex;align-items:center;gap:10px;height:34px;min-height:34px;padding:6px 12px;border-radius:8px;border:1px solid #e2e8f0;background:#fff;}
+.sub2 .go2{display:none;}
+.sub2 .g{flex:none;min-width:150px;}
+.sub2 .k{flex:none;}
+.sub2 .tt{flex:1;text-align:right;font-size:11px;}
+.sub2.we{background:#475569;border-color:#475569;}
+.sub2.we .g,.sub2.we .k,.sub2.we .k b{color:#fff;}
+.sub2.we .tt{color:#e2e8f0;}
+.sub2.we .tag{color:#fff;}
+
 /* ===== Live-page additions ===== */
 #cc-boot{position:fixed;inset:0;z-index:2147483646;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-family:'Sora',system-ui,sans-serif;text-align:center;padding:24px;color:#0f1e3d;}
 #cc-boot .ring{position:relative;width:200px;height:200px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;}
