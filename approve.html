@@ -157,7 +157,7 @@ function pick(btn){
         finish(data && data.status);
       }).catch(function(x){ last = 'network: ' + (x && x.message); });
   }
-  var send = API + '?action=approveLoginLink&t=' + encodeURIComponent(T) + '&c=' + encodeURIComponent(n), ask = API + '?action=getLoginLink&t=' + encodeURIComponent(T);
+  var send = API + '?action=approveLoginLink&t=' + encodeURIComponent(T) + '&n=' + encodeURIComponent(n), ask = API + '?action=getLoginLink&t=' + encodeURIComponent(T);
   call(send);
   (function loop(k){
     timers.push(setTimeout(function(){
