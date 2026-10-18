@@ -146,11 +146,16 @@ function pick(btn){
   var all = document.querySelectorAll('.ch'), no = document.getElementById('btn-no'), e = document.getElementById('ask-err');
   if(btn.disabled) return;
   all.forEach(function(b){ b.disabled = true; }); btn.classList.add('on'); no.disabled = true; e.style.display = 'none';
-  var n = btn.getAttribute('data-n'), done = false, t0 = Date.now(), timers = [];
+  var n = btn.getAttribute('data-n'), done = false, t0 = Date.now(), timers = [], last = 'no reply';
   function finish(st){ if(done || !st || st === 'pending') return; done = true; timers.forEach(clearTimeout); byStatusAll(st); }
   function call(url){
-    return fetch(url + '&_=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.json(); })
-      .then(function(d){ var data = d.data || d; finish(data && data.status); }).catch(function(){});
+    return fetch(url + '&_=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.text(); })
+      .then(function(tx){
+        var d; try { d = JSON.parse(tx); } catch(x){ last = 'not JSON: ' + tx.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').slice(0, 120); return; }
+        var data = d.data || d; last = JSON.stringify(data).slice(0, 160);
+        if(d.status === 'error'){ last = 'error: ' + (d.message || ''); return; }
+        finish(data && data.status);
+      }).catch(function(x){ last = 'network: ' + (x && x.message); });
   }
   var send = API + '?action=approveLoginLink&t=' + encodeURIComponent(T) + '&c=' + encodeURIComponent(n), ask = API + '?action=getLoginLink&t=' + encodeURIComponent(T);
   call(send);
@@ -161,7 +166,7 @@ function pick(btn){
       if(Date.now() - t0 > 30000){
         done = true; timers.forEach(clearTimeout);
         all.forEach(function(b){ b.disabled = false; b.classList.remove('on'); }); no.disabled = false;
-        e.textContent = 'Could not reach CampusCore. Please check your connection and tap the number again.'; e.style.display = 'block';
+        e.textContent = 'Could not sign in. Please send a new link on the classroom PC. (CampusCore replied: ' + last + ')'; e.style.display = 'block';
         return;
       }
       loop(k + 1);
