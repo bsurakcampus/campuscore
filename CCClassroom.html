@@ -742,7 +742,7 @@ tr.grp-sep td{background:var(--surface3)!important;font-size:10.5px;font-weight:
 .cc-cancel-lk{color:#b91c1c;font-weight:600;text-decoration:underline;text-underline-offset:2px;}
 .cc-cancel-lk:hover{color:#7f1d1d;}
 /* the class on the timetable right now */
-#nowBox{display:flex;flex-direction:column;gap:10px;margin-bottom:16px;}
+#nowBox{display:flex;flex-direction:column;gap:10px;margin-bottom:36px;}   /* 19 Oct: clear gap above the term section */
 #nowBox:empty{display:none;}
 .now-card{display:flex;align-items:center;gap:18px;background:#fff;border:1.5px solid #86efac;border-left:6px solid #16a34a;border-radius:12px;padding:16px 20px;box-shadow:0 6px 18px rgba(22,163,74,.12);}
 .now-card.next{border-color:#e2e8f0;border-left-color:#94a3b8;box-shadow:none;}
@@ -910,6 +910,32 @@ button.circ:hover{transform:scale(1.12);}
 .sub2.we .g,.sub2.we .k,.sub2.we .k b{color:#fff;}
 .sub2.we .tt{color:#e2e8f0;}
 .sub2.we .tag{color:#fff;}
+
+/* 19 Oct 2026: guided class flow */
+.g-ov{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;background:rgba(15,30,61,.55);padding:20px;font-family:'Sora',sans-serif;}
+.g-ov[hidden]{display:none;}
+.g-box{background:#fff;border-radius:22px;max-width:620px;width:100%;padding:32px 34px 26px;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.35);animation:gIn .25s ease both;}
+@keyframes gIn{from{transform:scale(.94);opacity:0}to{transform:none;opacity:1}}
+.g-tick{width:104px;height:104px;border-radius:50%;background:#16a34a;color:#fff;font-size:58px;line-height:104px;margin:0 auto 16px;box-shadow:0 0 0 12px #dcfce7;}
+.g-tick.blue{background:#2563eb;box-shadow:0 0 0 12px #dbeafe;}.g-tick.amber{background:#d97706;box-shadow:0 0 0 12px #fef3c7;}
+.g-box h2{font-size:27px;margin:0 0 6px;color:#0f1e3d;font-weight:800;}
+.g-sub{font-size:15px;color:#475569;margin-bottom:16px;line-height:1.5;}
+.g-steps{text-align:left;background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:12px 16px;margin:0 0 18px;font-size:14.5px;line-height:1.55;color:#0f172a;}
+.g-steps div{display:flex;gap:12px;align-items:flex-start;padding:5px 0;}
+.g-steps i{font-style:normal;flex:none;width:26px;height:26px;border-radius:50%;background:#0f1e3d;color:#fff;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;}
+.g-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+.g-btn{border:none;border-radius:12px;padding:15px 22px;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit;}
+.g-go{background:#16a34a;color:#fff;}.g-fin{background:#dc2626;color:#fff;}
+.g-tl{display:flex;justify-content:space-between;gap:4px;border-top:2px solid #e2e8f0;padding-top:10px;}
+.g-tl span{flex:1;font-size:11.5px;color:#64748b;line-height:1.3;}.g-tl b{display:block;font:700 14px 'DM Mono',monospace;color:#0f1e3d;}.g-tl .r b{color:#dc2626;}
+.g-out{display:inline-block;background:#dc2626;color:#fff;font-weight:800;font-size:18px;border-radius:999px;padding:9px 22px;margin:-4px 0 16px;}
+.g-count{font-size:16px;color:#334155;margin-top:4px;}.g-cnum{width:96px;height:96px;line-height:96px;border-radius:50%;background:#0f1e3d;color:#fff;font:800 52px Arial,sans-serif;margin:4px auto 10px;}.g-count b{color:#0f1e3d;}
+.now-go.g-start{background:#16a34a!important;}
+@keyframes gPulse{0%{box-shadow:0 0 0 0 rgba(37,99,235,.55)}100%{box-shadow:0 0 0 14px rgba(37,99,235,0)}}
+.ncard.g-pulse{animation:gPulse 1.2s infinite;border-color:#2563eb!important;}
+#gHint{position:fixed;z-index:400;background:#2563eb;color:#fff;font-weight:700;font-size:14px;border-radius:10px;padding:9px 14px;box-shadow:0 10px 24px rgba(37,99,235,.35);pointer-events:none;white-space:nowrap;font-family:'Sora',sans-serif;}
+#gHint[hidden]{display:none;}
+#gHint::before{content:"";position:absolute;left:-7px;top:12px;border:7px solid transparent;border-right-color:#2563eb;border-left:0;}
 
 /* ===== Live-page additions ===== */
 #cc-boot{position:fixed;inset:0;z-index:2147483646;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-family:'Sora',system-ui,sans-serif;text-align:center;padding:24px;color:#0f1e3d;}
@@ -1106,11 +1132,38 @@ button.circ:hover{transform:scale(1.12);}
   <div id="stopWarn"></div>
   <div class="cc-sum" id="stopSum"></div>
   <div class="cc-mbtns">
-    <button class="red" id="stopOut">⏹ Finish Session &amp; Sign Out</button>
+    <button class="green" id="stopCancel">✓ Keep the class running</button>
+    <button class="red" id="stopOut">⏹ Finish class &amp; sign out</button>
     <button class="blue" id="stopShow" style="display:none">Show unmarked students</button>
-    <button class="link" id="stopCancel">Cancel, keep the class running</button>
   </div>
 </div></div>
+
+
+<!-- 19 Oct 2026: guided boxes -->
+<div class="g-ov" id="gStarted" hidden><div class="g-box">
+  <div class="g-tick">✓</div><h2>Class started</h2><div class="g-sub" id="gStartedSub"></div>
+  <div class="g-steps"><div><i>1</i><span><b>Teach as usual.</b> Take the register at any point in the class: tap once Present, twice Absent, three times Late. Every tap saves by itself.</span></div>
+  <div><i>2</i><span>CampusCore reminds you with a chime <b>halfway</b> and <b>15 minutes before the end</b>.</span></div>
+  <div><i>3</i><span>Register done? Press <b>Finish class &amp; sign out</b>.</span></div></div>
+  <div class="g-tl" id="gStartedTl"></div>
+</div></div>
+<div class="g-ov" id="gRemind" hidden><div class="g-box">
+  <div class="g-tick" id="gRemIcon">🔔</div><h2 id="gRemTitle"></h2><div class="g-sub" id="gRemSub"></div>
+  <div class="g-steps" id="gRemMsg"></div>
+  <div class="g-btns"><button class="g-btn g-go" id="gRemKeep" type="button">✓ Keep the class running</button><button class="g-btn g-fin" id="gRemFin" type="button">⏹ Finish class &amp; sign out</button></div>
+</div></div>
+<div class="g-ov" id="gAll" hidden><div class="g-box">
+  <div class="g-tick">✓</div><h2>Everyone is marked</h2><div class="g-sub" id="gAllSub"></div>
+  <div class="g-steps"><div><i>✓</i><span>All marks are <b>saved</b>.</span></div><div><i>→</i><span>Still teaching, or expecting late arrivals? <b>Keep the class running</b> and finish at the end. Done? <b>Finish class &amp; sign out</b>.</span></div></div>
+  <div class="g-btns"><button class="g-btn g-go" id="gAllKeep" type="button">✓ Keep the class running</button><button class="g-btn g-fin" id="gAllFin" type="button">⏹ Finish class &amp; sign out</button></div>
+</div></div>
+<div class="g-ov" id="gDone" hidden><div class="g-box">
+  <div class="g-tick">✓</div><h2 id="gDoneTitle">Class closed and saved</h2><div class="g-sub" id="gDoneSub"></div>
+  <div class="g-out">🔒 You are signed out</div>
+  <div class="g-steps" id="gDoneNext" style="display:none"></div>
+  <div class="g-count"><div class="g-cnum" id="gCount">5</div>This screen goes back to the sign-in page in <b id="gCount2">5</b> seconds</div>
+</div></div>
+<div id="gHint" hidden>👆 Tap a student to mark: <b>once Present</b> · twice Absent · three times Late</div>
 
 <!-- SIGNED OUT -->
 <div id="outScr" style="display:none;position:fixed;inset:0;z-index:2147483647;background:#0f1e3d;align-items:center;justify-content:center;padding:24px;font-family:Segoe UI,system-ui,Arial,sans-serif;">
@@ -1245,6 +1298,97 @@ function isPassErr(e){ return e && /^SIGNED_OUT/.test(String(e.message || '')); 
 function autoSignOut(){
   // the server also auto-stops a forgotten class after 2 idle hours
   signOut('Signed out due to inactivity', LIVE ? 'No activity for 4 hours. The running class was closed.' : 'No activity for 2 hours.');
+}
+
+
+// ============================================================ guided class flow (19 Oct 2026)
+function gHide(){ ['gStarted','gRemind','gAll'].forEach(function(i){ var e = $(i); if(e) e.hidden = true; }); }
+var G_FLAGS = {};   // also kept in memory, so a PC without session storage never repeats a reminder
+function gFlag(k, set){ var id = 'cc_g' + k + '_' + (LIVE ? LIVE.id : ''); if(set) G_FLAGS[id] = 1; try { if(set){ sessionStorage.setItem(id, '1'); return true; } return G_FLAGS[id] === 1 || sessionStorage.getItem(id) === '1'; } catch(e){ return G_FLAGS[id] === 1; } }
+function hm12(ms){ var d = new Date(ms), h = d.getHours() % 12 || 12; return h + ':' + String(d.getMinutes()).padStart(2, '0'); }
+function startNow(i){ openAtt(i); if(!LIVE) startClass(); }
+function showStarted(cls){
+  if(!LIVE) return;
+  $('gStartedSub').innerHTML = '<b>' + esc(cls ? cls.module : '') + '</b> · Session ' + esc(LIVE.num) + ' · started ' + esc(LIVE.start);
+  var tl = [[LIVE.t0, 'Started']];
+  if(LIVE.halfAt) tl.push([LIVE.halfAt, 'Halfway reminder']);
+  if(LIVE.lastAt) tl.push([LIVE.lastAt, '15 minutes left']);
+  tl.push([LIVE.endAt, 'Class ends']); tl.push([LIVE.closeAt, 'Closes by itself']);
+  $('gStartedTl').innerHTML = tl.map(function(x, k){ return '<span' + (k === tl.length - 1 ? ' class="r"' : '') + '><b>' + hm12(x[0]) + '</b>' + x[1] + '</span>'; }).join('');
+  $('gStarted').hidden = false;
+  clearTimeout(showStarted._t); showStarted._t = setTimeout(function(){ $('gStarted').hidden = true; }, 3000);
+}
+$('gStarted').onclick = function(){ $('gStarted').hidden = true; };
+function liveCounts(){
+  var c = LIVE ? CLASSES.find(function(x){ return x.key === LIVE.key; }) : null, n = 0, tot = c ? (c.count || 0) : 0, k = { p: 0, l: 0, a: 0 };
+  if(LIVE_VIEW && LIVE && LIVE_VIEW.id === LIVE.id) Object.keys(LIVE_VIEW.marks || {}).forEach(function(x){ var v = LIVE_VIEW.marks[x]; if(v === 'P') k.p++; else if(v === 'L') k.l++; else if(v === 'A') k.a++; });
+  n = k.p + k.l + k.a;
+  return { c: c, n: n, tot: tot, k: k };
+}
+function goLive(){ if(!LIVE) return; var i = CLASSES.findIndex(function(x){ return x.key === LIVE.key; }); if(i > -1 && !(CUR && CUR.key === LIVE.key && VIEW === LIVE_VIEW)) openAtt(i); else go('attendance'); }
+// Halfway and 15 minutes before the end: chime and a box. If Edge is behind another window, Edge's own small
+// message is used instead (it makes the Edge button flash on the taskbar); after OK the register opens, no second box.
+function remind(kind){
+  gFlag(kind === 'half' ? 'h' : 'q', true);
+  var L = liveCounts(), mod = L.c ? L.c.module : '', all = L.tot > 0 && L.n >= L.tot;
+  try { chime(); } catch(e){}
+  if(document.hidden || !document.hasFocus()){
+    var msg = (kind === 'half' ? 'Halfway through the class' : '15 minutes left') + ': ' + mod + '. ' + L.n + ' of ' + L.tot + ' marked. ' +
+              (all ? 'Finish the class when it ends.' : 'Please take the register.');
+    try { window.alert(msg); } catch(e){}
+    goLive(); return;
+  }
+  gHide();
+  $('gRemIcon').textContent = kind === 'half' ? '🔔' : '⏰'; $('gRemIcon').className = 'g-tick ' + (kind === 'half' ? 'blue' : 'amber');
+  $('gRemTitle').textContent = kind === 'half' ? 'Halfway through the class' : '15 minutes left';
+  $('gRemSub').innerHTML = '<b>' + esc(mod) + '</b> · ' + (kind === 'last' ? 'ends at <b>' + hm12(LIVE.endAt) + '</b> · ' : '') + '<b>' + L.n + ' of ' + L.tot + ' marked</b>';
+  $('gRemMsg').innerHTML = all
+    ? '<div><i>✓</i><span>The register is complete and saved. Finish now, or keep the class running and finish at the end.</span></div>'
+    : '<div><i>→</i><span>' + (L.n ? 'Some students are not marked yet.' : 'The register has not been taken yet.') + ' Please take it now.</span></div>' +
+      (kind === 'last' ? '<div><i>!</i><span>If nobody finishes it, the class closes by itself at <b>' + hm12(LIVE.closeAt) + '</b> with all marks saved, and the PC signs out.</span></div>' : '');
+  $('gRemKeep').textContent = all ? '✓ Keep the class running' : '✓ Take the register now';
+  $('gRemind').hidden = false;
+}
+$('gRemKeep').onclick = function(){ $('gRemind').hidden = true; goLive(); };
+$('gRemFin').onclick = function(){ $('gRemind').hidden = true; doStop('out'); };
+$('gAllKeep').onclick = function(){ $('gAll').hidden = true; };
+$('gAllFin').onclick = function(){ $('gAll').hidden = true; doStop('out'); };
+// "Everyone is marked" (once per class) and the hint on the first card while nobody is marked
+setInterval(function(){
+  if(!LIVE || SIGNED_OUT){ $('gHint').hidden = true; return; }
+  var L = liveCounts(), busy = document.querySelector('.cc-ov.show') || !$('gStarted').hidden || !$('gRemind').hidden || !$('gDone').hidden;
+  if(L.tot > 0 && L.n >= L.tot && !gFlag('a') && !busy){
+    gFlag('a', true);
+    $('gAllSub').innerHTML = '<b style="color:#16a34a">' + L.k.p + ' present</b> · <b style="color:#d97706">' + L.k.l + ' late</b> · <b style="color:#dc2626">' + L.k.a + ' absent</b>';
+    $('gAll').hidden = false;
+  }
+  var h = $('gHint'), onPage = $('page-attendance') && $('page-attendance').classList.contains('active');
+  var card = onPage && liveHere() && L.n === 0 && !busy && $('gAll').hidden ? document.querySelector('#att-tbody .ncard') : null;
+  document.querySelectorAll('.g-pulse').forEach(function(x){ if(x !== card) x.classList.remove('g-pulse'); });
+  if(!card){ h.hidden = true; return; }
+  card.classList.add('g-pulse');
+  var r = card.getBoundingClientRect(); h.style.left = Math.round(r.right + 14) + 'px'; h.style.top = Math.round(r.top + 8) + 'px'; h.hidden = false;
+}, 700);
+// the tutor's next own class later today (for the closed screen)
+function nextClassToday(exceptKey){
+  var best = null;
+  CLASSES.forEach(function(c){ if(c.cover) return; var x = slotNowOf(c, true); if(x && (!best || tMin(String(x.time).split('-')[0]) < tMin(String(best.x.time).split('-')[0]))) best = { c: c, x: x }; });
+  return best;
+}
+// Closed and signed out: green tick, totals, red "You are signed out", next class, 5-second countdown, then the sign-in page.
+function showDone(LC, sum, next, auto){
+  SIGNED_OUT = true;
+  try { endPass(); } catch(e){}
+  try { clearAll(); } catch(e){}
+  try { localStorage.setItem('cc_done_msg', '1'); } catch(e){}
+  $('gDoneTitle').textContent = auto ? 'Class closed automatically' : 'Class closed and saved';
+  $('gDoneSub').innerHTML = (LC ? '<b>' + esc(LC.module) + '</b> · ' : '') + '<b style="color:#16a34a">' + sum.p + ' present</b> · <b style="color:#d97706">' + sum.l + ' late</b> · <b style="color:#dc2626">' + sum.a + ' absent</b>' +
+    (auto ? '<br>The class reached its closing time. All marks were saved.' : '');
+  if(next){ $('gDoneNext').innerHTML = '<div><i>→</i><span><b>Your next class today:</b> ' + esc(next.c.module) + ' at ' + esc(String(next.x.time).split('-')[0]) + (next.x.room ? ' in ' + esc(next.x.room) : '') + '. Sign in again there and start it.</span></div>'; $('gDoneNext').style.display = ''; }
+  gHide(); $('gHint').hidden = true; $('gDone').hidden = false;
+  var left = 5; $('gCount').textContent = left; $('gCount2').textContent = left;
+  var t = setInterval(function(){ left--; $('gCount').textContent = Math.max(0, left); $('gCount2').textContent = Math.max(0, left);
+    if(left <= 0){ clearInterval(t); window.location.replace('classroom.html'); } }, 1000);
 }
 
 // ============================================================ API (same retry behaviour as the portals)
@@ -1418,7 +1562,7 @@ function renderNow(){
     h += now.map(function(x){
       return '<div class="now-card"><div class="now-l"><div class="now-tag"><span class="now-dot"></span>On your timetable now · ' + esc(prettyTime(x.s.time)) + (x.s.room ? ' · Room ' + esc(x.s.room) : '') + '</div>'
         + '<div class="now-mod">' + esc(x.c.module) + '</div><div class="now-sub">' + esc(x.c.groups.map(gShort).join('  +  ')) + ' · ' + x.c.count + ' students</div></div>'
-        + '<button class="now-go" onclick="openAtt(' + x.i + ')">▶ Open this class</button></div>';
+        + '<button class="now-go g-start" onclick="startNow(' + x.i + ')">▶ Start class now</button></div>';
     }).join('');
   } else if(!LIVE){
     var next = own.map(function(x){ return { c: x.c, i: x.i, s: slotNowOf(x.c, true) }; }).filter(function(x){ return x.s; })
@@ -1511,7 +1655,7 @@ function openClass(i){
   var c = CLASSES[i]; if(!c) return;
   if(c.cover || (LIVE && LIVE.key === c.key) || slotNowOf(c)){ openAtt(i); return; }
   var r = closeRuleOf(c, Date.now()), m = Math.round((r.endAt - Date.now()) / 60000), len = 'its usual ' + Math.floor(m / 60) + ' h ' + String(m % 60).padStart(2, '0');
-  $('offMp').innerHTML = 'You can still take attendance. If you start it, the class closes automatically ' + Math.floor((m + 15) / 60) + ' h ' + String((m + 15) % 60).padStart(2, '0') + ' min after you start (' + len + ' + 15 minutes).';
+  $('offMp').innerHTML = 'You can still take attendance. If you start it, the class closes automatically ' + Math.floor((m + CLOSE_AFTER_MIN) / 60) + ' h ' + String((m + CLOSE_AFTER_MIN) % 60).padStart(2, '0') + ' min after you start (' + len + ' + ' + CLOSE_AFTER_MIN + ' minutes).';
   $('offYes').onclick = function(){ $('offOv').classList.remove('show'); openAtt(i); };
   $('offOv').classList.add('show');
 }
@@ -1864,7 +2008,7 @@ function startClass(force){
   setCloseTimes(LIVE, cls, now.getTime());
   VIEW = LIVE_VIEW = { id: s.id, live: true, num: s.num, marks: {}, savedMarks: {} };
   renderStrip(); renderCtl(); renderTable();
-  toast('Class started at ' + s.start);
+  showStarted(cls);
   var localId = s.id;
   queue(async function(){
     var verify = async function(){
@@ -1888,7 +2032,12 @@ function startClass(force){
     if(LIVE && LIVE.id === s.id){ LIVE.num = s.num; LIVE.start = s.start; if(real.closeAt) setCloseTimes(LIVE, cls, LIVE.t0, real.closeAt); }
     if(CUR && CUR.key === key){ renderStrip(); renderCtl(); }
   }).catch(function(e){
-    // undo the start on screen, keep any marks as a draft
+    // 19 Oct 2026: only a clear "no" from CampusCore undoes the start. A slow or lost reply never does: the class
+    // keeps running on screen, and every save and the finish carry the class details, so CampusCore records it anyway.
+    if(!(e && e.serverSaid) || isPassErr(e) || /lock|timed? ?out|busy|try again/i.test(String(e && e.message))){
+      if(!isPassErr(e)) toast('CampusCore is slow to confirm the start. Your class is running and every mark is saved.');
+      return;
+    }
     var i = list.indexOf(s); if(i > -1) list.splice(i, 1);
     if(LIVE && LIVE.id === s.id){ LIVE = null; LIVE_VIEW = null; renderLiveNav(); }
     if(VIEW && VIEW.id === s.id){ VIEW = null; }
@@ -1942,19 +2091,27 @@ $('cancelYes').onclick = doCancel;
 $('cancelNo').onclick = function(){ $('cancelOv').classList.remove('show'); };
 var STOP_LABELS = null, STOPPING = false;
 async function doStop(after, auto){
-  if(STOPPING) return; STOPPING = true;
+  if(STOPPING) return;
+  if(!LIVE){ try { $('stopOv').classList.remove('show'); gHide(); } catch(e){} if(after === 'out') signOut(); return; }
+  STOPPING = true;
   var L = LIVE, key = L.key, s = sessionsOf(key).find(function(x){ return x.id === L.id; });
   if(after === 'out'){
-    // the whole register goes once more with the emails (the server sends them only if switched on in KEY),
-    // even if the tutor is on another page; unmarked students are not sent
-    var LC = CLASSES.find(function(x){ return x.key === key; });
-    if(LIVE_VIEW && LIVE_VIEW.id === L.id && LC && Object.keys(LIVE_VIEW.marks || {}).length) save(true, true, LIVE_VIEW, LC);
+    // 19 Oct 2026: each step is guarded, so Finish always closes the class, sends the stop and signs out.
+    var sum = { p: 0, l: 0, a: 0 }, LC = null;
+    try {
+      LC = CLASSES.find(function(x){ return x.key === key; });
+      if(LIVE_VIEW && LIVE_VIEW.id === L.id) Object.keys(LIVE_VIEW.marks || {}).forEach(function(k){ var v = LIVE_VIEW.marks[k]; if(v === 'P') sum.p++; else if(v === 'L') sum.l++; else if(v === 'A') sum.a++; });
+      // the whole register goes once more with the emails (the server sends them only if switched on in KEY); unmarked students are not sent
+      if(LIVE_VIEW && LIVE_VIEW.id === L.id && LC && Object.keys(LIVE_VIEW.marks || {}).length) save(true, true, LIVE_VIEW, LC);
+    } catch(e){}
     // closed automatically: the recorded stop time is the usual end of the class
     var stopAt = auto ? Math.min(Date.now(), L.endAt || Date.now()) : Date.now();
-    queue(function(){ return apiPost('stopClassSession', Object.assign(sessInfo(L.id, key), { sessionId: L.id, email: TUTOR, stoppedAt: stopAt, auto: !!auto })); }).catch(function(){});
+    try { queue(function(){ return apiPost('stopClassSession', Object.assign(sessInfo(L.id, key), { sessionId: L.id, email: TUTOR, stoppedAt: stopAt, auto: !!auto })); }).catch(function(){}); } catch(e){}
     try { sessionStorage.removeItem(draftKey(L.id)); } catch(e){}
-    LIVE = null; VIEW = null; LIVE_VIEW = null; renderLiveNav(); STOPPING = false; $('stopOv').classList.remove('show'); $('offOv').classList.remove('show'); closeNotices();
-    if(auto) signOut('Class closed automatically', 'The class reached its closing time. Your marks were saved and you have been signed out.'); else signOut();
+    var next = null; try { next = nextClassToday(key); } catch(e){}
+    LIVE = null; VIEW = null; LIVE_VIEW = null; STOPPING = false;
+    try { renderLiveNav(); $('stopOv').classList.remove('show'); $('offOv').classList.remove('show'); closeNotices(); gHide(); } catch(e){}
+    showDone(LC, sum, next, !!auto);
     return;
   }
   // Closed on screen at once; CampusCore records it in the background.
@@ -2049,6 +2206,7 @@ async function openCover(i){
 // ============================================================ closing time, 30-minute sound, automatic close
 // Same rule as the server: started inside (or up to 15 minutes before) a timetabled slot today -> that slot's end;
 // otherwise start + the usual length of the class. The class closes by itself 15 minutes after that.
+var CLOSE_AFTER_MIN = 10;   // 19 Oct 2026: was 15. Closes this many minutes after the end.
 function closeRuleOf(c, t0){
   var d = new Date(t0), day = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'][d.getDay()], m = d.getHours() * 60 + d.getMinutes();
   var len = 100, best = null;
@@ -2058,12 +2216,16 @@ function closeRuleOf(c, t0){
     if(String(x.day).toLowerCase() === day && m >= a - 15 && m < e) best = { a: a, e: e };
   });
   var end = best ? new Date(d.getFullYear(), d.getMonth(), d.getDate(), Math.floor(best.e / 60), best.e % 60).getTime() : t0 + len * 60000;
-  return { endAt: end, closeAt: end + 15 * 60000 };
+  var startAt = best ? new Date(d.getFullYear(), d.getMonth(), d.getDate(), Math.floor(best.a / 60), best.a % 60).getTime() : t0;
+  return { endAt: end, closeAt: end + CLOSE_AFTER_MIN * 60000, startAt: startAt };
 }
 function setCloseTimes(L, c, t0, serverCloseAt){
   var r = closeRuleOf(c, t0);
-  if(serverCloseAt){ r.closeAt = Number(serverCloseAt); r.endAt = r.closeAt - 15 * 60000; }
+  if(serverCloseAt){ r.closeAt = Number(serverCloseAt); r.endAt = r.closeAt - 10 * 60000; }
   L.endAt = r.endAt; L.closeAt = r.closeAt;
+  // reminders: halfway through the timetabled class and 15 minutes before its end (skipped if the class started after them)
+  var s0 = Math.min(r.startAt || t0, r.endAt), half = s0 + (r.endAt - s0) / 2, last = r.endAt - 15 * 60000;
+  L.halfAt = t0 < half - 60000 ? half : 0; L.lastAt = t0 < last - 60000 ? last : 0;
   try { L.warned = sessionStorage.getItem('cc_warn_' + L.id) === '1'; } catch(e){}
 }
 // The warning is a sound only (no banner): played twice, 30 minutes before the class ends.
@@ -2082,10 +2244,8 @@ function chime(){
 setInterval(function(){
   if(!LIVE || SIGNED_OUT || !LIVE.closeAt) return;
   var now = Date.now();
-  if(!LIVE.warned && now >= LIVE.endAt - 30 * 60000 && now < LIVE.closeAt){
-    LIVE.warned = true; try { sessionStorage.setItem('cc_warn_' + LIVE.id, '1'); } catch(e){}
-    chime();
-  }
+  if(LIVE.halfAt && now >= LIVE.halfAt && now < LIVE.halfAt + 10 * 60000 && !gFlag('h')) remind('half');
+  else if(LIVE.lastAt && now >= LIVE.lastAt && now < LIVE.closeAt && !gFlag('q')) remind('last');
   if(now >= LIVE.closeAt && !STOPPING) doStop('out', true);
 }, 15000);
 
@@ -2204,11 +2364,11 @@ function renderAnnouncements(anns){
     return `<div class="announcement-card" style="${borderStyle}">
       <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px;">
         <div>
-          <div class="ann-title" style="${titleColor}">${prefix}${a.title}</div>
-          <div class="ann-date">${a.date||''}${metaExtra}</div>
+          <div class="ann-title" style="${titleColor}">${prefix}${esc(a.title)}</div>
+          <div class="ann-date">${esc(a.date||'')}${metaExtra}</div>
         </div>
       </div>
-      <div class="ann-body" style="white-space:pre-line;">${a.body||''}</div>
+      <div class="ann-body" style="white-space:pre-line;">${esc(a.body||'')}</div>
     </div>`;
   }).join('');
 }

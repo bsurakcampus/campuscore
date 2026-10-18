@@ -138,8 +138,8 @@ h2{font:400 34px var(--display);color:var(--navy);}
     <button class="btn" id="send-btn" onclick="sendCode()">Email me a sign-in link</button>
     <div class="steps" id="link-steps">
       <div class="step"><i>1</i><span>Open the email on your phone.</span></div>
-      <div class="step"><i>2</i><span>Check the code matches this screen and press <b>Approve</b>.</span></div>
-      <div class="step"><i>3</i><span>Your classes open here. Sign out when you finish.</span></div>
+      <div class="step"><i>2</i><span>On your phone, <b>tap the number shown on this screen</b>.</span></div>
+      <div class="step"><i>3</i><span>Your class is ready: <b>start it with one tap</b>.</span></div>
     </div>
     <p class="small cc-footer-note">Shared classroom PC. Signs out when the browser closes and after 2 hours without use. Not recognised? Write to <a href="mailto:academics@bathspa.ae">academics@bathspa.ae</a></p>
   </div>
@@ -151,11 +151,11 @@ h2{font:400 34px var(--display);color:var(--navy);}
     <p class="sent-to" id="otp-sent-to">We sent a sign-in link to your email.</p>
     <div class="code-box">
       <div><div class="code-lbl">Your code</div><div class="code-num" id="wait-code">--</div></div>
-      <div class="code-hint">Your phone will show the same code. Only approve if they match.</div>
+      <div class="code-hint">On your phone, <b>tap this number</b> to approve. Nobody can sign in without it.</div>
     </div>
     <div class="wait-row" id="wait-status"><span class="spin"></span><span id="wait-text">Waiting for approval…</span></div>
     <div class="err-msg" id="otp-err"></div>
-    <p class="resend">No email after a minute? Check Junk, or <button class="link-btn" onclick="sendCode()">send a new link</button>.</p>
+    <p class="resend">No email after a minute? Check the spelling and your Junk folder, or <button class="link-btn" onclick="sendCode()">send a new link</button>.</p>
     <p class="small cc-footer">© 2025–2026 Bath Spa University · RAK Campus</p>
   </div>
 
@@ -242,7 +242,7 @@ function backToLogin(){
 }
 
 // ── Send sign-in link ──
-// "iftikhar" or "iftikhar@bathspa.ae" -> "iftikhar@bathspa.ae"; any other domain -> ''
+// "your.name" or "your.name@bathspa.ae" -> "your.name@bathspa.ae"; any other domain -> ''
 // Attendance, starts and closes from a classroom page that was closed before CampusCore confirmed
 // them are kept in this browser and sent again from here (the server ignores repeats).
 (function obReplay(){
@@ -275,11 +275,11 @@ function sendCode(){
   var onWait = $('screen-otp').classList.contains('active');
   $('login-err').style.display = 'none'; $('otp-err').style.display = 'none';
   var errEl = $(onWait ? 'otp-err' : 'login-err');
-  if(!raw){ errEl.textContent = 'Please type your BSU email name, for example iftikhar.'; errEl.style.display = 'block'; return; }
+  if(!raw){ errEl.textContent = 'Please type your BSU email name, for example your.name.'; errEl.style.display = 'block'; return; }
   if(!val){ errEl.textContent = 'Only @bathspa.ae staff emails can sign in here.'; errEl.style.display = 'block'; return; }
   stopPoll();
   // Show the code screen straight away; the email is sent in the background.
-  var seq = ++_sendSeq, rid = newRid(), code = String(10 + Math.floor(Math.random() * 90)), u = val.split('@');
+  var seq = ++_sendSeq, rid = newRid(), code = '··', u = val.split('@');   // the number comes from CampusCore
   showWait({ requestId: rid, code: code, maskedEmail: u[0].charAt(0) + '***@' + u[1], expiresIn: 600 }, true);
   setWait('Sending the email to your phone…', false);
   var resp = '';
@@ -290,7 +290,7 @@ function sendCode(){
   // fetch the classroom page now, while the tutor approves, so it opens straight from the browser cache
   try { if(!document.getElementById('pf-portal')){ var lk = document.createElement('link'); lk.id = 'pf-portal'; lk.rel = 'prefetch'; lk.href = PORTAL; document.head.appendChild(lk); } } catch(e){}
   _pollTimer = setTimeout(poll, 1200);
-  fetch(API + '?action=requestLoginLink&portal=classroom&email=' + encodeURIComponent(val) + '&rid=' + rid + '&code=' + code, { signal: ctl ? ctl.signal : undefined })
+  fetch(API + '?action=requestLoginLink&portal=classroom&email=' + encodeURIComponent(val) + '&rid=' + rid, { signal: ctl ? ctl.signal : undefined })
     .then(function(r){ clearTimeout(slow); return r.text(); })
     .then(function(t){ resp = t; try { return JSON.parse(t); } catch(e){ return { lost: true }; } })
     .catch(function(){ return { lost: true }; })
@@ -307,7 +307,7 @@ function sendCode(){
         failSend(said || ('Could not send the sign-in link. Please try again. (Server reply: ' + (String(resp).replace(/<(script|style)[^>]*>[\s\S]*?<\/\1>/gi,' ').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim().slice(0, 300) || 'empty') + ')'));
         return;
       }
-      if(data.code && String(data.code) !== code) $('wait-code').textContent = data.code;   // older server picks its own code
+      if(data.code) $('wait-code').textContent = data.code;
       _grace = 0;
       if(/sending/i.test($('wait-text').textContent)) setWait('Waiting for approval…', false);
       if(!_pollTimer) _pollTimer = setTimeout(poll, 300);
@@ -372,7 +372,7 @@ function poll(){
   var rid = _rid; if(!rid) return;
   if(Date.now() > _pollUntil){ waitError('The sign-in link has expired. Please send a new link.'); return; }
   _pollTimer = setTimeout(poll, 1000);
-  if(_inFlight >= 4) return;
+  if(_inFlight >= 1) return;                     // one check at a time per PC (keeps Google free at busy times)
   _inFlight++;
   fetch(API + '?action=checkLoginLink&rid=' + encodeURIComponent(rid) + '&_=' + Date.now(), { cache: 'no-store' })
     .then(function(r){ return r.json(); })
@@ -390,6 +390,9 @@ function poll(){
         return;
       }
       if(st === 'denied'){ waitError('Sign-in was declined on the phone. If that was a mistake, send a new link.'); return; }
+      if(st === 'locked'){ waitError('Sign-in cancelled: a different number was tapped on the phone. Please send a new link.'); return; }
+      if(st === 'replaced'){ waitError('A newer sign-in was requested for this email, so this one was cancelled. If that was not you, tell academics@bathspa.ae. Then send a new link.'); return; }
+      if(st === 'pending' && data.code && $('wait-code').textContent !== String(data.code)) $('wait-code').textContent = data.code;
       if(st === 'expired' && Date.now() < _grace) return;
       if(st === 'pending' && /sending/i.test($('wait-text').textContent)) setWait('Waiting for approval…', false);
       if(st === 'expired'){ waitError('The sign-in link has expired or was already used. Please send a new link.'); return; }
@@ -407,6 +410,9 @@ function finishSignIn(){
 
 $('login-input').addEventListener('keydown', function(e){ if(e.key === 'Enter') sendCode(); });
 // signed out because the browser was closed or the PC restarted: say so, and that the class is safe
+(function(){ var d = null; try { d = localStorage.getItem('cc_done_msg'); localStorage.removeItem('cc_done_msg'); } catch(e){}
+  if(d){ var e0 = $('login-err'); e0.style.background = '#ecfdf3'; e0.style.borderColor = '#86efac'; e0.style.color = '#166534';
+    e0.innerHTML = '<b>✓ Class closed and saved. You are signed out.</b><br>Next class? The next tutor signs in here.'; e0.style.display = 'block'; } })();
 (function(){ var m = null; try { m = localStorage.getItem('cc_closed_msg'); localStorage.removeItem('cc_closed_msg'); } catch(e){}
   if(m){ var e = $('login-err'); e.style.background = '#eef6ff'; e.style.borderColor = '#bfdbfe'; e.style.color = '#1e3a8a';
     e.innerHTML = '<b>You were signed out because the browser was closed.</b> If your class was running, it is still running: sign in again and it opens where you left it, with your marks.'; e.style.display = 'block'; } })();

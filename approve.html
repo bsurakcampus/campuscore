@@ -33,6 +33,15 @@ p strong{color:#0f172a;}
 .err{background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:10px 12px;font-size:12.5px;color:#b91c1c;margin-bottom:12px;display:none;}
 .foot{font-size:11px;color:#94a3b8;text-align:center;margin-top:18px;line-height:1.7;}
 .hide{display:none;}
+.cls{border:1.5px solid #bfdbfe;background:#eff6ff;border-radius:10px;padding:11px 13px;margin:12px 0 4px;font-size:13px;color:#1e3a8a;line-height:1.45;}
+.cls b.m{display:block;font-size:16px;color:#0f1e3d;}
+.cls.none{border-color:#fecaca;background:#fef2f2;color:#991b1b;}
+.q{font-size:15px;font-weight:700;text-align:center;margin:16px 0 12px;}
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 6px;margin-bottom:14px;}
+.ch{height:72px;border-radius:999px;border:2.5px solid #cbd5e1;background:#fff;font:600 32px 'DM Mono',monospace;color:#0f172a;cursor:pointer;}
+.ch:disabled{opacity:.5;}
+.ch.on{border-color:#16a34a;background:#ecfdf3;color:#166534;opacity:1;}
+.hint{font-size:11.5px;color:#94a3b8;text-align:center;margin-top:4px;}
 </style>
 </head>
 <body>
@@ -44,14 +53,13 @@ p strong{color:#0f172a;}
   <div id="v-ask" class="hide">
     <div class="badge">🏫 Classroom Attendance</div>
     <h1>Approve sign-in?</h1>
-    <p>Someone is signing in to the classroom attendance page as <strong id="ask-email"></strong>.</p>
-    <div class="code-box">
-      <div><div class="code-lbl">Code</div><div class="code-num" id="ask-code">--</div></div>
-      <div class="code-hint">Only approve if the classroom screen shows this same code.</div>
-    </div>
+    <p>Someone is signing in to a classroom PC as <strong id="ask-email"></strong>.</p>
+    <div class="cls" id="ask-cls"></div>
+    <div class="q">Which number is on the classroom screen?</div>
+    <div class="choices" id="choices"></div>
     <div class="err" id="ask-err"></div>
-    <button class="btn btn-yes" id="btn-yes" onclick="decide('approveLoginLink')">Approve sign-in</button>
-    <button class="btn btn-no" id="btn-no" onclick="decide('denyLoginLink')">This wasn't me</button>
+    <button class="btn btn-no" id="btn-no" onclick="decide('denyLoginLink')">I am not in that room: do not sign in</button>
+    <p class="hint">Tap the wrong number and this sign-in is cancelled for safety.</p>
   </div>
 
   <div id="v-ok" class="hide state">
@@ -64,6 +72,18 @@ p strong{color:#0f172a;}
     <div class="ic">🛑</div>
     <h1>Sign-in declined</h1>
     <p>Nobody was signed in. If you did not request this, you can ignore it. If it keeps happening, please tell <strong>academics@bathspa.ae</strong>.</p>
+  </div>
+
+  <div id="v-locked" class="hide state">
+    <div class="ic">🔒</div>
+    <h1>Sign-in cancelled</h1>
+    <p>That was not the number on the classroom screen, so nobody was signed in. If you are at the classroom PC, send a new link there.</p>
+  </div>
+
+  <div id="v-replaced" class="hide state">
+    <div class="ic">🔁</div>
+    <h1>This link was replaced</h1>
+    <p>A newer sign-in was requested for your email, so this link no longer works. Use the newest email, and only if <strong>you</strong> are at the classroom PC. If you did not request it, tell <strong>academics@bathspa.ae</strong>.</p>
   </div>
 
   <div id="v-expired" class="hide state">
@@ -87,7 +107,7 @@ var T = '', C = '', E = '';
 try { var q = new URLSearchParams(location.search); T = q.get('t') || ''; C = q.get('c') || ''; E = q.get('e') || ''; } catch(e){}
 
 function show(id){
-  ['v-load','v-ask','v-ok','v-denied','v-expired','v-fail'].forEach(function(v){
+  ['v-load','v-ask','v-ok','v-denied','v-locked','v-replaced','v-expired','v-fail'].forEach(function(v){
     document.getElementById(v).className = (v === id) ? (v === 'v-ask' || v === 'v-load' ? '' : 'state') : 'hide';
   });
 }
@@ -97,63 +117,67 @@ function byStatus(st){
   else show('v-expired');
 }
 
-// Load: show the code first. Opening the link never approves anything by itself.
+function esc(x){ return String(x == null ? '' : x).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+// Load: show the class and the four numbers. Opening the link never approves anything by itself.
 (function(){
   if(!/^[a-f0-9]{40,80}$/i.test(T)){ show('v-expired'); return; }
-  // The code comes in the link, so the question shows at once; the server check below runs alongside.
-  if(/^\d{2}$/.test(C)){
-    document.getElementById('ask-email').textContent = E || 'your BSU email';
-    document.getElementById('ask-code').textContent = C;
-    show('v-ask');
-  }
-  fetch(API + '?action=getLoginLink&t=' + encodeURIComponent(T))
+  fetch(API + '?action=getLoginLink&t=' + encodeURIComponent(T) + '&_=' + Date.now(), { cache: 'no-store' })
     .then(function(r){ return r.json(); })
     .then(function(d){
       var data = d.data || d;
-      if(document.getElementById('btn-yes').disabled) return;   // already pressing Approve
-      if(data && data.status === 'pending'){
-        document.getElementById('ask-email').textContent = data.maskedEmail || '';
-        document.getElementById('ask-code').textContent = data.code || '--';
-        show('v-ask');
-      } else byStatus(data && data.status);
+      if(!data || data.status !== 'pending'){ byStatus(data && data.status); return; }
+      document.getElementById('ask-email').textContent = data.maskedEmail || E || 'your BSU email';
+      var c = data.cls, box = document.getElementById('ask-cls');
+      if(c){ box.innerHTML = '<b class="m">' + esc(c.module) + '</b>' + esc(c.groups) + '<br><b>Room ' + esc(c.room || '-') + ' · ' + esc(c.time) + '</b>'; }
+      else { box.className = 'cls none'; box.innerHTML = '<b>You have no class on the timetable right now.</b> If you are not at a classroom PC, do not approve.'; }
+      var ch = document.getElementById('choices');
+      ch.innerHTML = (data.choices || []).map(function(n){ return '<button type="button" class="ch" data-n="' + esc(n) + '">' + esc(n) + '</button>'; }).join('');
+      ch.querySelectorAll('.ch').forEach(function(b){ b.onclick = function(){ pick(b); }; });
+      show('v-ask');
     })
-    .catch(function(){ if(!/^\d{2}$/.test(C)) show('v-fail'); });
+    .catch(function(){ show('v-fail'); });
 })();
-
-// The tap is sent at once. Google sometimes holds a reply back for a while even though the work is
-// done, so from 1 second the page also asks for the status (and re-sends the tap, which is safe to
-// repeat). Whichever answer comes first is shown.
-function decide(action){
-  var yes = document.getElementById('btn-yes'), no = document.getElementById('btn-no'), e = document.getElementById('ask-err');
-  yes.disabled = no.disabled = true; e.style.display = 'none';
-  if(action === 'approveLoginLink') yes.textContent = 'Approving…';
-  var done = false, fails = 0, t0 = Date.now(), timers = [];
-  function finish(st){
-    if(done || !st || st === 'pending') return;
-    done = true; timers.forEach(clearTimeout); byStatus(st);
-  }
+function byStatusAll(st){
+  if(st === 'locked') show('v-locked'); else if(st === 'replaced') show('v-replaced'); else byStatus(st);
+}
+// One tap. Sent at once; from 1 second the page also asks for the status (Google sometimes holds a reply back),
+// and the same tap is sent again every few rounds (a repeat changes nothing).
+function pick(btn){
+  var all = document.querySelectorAll('.ch'), no = document.getElementById('btn-no'), e = document.getElementById('ask-err');
+  if(btn.disabled) return;
+  all.forEach(function(b){ b.disabled = true; }); btn.classList.add('on'); no.disabled = true; e.style.display = 'none';
+  var n = btn.getAttribute('data-n'), done = false, t0 = Date.now(), timers = [];
+  function finish(st){ if(done || !st || st === 'pending') return; done = true; timers.forEach(clearTimeout); byStatusAll(st); }
   function call(url){
-    return fetch(url + (url.indexOf('?') > -1 ? '&' : '?') + '_=' + Date.now(), { cache: 'no-store' })
-      .then(function(r){ return r.json(); })
-      .then(function(d){ var data = d.data || d; finish(data && data.status); })
-      .catch(function(){ fails++; });
+    return fetch(url + '&_=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.json(); })
+      .then(function(d){ var data = d.data || d; finish(data && data.status); }).catch(function(){});
   }
-  var send = API + '?action=' + action + '&t=' + encodeURIComponent(T), ask = API + '?action=getLoginLink&t=' + encodeURIComponent(T);
+  var send = API + '?action=approveLoginLink&t=' + encodeURIComponent(T) + '&c=' + encodeURIComponent(n), ask = API + '?action=getLoginLink&t=' + encodeURIComponent(T);
   call(send);
-  (function loop(n){
+  (function loop(k){
     timers.push(setTimeout(function(){
       if(done) return;
-      call(ask);
-      if(n % 3 === 2) call(send);                       // re-send the tap every few rounds
+      call(ask); if(k % 3 === 2) call(send);
       if(Date.now() - t0 > 30000){
         done = true; timers.forEach(clearTimeout);
-        yes.disabled = no.disabled = false; yes.textContent = 'Approve sign-in';
-        e.textContent = 'Could not reach CampusCore. Please check your connection and try again.'; e.style.display = 'block';
+        all.forEach(function(b){ b.disabled = false; b.classList.remove('on'); }); no.disabled = false;
+        e.textContent = 'Could not reach CampusCore. Please check your connection and tap the number again.'; e.style.display = 'block';
         return;
       }
-      loop(n + 1);
-    }, n === 0 ? 1000 : 1000));
+      loop(k + 1);
+    }, 1000));
   })(0);
+}
+// "I am not in that room": stops this sign-in.
+function decide(action){
+  var no = document.getElementById('btn-no'); no.disabled = true;
+  document.querySelectorAll('.ch').forEach(function(b){ b.disabled = true; });
+  var url = API + '?action=' + action + '&t=' + encodeURIComponent(T), tries = 0;
+  (function go(){
+    fetch(url + '&_=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.json(); })
+      .then(function(d){ var data = d.data || d; byStatusAll(data && data.status === 'pending' ? 'denied' : data && data.status); })
+      .catch(function(){ if(++tries < 5) setTimeout(go, 1500); else show('v-fail'); });
+  })();
 }
 </script>
 </body>
