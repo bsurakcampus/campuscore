@@ -82,7 +82,7 @@ p strong{color:#0f172a;}
 
   <div id="v-replaced" class="hide state">
     <div class="ic">🔁</div>
-    <h1>This link was replaced</h1>
+    <h1>Please use the newest email</h1>
     <p>A newer sign-in was requested for your email, so this link no longer works. Use the newest email, and only if <strong>you</strong> are at the classroom PC. If you did not request it, tell <strong>academics@bathspa.ae</strong>.</p>
   </div>
 
@@ -125,7 +125,7 @@ function esc(x){ return String(x == null ? '' : x).replace(/[&<>"']/g, function(
     .then(function(r){ return r.json(); })
     .then(function(d){
       var data = d.data || d;
-      if(!data || data.status !== 'pending'){ byStatus(data && data.status); return; }
+      if(!data || data.status !== 'pending'){ byStatusAll(data && data.status); return; }
       document.getElementById('ask-email').textContent = data.maskedEmail || E || 'your BSU email';
       var c = data.cls, box = document.getElementById('ask-cls');
       if(c){ box.innerHTML = '<b class="m">' + esc(c.module) + '</b>' + esc(c.groups) + '<br><b>Room ' + esc(c.room || '-') + ' · ' + esc(c.time) + '</b>'; }

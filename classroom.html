@@ -155,7 +155,7 @@ h2{font:400 34px var(--display);color:var(--navy);}
     </div>
     <div class="wait-row" id="wait-status"><span class="spin"></span><span id="wait-text">Waiting for approval…</span></div>
     <div class="err-msg" id="otp-err"></div>
-    <p class="resend">No email after a minute? Check the spelling and your Junk folder, or <button class="link-btn" onclick="sendCode()">send a new link</button>.</p>
+    <p class="resend" id="resend">Not arrived? Check the spelling and your Junk folder, or <button class="link-btn" onclick="sendCode()">send a new link</button>.</p>
     <p class="small cc-footer">© Bath Spa University - RAK Campus</p>
   </div>
 
@@ -281,6 +281,7 @@ function sendCode(){
   // Show the code screen straight away; the email is sent in the background.
   var seq = ++_sendSeq, rid = newRid(), code = '··', u = val.split('@');   // the number comes from CampusCore
   showWait({ requestId: rid, code: code, maskedEmail: u[0].charAt(0) + '***@' + u[1], expiresIn: 600 }, true);
+  resendLater(seq);
   setWait('Sending the email to your phone…', false);
   var resp = '';
   // never wait for ever: after 25 seconds stop waiting and ask the server whether the link went out
@@ -289,7 +290,7 @@ function sendCode(){
   _grace = Date.now() + 30000;                     // until the request is confirmed, "not found yet" just means wait
   // fetch the classroom page now, while the tutor approves, so it opens straight from the browser cache
   try { if(!document.getElementById('pf-portal')){ var lk = document.createElement('link'); lk.id = 'pf-portal'; lk.rel = 'prefetch'; lk.href = PORTAL; document.head.appendChild(lk); } } catch(e){}
-  _pollTimer = setTimeout(poll, 1200);
+  _pollTimer = setTimeout(poll, 2000);
   fetch(API + '?action=requestLoginLink&portal=classroom&email=' + encodeURIComponent(val) + '&rid=' + rid, { signal: ctl ? ctl.signal : undefined })
     .then(function(r){ clearTimeout(slow); return r.text(); })
     .then(function(t){ resp = t; try { return JSON.parse(t); } catch(e){ return { lost: true }; } })
@@ -309,7 +310,7 @@ function sendCode(){
       }
       if(data.code) $('wait-code').textContent = data.code;
       _grace = 0;
-      if(/sending/i.test($('wait-text').textContent)) setWait('Waiting for approval…', false);
+      if(/sending/i.test($('wait-text').textContent)) setWait('Check your email on your phone and tap this number.', false);
       if(!_pollTimer) _pollTimer = setTimeout(poll, 300);
     })
     .catch(function(){ if(seq === _sendSeq) failSend('Could not reach CampusCore. Check the internet connection and try again.'); });
@@ -350,7 +351,7 @@ function showWait(data, noPoll){
   setWait('Waiting for approval…', false);
   show('screen-otp');
   _pollUntil = Date.now() + ((Number(data.expiresIn) || 600) + 30) * 1000;
-  if(!noPoll) _pollTimer = setTimeout(poll, 1000);
+  if(!noPoll) _pollTimer = setTimeout(poll, 2000);
 }
 function setWait(text, done, hide){
   var row = $('wait-status');
@@ -360,19 +361,27 @@ function setWait(text, done, hide){
   $('wait-text').textContent = text;
 }
 function stopPoll(){ if(_pollTimer){ clearTimeout(_pollTimer); _pollTimer = null; } _rid = null; }
+// 20 Oct 2026: "send a new link" appears only after 30 seconds, so a second email does not cancel one still on its way.
+function resendLater(seq){
+  var r = $('resend'); if(!r) return; r.style.display = 'none';
+  setTimeout(function(){ if(seq === _sendSeq) r.style.display = ''; }, 30000);
+}
 function waitError(msg){
-  stopPoll(); setWait('', false, true);
+  stopPoll(); setWait('', false, true); if($('resend')) $('resend').style.display = '';
   var e = $('otp-err'); e.textContent = msg; e.style.display = 'block';
 }
-// Asks every second whether the phone has approved, without waiting for the previous answer
+// Asks every 2 seconds whether the phone has approved, without waiting for the previous answer
 // (Google sometimes takes a few seconds to reply), so approval is noticed as soon as it happens.
-var _inFlight = 0;
+var _inFlight = 0, _hidTick = 0;
+// back in front: check at once
+document.addEventListener('visibilitychange', function(){ if(!document.hidden && _rid){ clearTimeout(_pollTimer); poll(); } });
 function poll(){
   _pollTimer = null;
   var rid = _rid; if(!rid) return;
   if(Date.now() > _pollUntil){ waitError('The sign-in link has expired. Please send a new link.'); return; }
-  _pollTimer = setTimeout(poll, 1000);
-  if(_inFlight >= 1) return;                     // one check at a time per PC (keeps Google free at busy times)
+  _pollTimer = setTimeout(poll, 2000);           // 20 Oct 2026: every 2 seconds (was 1), so 9:00 does not crowd Google
+  if(_inFlight >= 1) return;
+  if(document.hidden && (++_hidTick % 3)) return;   // hidden or covered: check every 6 seconds instead
   _inFlight++;
   fetch(API + '?action=checkLoginLink&rid=' + encodeURIComponent(rid) + '&_=' + Date.now(), { cache: 'no-store' })
     .then(function(r){ return r.json(); })
@@ -394,7 +403,7 @@ function poll(){
       if(st === 'replaced'){ waitError('A newer sign-in was requested for this email, so this one was cancelled. If that was not you, tell academics@bathspa.ae. Then send a new link.'); return; }
       if(st === 'pending' && data.code && $('wait-code').textContent !== String(data.code)) $('wait-code').textContent = data.code;
       if(st === 'expired' && Date.now() < _grace) return;
-      if(st === 'pending' && /sending/i.test($('wait-text').textContent)) setWait('Waiting for approval…', false);
+      if(st === 'pending' && /sending/i.test($('wait-text').textContent)) setWait('Check your email on your phone and tap this number.', false);
       if(st === 'expired'){ waitError('The sign-in link has expired or was already used. Please send a new link.'); return; }
     })
     .catch(function(){ _inFlight--; });          // keep trying on a network blip

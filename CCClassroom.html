@@ -1316,9 +1316,17 @@ function showStarted(cls){
   tl.push([LIVE.endAt, 'Class ends']); tl.push([LIVE.closeAt, 'Closes by itself']);
   $('gStartedTl').innerHTML = tl.map(function(x, k){ return '<span' + (k === tl.length - 1 ? ' class="r"' : '') + '><b>' + hm12(x[0]) + '</b>' + x[1] + '</span>'; }).join('');
   $('gStarted').hidden = false;
-  clearTimeout(showStarted._t); showStarted._t = setTimeout(function(){ $('gStarted').hidden = true; }, 3000);
+  clearTimeout(showStarted._t); showStarted._t = setTimeout(startedDone, 3000);
 }
-$('gStarted').onclick = function(){ $('gStarted').hidden = true; };
+// 20 Oct 2026: when the "Class started" box closes, the notices open by themselves (once per class),
+// so they are on the classroom screen while students arrive. "Close and continue" goes back to the register.
+function startedDone(){
+  clearTimeout(showStarted._t);
+  if($('gStarted').hidden) return;
+  $('gStarted').hidden = true;
+  if(LIVE && !SIGNED_OUT && !gFlag('n')){ gFlag('n', true); try { openNotices(); } catch(e){} }
+}
+$('gStarted').onclick = startedDone;
 function liveCounts(){
   var c = LIVE ? CLASSES.find(function(x){ return x.key === LIVE.key; }) : null, n = 0, tot = c ? (c.count || 0) : 0, k = { p: 0, l: 0, a: 0 };
   if(LIVE_VIEW && LIVE && LIVE_VIEW.id === LIVE.id) Object.keys(LIVE_VIEW.marks || {}).forEach(function(x){ var v = LIVE_VIEW.marks[x]; if(v === 'P') k.p++; else if(v === 'L') k.l++; else if(v === 'A') k.a++; });
@@ -1356,7 +1364,7 @@ $('gAllFin').onclick = function(){ $('gAll').hidden = true; doStop('out'); };
 // "Everyone is marked" (once per class) and the hint on the first card while nobody is marked
 setInterval(function(){
   if(!LIVE || SIGNED_OUT){ $('gHint').hidden = true; return; }
-  var L = liveCounts(), busy = document.querySelector('.cc-ov.show') || !$('gStarted').hidden || !$('gRemind').hidden || !$('gDone').hidden;
+  var L = liveCounts(), busy = document.querySelector('.cc-ov.show') || ($('notOv') && $('notOv').classList.contains('show')) || !$('gStarted').hidden || !$('gRemind').hidden || !$('gDone').hidden;
   if(L.tot > 0 && L.n >= L.tot && !gFlag('a') && !busy){
     gFlag('a', true);
     $('gAllSub').innerHTML = '<b style="color:#16a34a">' + L.k.p + ' present</b> · <b style="color:#d97706">' + L.k.l + ' late</b> · <b style="color:#dc2626">' + L.k.a + ' absent</b>';
