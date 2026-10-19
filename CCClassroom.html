@@ -937,6 +937,19 @@ button.circ:hover{transform:scale(1.12);}
 #gHint[hidden]{display:none;}
 #gHint::before{content:"";position:absolute;left:-7px;top:12px;border:7px solid transparent;border-right-color:#2563eb;border-left:0;}
 
+/* 20 Oct 2026: Accounts column: registration on top, accounts status below, both from the receivable file */
+.rg th.ax,.rg td.ax{min-width:138px!important;width:138px!important;}
+.rg th.pc,.rg td.pc{left:408px!important;}
+.rg td.ax{vertical-align:middle;}
+.accp{display:block;border-radius:5px;padding:3px 7px;font-size:10.5px;font-weight:800;line-height:1.3;text-align:center;white-space:nowrap;}
+.accp + .accp{margin-top:4px;}
+.accp.ok{background:#16a34a;color:#fff;}
+.accp.no{background:#dc2626;color:#fff;}
+.accp.mid{background:#f59e0b;color:#fff;}
+.accp.none{color:var(--text3);background:none;}
+.rg th.ax{text-align:center!important;padding-left:6px!important;}
+.rg td.ax{padding-left:6px!important;}
+
 /* ===== Live-page additions ===== */
 #cc-boot{position:fixed;inset:0;z-index:2147483646;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-family:'Sora',system-ui,sans-serif;text-align:center;padding:24px;color:#0f1e3d;}
 #cc-boot .ring{position:relative;width:200px;height:200px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;}
@@ -1831,13 +1844,21 @@ function renderTable(){
     if(multi && r.group !== last){ h += '<tr class="grp-sep" data-group="' + esc(r.group) + '"><td colspan="' + cols + '">' + esc(gShort(r.group)) + '</td></tr>'; last = r.group; }
     var st = marks[s.key] || '', p = modPct(s.key, past);
     var id = s.kind === 'ok' ? esc(s.bsuId) : s.kind === 'new' ? 'New, no ID yet' : 'Not in records';
-    var reg = String(s.reg || '').trim(), regNo = /not|drop/i.test(reg);
+    var reg = String(s.reg || '').trim(), regNo = /not|drop/i.test(reg), regCls = regNo ? ' no' : /partial/i.test(reg) ? ' mid' : /^registered\.?$/i.test(reg) ? ' ok' : '';
+    // 20 Oct 2026: the Accounts status is shown as it is in the receivable file: Clear in green, "see Accounts" in red, anything else in amber
+    // 20 Oct 2026: both come from the receivable file, so both sit in the Accounts column: registration on top, accounts status below
+    var accV = String(s.acc || '').trim().replace(/\.$/, ''), accH =
+      (reg ? '<span class="accp' + (regNo ? ' no' : /partial/i.test(reg) ? ' mid' : ' ok') + '">' + esc(reg.replace(/\.$/, '')) + '</span>' : '')
+      + (!accV ? '' : /^clear$/i.test(accV) ? '<span class="accp ok">Clear</span>'
+        : /see\s*accounts/i.test(accV) ? '<span class="accp no">Please see Accounts!</span>'
+        : '<span class="accp mid">' + esc(accV) + '</span>');
+    if(!accH) accH = '<span class="accp none">–</span>';
     var note = s.moved ? '<span class="nw out">Moved to another group</span>' : s.joined ? '<span class="nw">Joined this group</span>' : '';
     h += '<tr data-key="' + esc(s.key) + '" data-name="' + esc(s.name) + '" data-id="' + esc(s.bsuId || '') + '" data-group="' + esc(r.group) + '"' + (st ? ' data-att-status="' + st + '"' : '') + '>'
       + '<td class="nm"><button type="button" class="ncard' + (st ? ' st-' + st : '') + (s.moved ? ' moved' : '') + '" data-key="' + esc(s.key) + '" title="' + esc(s.name) + '"><span><span class="nn">' + esc(s.name) + '</span><span class="ni">' + id + '</span>'
-      + (reg ? '<span class="nr' + (regNo ? ' no' : '') + '">' + esc(reg) + '</span>' : '') + note + '</span>'
+      + '' + note + '</span>'
       + '<span class="nt">' + (st ? LBL[st] : (live ? 'NOT MARKED' : '')) + '</span></button></td>'
-      + '<td class="ax">' + (/see\s*accounts/i.test(String(s.acc || '')) ? '<span class="accn"><span>Please see</span>Accounts!</span>' : '') + '</td>'
+      + '<td class="ax">' + accH + '</td>'
       + '<td class="pc"><span class="pcv" style="color:' + (p == null ? 'var(--text3)' : p < 70 ? 'var(--red)' : p < 80 ? 'var(--amber)' : 'var(--green)') + '">' + (p == null ? '—' : p + '%') + '</span></td>'
       + (live ? '<td class="' + (SEL ? '' : 'on') + '"><span class="circ ' + (st || 'n') + '">' + (st || '–') + '</span></td>' : '')
       + past.map(function(x){
