@@ -128,7 +128,8 @@ function esc(x){ return String(x == null ? '' : x).replace(/[&<>"']/g, function(
       if(!data || data.status !== 'pending'){ byStatusAll(data && data.status); return; }
       document.getElementById('ask-email').textContent = data.maskedEmail || E || 'your BSU email';
       var c = data.cls, box = document.getElementById('ask-cls');
-      if(c){ box.innerHTML = '<b class="m">' + esc(c.module) + '</b>' + esc(c.groups) + '<br><b>Room ' + esc(c.room || '-') + ' · ' + esc(c.time) + '</b>'; }
+      if(data.portal === 'tutor'){ tutorWording(); box.style.display = 'none'; }
+      else if(c){ box.innerHTML = '<b class="m">' + esc(c.module) + '</b>' + esc(c.groups) + '<br><b>Room ' + esc(c.room || '-') + ' · ' + esc(c.time) + '</b>'; }
       else { box.className = 'cls none'; box.innerHTML = '<b>You have no class on the timetable right now.</b> If you are not at a classroom PC, do not approve.'; }
       var ch = document.getElementById('choices');
       ch.innerHTML = (data.choices || []).map(function(n){ return '<button type="button" class="ch" data-n="' + esc(n) + '">' + esc(n) + '</button>'; }).join('');
@@ -137,6 +138,18 @@ function esc(x){ return String(x == null ? '' : x).replace(/[&<>"']/g, function(
     })
     .catch(function(){ show('v-fail'); });
 })();
+// 4 Nov 2026: the Tutor Portal uses the same link and numbers; only the words differ.
+function tutorWording(){
+  function set(sel, html){ var el = document.querySelector(sel); if(el) el.innerHTML = html; }
+  set('#v-ask .badge', '📚 Tutor Portal');
+  set('#v-ask p', 'Someone is signing in to the <b>CampusCore Tutor Portal</b> as <strong id="ask-email">' + esc(document.getElementById('ask-email').textContent) + '</strong>.');
+  set('#v-ask .q', 'Which number is on your Tutor Portal screen?');
+  set('#btn-no', 'I am not signing in: do not approve');
+  set('#v-ok p', 'The Tutor Portal will open in a few seconds. You can close this page.');
+  set('#v-locked p', 'That was not the number on the screen, so nobody was signed in. If you are signing in, send a new link from the Tutor Portal.');
+  set('#v-replaced p', 'A newer sign-in was requested for your email, so this link no longer works. Use the newest email, and only if <strong>you</strong> are signing in. If you did not request it, tell <strong>academics@bathspa.ae</strong>.');
+  set('#v-expired p', 'Sign-in links work once and only for 10 minutes. Please request a new link on the Tutor Portal.');
+}
 function byStatusAll(st){
   if(st === 'locked') show('v-locked'); else if(st === 'replaced') show('v-replaced'); else byStatus(st);
 }
@@ -166,7 +179,7 @@ function pick(btn){
       if(Date.now() - t0 > 30000){
         done = true; timers.forEach(clearTimeout);
         all.forEach(function(b){ b.disabled = false; b.classList.remove('on'); }); no.disabled = false;
-        e.textContent = 'Could not sign in. Please send a new link on the classroom PC. (CampusCore replied: ' + last + ')'; e.style.display = 'block';
+        e.textContent = 'Could not sign in. Please send a new link from the sign-in screen. (CampusCore replied: ' + last + ')'; e.style.display = 'block';
         return;
       }
       loop(k + 1);
