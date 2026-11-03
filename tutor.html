@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CampusCore Tutor Portal · Bath Spa University RAK Campus</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
@@ -17,41 +17,98 @@ body{font-family:var(--sans);color:var(--ink);background:var(--bg);font-size:14p
 button{font-family:inherit;}
 .hide{display:none!important;}
 
-/* ---------- sign-in ---------- */
-#signin{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px 16px;background:var(--navy);}
-.card{background:#fff;border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.3);width:100%;max-width:440px;padding:36px 34px;}
-.brand{display:flex;align-items:center;gap:14px;margin-bottom:26px;}
-.brand img{height:54px;width:auto;}
-.brand .b0{font:700 17px var(--sans);color:var(--navy);}
-.brand .b1{font-size:11px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--red);margin-top:3px;}
-h2{font:600 26px var(--serif);color:var(--navy);}
-.lead{font-size:14px;color:var(--ink2);margin:8px 0 24px;line-height:1.6;}
-.flabel{display:block;font-size:11px;font-weight:700;letter-spacing:1.3px;text-transform:uppercase;margin-bottom:8px;}
-.email{display:flex;border:1.5px solid var(--line2);border-radius:6px;overflow:hidden;}
-.email:focus-within{border-color:var(--navy);box-shadow:0 0 0 3px rgba(15,30,61,.12);}
-.email input{flex:1;min-width:0;border:none;outline:none;padding:12px 13px;font:500 15px var(--sans);}
-.email span{display:flex;align-items:center;padding:0 12px;background:#eef1f6;color:var(--navy2);font:500 14px var(--sans);border-left:1.5px solid var(--line2);}
-.btn{width:100%;border:none;border-radius:6px;padding:14px;font:600 15px var(--sans);cursor:pointer;color:#fff;background:var(--red);margin-top:16px;}
-.btn:hover{background:var(--red-dark);}
-.btn:disabled{background:#e8a3ae;cursor:not-allowed;}
-.msg{display:none;border-radius:6px;padding:10px 12px;font-size:13px;margin-top:14px;line-height:1.5;background:var(--red-soft);border:1px solid #f3c2ca;color:var(--red-dark);}
-.msg.info{background:#eef6ff;border-color:#bfdbfe;color:#1e3a8a;}
-.steps{margin-top:24px;display:grid;gap:10px;}
-.step{display:flex;gap:10px;font-size:13px;color:var(--navy2);line-height:1.5;}
-.step i{font-style:normal;flex-shrink:0;width:22px;height:22px;border-radius:50%;background:var(--red-soft);color:var(--red);font:700 11px var(--mono);display:flex;align-items:center;justify-content:center;}
-.small{margin-top:24px;font-size:11.5px;color:var(--ink3);line-height:1.6;border-top:1px solid #eef1f6;padding-top:14px;}
-.small a{color:var(--navy2);}
-.back{background:none;border:none;color:var(--ink2);font:500 13px var(--sans);cursor:pointer;margin-bottom:18px;}
-.code-box{border:1.5px solid #f3c2ca;background:var(--red-soft);border-radius:8px;padding:14px 18px;display:flex;align-items:center;gap:18px;}
-.code-lbl{font-size:10.5px;font-weight:700;color:var(--red-dark);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;white-space:nowrap;}
-.code-num{font:600 44px/1 var(--mono);color:var(--red);letter-spacing:6px;}
-.code-hint{font-size:13px;color:#7f1d1d;line-height:1.5;}
-.wait{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--navy2);font-weight:600;margin-top:20px;}
-.wait.done{color:var(--green);}
-.spin{width:18px;height:18px;border:2.5px solid #e2e8f0;border-top-color:var(--red);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0;}
-@keyframes spin{to{transform:rotate(360deg);}}
-.resend{margin-top:16px;font-size:13px;color:var(--ink2);}
-.lbtn{background:none;border:none;color:var(--navy);font:600 13px var(--sans);text-decoration:underline;cursor:pointer;}
+/* ---------- sign-in: the same screen as the Classroom (4 Nov 2026) ---------- */
+#signin{--navy:#14213d; --navy2:#1f2f52; --ink:#0f172a; --muted:#5b6b86; --line:#d8dee9;
+  --red:#c8102e; --red-dark:#a50d26; --red-soft:#fdecee; --green:#15803d;
+  --serif:'Source Serif 4',Georgia,serif; --display:'Fraunces',Georgia,serif; --sans:'IBM Plex Sans',system-ui,sans-serif; --mono:'IBM Plex Mono',ui-monospace,monospace;
+  font-family:var(--sans);color:var(--ink);background:var(--navy);min-height:100vh;display:flex;}
+#signin.hide{display:none!important;}
+@media (max-width:900px){#signin{flex-direction:column;}}
+
+
+/* ---------- left: the room display ---------- */
+#signin .left{position:relative;flex:1.15;display:flex;flex-direction:column;justify-content:space-between;gap:30px;padding:0 64px 56px;color:#fff;overflow:hidden;}
+#signin .left::before{content:"";position:absolute;inset:0;pointer-events:none;background:
+  repeating-linear-gradient(90deg,rgba(255,255,255,.035) 0 1px,transparent 1px 120px),
+  linear-gradient(180deg,rgba(255,255,255,.04),transparent 40%);}
+#signin .logo-tile{position:relative;background:#fff;border-radius:0 0 10px 10px;padding:24px 22px 16px;display:inline-flex;align-items:center;gap:18px;align-self:flex-start;box-shadow:0 14px 40px rgba(0,0,0,.25);min-width:349px;height:164px;}
+#signin .logo-tile img{display:block;height:124px;width:auto;}
+#signin .logo-text{display:none;font:600 15px/1.25 var(--serif);color:var(--navy);text-align:center;border-right:1px solid var(--line);padding-right:20px;}
+#signin .logo-tile .t0,#signin .logo-tile .t1,#signin .logo-tile .t2{white-space:nowrap;}
+#signin .logo-tile .t0{font:600 12px var(--sans);letter-spacing:1.4px;text-transform:uppercase;color:var(--navy);margin-bottom:4px;}
+#signin .logo-tile .t1{font:600 22px/1.1 var(--serif);color:var(--navy);}
+#signin .logo-tile .rule{width:30px;height:2px;background:var(--red);margin:9px 0 8px;}
+#signin .logo-tile .t2{font:600 11px var(--sans);letter-spacing:1.5px;text-transform:uppercase;color:var(--red);}
+#signin .hello{position:relative;}
+/* latest announcement (from CampusCore announcements) */
+#signin .ann{position:relative;width:100%;}
+#signin .ann-h{display:flex;align-items:center;gap:10px;font-size:12.5px;font-weight:700;letter-spacing:2.6px;text-transform:uppercase;color:#9fb0cf;margin-bottom:12px;}
+#signin .ann-bang{width:22px;height:22px;border-radius:50%;background:var(--red);color:#fff;font:700 13px var(--sans);letter-spacing:0;display:inline-flex;align-items:center;justify-content:center;}
+#signin .ann-box{height:260px;border-top:1px solid rgba(255,255,255,.28);border-bottom:1px solid rgba(255,255,255,.28);padding:16px 0;overflow:hidden;display:flex;flex-direction:column;justify-content:center;}
+#signin .ann-title{font:600 13px var(--sans);letter-spacing:.4px;color:#fff;margin-bottom:8px;}
+#signin .ann-text{font-family:var(--serif);font-style:italic;font-weight:500;color:#e6ecf7;line-height:1.4;font-size:26px;white-space:pre-line;}
+#signin .ann-empty{font-family:var(--serif);font-style:italic;color:#7f91b3;font-size:18px;}
+/* today's date and the term (in place of the announcement,#signin 16 Oct 2026) */
+#signin .bigdate{padding:6px 0 30px;border-bottom:1px solid rgba(255,255,255,.15);}
+#signin .bigdate .bd0{font:500 13px var(--sans);letter-spacing:4px;text-transform:uppercase;color:#9fb0cf;margin-bottom:10px;min-height:16px;}
+#signin .bigdate .bd1{font:300 56px/1.05 var(--display);color:#fff;letter-spacing:-.5px;white-space:nowrap;}
+#signin .bigdate .bd2{font:italic 400 26px/1.2 var(--display);color:#facc15;margin-top:10px;min-height:32px;}@media (max-width:1300px){.bigdate .bd1{font-size:44px;white-space:normal;}#signin .bigdate .bd2{font-size:22px;}}
+/* standing notice under the sessions */
+#signin .rule-note{display:flex;align-items:center;gap:12px;margin-top:24px;font-size:18px;font-weight:600;line-height:1.4;color:#facc15;white-space:nowrap;}
+#signin .rule-note .ico{flex-shrink:0;width:26px;height:26px;border-radius:50%;border:2px solid #facc15;color:#facc15;font:800 14px var(--sans);display:flex;align-items:center;justify-content:center;}@media (max-width:1400px){ .rule-note{white-space:normal;font-size:16px;} }
+#signin .day{font-size:13px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#9fb0cf;}
+#signin .clock{font:300 84px/1 'DM Mono',var(--mono);letter-spacing:-2px;margin:10px 0 6px;}
+#signin .clock .ampm{font:500 22px var(--sans);letter-spacing:3px;color:#9fb0cf;margin-left:14px;vertical-align:top;}
+#signin .greet{font:500 13px var(--sans);letter-spacing:4px;text-transform:uppercase;color:#9fb0cf;margin-top:14px;}
+#signin .periods{display:flex;gap:6px;margin-top:36px;max-width:620px;}
+#signin .period{flex:1;border-radius:6px;padding:8px 10px;font-size:11.5px;line-height:1.35;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#9fb0cf;}
+#signin .period b{display:block;font-family:var(--mono);font-size:12.5px;white-space:nowrap;}
+#signin .period.now{background:var(--red);border-color:var(--red);color:#fff;}
+#signin .period.done{opacity:.45;}
+
+/* ---------- right: sign-in ---------- */
+#signin .right{position:relative;width:500px;flex-shrink:0;background:#fff;display:flex;flex-direction:column;justify-content:center;padding:56px;}
+#signin .pane{display:none;}
+#signin .pane.active{display:block;animation:fade .25s ease both;}@keyframes fade{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+#signin h2{font:400 34px var(--display);color:var(--navy);}
+#signin .lead{font-size:14.5px;color:var(--muted);margin:8px 0 28px;line-height:1.6;}
+#signin .field-label{display:block;font-size:11px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--ink);margin-bottom:8px;}
+#signin .email{display:flex;border:1.5px solid var(--line);border-radius:4px;overflow:hidden;background:#fff;transition:border-color .2s,box-shadow .2s;}
+#signin .email:focus-within{border-color:var(--navy);box-shadow:0 0 0 3px rgba(20,33,61,.12);}
+#signin .email input{flex:1;min-width:0;border:none;outline:none;padding:13px 14px;font:500 15px var(--sans);color:var(--ink);background:transparent;}
+#signin .email span{display:flex;align-items:center;padding:0 14px;background:#eef1f6;color:var(--navy2);font:500 15px var(--sans);border-left:1.5px solid var(--line);}
+#signin .btn{width:100%;border:none;border-radius:4px;padding:15px;font:600 15px var(--sans);cursor:pointer;color:#fff;background:var(--red);margin-top:18px;letter-spacing:.2px;transition:background .15s;}
+#signin .btn:hover{background:var(--red-dark);}
+#signin .btn:disabled{background:#e8a3ae;cursor:not-allowed;}
+#signin .err-msg{display:none;background:var(--red-soft);border:1px solid #f3c2ca;border-radius:4px;padding:10px 12px;font-size:13px;color:var(--red-dark);margin-top:14px;line-height:1.5;}
+#signin .steps{margin-top:30px;display:grid;gap:12px;}
+#signin .step{display:flex;gap:12px;align-items:flex-start;font-size:13.5px;color:var(--navy2);line-height:1.5;}
+#signin .step i{font-style:normal;flex-shrink:0;width:24px;height:24px;border-radius:50%;background:var(--red-soft);color:var(--red);font:700 12px var(--mono);display:flex;align-items:center;justify-content:center;}
+#signin .small{margin-top:30px;font-size:11.5px;color:#94a3b8;line-height:1.6;border-top:1px solid #eef1f6;padding-top:16px;}
+#signin .small a{color:var(--navy2);}
+/* waiting pane */
+#signin .back{background:none;border:none;color:var(--muted);font:500 13px var(--sans);cursor:pointer;padding:0;margin-bottom:22px;}
+#signin .back:hover{color:var(--navy);}
+#signin .sent-to{font-size:14.5px;color:var(--muted);margin:8px 0 22px;line-height:1.6;}
+#signin .sent-to strong{color:var(--ink);}
+#signin .code-box{border:1.5px solid #f3c2ca;background:var(--red-soft);border-radius:8px;padding:16px 20px;display:flex;align-items:center;gap:20px;}
+#signin .code-lbl{white-space:nowrap;font-size:10.5px;font-weight:700;color:var(--red-dark);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}
+#signin .code-num{font:600 46px/1 var(--mono);color:var(--red);letter-spacing:6px;}
+#signin .code-hint{font-size:13px;color:#7f1d1d;line-height:1.5;}
+#signin .wait-row{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--navy2);font-weight:600;margin-top:22px;}
+#signin .wait-row.done{color:var(--green);}
+#signin .spin{width:18px;height:18px;border:2.5px solid #e2e8f0;border-top-color:var(--red);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0;}@keyframes spin{to{transform:rotate(360deg);}}
+#signin .resend{margin-top:18px;font-size:13px;color:var(--muted);}
+#signin .link-btn{background:none;border:none;color:var(--navy);font:600 13px var(--sans);text-decoration:underline;cursor:pointer;padding:0;}
+@media (max-width:900px){
+  #signin .left{padding:0 20px 28px;gap:26px;flex:none;}
+  #signin .logo-tile{padding:18px 16px 12px;gap:14px;min-width:0;height:auto;}
+  #signin .logo-tile img{height:84px;}
+  #signin .clock{font-size:60px;letter-spacing:-1px;}
+  #signin .periods{flex-wrap:wrap;margin-top:24px;}
+  #signin .period{min-width:45%;}
+  #signin .right{width:100%;padding:32px 20px 40px;}
+}
 
 /* ---------- portal ---------- */
 #app{display:flex;min-height:100vh;}
@@ -200,37 +257,53 @@ table.mt{border-collapse:separate;border-spacing:0;font-size:12.5px;min-width:10
 
 <!-- ============ SIGN-IN ============ -->
 <section id="signin">
-  <div class="card">
-    <div class="brand"><img src="bsu-logo.png" alt="Bath Spa University" onerror="this.style.display='none'"><div><div class="b0">CampusCore</div><div class="b1">Tutor Portal</div></div></div>
-
-    <div id="p-email">
-      <h2>Sign in</h2>
-      <p class="lead">Sign in with your BSU staff email. We email you a link; open it on your phone and tap the number shown here.</p>
-      <label class="flabel" for="email">Your BSU email</label>
-      <div class="email"><input id="email" type="text" placeholder="your.name" autocomplete="off" autocapitalize="off" spellcheck="false"><span>@bathspa.ae</span></div>
-      <div class="msg" id="e-err"></div>
-      <button class="btn" id="send" onclick="sendLink()">Email me a sign-in link</button>
-      <div class="steps">
-        <div class="step"><i>1</i><span>Open the email on your phone.</span></div>
-        <div class="step"><i>2</i><span>On your phone, <b>tap the number shown on this screen</b>.</span></div>
-        <div class="step"><i>3</i><span>Your modules open here.</span></div>
-      </div>
-      <p class="small">Signs out when the browser closes and after 2 hours without use. Everything you change is recorded with your name. Help: <a href="mailto:academics@bathspa.ae">academics@bathspa.ae</a></p>
-    </div>
-
-    <div id="p-wait" class="hide">
-      <button class="back" onclick="backToEmail()">‹ Back</button>
-      <h2>Check your email</h2>
-      <p class="lead" id="sentTo">We sent a sign-in link to your email.</p>
-      <div class="code-box">
-        <div><div class="code-lbl">Your code</div><div class="code-num" id="code">··</div></div>
-        <div class="code-hint">On your phone, <b>tap this number</b> to approve. Nobody can sign in without it.</div>
-      </div>
-      <div class="wait" id="waitRow"><span class="spin"></span><span id="waitText">Waiting for approval…</span></div>
-      <div class="msg" id="w-err"></div>
-      <p class="resend hide" id="resend">Not arrived? Check the spelling and your Junk folder, or <button class="lbtn" onclick="sendLink()">send a new link</button>.</p>
-    </div>
+<!-- LEFT: same as the Classroom screen -->
+<section class="left">
+  <div class="logo-tile">
+    <img id="logo" alt="Bath Spa University RAK Campus" src="bsu-logo.png" onerror="this.style.display='none';document.getElementById('logo-text').style.display='block'">
+    <div class="logo-text" id="logo-text">Bath Spa<br>University</div>
+    <div><div class="t0">Bath Spa University</div><div class="t1">RAK Campus</div><div class="rule"></div><div class="t2">Tutor Portal</div></div>
   </div>
+  <div class="bigdate"><div class="bd0" id="bigDay">&nbsp;</div><div class="bd1" id="bigDate">&nbsp;</div><div class="bd2" id="term"></div></div>
+  <div class="hello">
+    <div class="clock" id="clock">--:--</div>
+    <div class="greet" id="greet">Welcome</div>
+    <div class="periods" id="periods"></div>
+    <div class="rule-note"><span class="ico">!</span><span id="ruleText">Students must maintain a minimum of 70% attendance in each module to qualify to submit their final assessment.</span></div>
+  </div>
+</section>
+
+<!-- RIGHT: sign-in -->
+<section class="right">
+  <div id="p-email">
+    <h2>Tutor Portal</h2>
+    <p class="lead">Sign in with your BSU email to open your modules, assessments and registers.</p>
+    <label class="field-label" for="email">Your BSU email</label>
+    <div class="email"><input id="email" type="text" placeholder="your.name" autocomplete="off" autocapitalize="off" spellcheck="false"><span>@bathspa.ae</span></div>
+    <div class="err-msg" id="e-err"></div>
+    <button class="btn" id="send" onclick="sendLink()">Email me a sign-in link</button>
+    <div class="steps">
+      <div class="step"><i>1</i><span>Open the email on your phone.</span></div>
+      <div class="step"><i>2</i><span>On your phone, <b>tap the number shown on this screen</b>.</span></div>
+      <div class="step"><i>3</i><span>Your modules open: <b>add assessments and see your registers</b>.</span></div>
+    </div>
+    <p class="small">Signs out when the browser closes and after 2 hours without use. Everything you change is recorded with your name. Not recognised? Write to <a href="mailto:academics@bathspa.ae">academics@bathspa.ae</a></p>
+  </div>
+
+  <div id="p-wait" class="hide">
+    <button class="back" onclick="backToEmail()">‹ Back</button>
+    <h2>Check your email</h2>
+    <p class="sent-to" id="sentTo">We sent a sign-in link to your email.</p>
+    <div class="code-box">
+      <div><div class="code-lbl">Your code</div><div class="code-num" id="code">··</div></div>
+      <div class="code-hint">On your phone, <b>tap this number</b> to approve. Nobody can sign in without it.</div>
+    </div>
+    <div class="wait-row" id="waitRow"><span class="spin"></span><span id="waitText">Waiting for approval…</span></div>
+    <div class="err-msg" id="w-err"></div>
+    <p class="resend hide" id="resend">Not arrived? Check the spelling and your Junk folder, or <button class="link-btn" onclick="sendLink()">send a new link</button>.</p>
+    <p class="small cc-footer">© Bath Spa University - RAK Campus</p>
+  </div>
+</section>
 </section>
 
 <!-- ============ PORTAL ============ -->
@@ -275,8 +348,8 @@ function newRid(){
   var a = new Uint8Array(32); crypto.getRandomValues(a);
   return Array.prototype.map.call(a, function(b){ return ('0' + b.toString(16)).slice(-2); }).join('');
 }
-function errMsg(id, t, info){ var e = $(id); e.textContent = t; e.className = 'msg' + (info ? ' info' : ''); e.style.display = t ? 'block' : 'none'; }
-function setWait(t, done, hide){ var r = $('waitRow'); r.style.display = hide ? 'none' : 'flex'; r.className = 'wait' + (done ? ' done' : ''); r.firstChild.style.display = done ? 'none' : ''; $('waitText').textContent = t; }
+function errMsg(id, t, info){ var e = $(id); e.textContent = t; e.style.background = info ? '#eef6ff' : ''; e.style.borderColor = info ? '#bfdbfe' : ''; e.style.color = info ? '#1e3a8a' : ''; e.style.display = t ? 'block' : 'none'; }
+function setWait(t, done, hide){ var r = $('waitRow'); r.style.display = hide ? 'none' : 'flex'; r.className = 'wait-row' + (done ? ' done' : ''); r.firstChild.style.display = done ? 'none' : ''; $('waitText').textContent = t; }
 function stopPoll(){ if(_poll){ clearTimeout(_poll); _poll = null; } _rid = null; }
 function backToEmail(){ stopPoll(); errMsg('w-err', ''); show('p-wait', false); show('p-email', true); $('email').focus(); }
 function failSend(m){ stopPoll(); show('p-wait', false); show('p-email', true); errMsg('e-err', m); }
@@ -351,6 +424,33 @@ function poll(){
     .catch(function(){ _busy = 0; });
 }
 $('email').addEventListener('keydown', function(e){ if(e.key === 'Enter') sendLink(); });
+// ── Clock, date, greeting and today's sessions (same as the Classroom screen) ──
+var PERIODS = [['9:00','10:40'],['10:40','12:20'],['12:20','2:00'],['2:00','3:40']];
+function mins(t){ var p = t.split(':'), h = +p[0]; if(h < 8) h += 12; return h * 60 + +p[1]; }
+function tick(){
+  if($('signin').classList.contains('hide')) return;
+  var d = new Date(), days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var h12 = d.getHours() % 12 || 12;
+  $('clock').innerHTML = h12 + ':' + String(d.getMinutes()).padStart(2,'0') + '<span class="ampm">' + (d.getHours() < 12 ? 'AM' : 'PM') + '</span>';
+  var n = d.getDate(), th = (n % 100 >= 11 && n % 100 <= 13) ? 'th' : (['th','st','nd','rd'][n % 10] || 'th');
+  $('bigDay').textContent = days[d.getDay()];
+  $('bigDate').textContent = n + th + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
+  var h = d.getHours(); $('greet').textContent = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+  var now = h * 60 + d.getMinutes();
+  $('periods').innerHTML = PERIODS.map(function(p, i){
+    var a = mins(p[0]), b = mins(p[1]), c = now >= a && now < b ? 'now' : now >= b ? 'done' : '';
+    return '<div class="period ' + c + '"><b>' + p[0] + '–' + p[1] + '</b>Session ' + (i + 1) + '</div>';
+  }).join('');
+}
+tick(); setInterval(tick, 15000);
+try { var _t0 = localStorage.getItem('cc_term'); if(_t0) $('term').textContent = _t0; } catch(e){}
+fetch(API + '?action=getClassroomInfo').then(function(r){ return r.json(); }).then(function(j){
+  var d = (j && j.status === 'ok' && j.data) || {};
+  if(d.term){ $('term').textContent = d.term; try { localStorage.setItem('cc_term', d.term); } catch(e){} }
+  if(d.notice) $('ruleText').textContent = String(d.notice);
+  if(d.footer) document.querySelectorAll('.cc-footer').forEach(function(el){ el.textContent = String(d.footer); });
+}).catch(function(){});
 
 // ============================================================ SIGNED REQUESTS (the pass never leaves this tab)
 var PASS = '', PID = '', OFF = 0, ME = '', _hk = null;
