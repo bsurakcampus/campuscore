@@ -110,147 +110,6 @@ button{font-family:inherit;}
   #signin .right{width:100%;padding:32px 20px 40px;}
 }
 
-/* ---------- portal ---------- */
-#app{display:flex;min-height:100vh;}
-.side{width:230px;flex-shrink:0;background:var(--navy);color:#cbd5e1;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;}
-.side .lg{display:flex;align-items:center;gap:10px;padding:18px 16px;border-bottom:1px solid rgba(255,255,255,.08);}
-.side .lg img{height:34px;width:auto;background:#fff;border-radius:4px;padding:2px;}
-.side .lg b{display:block;color:#fff;font-size:14px;}
-.side .lg span{font-size:10.5px;color:#94a3b8;}
-.who{padding:16px;border-bottom:1px solid rgba(255,255,255,.08);}
-.who .av{width:38px;height:38px;border-radius:50%;background:#1e3a8a;color:#bfdbfe;font:700 13px var(--sans);display:flex;align-items:center;justify-content:center;margin-bottom:8px;}
-.who b{display:block;color:#fff;font-size:13.5px;}
-.who span{font-size:11px;color:#94a3b8;word-break:break-all;}
-.nav{padding:10px;display:flex;flex-direction:column;gap:2px;}
-.nav button{display:flex;align-items:center;gap:10px;background:none;border:none;color:#cbd5e1;padding:9px 10px;border-radius:7px;font-size:13.5px;cursor:pointer;text-align:left;}
-.nav button:hover{background:rgba(255,255,255,.06);}
-.nav button.on{background:#1e3a8a;color:#fff;font-weight:600;}
-.viewas{margin:10px;padding:10px;border:1px solid rgba(250,204,21,.4);border-radius:8px;background:rgba(250,204,21,.06);}
-.viewas label{display:block;font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#facc15;margin-bottom:6px;}
-.viewas select{width:100%;font:500 12.5px var(--sans);padding:6px;border-radius:5px;border:none;}
-.side .sp{flex:1;}
-.side .out{margin:10px;background:none;border:1px solid rgba(255,255,255,.2);color:#e2e8f0;border-radius:7px;padding:9px;font-size:13px;cursor:pointer;}
-.side .out:hover{background:rgba(255,255,255,.06);}
-.main{flex:1;min-width:0;padding:26px 28px 40px;}
-.top{display:flex;align-items:flex-end;gap:12px;margin-bottom:18px;flex-wrap:wrap;}
-.top h1{font-size:22px;font-weight:700;color:var(--navy);}
-.top p{font-size:13px;color:var(--ink2);margin-top:4px;}
-.top .sp{flex:1;}
-.asbar{background:#fef9c3;border:1px solid #fde047;color:#713f12;border-radius:9px;padding:10px 14px;font-size:13px;margin-bottom:14px;}
-.hero{background:var(--navy);border-radius:12px;padding:14px 18px;display:flex;align-items:center;gap:14px;margin-bottom:20px;color:#fff;flex-wrap:wrap;}
-.hero .av{width:44px;height:44px;border-radius:50%;border:2px solid #93c5fd;background:#1e3a8a;display:flex;align-items:center;justify-content:center;font-weight:700;}
-.hero b{font-size:16px;display:block;}
-.hero span{font-size:12px;color:#cbd5e1;}
-.hero .tags{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;}
-.tag{border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:4px 10px;font-size:11.5px;color:#e2e8f0;}
-.term{display:flex;align-items:baseline;gap:12px;border-bottom:2px solid var(--navy);padding-bottom:8px;margin-bottom:14px;flex-wrap:wrap;}
-.term h3{font:600 26px var(--serif);color:var(--navy);}
-.term .cur{font-size:11px;font-weight:700;letter-spacing:1px;color:var(--green);text-transform:uppercase;}
-.term .st{margin-left:auto;font-size:12.5px;color:var(--ink2);}
-.term .st b{font-family:var(--mono);color:var(--navy);}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(400px,1fr));gap:14px;}
-.mc{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;}
-.mh{padding:14px 16px;color:#fff;display:flex;align-items:center;gap:10px;}
-.mh .mn{background:none;border:none;color:#fff;font:700 15px var(--sans);cursor:pointer;text-align:left;padding:0;}
-.mh .mn:hover{text-decoration:underline;}
-.mh .mn::after{content:' ›';opacity:.7;}
-.mh .sub{font-size:11.5px;opacity:.85;margin-top:3px;}
-.mh .cnt{margin-left:auto;text-align:right;font-size:12.5px;white-space:nowrap;}
-.mh .cnt b{font:700 20px var(--mono);}
-.asl{display:flex;flex-direction:column;gap:6px;padding:12px 10px;}
-.as{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto auto;gap:10px;align-items:center;border:1px solid #fecaca;background:#fef2f2;border-radius:9px;padding:7px 10px;font-size:12.5px;}
-.as .c{font-family:var(--mono);font-weight:700;color:var(--red-dark);white-space:nowrap;}
-.as .n{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.as .d{color:#991b1b;white-space:nowrap;font-size:12px;}
-.as .pill{border:1px solid #fca5a5;background:#fff;color:#991b1b;font-size:11px;font-weight:700;border-radius:5px;padding:2px 7px;white-space:nowrap;}
-.as.lk{border-color:#cbd5e1;background:#f8fafc;}.as.lk .c,.as.lk .d{color:var(--ink2);}.as.lk .pill{border-color:#cbd5e1;color:var(--ink2);}
-.as .ic{display:flex;gap:2px;}
-.as .ic button{background:none;border:none;color:var(--ink2);cursor:pointer;font-size:14px;padding:2px 5px;border-radius:4px;}
-.as .ic button:hover{background:#fff;color:var(--navy);}
-.add{display:flex;align-items:center;gap:8px;border:1.5px dashed var(--line2);background:#f8fafc;border-radius:9px;padding:8px 12px;font-size:13.5px;cursor:pointer;color:var(--navy2);width:100%;text-align:left;}
-.add:hover{border-color:var(--navy);background:#fff;}
-.add .w{margin-left:auto;font:600 11.5px var(--mono);color:var(--ink3);}
-.full{font-size:12px;color:var(--green);padding:2px 4px;}
-.warn{font-size:12.5px;color:#92400e;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:10px 12px;}
-.empty{border:1.5px dashed var(--line2);border-radius:12px;padding:30px;text-align:center;color:var(--ink2);background:#fff;}
-.loading{padding:40px;text-align:center;color:var(--ink2);}
-
-/* module page */
-.mtop{display:flex;align-items:center;gap:14px;margin-bottom:12px;flex-wrap:wrap;}
-.bk{border:1px solid var(--line2);background:#fff;border-radius:8px;padding:8px 14px;font-size:13px;cursor:pointer;}
-.bk:hover{border-color:var(--navy);}
-.mtop h1{font-size:20px;color:var(--navy);}
-.mtop p{font-size:12.5px;color:var(--ink2);margin-top:2px;}
-.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;align-items:center;}
-.gt{border:1.5px solid var(--line2);background:#fff;border-radius:999px;padding:5px 13px;font-size:12.5px;font-weight:600;color:var(--ink2);cursor:pointer;}
-.gt.on{background:var(--navy);border-color:var(--navy);color:#fff;}
-.kline{margin-left:auto;font-size:12.5px;color:var(--ink2);}
-.kline b{font-family:var(--mono);color:var(--navy);}
-.kline b.r{color:#dc2626;}
-.srch{display:flex;align-items:center;gap:8px;background:#fff;border:1.5px solid var(--line2);border-radius:9px;padding:7px 12px;margin-bottom:10px;}
-.srch input{flex:1;border:none;outline:none;font:inherit;font-size:13.5px;}
-.twrap{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:auto;max-height:calc(100vh - 230px);}
-table.mt{border-collapse:separate;border-spacing:0;font-size:12.5px;min-width:100%;}
-.mt th{background:var(--navy);color:#fff;font-size:10px;letter-spacing:.3px;text-transform:uppercase;padding:7px 6px;text-align:center;white-space:nowrap;position:sticky;top:0;z-index:2;font-weight:700;}
-.mt th.l{text-align:left;padding-left:12px;}
-.mt th.dt{min-width:40px;line-height:1.25;}
-.mt th.dt small{display:block;font-size:9px;opacity:.75;}
-.mt td{border-bottom:1px solid #eef1f6;padding:6px;text-align:center;white-space:nowrap;}
-.mt .fill{width:100%;}
-.mt td.acc{text-align:left;min-width:150px;max-width:170px;}
-.mt td.nm{text-align:left;padding-left:12px;position:sticky;left:0;background:#fff;z-index:1;min-width:190px;}
-.mt th.nm{position:sticky;left:0;z-index:3;}
-.mt td.nm b{display:block;font-size:13px;font-weight:600;}
-.mt td.nm span{font:500 11px var(--mono);color:var(--ink3);}
-.mt tr.gs td{background:#f1f5f9;text-align:left;font-weight:700;font-size:11.5px;color:var(--navy2);padding-left:12px;}
-.accp{display:block;border-radius:4px;font-size:10.5px;font-weight:700;padding:2px 6px;margin:1px 0;color:#fff;background:#94a3b8;}
-.accp.ok{background:#16a34a;}.accp.no{background:#dc2626;}.accp.mid{background:#f59e0b;}
-.pc{font:700 12.5px var(--mono);}
-.pc.r{color:#dc2626;}.pc.a{color:#d97706;}.pc.g{color:#15803d;}
-.ci{display:inline-flex;width:22px;height:22px;border-radius:50%;border:1.6px solid;align-items:center;justify-content:center;font:700 10px var(--sans);}
-.ci.P{border-color:#16a34a;color:#15803d;background:#f0fdf4;}
-.ci.L{border-color:#f59e0b;color:#b45309;background:#fffbeb;}
-.ci.A{border-color:#dc2626;color:#b91c1c;background:#fef2f2;}
-.ci.x{border-color:#e2e8f0;color:#cbd5e1;}
-.ass-line{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;}
-.ass-line span{font-size:12px;border:1px solid var(--line2);background:#fff;border-radius:7px;padding:4px 9px;}
-.ass-line b{font-family:var(--mono);}
-
-/* modal */
-.ov{position:fixed;inset:0;background:rgba(15,23,42,.5);display:flex;align-items:center;justify-content:center;padding:16px;z-index:50;}
-.dlg{background:#fff;border-radius:14px;width:100%;max-width:480px;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.3);}
-.dlg h3{font-size:18px;color:var(--navy);}
-.dlg .s{font-size:12.5px;color:var(--ink2);margin:4px 0 16px;}
-.frow{display:grid;grid-template-columns:90px 1fr 1fr;gap:10px;margin-bottom:12px;}
-.fld label{display:block;font-size:10.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--ink2);margin-bottom:5px;}
-.fld input{width:100%;border:1.5px solid var(--line2);border-radius:7px;padding:9px 10px;font:500 14px var(--sans);}
-.fld input:focus{outline:none;border-color:var(--navy);}
-.fld input[readonly]{background:#f1f5f9;color:var(--ink2);}
-.wbar{height:10px;border-radius:5px;background:#e2e8f0;overflow:hidden;display:flex;margin:6px 0 4px;}
-.wbar i{display:block;height:100%;}
-.wtxt{font-size:12px;color:var(--ink2);}
-.wtxt.bad{color:#dc2626;font-weight:600;}
-.rules{font-size:12px;color:var(--ink2);background:#f8fafc;border-radius:8px;padding:10px 12px;margin-top:12px;line-height:1.55;}
-.dbtns{display:flex;gap:10px;justify-content:flex-end;margin-top:18px;}
-.b2{border:1px solid var(--line2);background:#fff;border-radius:7px;padding:9px 16px;font-size:13.5px;cursor:pointer;}
-.b1{border:none;background:var(--navy);color:#fff;border-radius:7px;padding:9px 18px;font-size:13.5px;font-weight:600;cursor:pointer;}
-.b1.red{background:var(--red);}
-.b1:disabled{opacity:.5;cursor:not-allowed;}
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;border-radius:9px;padding:10px 18px;font-size:13.5px;z-index:60;box-shadow:0 10px 30px rgba(0,0,0,.25);}
-.toast.bad{background:#b91c1c;}
-
-@media (max-width:900px){
-  #app{flex-direction:column;}
-  .side{width:100%;height:auto;position:static;}
-  .side .sp{display:none;}
-  .main{padding:18px 16px 30px;}
-  .grid{grid-template-columns:1fr;}
-  .as{grid-template-columns:auto minmax(0,1fr) auto;}
-  .as .d{grid-column:2;}
-  .frow{grid-template-columns:70px 1fr;}
-  .frow .fld:last-child{grid-column:1 / -1;}
-  .card{padding:28px 20px;}
-}
 </style>
 </head>
 <body>
@@ -306,36 +165,17 @@ table.mt{border-collapse:separate;border-spacing:0;font-size:12.5px;min-width:10
 </section>
 </section>
 
-<!-- ============ PORTAL ============ -->
-<div id="app" class="hide">
-  <aside class="side">
-    <div class="lg"><img src="bsu-logo.png" alt="" onerror="this.style.display='none'"><div><b>CampusCore</b><span>Tutor Portal</span></div></div>
-    <div class="who"><div class="av" id="meAv">--</div><b id="meName"></b><span id="meEmail"></span></div>
-    <nav class="nav"><button class="on" id="navDash" onclick="goDash()">🏠 Dashboard</button></nav>
-    <div class="viewas hide" id="viewAs">
-      <label for="asSel">Admin: view as</label>
-      <select id="asSel" onchange="pickAs(this.value)"></select>
-    </div>
-    <div class="sp"></div>
-    <button class="out" onclick="signOut()">Sign out</button>
-  </aside>
-  <main class="main" id="main"><div class="loading">Loading your modules…</div></main>
-</div>
-
-<div id="modal"></div>
-<div id="toast"></div>
 
 <script>
 var API = 'https://script.google.com/macros/s/AKfycbycKFnbEm2aXY6JJ8QS-x-vUQMAcqp800afJhejux9UofP1YfK49AxoTG8cXMORzZby/exec';
 var STAFF_DOMAIN = 'bathspa.ae';
 var SKEY = 'tp_session';
 var EXP_MS = 8 * 60 * 60 * 1000;           // this page signs out after 2 hours without use; the server after 3
-var COLORS = ['#1e40af','#065f46','#6b21a8','#9a3412','#0e7490','#9d174d','#3f6212','#334155'];
+var PORTAL = 'CCTutor.html';
 
 function $(id){ return document.getElementById(id); }
 function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
 function show(el, on){ $(el).classList.toggle('hide', !on); }
-
 // ============================================================ SIGN-IN (same method as the Classroom)
 var _rid = null, _poll = null, _until = 0, _seq = 0, _grace = 0, _busy = 0;
 function staffEmail(v){
@@ -412,7 +252,7 @@ function poll(){
         stopPoll(); setWait('Approved. Opening your modules…', true);
         var s = { email: x.email, pass: x.pass, off: x.now ? Number(x.now) - Date.now() : 0, exp: Date.now() + EXP_MS };
         try { sessionStorage.setItem(SKEY, JSON.stringify(s)); } catch(e){}
-        start(s); return;
+        window.location.replace(PORTAL); return;
       }
       if(st === 'denied'){ waitErr('Sign-in was declined on the phone. If that was a mistake, send a new link.'); return; }
       if(st === 'locked'){ waitErr('Sign-in cancelled: a different number was tapped on the phone. Please send a new link.'); return; }
@@ -452,281 +292,18 @@ fetch(API + '?action=getClassroomInfo').then(function(r){ return r.json(); }).th
   if(d.footer) document.querySelectorAll('.cc-footer').forEach(function(el){ el.textContent = String(d.footer); });
 }).catch(function(){});
 
-// ============================================================ SIGNED REQUESTS (the pass never leaves this tab)
-var PASS = '', PID = '', OFF = 0, ME = '', _hk = null;
-function passKey(){ if(!_hk) _hk = crypto.subtle.importKey('raw', new TextEncoder().encode(PASS), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']); return _hk; }
-function hmacHex(msg){
-  return passKey().then(function(k){ return crypto.subtle.sign('HMAC', k, new TextEncoder().encode(msg)); })
-    .then(function(b){ return Array.prototype.map.call(new Uint8Array(b), function(x){ return ('0' + x.toString(16)).slice(-2); }).join(''); });
-}
-function sealGet(params){
-  var q = Object.assign({}, params, { pid: PID, ts: String(Date.now() + OFF) }), keys = Object.keys(q).sort();
-  return hmacHex('GET\n' + keys.map(function(k){ return k + '=' + String(q[k]); }).join('&')).then(function(sig){ q.sig = sig; return q; });
-}
-function sealPost(obj){
-  var p = JSON.stringify(obj);
-  return hmacHex('POST\n' + p).then(function(sig){ return JSON.stringify({ action: obj.action, pid: PID, sig: sig, p: p }); });
-}
-function isOut(e){ return e && /^SIGNED_OUT/.test(String(e.message || '')); }
-async function apiGet(params){
-  var last, fixed = false;
-  if(AS) params.as = AS;
-  for(var a = 0; a < 3; a++){
-    try {
-      var q = await sealGet(params);
-      var r = await fetch(API + '?' + Object.keys(q).map(function(k){ return k + '=' + encodeURIComponent(q[k]); }).join('&'), { cache: 'no-store' });
-      var j; try { j = JSON.parse(await r.text()); } catch(_){ throw new Error('CampusCore did not reply properly. Please try again.'); }
-      if(j.status !== 'ok' && !fixed && /^CLOCK:\d+$/.test(String(j.message || ''))){ fixed = true; OFF = Number(String(j.message).slice(6)) - Date.now(); saveOff(); a--; continue; }
-      if(j.status !== 'ok'){ var se = new Error(j.message || 'Error'); se.said = true; throw se; }
-      return j.data;
-    } catch(e){ last = e; if(e.said) break; if(a < 2) await new Promise(function(res){ setTimeout(res, 800 * (a + 1)); }); }
-  }
-  if(isOut(last)) ended();
-  throw last;
-}
-async function apiPost(action, body){
-  var last, fixed = false;
-  for(var a = 0; a < 2; a++){
-    try {
-      // signed afresh on every try, with the time: CampusCore accepts each request once, within 2 minutes
-      var obj = Object.assign({ action: action }, body, { ts: Date.now() + OFF }); if(AS) obj.as = AS;
-      var payload = await sealPost(obj);
-      var r = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: payload, redirect: 'follow' });
-      var j; try { j = JSON.parse(await r.text()); } catch(_){ throw new Error('CampusCore did not reply properly.'); }
-      if(j.status !== 'ok' && !fixed && /^CLOCK:\d+$/.test(String(j.message || ''))){ fixed = true; OFF = Number(String(j.message).slice(6)) - Date.now(); saveOff(); a--; continue; }
-      if(j.status !== 'ok'){ var se = new Error(j.message || 'Error'); se.said = true; throw se; }
-      return j.data;
-    } catch(e){ last = e; if(e.said) break; if(a < 1) await new Promise(function(res){ setTimeout(res, 1500); }); }
-  }
-  if(isOut(last)) ended();
-  throw last;
-}
-function saveOff(){ try { var s = JSON.parse(sessionStorage.getItem(SKEY) || 'null'); if(s){ s.off = OFF; sessionStorage.setItem(SKEY, JSON.stringify(s)); } } catch(e){} }
-
-// ============================================================ PORTAL
-var BOOT = null, AS = '', CUR = null, _idle = 0;
-function start(s){
-  PASS = String(s.pass); PID = PASS.slice(0, 16); OFF = Number(s.off) || 0; ME = s.email; _hk = null;
-  try { AS = sessionStorage.getItem('tp_as') || ''; } catch(e){ AS = ''; }
-  show('signin', false); show('app', true);
-  goDash();
-}
-function ended(){
-  PASS = ''; try { sessionStorage.removeItem(SKEY); sessionStorage.removeItem('tp_as'); } catch(e){}
-  show('app', false); show('signin', true); backToEmail();
-  errMsg('e-err', 'Your sign-in has ended. Please sign in again.', true);
-}
-function signOut(){
-  var p = PASS ? sealPost({ action: 'tutEndPass' }) : null;
-  if(p) p.then(function(b){ fetch(API, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: b, keepalive: true }).catch(function(){}); });
-  PASS = ''; try { sessionStorage.removeItem(SKEY); sessionStorage.removeItem('tp_as'); } catch(e){}
-  show('app', false); show('signin', true); backToEmail(); $('email').value = '';
-  errMsg('e-err', 'You are signed out.', true);
-}
-// 2 hours without use: sign out (the server does the same)
-['click','keydown','mousemove','touchstart'].forEach(function(ev){ document.addEventListener(ev, function(){ _idle = Date.now(); }, { passive: true }); });
-_idle = Date.now();
-setInterval(function(){ if(PASS && Date.now() - _idle > 2 * 60 * 60 * 1000) signOut(); }, 60000);
-
-function initials(n){ var p = String(n || '').replace(/^(dr|mr|mrs|ms|prof)\.?\s+/i, '').split(/\s+/).filter(Boolean); return ((p[0] || '?')[0] + (p.length > 1 ? p[p.length - 1][0] : '')).toUpperCase(); }
-function toast(t, bad){ var e = $('toast'); e.innerHTML = '<div class="toast' + (bad ? ' bad' : '') + '">' + esc(t) + '</div>'; clearTimeout(toast.t); toast.t = setTimeout(function(){ e.innerHTML = ''; }, bad ? 6000 : 3000); }
-var MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-var DAY = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-function fmtD(iso){ var m = String(iso || '').match(/^(\d{4})-(\d{2})-(\d{2})/); if(!m) return esc(iso); return Number(m[3]) + ' ' + MON[Number(m[2]) - 1] + ' ' + m[1]; }
-function daysTo(iso){ var m = String(iso || '').match(/^(\d{4})-(\d{2})-(\d{2})/); if(!m || !BOOT) return null; var a = Date.UTC(+m[1], +m[2] - 1, +m[3]), t = BOOT.today.split('-'); return Math.round((a - Date.UTC(+t[0], +t[1] - 1, +t[2])) / 86400000); }
-function pShort(p){ p = String(p || ''); var m = p.match(/\(([^)]+)\)\s*$/); if(/Business/.test(p) && m) return m[1]; return p.replace(/^(BA|BSc|MA|MSc)\s*\(Hons\)\s*/i, ''); }
-function gShort(g){ var p = String(g).split('|'); return pShort(p[0]) + ' · ' + String(p[1] || '').replace(/Year\s*/i, 'Y') + ' ' + String(p[2] || '').replace(/Group\s*/i, 'G'); }
-function progLine(groups){
-  var pr = [], yr = [];
-  groups.forEach(function(g){ var p = String(g).split('|'), a = pShort(p[0]); if(pr.indexOf(a) < 0) pr.push(a); if(p[1] && yr.indexOf(p[1]) < 0) yr.push(p[1]); });
-  return pr.join(' + ') + (yr.length ? ' · ' + yr.join(', ') : '');
-}
-
-function goDash(){
-  CUR = null;
-  $('main').innerHTML = '<div class="loading">Loading your modules…</div>';
-  apiGet({ action: 'tutBoot' }).then(function(d){ BOOT = d; drawSide(); drawDash(); })
-    .catch(function(e){ if(isOut(e)) return; $('main').innerHTML = '<div class="empty">' + esc(e.message || 'Could not load.') + '<br><br><button class="b1" onclick="goDash()">Try again</button></div>'; });
-}
-function drawSide(){
-  var me = BOOT.me;
-  $('meAv').textContent = initials(me.name || me.email); $('meName').textContent = me.name || me.email; $('meEmail').textContent = me.email;
-  if(me.admin && BOOT.tutors){
-    show('viewAs', true);
-    $('asSel').innerHTML = '<option value="">Myself (' + esc(me.name || me.email) + ')</option>' +
-      BOOT.tutors.filter(function(t){ return t.email !== me.email; }).map(function(t){ return '<option value="' + esc(t.email) + '"' + (t.email === AS ? ' selected' : '') + '>' + esc(t.name || t.email) + '</option>'; }).join('');
-  } else show('viewAs', false);
-}
-function pickAs(v){ AS = v || ''; try { sessionStorage.setItem('tp_as', AS); } catch(e){} goDash(); }
-
-function drawDash(){
-  var d = BOOT, as = d.as, mine = !AS, h = '';
-  var nStu = 0, nGrp = 0; d.runs.forEach(function(r){ nStu += r.students; nGrp += r.groups.length; });
-  h += '<div class="top"><div><h1>Dashboard</h1><p>' + esc(d.term ? d.term.year + ' · ' + d.term.sem : '') + ' · ' + fmtD(d.today) + '</p></div></div>';
-  if(!mine) h += '<div class="asbar"><b>Viewing as ' + esc(as.name || as.email) + '.</b> Anything you change here is recorded under your own email (' + esc(d.me.email) + '), with this tutor named beside it.</div>';
-  h += '<div class="hero"><div class="av">' + esc(initials(as.name || as.email)) + '</div><div><b>' + esc(as.name || as.email) + '</b><span>' + esc(as.email) + '</span></div>'
-     + '<div class="tags"><span class="tag">' + d.runs.length + ' module' + (d.runs.length === 1 ? '' : 's') + (d.term ? ' · ' + esc(d.term.sem) : '') + '</span></div></div>';
-  h += '<div class="term"><h3>' + esc(d.term ? d.term.label : 'This semester') + '</h3><span class="cur">● Current</span>'
-     + '<span class="st"><b>' + d.runs.length + '</b> modules · <b>' + nGrp + '</b> groups · <b>' + nStu + '</b> students</span></div>';
-  if(!d.term) h += '<div class="warn">The academic year or semester in KEY could not be read (expected e.g. 2026-2027 and Semester 1), so modules cannot be shown. Please tell academics@bathspa.ae.</div>';
-  else if(!d.runs.length) h += '<div class="empty">No modules on the timetable for ' + esc(as.name || as.email) + ' this semester.</div>';
-  else {
-    h += '<div class="grid">';
-    d.runs.forEach(function(r, i){ h += card(r, COLORS[i % COLORS.length], i); });
-    h += '</div>';
-  }
-  $('main').innerHTML = h;
-}
-function card(r, col, i){
-  var h = '<div class="mc"><div class="mh" style="background:' + col + '"><div><button class="mn" onclick="openRun(' + i + ')"' + (r.runId ? '' : ' disabled') + '>' + esc(r.module) + '</button>'
-    + '<div class="sub">' + esc(progLine(r.groups)) + '</div></div>'
-    + '<div class="cnt"><b>' + r.students + '</b> students · ' + r.groups.length + ' group' + (r.groups.length === 1 ? '' : 's') + '</div></div><div class="asl">';
-  if(!r.runId){
-    h += '<div class="warn">This module is not set up for this semester yet, so assessments cannot be added. Please tell academics@bathspa.ae (module name on the timetable: ' + esc(r.module) + ').</div></div></div>';
-    return h;
-  }
-  var act = r.assessments.filter(function(a){ return a.status !== 'Withdrawn'; });
-  act.forEach(function(a){
-    var n = Number(String(a.sa).replace(/\D/g, '')), dd = daysTo(a.deadline), when = dd == null ? '' : dd > 1 ? ' · ' + dd + ' days' : dd === 1 ? ' · tomorrow' : dd === 0 ? ' · today' : '';
-    h += '<div class="as' + (a.locked ? ' lk' : '') + '"><span class="c">' + esc(a.sa) + ' · ' + a.weight + '%</span><span class="n" title="' + esc(a.title) + '">' + esc(a.title) + '</span>'
-      + '<span class="d">due ' + fmtD(a.deadline) + when + '</span><span class="pill">' + (a.locked ? 'Locked' : 'Marks due') + '</span>'
-      + (a.locked ? '<span></span>' : '<span class="ic"><button title="Edit" onclick="editAss(' + i + ',' + n + ')">✎</button><button title="Withdraw" onclick="withdrawAss(' + i + ',' + n + ')">✕</button></span>') + '</div>';
-  });
-  if(act.length < 2 && r.weightSet < 100) h += '<button class="add" onclick="editAss(' + i + ',' + (act.length + 1) + ')">＋ Add assessment<span class="w">' + r.weightSet + '% of 100% set</span></button>';
-  else if(r.weightSet === 100) h += '<div class="full">✓ Weights add up to 100%. Marks can be added when they come in.</div>';
-  else h += '<div class="warn">The weights add up to ' + r.weightSet + '%. They must reach 100% before marks can be added: edit a weight.</div>';
-  return h + '</div></div>';
-}
-
-// ---------- add / edit an assessment
-function editAss(i, n){
-  var r = BOOT.runs[i], a = null; r.assessments.forEach(function(x){ if(x.sa === 'SA' + n && x.status !== 'Withdrawn') a = x; });
-  var others = r.weightSet - (a ? a.weight : 0);
-  var h = '<div class="ov" onclick="if(event.target===this)closeM()"><div class="dlg"><h3>' + (a ? 'Edit' : 'Add') + ' assessment</h3><div class="s">' + esc(r.module) + '</div>'
-    + '<div class="frow"><div class="fld"><label>Number</label><input readonly value="SA' + n + '"></div>'
-    + '<div class="fld"><label for="fW">Weight %</label><input id="fW" type="number" min="1" max="100" step="0.5" value="' + (a ? a.weight : (100 - others)) + '"></div>'
-    + '<div class="fld"><label for="fD">Deadline</label><input id="fD" type="date" value="' + esc(a ? a.deadline : '') + '"></div></div>'
-    + '<div class="fld"><label for="fT">Title</label><input id="fT" maxlength="100" placeholder="e.g. Research report" value="' + esc(a ? a.title : '') + '"></div>'
-    + '<div style="margin-top:12px"><div class="wbar" id="wBar"></div><div class="wtxt" id="wTxt"></div></div>'
-    + '<div class="rules">The weights of a module must add up to exactly 100% before marks can be added. You can edit or withdraw an assessment until its marks are uploaded. Every change is recorded.</div>'
-    + '<div class="msg" id="mErr"></div>'
-    + '<div class="dbtns"><button class="b2" onclick="closeM()">Cancel</button><button class="b1" id="mSave">Save</button></div></div></div>';
-  $('modal').innerHTML = h;
-  function upd(){
-    var w = Number($('fW').value) || 0, tot = others + w;
-    $('wBar').innerHTML = '<i style="width:' + Math.min(100, others) + '%;background:#94a3b8"></i><i style="width:' + Math.max(0, Math.min(100 - others, w)) + '%;background:' + (tot > 100 ? '#dc2626' : '#1e40af') + '"></i>';
-    var t = $('wTxt'); t.className = 'wtxt' + (tot > 100 ? ' bad' : '');
-    t.textContent = tot > 100 ? 'Total would be ' + tot + '%. It cannot be more than 100%.' : 'Total for this module: ' + tot + '% of 100%' + (tot < 100 ? ' (' + (100 - tot) + '% still to set)' : '');
-  }
-  $('fW').addEventListener('input', upd); upd();
-  $('fT').focus();
-  $('mSave').onclick = function(){
-    var w = Number($('fW').value), t = $('fT').value.trim(), dl = $('fD').value;
-    errMsg('mErr', '');
-    if(!t){ errMsg('mErr', 'Please give a title.'); return; }
-    if(!(w > 0 && w <= 100)){ errMsg('mErr', 'The weight must be from 1 to 100.'); return; }
-    if(others + w > 100){ errMsg('mErr', 'The total cannot be more than 100%.'); return; }
-    if(!/^\d{4}-\d{2}-\d{2}$/.test(dl)){ errMsg('mErr', 'Please choose a deadline date.'); return; }
-    var b = $('mSave'); b.disabled = true; b.textContent = 'Saving…';
-    apiPost('tutAssessSave', { runId: r.runId, sa: n, title: t, weight: w, deadline: dl })
-      .then(function(){ closeM(); toast('Saved: SA' + n + ' of ' + r.module); goDash(); })
-      .catch(function(e){ b.disabled = false; b.textContent = 'Save'; if(!isOut(e)) errMsg('mErr', e.message || 'Could not save. Please try again.'); });
-  };
-}
-function withdrawAss(i, n){
-  var r = BOOT.runs[i];
-  $('modal').innerHTML = '<div class="ov" onclick="if(event.target===this)closeM()"><div class="dlg"><h3>Withdraw SA' + n + '?</h3><div class="s">' + esc(r.module) + '</div>'
-    + '<p style="font-size:13.5px;line-height:1.6">It will no longer show here. It is kept in the records (marked Withdrawn) and can be added again.</p>'
-    + '<div class="msg" id="mErr"></div><div class="dbtns"><button class="b2" onclick="closeM()">Cancel</button><button class="b1 red" id="mSave">Withdraw</button></div></div></div>';
-  $('mSave').onclick = function(){
-    var b = $('mSave'); b.disabled = true; b.textContent = 'Withdrawing…';
-    apiPost('tutAssessWithdraw', { runId: r.runId, sa: n })
-      .then(function(){ closeM(); toast('SA' + n + ' withdrawn'); goDash(); })
-      .catch(function(e){ b.disabled = false; b.textContent = 'Withdraw'; if(!isOut(e)) errMsg('mErr', e.message || 'Could not withdraw. Please try again.'); });
-  };
-}
-function closeM(){ $('modal').innerHTML = ''; }
-document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeM(); });
-
-// ---------- module register (read only)
-var RUN = null, GSEL = '', QS = '';
-function openRun(i){
-  var r = BOOT.runs[i]; if(!r || !r.runId) return;
-  GSEL = ''; QS = '';
-  $('main').innerHTML = '<div class="loading">Loading ' + esc(r.module) + '…</div>';
-  apiGet({ action: 'tutRun', runId: r.runId }).then(function(d){ RUN = d; drawRun(); window.scrollTo(0, 0); })
-    .catch(function(e){ if(isOut(e)) return; $('main').innerHTML = '<div class="empty">' + esc(e.message || 'Could not load.') + '<br><br><button class="b1" onclick="goDash()">Back to the dashboard</button></div>'; });
-}
-function drawRun(){
-  var d = RUN, h = '';
-  h += '<div class="mtop"><button class="bk" onclick="goDash()">← Dashboard</button><div><h1>' + esc(d.module) + '</h1><p>' + esc(progLine(d.groups)) + '</p></div></div>';
-  if(AS) h += '<div class="asbar">Viewing as ' + esc(BOOT.as.name || BOOT.as.email) + '.</div>';
-  var act = d.assessments.filter(function(a){ return a.status !== 'Withdrawn'; });
-  h += '<div class="ass-line">' + (act.length ? act.map(function(a){ return '<span><b>' + esc(a.sa) + ' · ' + a.weight + '%</b> ' + esc(a.title) + ' · due ' + fmtD(a.deadline) + '</span>'; }).join('') : '<span>No assessments set yet</span>') + '</div>';
-  var total = 0; d.groups.forEach(function(g){ total += (d.rosters[g] || []).length; });
-  h += '<div class="chips"><button class="gt' + (GSEL ? '' : ' on') + '" onclick="selG(\'\')">All · ' + total + '</button>'
-    + d.groups.map(function(g){ return '<button class="gt' + (GSEL === g ? ' on' : '') + '" data-g="' + esc(g) + '" onclick="selG(this.dataset.g)">' + esc(gShort(g)) + ' · ' + (d.rosters[g] || []).length + '</button>'; }).join('')
-    + '<span class="kline" id="kline"></span></div>';
-  h += '<div class="srch">🔍<input id="q" placeholder="Search a student by name or BSU ID…" value="' + esc(QS) + '"></div>';
-  h += '<div class="twrap" id="tw"></div>';
-  $('main').innerHTML = h;
-  $('q').addEventListener('input', function(){ QS = this.value; drawTable(); });
-  drawTable();
-}
-function selG(g){ GSEL = g; drawRun(); }
-function drawTable(){
-  var d = RUN, groups = GSEL ? [GSEL] : d.groups, q = QS.trim().toLowerCase();
-  // classes taught to the groups shown
-  var cls = d.classes.filter(function(c){ return c.groups.some(function(g){ return groups.indexOf(g) > -1; }); });
-  // columns: one per teaching date (latest first); a student's mark comes from their own class on that date
-  var dates = {}; cls.forEach(function(c){ c.sessions.forEach(function(s){ dates[s.date] = 1; }); });
-  var cols = Object.keys(dates).sort().reverse();
-  var rows = [], n = 0, sum = 0, cnt = 0, low = 0, see = 0;
-  groups.forEach(function(g){
-    var gc = cls.filter(function(x){ return x.groups.indexOf(g) > -1; });   // a group may be in more than one class of a module
-    var list = (d.rosters[g] || []).filter(function(s){ return !q || String(s.name).toLowerCase().indexOf(q) > -1 || String(s.bsuId || '').indexOf(q) > -1; });
-    if(!list.length) return;
-    rows.push({ sep: g, n: list.length });
-    list.forEach(function(s){
-      var byDate = {}, p = 0, l = 0, a = 0;
-      gc.forEach(function(c){
-        var hist = String((c.hist || {})[s.key] || '');
-        c.sessions.forEach(function(se, j){ var x = hist.charAt(j) || '-'; (byDate[se.date] = byDate[se.date] || []).push(x); if(x === 'P') p++; else if(x === 'L') l++; else if(x === 'A') a++; });
-      });
-      var pct = gc.length === 1 ? d.pct[gc[0].key + '||' + s.key] : (p + l + a ? Math.round((p + 0.5 * l) / (p + l + a) * 100) : null);
-      if(pct === undefined) pct = null;
-      n++; if(pct != null){ sum += pct; cnt++; if(pct < 70) low++; }
-      if(/see\s*accounts/i.test(String(s.acc || ''))) see++;
-      rows.push({ s: s, p: p, l: l, a: a, pct: pct, byDate: byDate });
-    });
-  });
-  $('kline').innerHTML = '<b>' + n + '</b> students · <b>' + cols.length + '</b> class dates · <b>' + (cnt ? Math.round(sum / cnt) : 0) + '%</b> average · <b class="' + (low ? 'r' : '') + '">' + low + '</b> below 70% · <b class="' + (see ? 'r' : '') + '">' + see + '</b> see Accounts';
-  var h = '<table class="mt"><thead><tr><th class="l nm">Student</th><th class="l">Accounts</th><th>Attn %</th><th>P</th><th>L</th><th>A</th>'
-    + cols.map(function(dt){ var m = dt.split('-'), w = new Date(Date.UTC(+m[0], +m[1] - 1, +m[2])).getUTCDay(); return '<th class="dt">' + Number(m[2]) + ' ' + MON[+m[1] - 1] + '<small>' + DAY[w] + '</small></th>'; }).join('')
-    + '<th class="fill"></th></tr></thead><tbody>';
-  var span = 7 + cols.length;
-  rows.forEach(function(r){
-    if(r.sep){ if(groups.length > 1) h += '<tr class="gs"><td colspan="' + span + '">' + esc(gShort(r.sep)) + ' · ' + r.n + '</td></tr>'; return; }
-    var s = r.s, id = s.kind === 'ok' ? esc(s.bsuId) : s.kind === 'new' ? 'New, no ID yet' : 'Not in records';
-    var reg = String(s.reg || '').trim().replace(/\.$/, ''), acc = String(s.acc || '').trim().replace(/\.$/, '');
-    var accH = (reg ? '<span class="accp ' + (/not|drop/i.test(reg) ? 'no' : /partial/i.test(reg) ? 'mid' : 'ok') + '">' + esc(reg) + '</span>' : '')
-      + (!acc ? '' : /^clear$/i.test(acc) ? '<span class="accp ok">Clear</span>' : /see\s*accounts/i.test(acc) ? '<span class="accp no">Please see Accounts!</span>' : '<span class="accp mid">' + esc(acc) + '</span>');
-    var pc = r.pct == null ? '<span class="pc">–</span>' : '<span class="pc ' + (r.pct < 70 ? 'r' : r.pct < 80 ? 'a' : 'g') + '">' + r.pct + '%</span>';
-    h += '<tr><td class="nm"><b>' + esc(s.name) + '</b><span>' + id + '</span></td><td class="acc">' + (accH || '–') + '</td><td>' + pc + '</td><td>' + r.p + '</td><td>' + r.l + '</td><td>' + r.a + '</td>'
-      + cols.map(function(dt){ var L = r.byDate[dt]; if(!L) return '<td></td>'; return '<td>' + L.map(function(x){ return x === '-' ? '<span class="ci x">·</span>' : '<span class="ci ' + x + '">' + x + '</span>'; }).join(' ') + '</td>'; }).join('')
-      + '<td class="fill"></td></tr>';
-  });
-  h += '</tbody></table>';
-  if(!n) h = '<div class="empty" style="border:none">' + (q ? 'No student matches “' + esc(QS) + '”.' : 'No students in this group yet.') + '</div>';
-  $('tw').innerHTML = h;
-}
-
 // ============================================================ START
+// already signed in (this tab) -> straight to the portal; a message from the portal (signed out) is shown here
 (function(){
   var s = null; try { s = JSON.parse(sessionStorage.getItem(SKEY) || 'null'); } catch(e){}
-  if(s && s.pass && s.email && (!s.exp || Date.now() < s.exp)) start(s);
-  else { try { sessionStorage.removeItem(SKEY); } catch(e){} setTimeout(function(){ $('email').focus(); }, 100); }
+  if(s && s.pass && s.email && (!s.exp || Date.now() < s.exp)){ window.location.replace(PORTAL); return; }
+  try { sessionStorage.removeItem(SKEY); } catch(e){}
+  var m = null; try { m = localStorage.getItem('tp_msg'); localStorage.removeItem('tp_msg'); } catch(e){}
+  if(m) errMsg('e-err', m, true);
+  setTimeout(function(){ $('email').focus(); }, 100);
+  try { if(!document.getElementById('pf-portal')){ var lk = document.createElement('link'); lk.id = 'pf-portal'; lk.rel = 'prefetch'; lk.href = PORTAL; document.head.appendChild(lk); } } catch(e){}
 })();
+window.addEventListener('pageshow', function(e){ if(e.persisted){ var s = null; try { s = JSON.parse(sessionStorage.getItem(SKEY) || 'null'); } catch(_){} if(s && s.pass) window.location.replace(PORTAL); } });
 </script>
 </body>
 </html>
