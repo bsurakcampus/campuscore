@@ -1198,7 +1198,7 @@ var LIVE_IDLE_MS = 4 * 60 * 60 * 1000;     // while a class is running it stays 
 var COLORS = ['c1','c2','c3','c4','c5','c6','c7','c8'];
 var _config = {};                          // used by the reused calendar code
 var PASS = '';                             // sign-in pass from the server (checked on every classroom request)
-var PASS_ACTIONS = { getClassroomBundle:1, getClassSession:1, classroomPing:1, getCoverList:1, getCoverClass:1, getClassRoster:1 };
+var PASS_ACTIONS = { getClassroomBundle:1, getClassSession:1, classroomPing:1, getCoverList:1, getCoverClass:1, getClassRoster:1, classroomPhoto:1 };
 // 17 Oct 2026: signed requests. The pass stays inside this tab. Each request carries the pass id (first 16
 // characters) and a signature made with the pass, never the pass itself, so it is not in any web address,
 // request or the outbox kept on this computer, and a copied request cannot be changed or reused later.
@@ -1374,15 +1374,12 @@ $('gRemKeep').onclick = function(){ $('gRemind').hidden = true; goLive(); };
 $('gRemFin').onclick = function(){ $('gRemind').hidden = true; doStop('out'); };
 $('gAllKeep').onclick = function(){ $('gAll').hidden = true; };
 $('gAllFin').onclick = function(){ $('gAll').hidden = true; doStop('out'); };
-// "Everyone is marked" (once per class) and the hint on the first card while nobody is marked
+// The hint on the first card while nobody is marked
 setInterval(function(){
   if(!LIVE || SIGNED_OUT){ $('gHint').hidden = true; return; }
   var L = liveCounts(), busy = document.querySelector('.cc-ov.show') || ($('notOv') && $('notOv').classList.contains('show')) || !$('gStarted').hidden || !$('gRemind').hidden || !$('gDone').hidden;
-  if(L.tot > 0 && L.n >= L.tot && !gFlag('a') && !busy){
-    gFlag('a', true);
-    $('gAllSub').innerHTML = '<b style="color:#16a34a">' + L.k.p + ' present</b> · <b style="color:#d97706">' + L.k.l + ' late</b> · <b style="color:#dc2626">' + L.k.a + ' absent</b>';
-    $('gAll').hidden = false;
-  }
+  // 9 Nov 2026: the "Everyone is marked" box no longer opens (it came up on the first tap of the last student,
+  // before an Absent or Late could be given). Finishing stays with the Finish class button.
   var h = $('gHint'), onPage = $('page-attendance') && $('page-attendance').classList.contains('active');
   var card = onPage && liveHere() && L.n === 0 && !busy && $('gAll').hidden ? document.querySelector('#att-tbody .ncard') : null;
   document.querySelectorAll('.g-pulse').forEach(function(x){ if(x !== card) x.classList.remove('g-pulse'); });
@@ -1634,6 +1631,7 @@ function renderDashboard(){
   var name = B.tutor.name || TUTOR, ini = name.replace(/^(Dr\.|Mr\.|Ms\.|Mrs\.)\s*/i,'').split(' ').filter(Boolean).slice(0,2).map(function(w){ return w[0]; }).join('').toUpperCase();
   $('sidebar-name').textContent = name; $('sb-initials').textContent = ini; $('hero-initials').textContent = ini;
   showPhoto(B.tutor.photo);
+  if(!renderDashboard._ph){ apiFetch({action:'classroomPhoto'}).then(function(d){ renderDashboard._ph = 1; if(d && d.photo) showPhoto(d.photo); }).catch(function(){}); }   // asked again on the next refresh if it failed
   $('hero-name').textContent = name;
   $('hero-meta-line').innerHTML = '<strong>' + esc(TUTOR) + '</strong><span class="sep">·</span>Faculty';
   var OWN = CLASSES.filter(function(c){ return !c.cover; });
@@ -1692,8 +1690,8 @@ $('offNo').onclick = function(){ $('offOv').classList.remove('show'); };
 // Tutor photo (Google Drive link) in the sidebar and the profile card; initials stay if it does not load.
 function driveImg(url){
   url = String(url || ''); if(!url) return '';
-  var m = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-  return m ? 'https://lh3.googleusercontent.com/d/' + m[1] : url;
+  // 4 Nov 2026: only the photo sent by CampusCore (Drive stays private); nothing else is put into the page style
+  return /^data:image\/(png|jpeg|gif|webp);base64,[A-Za-z0-9+\/=]+$/.test(url) ? url : '';
 }
 function showPhoto(url){
   var src = driveImg(url); if(!src) return;
@@ -1905,7 +1903,7 @@ function pastClick(sid, key){
   var wrap = document.querySelector('#att-body .att-table-wrap'), sx = wrap.scrollLeft, sy = wrap.scrollTop;
   renderTable(); wrap.scrollLeft = sx; wrap.scrollTop = sy;
   var r = rosterOf(CUR).find(function(x){ return x.s.key === key; }); if(!r) return;
-  var at = Date.now(), ck = CUR.key;
+  var at = Date.now() + CLOCK_OFF, ck = CUR.key;   // 4 Nov 2026: CampusCore's time, so a PC clock that is ahead or behind cannot reorder marks
   queue(function(){
     return apiPost('saveClassAttendance', Object.assign(sessInfo(sid, ck), { sessionId: sid, email: TUTOR, records: [{ name: r.s.name, key: key, group: r.group, status: nx }], sendEmails: false, at: at }),
       async function(){ var d0 = await apiFetch({action:'getClassSession', sessionId: sid}); return d0 && d0.marks && d0.marks[key] === nx ? {} : null; },
@@ -1993,7 +1991,7 @@ function save(email, final, V0, cls0){
     recs.push({ name: r.s.name, key: r.s.key, group: r.group, status: st });
   });
   if(!recs.length){ V.dirty = false; return; }
-  var at = Date.now();                                        // newer marks always win, whatever order the saves arrive in
+  var at = Date.now() + CLOCK_OFF;                            // newer marks always win (CampusCore's time, 4 Nov 2026), whatever order the saves arrive in
   // Shown as saved at once; CampusCore confirms in the background (and says so if it could not save).
   var before = Object.assign({}, V.savedMarks);
   recs.forEach(function(r){ if(r.status === 'N') delete V.savedMarks[r.key]; else V.savedMarks[r.key] = r.status; });

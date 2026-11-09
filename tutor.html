@@ -251,7 +251,7 @@ function poll(){
       if(st === 'approved' && x.email && x.pass){
         stopPoll(); setWait('Approved. Opening your modules…', true);
         var s = { email: x.email, pass: x.pass, off: x.now ? Number(x.now) - Date.now() : 0, exp: Date.now() + EXP_MS };
-        try { sessionStorage.setItem(SKEY, JSON.stringify(s)); } catch(e){}
+        clearTp(); try { sessionStorage.setItem(SKEY, JSON.stringify(s)); } catch(e){}
         window.location.replace(PORTAL); return;
       }
       if(st === 'denied'){ waitErr('Sign-in was declined on the phone. If that was a mistake, send a new link.'); return; }
@@ -292,12 +292,14 @@ fetch(API + '?action=getClassroomInfo').then(function(r){ return r.json(); }).th
   if(d.footer) document.querySelectorAll('.cc-footer').forEach(function(el){ el.textContent = String(d.footer); });
 }).catch(function(){});
 
+// Everything the portal kept in this tab (the last tutor's modules, "view as") is removed before a new sign-in.
+function clearTp(){ try { Object.keys(sessionStorage).forEach(function(k){ if(/^tp_/.test(k)) sessionStorage.removeItem(k); }); } catch(e){} }
 // ============================================================ START
 // already signed in (this tab) -> straight to the portal; a message from the portal (signed out) is shown here
 (function(){
   var s = null; try { s = JSON.parse(sessionStorage.getItem(SKEY) || 'null'); } catch(e){}
   if(s && s.pass && s.email && (!s.exp || Date.now() < s.exp)){ window.location.replace(PORTAL); return; }
-  try { sessionStorage.removeItem(SKEY); } catch(e){}
+  clearTp();
   var m = null; try { m = localStorage.getItem('tp_msg'); localStorage.removeItem('tp_msg'); } catch(e){}
   if(m) errMsg('e-err', m, true);
   setTimeout(function(){ $('email').focus(); }, 100);

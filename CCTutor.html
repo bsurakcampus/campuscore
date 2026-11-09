@@ -979,12 +979,24 @@ body{overflow:hidden}
 .asbar[hidden]{display:none}
 .hav,.who .av{background-color:#1e3a8a}
 /* loading screen */
-#boot{position:fixed;inset:0;background:#0f1e3d;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;font-family:var(--sans);text-align:center;padding:24px}
+/* loading screen: the same as the Classroom */
+#boot{position:fixed;inset:0;z-index:2147483646;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-family:'Sora',system-ui,sans-serif;text-align:center;padding:24px;color:#0f1e3d;}
 #boot[hidden]{display:none}
-#boot .ring{width:96px;height:96px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center}
-#boot .ring img{height:64px}
-#boot .b1{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#93a4c3}
-#boot .b2{font-size:14px;color:#e2e8f0;line-height:1.6}
+#boot .ring{position:relative;width:200px;height:200px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;}
+#boot .ring::before{content:'';position:absolute;inset:0;border-radius:50%;border:3px solid #e6edf7;border-top-color:#2563eb;animation:ccspin 1s linear infinite;}
+#boot .ring img{height:128px;width:auto;}
+#boot .b1{font-size:15px;font-weight:700;letter-spacing:.3px;}
+#boot .b2{font-size:12.5px;color:#64748b;}
+@keyframes ccspin{to{transform:rotate(360deg)}}
+/* Notices and Ultra buttons: the same as the Classroom */
+.btn-notice{position:relative;display:inline-flex;align-items:center;gap:7px;padding:9px 18px;background:var(--sb-bg);color:#facc15;font-family:'Sora',sans-serif;font-size:13px;font-weight:700;border-radius:var(--radius);border:none;cursor:pointer;box-shadow:var(--shadow-sm);}
+.btn-notice em,.btn-notice em.nnew{position:absolute;top:-7px;right:-7px;background:#facc15;color:#0f1e3d;font-style:normal;font-size:10px;font-weight:800;border-radius:9px;padding:1px 6px;animation:nbp 1.6s infinite;}
+@keyframes nbp{50%{transform:scale(1.15)}}
+.hdr-btns{display:flex;gap:8px;align-items:center;}
+.semC .tn small.up{display:inline}   /* the mock's upload-panel class .up also matched this label */
+.ebar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#fffbeb;border:1px solid #fde68a;color:#713f12;border-radius:9px;padding:6px 12px;font-size:12.5px;margin-bottom:8px}
+.ebar[hidden]{display:none}.ebar b{color:#0f1e3d}.ebar button{margin-left:auto}
+.mt .circ.busy{opacity:.45}
 .wdtxt{font-size:13px;line-height:1.6;color:var(--ink2);margin:6px 0 0}
 @media print{.side,.mtop .btn-o,.mtop .back,#gtabs,.ms{display:none!important}.app{display:block;height:auto}.main,.main.modmode{height:auto;overflow:visible}.twrap{overflow:visible}body{overflow:visible}}
 </style>
@@ -1011,7 +1023,10 @@ body{overflow:hidden}
   <div class="main" id="main">
     <div class="pg" id="pg-dash">
       <div class="hrow"><div><h2>Dashboard</h2><p id="dashSub"></p></div>
-        <div class="hbtns"><a class="btn-o ultra" href="https://ultra.bathspa.ac.uk/" target="_blank" rel="noopener" title="Opens Blackboard Ultra in a new tab">🎓 Blackboard Ultra</a><button class="btn-notice" type="button" id="openNot">📢 Notices<em class="nnew" style="display:none">NEW</em></button></div></div>
+        <div class="hbtns hdr-btns"><button class="btn-notice" type="button" id="openNot">📢 Notices<em class="nnew" style="display:none">NEW</em></button>
+        <a href="https://ultra.bathspa.ac.uk/" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:7px;padding:9px 20px;background:var(--sb-bg);color:#fff;font-family:'Sora',sans-serif;font-size:13px;font-weight:700;border-radius:var(--radius);text-decoration:none;letter-spacing:0.3px;box-shadow:var(--shadow-sm);">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          Ultra</a></div></div>
       <div class="asbar" id="asBar" hidden></div>
       <div class="hero2"><span class="hav" id="heroAv">--</span><div><b id="heroName"></b><div class="hm" id="heroMeta"></div></div><div class="htags" id="heroTags"></div></div>
       <div id="dashWrap" class="lc soft ga thin v6"></div>
@@ -1019,6 +1034,7 @@ body{overflow:hidden}
     <div class="pg" id="pg-mod" hidden>
       <div class="mtop"><button class="back" type="button" id="modBack">← Dashboard</button><div><h2 id="modTitle"></h2><p id="modSub"></p></div><span class="sp"></span><button class="btn-o" type="button" id="modPrint">🖨️ Print</button></div>
       <div class="mrow2" id="gtabs"></div>
+      <div class="ebar" id="eBar" hidden>✏️ Changing attendance for <b id="eDate"></b>. Click a student's circle: Present → Absent → Late. Saved at once and recorded; no emails.<button class="btn-o" type="button" id="eDone">Done</button></div>
       <div class="ms"><span>🔍</span><input type="text" id="modSearch" placeholder="Search a student by name or BSU ID…" aria-label="Search a student"><button class="clr" type="button" id="modClr" title="Clear search" aria-label="Clear search" hidden>✕</button></div>
       <div class="twrap"><table class="mt" id="tbl"><thead><tr id="mHead"></tr></thead><tbody id="modBody"></tbody></table></div>
     </div>
@@ -1085,7 +1101,7 @@ var PASS = '', PID = '', OFF = 0, ME = '', AS = '', _hk = null;
 function readSess(){ try { return JSON.parse(sessionStorage.getItem(SKEY) || 'null'); } catch(e){ return null; } }
 (function guard(){
   var s = readSess();
-  if(!s || !s.pass || !s.email || (s.exp && Date.now() > s.exp)){ try { sessionStorage.removeItem(SKEY); } catch(e){} window.location.replace('tutor.html'); return; }
+  if(!s || !s.pass || !s.email || (s.exp && Date.now() > s.exp)){ try { Object.keys(sessionStorage).forEach(function(k){ if(/^tp_/.test(k)) sessionStorage.removeItem(k); }); } catch(e){} window.location.replace('tutor.html'); return; }
   PASS = String(s.pass); PID = PASS.slice(0, 16); OFF = Number(s.off) || 0; ME = s.email;
   try { AS = sessionStorage.getItem('tp_as') || ''; } catch(e){}
   var last = Date.now();
@@ -1111,7 +1127,10 @@ async function apiFetch(params){
   for(var a = 0; a < 3; a++){
     try {
       var q = signed ? await sealGet(params) : params;
-      var r = await fetch(API + '?' + Object.keys(q).map(function(k){ return k + '=' + encodeURIComponent(q[k]); }).join('&'), { cache: 'no-store' });
+      var ctl = new AbortController(), tmo = setTimeout(function(){ ctl.abort(); }, 30000), r;
+      try { r = await fetch(API + '?' + Object.keys(q).map(function(k){ return k + '=' + encodeURIComponent(q[k]); }).join('&'), { cache: 'no-store', signal: ctl.signal }); }
+      catch(fe){ throw new Error(ctl.signal.aborted ? 'CampusCore took too long to answer. Please press Retry.' : 'Could not reach CampusCore. Check the internet connection and press Retry.'); }
+      finally { clearTimeout(tmo); }
       var j; try { j = JSON.parse(await r.text()); } catch(_){ throw new Error('CampusCore did not reply properly. Please try again.'); }
       if(j.status !== 'ok' && signed && !fixed && /^CLOCK:\d+$/.test(String(j.message || ''))){ fixed = true; OFF = Number(String(j.message).slice(6)) - Date.now(); saveOff(); a--; continue; }
       if(j.status !== 'ok'){ var se = new Error(j.message || 'Error'); se.said = true; throw se; }
@@ -1137,7 +1156,14 @@ async function apiPost(action, body){
   if(isOut(last)) ended();
   throw last;
 }
-function clearSess(){ PASS = ''; try { sessionStorage.removeItem(SKEY); sessionStorage.removeItem('tp_as'); } catch(e){} }
+function clearSess(){ PASS = ''; try { sessionStorage.removeItem(SKEY); sessionStorage.removeItem('tp_as'); Object.keys(sessionStorage).forEach(function(k){ if(/^tp_[cr]_/.test(k)) sessionStorage.removeItem(k); }); } catch(e){} }
+// 4 Nov 2026: speed. What this tab has already loaded (dashboard and every register) is kept in this tab only
+// (sessionStorage: gone when the browser closes or on sign-out), shown at once and refreshed quietly in the background.
+var MEM = {};
+function cKey(kind, id){ return 'tp_' + kind + '_' + (AS || 'me') + (id ? '_' + id : ''); }
+function cGet(k){ if(MEM[k]) return MEM[k]; try { var v = JSON.parse(sessionStorage.getItem(k) || 'null'); if(v) MEM[k] = v; return v; } catch(e){ return null; } }
+function cDrop(k){ delete MEM[k]; try { sessionStorage.removeItem(k); } catch(e){} }
+function cPut(k, d){ var v = { t: Date.now(), d: d }; MEM[k] = v; try { sessionStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
 function ended(){ if(SIGNED_OUT) return; SIGNED_OUT = true; clearSess(); try { localStorage.setItem('tp_msg', 'Your sign-in has ended. Please sign in again.'); } catch(e){} window.location.replace('tutor.html'); }
 function signOut(msg){
   if(SIGNED_OUT) return; SIGNED_OUT = true;
@@ -1176,7 +1202,7 @@ function tMin(t){ var m = String(t || '').match(/(\d{1,2})[:.](\d{2})/); if(!m) 
 function driveImg(url){ url = String(url || ''); if(!url) return ''; var m = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/[?&]id=([a-zA-Z0-9_-]+)/); return m ? 'https://lh3.googleusercontent.com/d/' + m[1] : url; }
 // photo from FACULTY (Google Drive link); the initials stay if it does not load
 function setPhoto(ids, url){
-  var src = driveImg(url); if(!src || !/^https?:\/\//.test(src)) return;
+  var src = /^data:image\/(png|jpeg|gif|webp);base64,[A-Za-z0-9+\/=]+$/.test(String(url || '')) ? String(url) : ''; if(!src) return;   // only the photo sent by CampusCore
   var img = new Image();
   img.onload = function(){ ids.forEach(function(id){ var e = $(id); if(!e) return; e.textContent = ''; e.style.background = '#1e3a8a url("' + src.replace(/"/g, '') + '") center 20%/cover no-repeat'; }); };
   img.src = src;
@@ -1210,15 +1236,23 @@ function goDash(){
   if(!BOOT) return;
   loadBoot(true);
 }
+function showBoot(d){
+  BOOT = d; _config = { academic_year: d.term ? d.term.year : '', current_semester: d.term ? d.term.sem : '' };
+  drawSide(); if(PAGE === 'dash') drawDash(); else drawDashQuiet(); drawTT();
+  $('boot').hidden = true; $('app').hidden = false;
+}
+function drawDashQuiet(){ try { drawDash(); } catch(e){} }
 function loadBoot(quiet){
+  var hit = cGet(cKey('c'));
+  if(hit && !BOOT && !quiet) showBoot(hit.d);              // shown at once from this tab's copy, then refreshed
   return apiFetch({ action: 'tutBoot' }).then(function(d){
-    BOOT = d; _config = { academic_year: d.term ? d.term.year : '', current_semester: d.term ? d.term.sem : '' };
-    drawSide(); drawDash(); drawTT();
-    $('boot').hidden = true; $('app').hidden = false;
+    if(!d || !Array.isArray(d.runs) || d.runs.some(function(r){ return !Array.isArray(r.classes); })) throw new Error('The Apps Script file CampusCore_Tutor is older than this page. Paste the latest CampusCore_Tutor.gs and deploy a New version.');
+    cPut(cKey('c'), d); showBoot(d);
+    prefetchRuns();
   }).catch(function(e){
     if(isOut(e)) return;
-    if(quiet && BOOT){ toast(e.message || 'Could not refresh.', true); return; }
-    $('bootMsg').innerHTML = '⚠️ ' + esc(e.message || 'Could not load your modules.') + '<br><br><button class="btn-p" type="button" onclick="location.reload()">Try again</button> <button class="btn-o" type="button" onclick="signOut()">Sign out</button>';
+    if(BOOT){ if(quiet) toast(e.message || 'Could not refresh.', true); return; }
+    $('boot').innerHTML = '<div style="max-width:440px"><div style="font-size:40px;margin-bottom:8px">⚠️</div><div style="font-size:20px;font-weight:700;margin-bottom:10px;color:#0f1e3d">Could not load your modules</div><div style="font-size:13px;line-height:1.7;color:#64748b;margin-bottom:20px">' + esc(e.message || 'Please try again.') + '</div><button onclick="location.reload()" style="background:#2563eb;color:#fff;border:none;border-radius:9px;padding:12px 22px;font-size:14px;font-weight:700;cursor:pointer;margin-right:8px">Retry</button><button onclick="signOut()" style="background:transparent;color:#1d4ed8;border:1px solid #bfd3f2;border-radius:9px;padding:12px 22px;font-size:14px;font-weight:700;cursor:pointer">Sign out</button></div>';
   });
 }
 function drawSide(){
@@ -1283,6 +1317,23 @@ $('dashWrap').addEventListener('click', function(e){
   var r = e.target.closest('[data-run]'); if(r){ openRun(+r.dataset.run, r.dataset.g || ''); }
 });
 
+// every register of the tutor's modules is loaded quietly in the background, one after another,
+// so opening a module is instant
+var _pf = 0, LASTEDIT = {}, INF = {}, _iseq = 0;
+// a register asked for before the last change (or while one is being saved) is not used: it would show the old mark
+function stale(runId, t0){ return EDITING > 0 || (LASTEDIT[runId] || 0) >= t0; }
+function prefetchRuns(){
+  var my = ++_pf, list = (BOOT.runs || []).filter(function(r){ return r.runId; });
+  (function next(i){
+    if(my !== _pf || i >= list.length || SIGNED_OUT) return;
+    var k = cKey('r', list[i].runId), h = cGet(k);
+    if(h && Date.now() - h.t < 3 * 60 * 1000){ next(i + 1); return; }
+    var t0 = Date.now();
+    apiFetch({ action: 'tutRun', runId: list[i].runId }).then(function(d){ if(stale(d.runId, t0)) return; cPut(k, d); if(RUN && RUN.runId === d.runId && PAGE === 'mod' && !SEL){ RUN = d; drawRun(); } })
+      .catch(function(){}).then(function(){ setTimeout(function(){ next(i + 1); }, 400); });
+  })(0);
+}
+
 // ---------------------------------------------------------------- add / edit / withdraw an assessment (form as on the mock)
 var EDIT = null;
 function openAdd(i, n){
@@ -1303,7 +1354,7 @@ $('aSave').onclick = function(){
   if(!/^\d{4}-\d{2}-\d{2}$/.test(d)){ e.textContent = 'Please choose the deadline.'; return; }
   var b = $('aSave'); b.disabled = true; b.textContent = 'Saving…'; e.textContent = '';
   apiPost('tutAssessSave', { runId: r.runId, sa: EDIT.n, title: t, weight: w, deadline: d })
-    .then(function(){ $('addOv').hidden = true; toast('✓ Saved · ' + r.module + ' · ' + t + ' (' + w + '%) · for all groups'); loadBoot(true); })
+    .then(function(){ cDrop(cKey('r', r.runId)); $('addOv').hidden = true; toast('✓ Saved · ' + r.module + ' · ' + t + ' (' + w + '%) · for all groups'); loadBoot(true); })
     .catch(function(x){ b.disabled = false; b.textContent = 'Save assessment'; if(!isOut(x)) e.textContent = x.message || 'Could not save. Please try again.'; });
 };
 var WD = null;
@@ -1312,20 +1363,25 @@ $('wdNo').onclick = function(){ $('wdOv').hidden = true; };
 $('wdYes').onclick = function(){
   var r = BOOT.runs[WD.i], b = $('wdYes'); b.disabled = true;
   apiPost('tutAssessWithdraw', { runId: r.runId, sa: WD.n })
-    .then(function(){ $('wdOv').hidden = true; toast('SA' + WD.n + ' withdrawn · ' + r.module); loadBoot(true); })
+    .then(function(){ cDrop(cKey('r', r.runId)); $('wdOv').hidden = true; toast('SA' + WD.n + ' withdrawn · ' + r.module); loadBoot(true); })
     .catch(function(x){ b.disabled = false; if(!isOut(x)) $('wdErr').textContent = x.message || 'Could not withdraw. Please try again.'; });
 };
 
-// ---------------------------------------------------------------- module page (register, read only for now)
-var RUN = null, RI = -1, GSEL = '', SORT = { k: 'pct', d: 1 };
+// ---------------------------------------------------------------- module page (register; attendance can be changed, as in the Classroom)
+var RUN = null, RI = -1, GSEL = '', SORT = { k: 'pct', d: 1 }, SEL = '', EDITING = 0;
 function openRun(i, g){
   var r = BOOT.runs[i]; if(!r || !r.runId) return;
   RI = i; GSEL = g || ''; $('modSearch').value = ''; $('modClr').hidden = true;
   $('modTitle').textContent = r.module; $('modSub').textContent = progLine(r.groups);
-  $('gtabs').innerHTML = ''; $('mHead').innerHTML = ''; $('modBody').innerHTML = '<tr><td style="padding:30px;color:#64748b">Loading the register…</td></tr>';
+  SEL = ''; $('eBar').hidden = true;
+  var k = cKey('r', r.runId), hit = cGet(k);
   go('mod');
-  apiFetch({ action: 'tutRun', runId: r.runId }).then(function(d){ RUN = d; drawRun(); })
-    .catch(function(e){ if(!isOut(e)) $('modBody').innerHTML = '<tr><td style="padding:30px;color:#b91c1c">' + esc(e.message || 'Could not load.') + '</td></tr>'; });
+  if(hit){ RUN = hit.d; drawRun(); }
+  else { RUN = null; $('gtabs').innerHTML = ''; $('mHead').innerHTML = ''; $('modBody').innerHTML = '<tr><td style="padding:30px;color:#64748b">Loading the register…</td></tr>'; }
+  if(hit && Date.now() - hit.t < 60 * 1000) return;
+  var t0 = Date.now();
+  apiFetch({ action: 'tutRun', runId: r.runId }).then(function(d){ if(stale(d.runId, t0)) return; cPut(k, d); if(PAGE === 'mod' && RI === i){ RUN = d; drawRun(); } })
+    .catch(function(e){ if(!isOut(e) && !hit) $('modBody').innerHTML = '<tr><td style="padding:30px;color:#b91c1c">' + esc(e.message || 'Could not load.') + '</td></tr>'; });
 }
 function drawRun(){
   var d = RUN, total = 0; d.groups.forEach(function(g){ total += (d.rosters[g] || []).length; });
@@ -1337,7 +1393,10 @@ function drawRun(){
 $('gtabs').addEventListener('click', function(e){ var b = e.target.closest('.gt'); if(!b) return; GSEL = b.dataset.g || ''; drawRun(); });
 $('modSearch').addEventListener('input', function(){ $('modClr').hidden = !this.value; renderMod(); });
 $('modClr').onclick = function(){ $('modSearch').value = ''; this.hidden = true; renderMod(); $('modSearch').focus(); };
-$('mHead').addEventListener('click', function(e){ var h = e.target.closest('th[data-sort]'); if(!h) return; var k = h.dataset.sort; SORT = SORT.k === k ? { k: k, d: -SORT.d } : { k: k, d: (k === 'n' || k === 'pct') ? 1 : -1 }; renderMod(); });
+$('mHead').addEventListener('click', function(e){
+  var dh = e.target.closest('th[data-sid]');
+  if(dh){ if(dh.dataset.run === '1'){ toast('This class is running in the Classroom now. Change marks there.', true); return; } SEL = SEL === dh.dataset.sid ? '' : dh.dataset.sid; renderMod(); return; }
+  var h = e.target.closest('th[data-sort]'); if(!h) return; var k = h.dataset.sort; SORT = SORT.k === k ? { k: k, d: -SORT.d } : { k: k, d: (k === 'n' || k === 'pct') ? 1 : -1 }; renderMod(); });
 function cls3(p){ return p < 70 ? 'lo' : p < 85 ? 'md' : 'hi'; }
 function th(label, k, c, extra){ var on = SORT.k === k; return '<th class="' + c + ' srt' + (on ? ' on' : '') + '" data-sort="' + k + '">' + label + (extra || '') + '<span class="ar">' + (on ? (SORT.d > 0 ? '▲' : '▼') : '↕') + '</span></th>'; }
 function renderMod(){
@@ -1355,6 +1414,7 @@ function renderMod(){
       gc.forEach(function(c){ var h = String((c.hist || {})[s.key] || ''); for(var q = 0; q < h.length; q++){ if(h[q] === 'P') P++; else if(h[q] === 'L') L++; else if(h[q] === 'A') A++; } });
       var pct = gc.length === 1 ? d.pct[gc[0].key + '||' + s.key] : (P + L + A ? Math.round((P + 0.5 * L) / (P + L + A) * 100) : null);
       if(pct === undefined) pct = null;
+      if(pct == null && P + L + A) pct = Math.round((P + 0.5 * L) / (P + L + A) * 100);
       rows.push({ s: s, g: g, gc: gc, P: P, L: L, A: A, pct: pct, acc: /see\s*accounts/i.test(String(s.acc || '')) });
     });
   });
@@ -1364,7 +1424,7 @@ function renderMod(){
   var saTh = act.map(function(a, k){ return '<th class="' + (one ? 'r2' : (k === 0 ? 'r1' : 'r2')) + '">' + esc(a.sa) + '<small style="display:block;font-size:9px;opacity:.7">' + a.weight + '%</small></th>'; }).join('');
   $('tbl').classList.toggle('one', one); $('tbl').classList.toggle('nosa', !act.length);
   $('mHead').innerHTML = th('Student', 'n', 's1') + th('Accounts', 'acc', 's2') + th('Attn %', 'pct', 's3') + th('P', 'P', 's4') + th('L', 'L', 's5') + th('A', 'A', 's6')
-    + cols.map(function(c){ var m = c.s.date.split('-'), w = new Date(Date.UTC(+m[0], +m[1] - 1, +m[2])).getUTCDay(); return '<th class="dh" title="' + esc(prettyTime(c.s.start)) + '">' + (+m[2]) + ' ' + MON[+m[1] - 1] + '<small>' + DAYN[w].slice(0, 3) + '</small></th>'; }).join('')
+    + cols.map(function(c){ var m = c.s.date.split('-'), w = new Date(Date.UTC(+m[0], +m[1] - 1, +m[2])).getUTCDay(), run = c.s.status === 'Running'; return '<th class="dh' + (c.s.id === SEL ? ' sel' : '') + '" data-sid="' + esc(c.s.id) + '"' + (run ? ' data-run="1"' : '') + ' title="' + (run ? 'Running in the Classroom now' : 'Started ' + esc(prettyTime(c.s.start)) + '. Click to change attendance for this date') + '">' + (+m[2]) + ' ' + MON[+m[1] - 1] + '<small>' + DAYN[w].slice(0, 3) + '</small></th>'; }).join('')
     + '<th style="width:100%"></th>' + saTh + (act.length ? '<th class="r3">Total</th>' : '');
   $('modBody').innerHTML = rows.length ? rows.map(function(r){
     var s = r.s, id = s.kind === 'ok' ? esc(s.bsuId) : s.kind === 'new' ? 'New, no ID yet' : 'Not in records';
@@ -1372,9 +1432,11 @@ function renderMod(){
     var accH = (reg ? '<span class="accp ' + (/^registered$/i.test(reg) ? 'ok' : /partial/i.test(reg) ? 'mid' : 'no') + '" title="' + esc(reg) + '">' + esc(reg) + '</span>' : '')
       + (!acc ? '' : '<span class="accp ' + (/^clear$/i.test(acc) ? 'ok' : /see\s*accounts/i.test(acc) ? 'no' : 'mid') + '" title="' + esc(acc) + '">' + (/see\s*accounts/i.test(acc) ? 'Please see Accounts!' : esc(acc)) + '</span>');
     var cells = cols.map(function(c){
-      if(r.gc.indexOf(c.c) < 0) return '<td class="dc"><span class="na">·</span></td>';
-      var x = String((c.c.hist || {})[s.key] || '').charAt(c.j) || '';
-      return '<td class="dc">' + (x && x !== '-' ? '<span class="circ ' + x + '">' + x + '</span>' : '<span class="na">·</span>') + '</td>';
+      var on = c.s.id === SEL, sc = on ? ' sel' : '';
+      if(r.gc.indexOf(c.c) < 0) return '<td class="dc' + sc + '"><span class="na">·</span></td>';
+      var x = String((c.c.hist || {})[s.key] || '').charAt(c.j) || '', has = x && x !== '-';
+      if(on) return '<td class="dc' + sc + '"><span class="circ ' + (has ? x : 'n') + ' ed' + (INF[d.runId + '|' + c.c.key + '|' + c.j + '|' + s.key] ? ' busy' : '') + '" data-ck="' + esc(c.c.key) + '" data-j="' + c.j + '" data-k="' + esc(s.key) + '" data-g="' + esc(r.g) + '">' + (has ? x : '') + '</span></td>';
+      return '<td class="dc">' + (has ? '<span class="circ ' + x + '">' + x + '</span>' : '<span class="na">·</span>') + '</td>';
     }).join('');
     return '<tr><td class="s1"><span class="nm">' + esc(s.name) + '</span><span class="id">' + id + '</span></td><td class="s2">' + (accH || '–') + '</td>'
       + '<td class="s3">' + (r.pct == null ? '<span class="pct">–</span>' : '<span class="pct pc ' + cls3(r.pct) + '">' + r.pct + '%</span>') + '</td><td class="s4">' + r.P + '</td><td class="s5">' + r.L + '</td><td class="s6">' + r.A + '</td>'
@@ -1385,7 +1447,31 @@ function renderMod(){
   $('kAvg').textContent = withP.length ? Math.round(withP.reduce(function(a, r){ return a + r.pct; }, 0) / withP.length) + '%' : '–';
   $('kLow').textContent = withP.filter(function(r){ return r.pct < 70; }).length;
   $('kAcc').textContent = rows.filter(function(r){ return r.acc; }).length;
+  var sc = cols.filter(function(c){ return c.s.id === SEL; })[0];
+  if(SEL && !sc) SEL = '';
+  $('eBar').hidden = !sc;
+  if(sc){ var m = sc.s.date.split('-'); $('eDate').textContent = DAYN[new Date(Date.UTC(+m[0], +m[1] - 1, +m[2])).getUTCDay()] + ' ' + (+m[2]) + ' ' + MON[+m[1] - 1] + ' (started ' + prettyTime(sc.s.start) + ')'; }
 }
+$('eDone').onclick = function(){ SEL = ''; renderMod(); };
+// click a circle in the chosen date: Present -> Absent -> Late -> Present. Saved at once; put back if CampusCore refuses.
+var NEXTM = { '': 'P', '-': 'P', P: 'A', A: 'L', L: 'P' };
+$('modBody').addEventListener('click', function(e){
+  var c = e.target.closest('.circ.ed'); if(!c) return;
+  var cl = RUN.classes.filter(function(x){ return x.key === c.dataset.ck; })[0]; if(!cl) return;
+  var j = +c.dataset.j, k = c.dataset.k, sess = cl.sessions[j]; if(!sess) return;
+  var cell = RUN.runId + '|' + cl.key + '|' + j + '|' + k;
+  if(INF[cell]){ toast('Still saving the last change for this student. One moment, please.'); return; }
+  var H = cl.hist = cl.hist || {}, run = RUN, rk = cKey('r', RUN.runId);
+  function getM(){ var p0 = String(H[k] || ''); return p0.charAt(j) || '-'; }
+  function setM(v){ var p0 = String(H[k] || ''); p0 = p0.length < cl.sessions.length ? p0 + new Array(cl.sessions.length - p0.length + 1).join('-') : p0; H[k] = p0.substr(0, j) + v + p0.substr(j + 1); delete run.pct[cl.key + '||' + k]; }
+  var was = getM(), nw = NEXTM[was] || 'P', my = ++_iseq;
+  INF[cell] = my; EDITING++; LASTEDIT[run.runId] = Date.now();
+  setM(nw); renderMod();
+  apiPost('tutAttEdit', { runId: run.runId, sessionId: sess.id, key: k, group: c.dataset.g, status: nw })
+    .then(function(){ cPut(rk, run); try { delete MEM[cKey('c')]; sessionStorage.removeItem(cKey('c')); } catch(x){} })
+    .catch(function(x){ if(getM() === nw) setM(was); if(!isOut(x)) toast(x.message || 'Could not save the change. Please try again.', true); })
+    .then(function(){ EDITING--; LASTEDIT[run.runId] = Date.now(); if(INF[cell] === my) delete INF[cell]; if(RUN === run && PAGE === 'mod') renderMod(); });
+});
 $('modBack').onclick = function(){ go('dash'); };
 $('modPrint').onclick = function(){ window.print(); };
 
