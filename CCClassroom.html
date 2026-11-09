@@ -837,6 +837,8 @@ button.circ:hover{transform:scale(1.12);}
 #notOv .coming .mh{font-size:12px;font-weight:700;color:#0f1e3d;margin:8px 0 2px;}
 #notOv .ev{display:flex;gap:14px;padding:6px 0;border-bottom:1px dashed #e2e8f0;font-size:13px;}
 #notOv .ev .dt{font-family:'DM Mono',monospace;color:#1d4ed8;min-width:90px;}
+#notOv .ev.done{color:#64748b;}#notOv .ev.done .dt{color:#94a3b8;}
+.evtick{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:#16a34a;color:#fff;font-size:11px;font-weight:800;margin-left:8px;vertical-align:middle;}
 #notOv .chip{font-size:9.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;border-radius:4px;padding:1px 6px;margin-left:8px;background:#eef2ff;color:#3730a3;}
 #notOv .chip.assessment{background:#fef3c7;color:#92400e;}#notOv .chip.deadline{background:#fee2e2;color:#991b1b;}#notOv .chip.holiday{background:#dcfce7;color:#166534;}#notOv .chip.break{background:#f1f5f9;color:#475569;}
 /* dashboard: thin now cards, term layout, module and group cards */
@@ -2339,11 +2341,15 @@ function openNotices(){
   var now = new Date(), M = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'], FM = ['January','February','March','April','May','June','July','August','September','October','November','December'];
   var m1 = now.getMonth(), m2 = (m1 + 1) % 12, y1 = now.getFullYear(), y2 = m2 === 0 ? y1 + 1 : y1;
   function monthOfText(t){ var k = -1; String(t || '').split(/[\s\-–]+/).forEach(function(w){ var i = M.indexOf(w.slice(0, 3)); if(i > -1 && k < 0) k = i; }); return k; }
+  // 9 Nov 2026: an event whose last day has passed gets a green tick
+  function evDone(e, my){ var n = String(e.d || '').match(/\d+/g), w = String(e.d || '').match(/[A-Za-z]{3,}/g), mo = my[0], yr = my[1]; if(!n) return false;
+    if(w){ var k = M.indexOf(w[w.length - 1].slice(0, 3)); if(k > -1){ if(k < my[0]) yr++; mo = k; } }      // "22 Dec - 4 Jan" ends in January
+    return new Date(yr, mo, +n[n.length - 1], 23, 59, 59) < now; }
   function block(title, ev){
     var h = '<h5>' + title + ' · ' + FM[m1] + ' and ' + FM[m2] + '</h5>';
     [[m1, y1], [m2, y2]].forEach(function(my){
       var L = ev.filter(function(e){ return e.m === my[0]; });
-      h += '<div class="mh">' + FM[my[0]] + ' ' + my[1] + '</div>' + (L.length ? L.map(function(e){ return '<div class="ev"><span class="dt">' + esc(e.d) + '</span><span>' + esc(e.t) + (e.ty ? '<span class="chip ' + esc(String(e.ty).toLowerCase()) + '">' + esc(e.ty) + '</span>' : '') + '</span></div>'; }).join('')
+      h += '<div class="mh">' + FM[my[0]] + ' ' + my[1] + '</div>' + (L.length ? L.map(function(e){ var dn = evDone(e, my); return '<div class="ev' + (dn ? ' done' : '') + '"><span class="dt">' + esc(e.d) + '</span><span>' + esc(e.t) + (e.ty ? '<span class="chip ' + esc(String(e.ty).toLowerCase()) + '">' + esc(e.ty) + '</span>' : '') + (dn ? '<span class="evtick" title="Done">✓</span>' : '') + '</span></div>'; }).join('')
         : '<div class="ev"><span class="dt">–</span><span style="color:#94a3b8">No events</span></div>');
     });
     return h;

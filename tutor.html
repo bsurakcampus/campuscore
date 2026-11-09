@@ -110,6 +110,9 @@ button{font-family:inherit;}
   #signin .right{width:100%;padding:32px 20px 40px;}
 }
 
+#signin .keep,.keep{display:flex;gap:10px;align-items:flex-start;margin:12px 0 2px;cursor:pointer;text-align:left}
+.keep input{width:18px;height:18px;margin-top:2px;flex:none;accent-color:#1d4ed8}
+.keep b{display:block;font-size:13.5px;font-weight:600;color:#0f172a}.keep small{display:block;font-size:12px;color:#64748b;margin-top:2px}
 </style>
 </head>
 <body>
@@ -139,6 +142,7 @@ button{font-family:inherit;}
     <p class="lead">Sign in with your BSU email to open your modules, assessments and registers.</p>
     <label class="field-label" for="email">Your BSU email</label>
     <div class="email"><input id="email" type="text" placeholder="your.name" autocomplete="off" autocapitalize="off" spellcheck="false"><span>@bathspa.ae</span></div>
+    <label class="keep" for="keep"><input type="checkbox" id="keep"><span><b>Keep me signed in on this computer for 30 days</b><small>Only on your own computer. Never on a shared or classroom PC.</small></span></label>
     <div class="err-msg" id="e-err"></div>
     <button class="btn" id="send" onclick="sendLink()">Email me a sign-in link</button>
     <div class="steps">
@@ -171,6 +175,7 @@ var API = 'https://script.google.com/macros/s/AKfycbycKFnbEm2aXY6JJ8QS-x-vUQMAcq
 var STAFF_DOMAIN = 'bathspa.ae';
 var SKEY = 'tp_session';
 var EXP_MS = 8 * 60 * 60 * 1000;           // this page signs out after 2 hours without use; the server after 3
+var KEEP_MS = 30 * 24 * 60 * 60 * 1000;      // 9 Nov 2026: "Keep me signed in" (30 days from the last use; the server decides too)
 var PORTAL = 'CCTutor.html';
 
 function $(id){ return document.getElementById(id); }
@@ -210,7 +215,7 @@ function sendLink(){
   setWait('Sending the email to your phone…', false);
   _poll = setTimeout(poll, 2000);
   var ctl = new AbortController(), slow = setTimeout(function(){ ctl.abort(); }, 25000), resp = '';
-  fetch(API + '?action=requestLoginLink&portal=tutor&email=' + encodeURIComponent(val) + '&rid=' + rid, { signal: ctl.signal })
+  fetch(API + '?action=requestLoginLink&portal=tutor&email=' + encodeURIComponent(val) + '&rid=' + rid + ($('keep').checked ? '&keep=1' : ''), { signal: ctl.signal })
     .then(function(r){ clearTimeout(slow); return r.text(); })
     .then(function(t){ resp = t; try { return JSON.parse(t); } catch(e){ return { lost: true }; } })
     .catch(function(){ return { lost: true }; })
@@ -250,8 +255,8 @@ function poll(){
       var x = d.data || d, st = x && x.status;
       if(st === 'approved' && x.email && x.pass){
         stopPoll(); setWait('Approved. Opening your modules…', true);
-        var s = { email: x.email, pass: x.pass, off: x.now ? Number(x.now) - Date.now() : 0, exp: Date.now() + EXP_MS };
-        clearTp(); try { sessionStorage.setItem(SKEY, JSON.stringify(s)); } catch(e){}
+        var s = { email: x.email, pass: x.pass, off: x.now ? Number(x.now) - Date.now() : 0, keep: !!x.keep, exp: Date.now() + (x.keep ? KEEP_MS : EXP_MS) };
+        clearTp(); try { sessionStorage.setItem(SKEY, JSON.stringify(s)); if(s.keep) localStorage.setItem('tp_keep', JSON.stringify(s)); else localStorage.removeItem('tp_keep'); } catch(e){}
         window.location.replace(PORTAL); return;
       }
       if(st === 'denied'){ waitErr('Sign-in was declined on the phone. If that was a mistake, send a new link.'); return; }
@@ -299,6 +304,10 @@ function clearTp(){ try { Object.keys(sessionStorage).forEach(function(k){ if(/^
 (function(){
   var s = null; try { s = JSON.parse(sessionStorage.getItem(SKEY) || 'null'); } catch(e){}
   if(s && s.pass && s.email && (!s.exp || Date.now() < s.exp)){ window.location.replace(PORTAL); return; }
+  // kept sign-in on this computer (30 days from the last use): open the portal straight away
+  var k = null; try { k = JSON.parse(localStorage.getItem('tp_keep') || 'null'); } catch(e){}
+  if(k && k.pass && k.email && k.keep && k.exp && Date.now() < k.exp){ clearTp(); try { sessionStorage.setItem(SKEY, JSON.stringify(k)); } catch(e){} window.location.replace(PORTAL); return; }
+  try { localStorage.removeItem('tp_keep'); } catch(e){}
   clearTp();
   var m = null; try { m = localStorage.getItem('tp_msg'); localStorage.removeItem('tp_msg'); } catch(e){}
   if(m) errMsg('e-err', m, true);

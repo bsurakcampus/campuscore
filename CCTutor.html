@@ -980,6 +980,17 @@ html,body{margin:0;padding:0!important;height:100%}
 #pg-ars .bx{overflow-x:auto}
 @media(max-width:1600px){#pg-ars .cbx{grid-template-columns:1fr}}
 #pg-ars .ct td b{white-space:normal;overflow:visible;text-overflow:clip}
+/* 10 Nov 2026: round mark circles of one size; 100% and 82.6 fit inside */
+#pg-ars .mc{width:34px;min-width:34px;height:34px;padding:0;font-size:10.5px;letter-spacing:-.2px;box-sizing:border-box}
+#pg-ars .mc.l4{font-size:9px;letter-spacing:-.4px}
+#pg-ars .mc.big{width:40px;min-width:40px;height:40px;font-size:11.5px}
+#pg-ars .mc.big.l4{font-size:10px}
+#pg-ars h5.h5n{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-bottom:6px}
+#pg-ars h5.h5n .btn-o{padding:3px 12px;font-size:12px;text-transform:none;letter-spacing:0;margin:0}
+.tts .frl{display:flex;flex-wrap:wrap;align-items:center;gap:3px;margin-top:6px;padding-top:6px;border-top:1px dashed #cbd5e1}
+.tts .frl em{font-style:normal;font-size:10px;font-weight:700;color:#3f6212;margin-right:2px;width:100%}
+.tts .frl .rm{background:#eef6e3;border:1px solid #9cc96b;color:#365314;border-radius:5px;padding:0 5px;font:600 10px 'DM Mono',monospace}
+.tts .frl i{font-size:10px;color:#94a3b8}
 .ttgap .gh{display:block;font-weight:700;font-size:11.5px;margin-bottom:5px}
 .ttgap .rms{display:flex;flex-wrap:wrap;gap:4px}
 .ttgap .rm{background:#fff;border:1px solid #9cc96b;color:#365314;border-radius:6px;padding:1px 6px;font:600 10.5px 'DM Mono',monospace}
@@ -1141,15 +1152,24 @@ function toast(t, bad){ var e = $('toast'); e.textContent = t; e.style.backgroun
 
 // ---------------------------------------------------------------- session and signed requests (the pass never leaves this tab)
 var PASS = '', PID = '', OFF = 0, ME = '', AS = '', _hk = null;
-function readSess(){ try { return JSON.parse(sessionStorage.getItem(SKEY) || 'null'); } catch(e){ return null; } }
+function readSess(){
+  var s = null; try { s = JSON.parse(sessionStorage.getItem(SKEY) || 'null'); } catch(e){}
+  if(s) return s;
+  // 9 Nov 2026: "Keep me signed in on this computer": a kept sign-in (30 days from the last use) opens a new tab too
+  try { var k = JSON.parse(localStorage.getItem('tp_keep') || 'null'); if(k && k.keep && k.pass && k.exp && Date.now() < k.exp){ sessionStorage.setItem(SKEY, JSON.stringify(k)); return k; } } catch(e){}
+  return null;
+}
+var KEEP = false, KEEP_MS = 30 * 24 * 60 * 60 * 1000;
 (function guard(){
   var s = readSess();
-  if(!s || !s.pass || !s.email || (s.exp && Date.now() > s.exp)){ try { Object.keys(sessionStorage).forEach(function(k){ if(/^tp_/.test(k)) sessionStorage.removeItem(k); }); } catch(e){} window.location.replace('tutor.html'); return; }
-  PASS = String(s.pass); PID = PASS.slice(0, 16); OFF = Number(s.off) || 0; ME = s.email;
+  if(!s || !s.pass || !s.email || (s.exp && Date.now() > s.exp)){ try { localStorage.removeItem('tp_keep'); } catch(e){} try { Object.keys(sessionStorage).forEach(function(k){ if(/^tp_/.test(k)) sessionStorage.removeItem(k); }); } catch(e){} window.location.replace('tutor.html'); return; }
+  PASS = String(s.pass); PID = PASS.slice(0, 16); OFF = Number(s.off) || 0; ME = s.email; KEEP = !!s.keep;
   try { AS = sessionStorage.getItem('tp_as') || ''; } catch(e){}
-  var last = Date.now();
-  ['click','keydown','mousemove','scroll','touchstart'].forEach(function(ev){ document.addEventListener(ev, function(){ last = Date.now(); var c = readSess(); if(c){ c.exp = Date.now() + IDLE_MS; try { sessionStorage.setItem(SKEY, JSON.stringify(c)); } catch(e){} } }, { passive: true }); });
-  setInterval(function(){ if(PASS && Date.now() - last > IDLE_MS) signOut('Signed out after 2 hours without use.'); }, 60000);
+  var last = Date.now(), lastKeep = 0, IDLE = KEEP ? KEEP_MS : IDLE_MS;
+  ['click','keydown','mousemove','scroll','touchstart'].forEach(function(ev){ document.addEventListener(ev, function(){ last = Date.now(); var c = readSess(); if(c){ c.exp = Date.now() + IDLE; try { sessionStorage.setItem(SKEY, JSON.stringify(c)); if(KEEP && Date.now() - lastKeep > 10 * 60 * 1000 && localStorage.getItem('tp_keep')){ lastKeep = Date.now(); localStorage.setItem('tp_keep', JSON.stringify(c)); } } catch(e){} } }, { passive: true }); });
+  // signed out in another tab of this computer: this tab signs out too
+  window.addEventListener('storage', function(e){ if(KEEP && e.key === 'tp_keep' && !e.newValue && PASS){ clearSess(); window.location.replace('tutor.html'); } });
+  if(!KEEP) setInterval(function(){ if(PASS && Date.now() - last > IDLE_MS) signOut('Signed out after 2 hours without use.'); }, 60000);
 })();
 function passKey(){ if(!_hk) _hk = crypto.subtle.importKey('raw', new TextEncoder().encode(PASS), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']); return _hk; }
 function hmacHex(msg){
@@ -1199,7 +1219,7 @@ async function apiPost(action, body){
   if(isOut(last)) ended();
   throw last;
 }
-function clearSess(){ PASS = ''; try { sessionStorage.removeItem(SKEY); sessionStorage.removeItem('tp_as'); Object.keys(sessionStorage).forEach(function(k){ if(/^tp_[cr]_/.test(k)) sessionStorage.removeItem(k); }); } catch(e){} }
+function clearSess(){ PASS = ''; try { localStorage.removeItem('tp_keep'); } catch(e){} try { sessionStorage.removeItem(SKEY); sessionStorage.removeItem('tp_as'); Object.keys(sessionStorage).forEach(function(k){ if(/^tp_[cr]_/.test(k)) sessionStorage.removeItem(k); }); } catch(e){} }
 // 4 Nov 2026: speed. What this tab has already loaded (dashboard and every register) is kept in this tab only
 // (sessionStorage: gone when the browser closes or on sign-out), shown at once and refreshed quietly in the background.
 var MEM = {};
@@ -1552,7 +1572,7 @@ function drawTT(){
     var we = day === 'Saturday' || day === 'Sunday', L = TT[day];
     var extra = L.filter(function(x){ return SLOTS.indexOf(x[0]) < 0; });
     return '<div class="ttd' + (we ? ' we' : '') + (day === today ? ' today' : '') + '"><h6>' + day + '<small>' + (L.length ? L.length + ' session' + (L.length > 1 ? 's' : '') : '') + '</small></h6>'
-      + (L.length ? SLOTS.map(function(sl){ var xs = L.filter(function(x){ return x[0] === sl; }); return xs.length ? xs.map(function(x){ return '<div class="tts' + (we ? ' we' : '') + '"><span class="t">' + esc(x[0]) + '</span><b>' + esc(x[1]) + '</b><span>' + esc(x[2]) + '</span><span>' + esc(x[3]) + '</span></div>'; }).join('') : freeGap(day, sl); }).join('')
+      + (L.length ? SLOTS.map(function(sl){ var xs = L.filter(function(x){ return x[0] === sl; }); return xs.length ? xs.map(function(x){ return '<div class="tts' + (we ? ' we' : '') + '"><span class="t">' + esc(x[0]) + '</span><b>' + esc(x[1]) + '</b><span>' + esc(x[2]) + '</span><span>' + esc(x[3]) + '</span>' + freeLine(day, sl) + '</div>'; }).join('') : freeGap(day, sl); }).join('')
         + extra.map(function(x){ return '<div class="tts' + (we ? ' we' : '') + '"><span class="t">' + esc(x[0]) + '</span><b>' + esc(x[1]) + '</b><span>' + esc(x[2]) + '</span><span>' + esc(x[3]) + '</span></div>'; }).join('')
         : '<div class="none">No classes</div>') + '</div>';
   }).join('');
@@ -1562,6 +1582,10 @@ function freeRooms(day, sl){
   var R = (BOOT && BOOT.rooms) || { all: [], used: {} }, u = {};
   Object.keys(R.used).forEach(function(k){ var p2 = k.split('|'); if(p2[0] === day.toLowerCase() && prettyTime(p2[1]) === sl) R.used[k].forEach(function(rm){ u[rm] = 1; }); });
   return R.all.filter(function(rm){ return !u[rm]; });
+}
+function freeLine(day, sl){   // inside a class card: the rooms free at the same time (to move a class)
+  var f = freeRooms(day, sl);
+  return '<span class="frl"><em>Free rooms now</em>' + (f.length ? f.map(function(rm){ return '<span class="rm">' + esc(rm) + '</span>'; }).join('') : '<i>none</i>') + '</span>';
 }
 function freeGap(day, sl){
   var f = freeRooms(day, sl);
@@ -1628,8 +1652,9 @@ function openStudent(id){
   apiFetch({ action: 'tutStudent', q: id }).then(function(d){ cPut(k, d); if(my !== SBUSY) return; SREC = d; renderStudent(); })
     .catch(function(e){ if(isOut(e) || my !== SBUSY || hit) return; $('arsOut').innerHTML = '<div class="nm-info" style="font-size:13px;color:#b91c1c">' + esc(e.message || 'Could not open the record.') + '</div>'; });
 }
-function sPill(v){ if(v == null || v === '') return '<span class="mc m">–</span>'; return '<span class="mc ' + (v >= 70 ? 'g' : v >= 40 ? 'a' : 'r') + '">' + v + '</span>'; }
-function sAtt(p, big){ if(p == null) return '<span class="mc m' + (big ? ' big' : '') + '">–</span>'; return '<span class="mc ' + (p >= 85 ? 'g' : p >= 70 ? 'a' : 'r') + (big ? ' big' : '') + '">' + p + '%</span>'; }
+function sLong(t){ return String(t).length >= 4 ? ' l4' : ''; }
+function sPill(v){ if(v == null || v === '') return '<span class="mc m">–</span>'; return '<span class="mc ' + (v >= 70 ? 'g' : v >= 40 ? 'a' : 'r') + sLong(v) + '">' + v + '</span>'; }
+function sAtt(p, big){ if(p == null) return '<span class="mc m' + (big ? ' big' : '') + '">–</span>'; return '<span class="mc ' + (p >= 85 ? 'g' : p >= 70 ? 'a' : 'r') + (big ? ' big' : '') + sLong(p + '%') + '">' + p + '%</span>'; }
 function sSA(a){
   if(!a) return '<td class="c" style="color:var(--ink3);font-size:11px">N/A</td>';
   if(a.mark == null) return '<td class="c" title="' + esc(a.t) + ' · ' + a.w + '%">' + (a.sub ? '<span class="subst ' + (/NOT/.test(a.sub) ? 'no' : 'ok') + '">' + (/NOT/.test(a.sub) ? 'Not submitted' : 'Submitted') + '</span>' : '<span class="mc m">–</span>') + '</td>';
@@ -1657,7 +1682,7 @@ function renderStudent(){
   var accC = function(i, v){ return (i === 0 && /^registered$/i.test(v)) || (i === 1 && /^clear$/i.test(v)) ? '#16a34a' : v === '–' ? '#94a3b8' : '#dc2626'; };
   var attc = R.att == null ? '' : R.att >= 85 ? 'g' : R.att >= 70 ? 'a' : 'r';
   var notes = (R.notes || []).map(function(n){ return '<div class="nm-old" style="white-space:pre-wrap">' + esc(n.note) + '<small>' + esc(n.by || '') + (n.date ? ' · ' + esc(fmtD(n.date, 1)) : '') + (n.mod ? ' · ' + esc(n.mod) : '') + '</small></div>'; }).join('');
-  $('arsOut').innerHTML = '<div class="sh"><span class="hav">' + esc(initials(R.name)) + '</span><div style="flex:1"><div class="nm2">' + esc(R.name) + '<small>BSU ID# ' + esc(R.id) + '</small></div><div class="pg">' + esc(R.prog) + (R.year ? ' · ' + esc(R.year) : '') + (R.level ? ' · Level Entry: ' + esc(R.level) : '') + '</div>'
+  $('arsOut').innerHTML = '<div class="sh"><span class="hav" id="sHav">' + esc(initials(R.name)) + '</span><div style="flex:1"><div class="nm2">' + esc(R.name) + '<small>BSU ID# ' + esc(R.id) + '</small></div><div class="pg">' + esc(R.prog) + (R.year ? ' · ' + esc(R.year) : '') + (R.level ? ' · Level Entry: ' + esc(R.level) : '') + '</div>'
     + '<div class="chips"><span class="g">● ' + esc(R.status) + '</span>' + (R.dob ? '<span>DOB: ' + esc(R.dob) + '</span>' : '') + (R.age != null ? '<span>Age: ' + R.age + '</span>' : '') + (R.nat || R.gender ? '<span>' + esc([R.nat, R.gender].filter(Boolean).join(' · ')) + '</span>' : '')
     + (R.att == null ? '<span>Overall Attendance: no classes yet</span>' : '<button type="button" class="attbtn ' + attc + '" id="sCal" title="Open attendance by module">📅 Overall Attendance: ' + R.att + '% ›</button>')
     + (R.last ? '<span>Last Engagement Date: ' + esc(fmtD(R.last, 1)) + '</span>' : '') + '</div></div>'
@@ -1666,8 +1691,9 @@ function renderStudent(){
     + '<div class="bx"><h6>Personal contact</h6><table><tr><th>Student phone</th><th>Student email</th><th>Parent phone</th><th>Parent email</th></tr><tr>' + R.contact.map(function(v){ return '<td>' + esc(v) + '</td>'; }).join('') + '</tr></table></div>'
     + '<div class="bx"><h6>Accounts &amp; registration</h6><table><tr>' + ['Registration', 'Accounts', 'Current due', 'Tuition outstanding', 'Total receivable'].map(function(l){ return '<th>' + l + '</th>'; }).join('') + '</tr><tr>' + R.acc.map(function(v, i){ return '<td style="color:' + accC(i, v) + '">' + esc(v) + '</td>'; }).join('') + '</tr></table></div></div>'
     + '<h5>Academic record</h5>' + yrs
-    + '<h5>Critical notes <span style="float:right;text-transform:none;letter-spacing:0"><button class="btn-o" type="button" id="sNoteAdd" style="padding:3px 12px;font-size:12px">+ Add note</button></span></h5>' + (notes || '<div style="font-size:12.5px;color:var(--ink3)">No notes.</div>')
+    + '<h5 class="h5n"><span>Critical notes</span><button class="btn-o" type="button" id="sNoteAdd">+ Add note</button></h5>' + (notes || '<div style="font-size:12.5px;color:var(--ink3)">No notes.</div>')
     + '<p class="disc" style="font-size:10.5px;color:var(--ink3);margin-top:12px"><b>Disclaimer</b> · Indicative data for follow-up only. Official submissions are on Blackboard Ultra; official marks and results come from the Home Campus (BSU UK).</p></div>';
+  if(R.photo) setPhoto(['sHav'], R.photo);
 }
 $('arsOut').addEventListener('click', function(e){
   if(e.target.closest('#sCal')) openCal();
@@ -2250,8 +2276,18 @@ function buildUCalMonths(){
 
 
 
+// 10 Nov 2026: announcements, both calendars and the policies are fetched in the background straight after sign-in, and the
+// last copy on this computer is shown at once, so these pages are ready before they are opened (public information only).
+['renderAnnouncements', 'renderAcadCalendar', 'renderTutorUCal', 'renderTutorPolicies'].forEach(function(n){
+  var f = window[n], k = 'tp_pub_' + n; if(typeof f !== 'function') return;
+  window[n] = function(d){ try { localStorage.setItem(k, JSON.stringify(d || [])); } catch(e){} return f.apply(this, arguments); };
+  try { var v = JSON.parse(localStorage.getItem(k) || 'null'); if(v) f(v); } catch(e){}
+});
 loadBoot(false);
 setTimeout(function(){ try { loadNotices(); } catch(_){} apiFetch({action:'getNotices'}).then(renderAnnouncements).catch(function(){}); }, 1200);
+setTimeout(function(){ try { loadAcadCalendar(); } catch(_){} }, 1700);
+setTimeout(function(){ try { loadTutorUCal(); } catch(_){} }, 2200);
+setTimeout(function(){ try { loadTutorPolicies(); } catch(_){} }, 2700);
 </script>
 </body>
 </html>
