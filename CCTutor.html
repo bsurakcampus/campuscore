@@ -961,6 +961,29 @@ table.mt{border-collapse:separate;border-spacing:0;font-size:12px}
 /* ---- the real portal (4 Nov 2026): the mock frame removed, everything else as agreed in v28 ---- */
 :root{--surface:#fff;--surface2:#f8f9fc;--surface3:#eef0f5;--border:#e2e6ef;--border2:#c8cedd;--sb-bg:#0f1e3d;--sb-border:#1e2f52;--sb-text:#c8d3e8;--sb-text2:#6b80a8;--sb-active:rgba(79,142,247,0.18);--sb-active-text:#7eb3ff;--accent:#2563eb;--accent2:#4f46e5;--accent-light:#eff6ff;--accent-border:#bfdbfe;--green-border:#bbf7d0;--amber-border:#fde68a;--red-border:#fecaca;--orange:#ea580c;--orange-bg:#fff7ed;--orange-border:#fed7aa;--mod1:#1e40af;--mod2:#065f46;--mod3:#6b21a8;--mod4:#9a3412;--mod5:#0e7490;--mod6:#1e3a5f;--mod7:#3b0764;--mod8:#713f12;--mod9:#052e16;--text:#0f172a;--text2:#64748b;--text3:#94a3b8;--radius:10px;--radius-lg:14px;--shadow:0 1px 3px rgba(0,0,0,0.08),0 4px 16px rgba(0,0,0,0.05);--shadow-sm:0 1px 3px rgba(0,0,0,0.06)}
 html,body{margin:0;padding:0!important;height:100%}
+/* 9 Nov 2026: past calendar events get a green tick; free rooms sit inside each free session of My Timetable */
+.ev.done{color:#64748b}.ev.done .dt{color:#94a3b8}
+.evtick{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:#16a34a;color:#fff;font-size:11px;font-weight:800;margin-left:8px;vertical-align:middle}
+.ttgap{text-align:left!important;padding:8px 10px!important}
+/* 9 Nov 2026: Student Records */
+.srs{position:relative}
+.sugg2{position:absolute;left:0;right:150px;top:calc(100% + 4px);background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 14px 34px rgba(15,23,42,.16);z-index:40;max-height:360px;overflow:auto}
+.sugg2 button{display:block;width:100%;text-align:left;border:none;background:#fff;padding:8px 12px;font:inherit;cursor:pointer;border-bottom:1px solid #f1f5f9}
+.sugg2 button b{display:block;font-size:13px;color:var(--ink)}.sugg2 button span{font-size:11.5px;color:var(--ink3)}
+.sugg2 button.on,.sugg2 button:hover{background:#eff6ff}.sugg2 .none{padding:12px;font-size:12.5px;color:var(--ink3)}
+.ncopies{display:flex;flex-direction:column;gap:6px;margin:10px 0}
+.ncopies .ck{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink)}.ncopies .ck input{width:16px;height:16px}.ncopies i{color:var(--ink3);font-size:12px}
+#noteOv textarea{width:100%;box-sizing:border-box;min-height:120px;border:1.5px solid var(--line2);border-radius:9px;padding:10px;font:inherit;font-size:13.5px;margin-top:8px}
+.subst{font:700 9.5px var(--sans);border-radius:5px;padding:2px 6px}.subst.ok{background:#dcfce7;color:#15803d}.subst.no{background:#fee2e2;color:#b91c1c}
+.nsx{display:block;font:700 9px var(--sans);color:#b91c1c;margin-top:1px}
+#pg-ars .sh{margin-top:4px}
+#pg-ars .bx{overflow-x:auto}
+@media(max-width:1600px){#pg-ars .cbx{grid-template-columns:1fr}}
+#pg-ars .ct td b{white-space:normal;overflow:visible;text-overflow:clip}
+.ttgap .gh{display:block;font-weight:700;font-size:11.5px;margin-bottom:5px}
+.ttgap .rms{display:flex;flex-wrap:wrap;gap:4px}
+.ttgap .rm{background:#fff;border:1px solid #9cc96b;color:#365314;border-radius:6px;padding:1px 6px;font:600 10.5px 'DM Mono',monospace}
+.ttgap .rn{color:#65a30d;font-size:10.5px;font-style:italic}
 body{overflow:hidden}
 .app[hidden],.pg[hidden]{display:none!important}
 .m4{background:#9a3412}.m5{background:#0e7490}.m6{background:#7c2d12}.m7{background:#3730a3}.m8{background:#166534}
@@ -1010,6 +1033,7 @@ body{overflow:hidden}
     <div class="viewas" id="viewAs" hidden><label for="asSel">Admin: view as</label><select id="asSel"></select></div>
     <div class="snav">
       <button class="nav on" type="button" data-k="dash"><span class="ic">🏠</span>Dashboard</button>
+      <button class="nav" type="button" data-k="ars"><span class="ic">🎓</span>Student Records</button>
       <div class="sec-l">University</div>
       <button class="nav" type="button" data-k="tt"><span class="ic">🕐</span>My Timetable</button>
       <button class="nav" type="button" data-k="ann"><span class="ic">📢</span>Announcements</button>
@@ -1032,15 +1056,19 @@ body{overflow:hidden}
       <div id="dashWrap" class="lc soft ga thin v6"></div>
     </div>
     <div class="pg" id="pg-mod" hidden>
-      <div class="mtop"><button class="back" type="button" id="modBack">← Dashboard</button><div><h2 id="modTitle"></h2><p id="modSub"></p></div><span class="sp"></span><button class="btn-o" type="button" id="modPrint">🖨️ Print</button></div>
+      <div class="mtop"><button class="back" type="button" id="modBack">← Dashboard</button><div><h2 id="modTitle"></h2><p id="modSub"></p></div><span class="sp"></span></div>
       <div class="mrow2" id="gtabs"></div>
       <div class="ebar" id="eBar" hidden>✏️ Changing attendance for <b id="eDate"></b>. Click a student's circle: Present → Absent → Late. Saved at once and recorded; no emails.<button class="btn-o" type="button" id="eDone">Done</button></div>
       <div class="ms"><span>🔍</span><input type="text" id="modSearch" placeholder="Search a student by name or BSU ID…" aria-label="Search a student"><button class="clr" type="button" id="modClr" title="Clear search" aria-label="Clear search" hidden>✕</button></div>
       <div class="twrap"><table class="mt" id="tbl"><thead><tr id="mHead"></tr></thead><tbody id="modBody"></tbody></table></div>
     </div>
+    <div class="pg" id="pg-ars" hidden>
+      <div class="hrow"><div><h2>Student Records</h2><p>Any student on campus · contact, accounts, marks and attendance · search by BSU ID or name</p></div></div>
+      <div class="ars-s srs"><input type="text" id="arsIn" autocomplete="off" spellcheck="false" aria-label="BSU ID or name" placeholder="Type a BSU ID or a student's name…"><button class="btn-p" type="button" id="arsGo">Open record →</button><div class="sugg2" id="arsSug" hidden></div></div>
+      <div id="arsOut"><div class="nm-info" style="font-size:13px">Type a BSU ID or part of a name, then pick the student.</div></div>
+    </div>
     <div class="pg" id="pg-tt" hidden>
-      <div class="hrow"><div><h2>My Timetable</h2><p id="ttSub"></p></div><div class="hbtns"><button class="btn-o" type="button" id="frBtn">🏫 Free rooms</button><button class="btn-o" type="button" id="ttPdf">📄 Save as PDF</button></div></div>
-      <div class="frp" id="frp" hidden></div>
+      <div class="hrow"><div><h2>My Timetable</h2><p id="ttSub"></p></div><div class="hbtns"><button class="btn-o" type="button" id="ttPdf">📄 Save as PDF</button></div></div>
       <div class="tsum" id="ttSum"></div>
       <div class="ttg" id="ttg"></div>
     </div>
@@ -1082,6 +1110,21 @@ body{overflow:hidden}
   <div class="nhead"><b><i>!</i> Latest announcement <span class="ndate" id="notDate"></span></b><button class="nclose" type="button" id="notClose">✕ Close and continue</button></div>
   <div class="nbody" id="notBody"><h4 id="notTitle"></h4><div class="txt" id="notTxt"></div></div>
   <div class="coming"><div id="notAcad"></div><div id="notAnn"></div></div>
+</div></div>
+<div class="nm-ov" id="calOv" hidden><div class="nm-box calbox">
+  <div class="calhd"><span class="hav" id="calIni">--</span><div style="flex:1"><b id="calName">Student</b><small id="calSub"></small></div><button type="button" class="btn-o" id="calPdf" style="background:#fff">📄 Download PDF</button><button type="button" class="btn-o" id="calX" style="background:#fff">✕</button></div>
+  <div class="calbd"><div class="calsum" id="calSum"></div>
+    <div class="calleg"><span><i style="background:#16a34a"></i>Present</span><span><i style="background:#f59e0b"></i>Late</span><span><i style="background:#dc2626"></i>Absent</span><span>Each module on its own: every class from the first (left) to the latest, with its date and day and the student’s mark.</span></div>
+    <div id="calMonths"></div>
+    <div class="calft"><span style="font-size:11px;color:var(--ink3)">From the class registers (Classroom); tutors from the timetable. Late counts as half in the overall figure. <b>Confidential</b>: student record, for staff and the student and parents only.</span></div></div>
+</div></div>
+<div class="nm-ov" id="noteOv" hidden><div class="nm-box">
+  <h3>Critical note · <span id="noteWho">Student</span></h3><div class="s">Saved to the student's record (CRITICAL_NOTES)</div>
+  <textarea id="noteTxt" maxlength="2000" placeholder="Write the note the student will receive…"></textarea>
+  <div class="ncopies" id="noteCopies"></div>
+  <div class="nm-info" id="noteInfo"></div>
+  <div class="err" id="noteErr" style="color:#b91c1c;font-size:12.5px;min-height:16px"></div>
+  <div class="nm-row"><button class="btn-o" type="button" id="noteCancel">Cancel</button><button class="btn-p" type="button" id="noteSave">Save and email</button></div>
 </div></div>
 <div class="toast" id="toast" hidden></div>
 <script>
@@ -1220,6 +1263,7 @@ function go(p){
   if(p === 'acal') loadAcadCalendar();
   if(p === 'ucal') loadTutorUCal();
   if(p === 'pol') loadTutorPolicies();
+  if(p === 'ars'){ loadSList().catch(function(){}); setTimeout(function(){ if(!SREC) $('arsIn').focus(); }, 60); }
 }
 document.querySelector('.snav').addEventListener('click', function(e){
   var b = e.target.closest('.nav'); if(!b) return;
@@ -1371,7 +1415,7 @@ $('wdYes').onclick = function(){
 var RUN = null, RI = -1, GSEL = '', SORT = { k: 'pct', d: 1 }, SEL = '', EDITING = 0;
 function openRun(i, g){
   var r = BOOT.runs[i]; if(!r || !r.runId) return;
-  RI = i; GSEL = g || ''; $('modSearch').value = ''; $('modClr').hidden = true;
+  RI = i; GSEL = g || ''; GPRE = null; $('modSearch').value = ''; $('modClr').hidden = true;
   $('modTitle').textContent = r.module; $('modSub').textContent = progLine(r.groups);
   SEL = ''; $('eBar').hidden = true;
   var k = cKey('r', r.runId), hit = cGet(k);
@@ -1390,9 +1434,20 @@ function drawRun(){
     + '<span class="kline"><b id="kS">0</b> students · <b id="kSe">0</b> sessions · <b id="kAvg">–</b> average · <b class="r" id="kLow">0</b> below 70% · <b class="r" id="kAcc">0</b> see Accounts</span>';
   renderMod();
 }
-$('gtabs').addEventListener('click', function(e){ var b = e.target.closest('.gt'); if(!b) return; GSEL = b.dataset.g || ''; drawRun(); });
-$('modSearch').addEventListener('input', function(){ $('modClr').hidden = !this.value; renderMod(); });
-$('modClr').onclick = function(){ $('modSearch').value = ''; this.hidden = true; renderMod(); $('modSearch').focus(); };
+$('gtabs').addEventListener('click', function(e){ var b = e.target.closest('.gt'); if(!b) return; GSEL = b.dataset.g || ''; GPRE = null; drawRun(); });
+// 9 Nov 2026: searching opens the group of the student found, so only that group's sessions show; clearing goes back
+var GPRE = null;
+function searchGroup(){
+  var Q = ($('modSearch').value || '').trim().toLowerCase(), d = RUN;
+  if(!d){ renderMod(); return; }
+  if(!Q){ if(GPRE !== null){ GSEL = GPRE; GPRE = null; } drawRun(); return; }
+  if(GPRE === null) GPRE = GSEL;
+  var hit = d.groups.filter(function(g){ return (d.rosters[g] || []).some(function(s){ return (s.name + ' ' + (s.bsuId || '')).toLowerCase().indexOf(Q) > -1; }); });
+  GSEL = hit.length === 1 ? hit[0] : (hit.length > 1 && hit.indexOf(GPRE) > -1 ? GPRE : '');
+  drawRun();
+}
+$('modSearch').addEventListener('input', function(){ $('modClr').hidden = !this.value; searchGroup(); });
+$('modClr').onclick = function(){ $('modSearch').value = ''; this.hidden = true; searchGroup(); $('modSearch').focus(); };
 $('mHead').addEventListener('click', function(e){
   var dh = e.target.closest('th[data-sid]');
   if(dh){ if(dh.dataset.run === '1'){ toast('This class is running in the Classroom now. Change marks there.', true); return; } SEL = SEL === dh.dataset.sid ? '' : dh.dataset.sid; renderMod(); return; }
@@ -1473,7 +1528,6 @@ $('modBody').addEventListener('click', function(e){
     .then(function(){ EDITING--; LASTEDIT[run.runId] = Date.now(); if(INF[cell] === my) delete INF[cell]; if(RUN === run && PAGE === 'mod') renderMod(); });
 });
 $('modBack').onclick = function(){ go('dash'); };
-$('modPrint').onclick = function(){ window.print(); };
 
 // ---------------------------------------------------------------- My Timetable (from the timetable, as on the mock)
 var SLOTS = ['9:00 – 10:40','10:40 – 12:20','12:20 – 2:00','2:00 – 3:40'];
@@ -1498,23 +1552,21 @@ function drawTT(){
     var we = day === 'Saturday' || day === 'Sunday', L = TT[day];
     var extra = L.filter(function(x){ return SLOTS.indexOf(x[0]) < 0; });
     return '<div class="ttd' + (we ? ' we' : '') + (day === today ? ' today' : '') + '"><h6>' + day + '<small>' + (L.length ? L.length + ' session' + (L.length > 1 ? 's' : '') : '') + '</small></h6>'
-      + (L.length ? SLOTS.map(function(sl){ var xs = L.filter(function(x){ return x[0] === sl; }); return xs.length ? xs.map(function(x){ return '<div class="tts' + (we ? ' we' : '') + '"><span class="t">' + esc(x[0]) + '</span><b>' + esc(x[1]) + '</b><span>' + esc(x[2]) + '</span><span>' + esc(x[3]) + '</span></div>'; }).join('') : '<div class="ttgap">☕ Free ' + sl + '</div>'; }).join('')
+      + (L.length ? SLOTS.map(function(sl){ var xs = L.filter(function(x){ return x[0] === sl; }); return xs.length ? xs.map(function(x){ return '<div class="tts' + (we ? ' we' : '') + '"><span class="t">' + esc(x[0]) + '</span><b>' + esc(x[1]) + '</b><span>' + esc(x[2]) + '</span><span>' + esc(x[3]) + '</span></div>'; }).join('') : freeGap(day, sl); }).join('')
         + extra.map(function(x){ return '<div class="tts' + (we ? ' we' : '') + '"><span class="t">' + esc(x[0]) + '</span><b>' + esc(x[1]) + '</b><span>' + esc(x[2]) + '</span><span>' + esc(x[3]) + '</span></div>'; }).join('')
         : '<div class="none">No classes</div>') + '</div>';
   }).join('');
 }
-var FD = DAYN[new Date().getDay()];
-function renderFR(){
-  var p = $('frp'), R = (BOOT && BOOT.rooms) || { all: [], used: {} };
-  p.innerHTML = '<h4>Free rooms · ' + FD + '</h4><div class="s">Rooms with no class booked on the timetable. A room may still be booked for other activities.</div><div class="frd">' + TTDAYS.map(function(d){ return '<button type="button" data-d="' + d + '" class="' + (d === FD ? 'on' : '') + '">' + d.slice(0, 3) + '</button>'; }).join('') + '</div>'
-    + SLOTS.map(function(sl){
-      var u = {}; Object.keys(R.used).forEach(function(k){ var p2 = k.split('|'); if(p2[0] === FD.toLowerCase() && prettyTime(p2[1]) === sl) R.used[k].forEach(function(rm){ u[rm] = 1; }); });
-      var f = R.all.filter(function(rm){ return !u[rm]; });
-      return '<div class="frs"><span class="t">' + sl + '</span><div>' + (f.length ? f.map(function(rm){ return '<span class="frc">' + esc(rm) + '</span>'; }).join('') : '<span class="no">No free rooms in this session.</span>') + '</div></div>';
-    }).join('');
+// 9 Nov 2026: each free session shows the rooms free then (no class booked on the timetable)
+function freeRooms(day, sl){
+  var R = (BOOT && BOOT.rooms) || { all: [], used: {} }, u = {};
+  Object.keys(R.used).forEach(function(k){ var p2 = k.split('|'); if(p2[0] === day.toLowerCase() && prettyTime(p2[1]) === sl) R.used[k].forEach(function(rm){ u[rm] = 1; }); });
+  return R.all.filter(function(rm){ return !u[rm]; });
 }
-$('frBtn').onclick = function(){ var p = $('frp'); p.hidden = !p.hidden; if(!p.hidden) renderFR(); this.textContent = p.hidden ? '🏫 Free rooms' : '✕ Close free rooms'; };
-$('frp').addEventListener('click', function(e){ var b = e.target.closest('button[data-d]'); if(b){ FD = b.dataset.d; renderFR(); } });
+function freeGap(day, sl){
+  var f = freeRooms(day, sl);
+  return '<div class="ttgap"><span class="gh">☕ Free ' + esc(sl) + '</span>' + (f.length ? '<span class="rms">' + f.map(function(rm){ return '<span class="rm">' + esc(rm) + '</span>'; }).join('') + '</span>' : '<span class="rn">No free rooms then</span>') + '</div>';
+}
 $('ttPdf').onclick = function(){
   if(!(window.jspdf && window.jspdf.jsPDF)){ toast('The PDF tool is still loading. Please try again in a moment.', true); return; }
   var who = BOOT.as.name || BOOT.as.email, doc = new window.jspdf.jsPDF({ unit: 'pt', format: 'a4' }), M = 40, y = 50, W = doc.internal.pageSize.getWidth(), PH = doc.internal.pageSize.getHeight();
@@ -1530,6 +1582,174 @@ $('ttPdf').onclick = function(){
 // ---------------------------------------------------------------- notices (same screen as the Classroom and the students)
 $('openNot').onclick = function(){ openNotices(); };
 $('notClose').onclick = function(){ closeNotices(); };
+
+// ---------------------------------------------------------------- Student Records (9 Nov 2026), as mock v28 "Students ARS"
+// Any student by BSU ID or name: contact, accounts and registration, marks by year, this year's attendance (calendar and
+// PDF), critical notes. No passport, Emirates ID or documents (Admin Portal only). Nothing here changes a record except
+// "Add note", which saves the note and emails it to the student (copies as ticked).
+var SLIST = null, SREC = null, SBUSY = 0, CALC = null;
+var MNF = ['January','February','March','April','May','June','July','August','September','October','November','December'], DNS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+function loadSList(){
+  var k = cKey('c', 'slist'), hit = cGet(k);
+  if(hit){ SLIST = hit.d; if(Date.now() - hit.t < 30 * 60 * 1000) return Promise.resolve(SLIST); }
+  return apiFetch({ action: 'tutStudents' }).then(function(d){ SLIST = d.list || []; cPut(k, SLIST); return SLIST; });
+}
+function sFind(q){
+  q = String(q || '').trim().toLowerCase(); if(!q || !SLIST) return [];
+  if(/^\d+$/.test(q)) return SLIST.filter(function(s){ return s[0].indexOf(q) === 0; }).slice(0, 10);
+  var w = q.split(/\s+/).filter(Boolean);
+  return SLIST.filter(function(s){ var n = String(s[1]).toLowerCase(); return w.every(function(x){ return n.indexOf(x) > -1; }); }).slice(0, 10);
+}
+function sSugg(){
+  var q = $('arsIn').value, L = sFind(q), box = $('arsSug');
+  if(!q.trim()){ box.hidden = true; return; }
+  box.innerHTML = L.length ? L.map(function(s, i){ return '<button type="button" data-sid="' + esc(s[0]) + '" class="' + (i ? '' : 'on') + '"><b>' + esc(s[1]) + '</b><span>' + esc(s[0]) + ' · ' + esc(pShort(s[2]) || s[2]) + (s[3] ? ' · ' + esc(s[3]) : '') + (s[4] ? ' · ' + esc(s[4]) : '') + '</span></button>'; }).join('')
+    : '<div class="none">' + (SLIST ? 'No student matches. Try the BSU ID.' : 'Loading the student list…') + '</div>';
+  box.hidden = false;
+}
+$('arsIn').addEventListener('input', sSugg);
+$('arsIn').addEventListener('focus', function(){ loadSList().then(function(){ if($('arsIn').value.trim()) sSugg(); }).catch(function(){}); });
+$('arsIn').addEventListener('keydown', function(e){
+  var box = $('arsSug'), bs = box.querySelectorAll('button[data-sid]'), at = -1;
+  bs.forEach(function(b, i){ if(b.classList.contains('on')) at = i; });
+  if((e.key === 'ArrowDown' || e.key === 'ArrowUp') && bs.length){ e.preventDefault(); at = (at + (e.key === 'ArrowDown' ? 1 : -1) + bs.length) % bs.length; bs.forEach(function(b, i){ b.classList.toggle('on', i === at); }); return; }
+  if(e.key === 'Escape'){ box.hidden = true; return; }
+  if(e.key === 'Enter'){ e.preventDefault(); var v = this.value.trim(); if(/^\d{5,7}$/.test(v)) openStudent(v); else if(at > -1) openStudent(bs[at].dataset.sid); }
+});
+$('arsSug').addEventListener('mousedown', function(e){ var b = e.target.closest('button[data-sid]'); if(b){ e.preventDefault(); openStudent(b.dataset.sid); } });
+$('arsIn').addEventListener('blur', function(){ setTimeout(function(){ $('arsSug').hidden = true; }, 150); });
+$('arsGo').onclick = function(){ var v = $('arsIn').value.trim(), L = sFind(v); if(/^\d{5,7}$/.test(v)) openStudent(v); else if(L.length) openStudent(L[0][0]); else toast('Type a BSU ID, or pick a name from the list.', true); };
+function openStudent(id){
+  $('arsSug').hidden = true; $('arsIn').value = id; $('arsIn').blur();
+  var k = cKey('r', 's' + id), hit = cGet(k), my = ++SBUSY;
+  if(hit){ SREC = hit.d; renderStudent(); }
+  else $('arsOut').innerHTML = '<div class="nm-info" style="font-size:13px">⏳ Opening the record of ' + esc(id) + '…</div>';
+  if(hit && Date.now() - hit.t < 60 * 1000) return;
+  apiFetch({ action: 'tutStudent', q: id }).then(function(d){ cPut(k, d); if(my !== SBUSY) return; SREC = d; renderStudent(); })
+    .catch(function(e){ if(isOut(e) || my !== SBUSY || hit) return; $('arsOut').innerHTML = '<div class="nm-info" style="font-size:13px;color:#b91c1c">' + esc(e.message || 'Could not open the record.') + '</div>'; });
+}
+function sPill(v){ if(v == null || v === '') return '<span class="mc m">–</span>'; return '<span class="mc ' + (v >= 70 ? 'g' : v >= 40 ? 'a' : 'r') + '">' + v + '</span>'; }
+function sAtt(p, big){ if(p == null) return '<span class="mc m' + (big ? ' big' : '') + '">–</span>'; return '<span class="mc ' + (p >= 85 ? 'g' : p >= 70 ? 'a' : 'r') + (big ? ' big' : '') + '">' + p + '%</span>'; }
+function sSA(a){
+  if(!a) return '<td class="c" style="color:var(--ink3);font-size:11px">N/A</td>';
+  if(a.mark == null) return '<td class="c" title="' + esc(a.t) + ' · ' + a.w + '%">' + (a.sub ? '<span class="subst ' + (/NOT/.test(a.sub) ? 'no' : 'ok') + '">' + (/NOT/.test(a.sub) ? 'Not submitted' : 'Submitted') + '</span>' : '<span class="mc m">–</span>') + '</td>';
+  return '<td class="c" title="' + esc(a.t) + ' · ' + a.w + '%">' + sPill(a.mark) + (a.ns ? '<span class="nsx">NS</span>' : '') + '</td>';
+}
+function sSw(m){ var p = []; if(m.sa1) p.push('SA1 ' + m.sa1.w + '% ' + m.sa1.t); if(m.sa2) p.push('SA2 ' + m.sa2.w + '% ' + m.sa2.t); return p.length ? esc(p.join(' · ')) : 'Assessments not set yet'; }
+function renderStudent(){
+  var R = SREC; if(!R) return;
+  var nowD = new Date(), yrs = '';
+  (R.years || []).forEach(function(Y){
+    var head = (Y.y != null ? 'Year ' + Y.y + ' · Level ' + Y.lvl : 'Academic year') ;
+    if(Y.apl){ yrs += '<div class="yr2"><div class="yrh"><div><b>' + head + '</b> <span>· APL · 120 credits (entered at ' + esc(R.level) + ')</span></div></div></div>'; return; }
+    var any = Y.s.some(function(S){ return S.mods.length; });
+    if(!any && !Y.cur){ yrs += '<div class="yr2"><div class="yrh"><div><b>' + head + '</b> <span>· ' + esc(Y.ay) + '</span></div></div><div class="ns" style="padding:10px 14px;font-size:12px;color:var(--ink3)">No marks for this year in CampusCore (marks are kept from 2025/2026).</div></div>'; return; }
+    function semT(S){
+      var title = 'Semester ' + S.n, L = S.mods;
+      if(!L.length) return '<div><table class="ct"><colgroup><col class="cm"><col class="cs"><col class="cs"><col class="co"><col class="ca"></colgroup><tr class="sum"><th colspan="5">' + title + '</th></tr></table><div class="ns">' + (Y.cur && R.term && S.n > R.term.sem ? 'Not started yet' : 'No modules') + '</div></div>';
+      var ovs = L.map(function(m){ return m.ov; }), avg = ovs.length && ovs.indexOf(null) < 0 ? Math.round(ovs.reduce(function(a, b){ return a + b; }, 0) / ovs.length) : null;
+      var ats = L.map(function(m){ return m.att; }).filter(function(x){ return x != null; }), at = ats.length ? Math.round(ats.reduce(function(a, b){ return a + b; }, 0) / ats.length) : null;
+      return '<div><table class="ct"><colgroup><col class="cm"><col class="cs"><col class="cs"><col class="co"><col class="ca"></colgroup><tr class="sum"><th colspan="3">' + title + '</th><th class="c">' + (avg == null ? '<span class="mc m big">–</span>' : '<span class="mc big ' + (avg >= 70 ? 'g' : avg >= 40 ? 'a' : 'r') + '">' + avg + '</span>') + '</th><th class="c">' + sAtt(at, 1) + '</th></tr><tr><th>Module</th><th class="c">SA1</th><th class="c">SA2</th><th class="c">Overall</th><th class="c">Att</th></tr>'
+        + L.map(function(m){ return '<tr><td><b>' + esc(m.m) + '</b><span class="sw">' + sSw(m) + '</span></td>' + sSA(m.sa1) + sSA(m.sa2) + '<td class="c">' + sPill(m.ov) + '</td><td class="c">' + sAtt(m.att) + '</td></tr>'; }).join('') + '</table></div>';
+    }
+    yrs += '<div class="yr2"><div class="yrh' + (Y.cur ? ' cur' : '') + '"><div><b>' + head + '</b> <span>· ' + esc(Y.ay) + (Y.cur ? ' · current' : '') + '</span></div></div><div class="sems">' + semT(Y.s[0]) + semT(Y.s[1]) + '</div></div>';
+  });
+  var accC = function(i, v){ return (i === 0 && /^registered$/i.test(v)) || (i === 1 && /^clear$/i.test(v)) ? '#16a34a' : v === '–' ? '#94a3b8' : '#dc2626'; };
+  var attc = R.att == null ? '' : R.att >= 85 ? 'g' : R.att >= 70 ? 'a' : 'r';
+  var notes = (R.notes || []).map(function(n){ return '<div class="nm-old" style="white-space:pre-wrap">' + esc(n.note) + '<small>' + esc(n.by || '') + (n.date ? ' · ' + esc(fmtD(n.date, 1)) : '') + (n.mod ? ' · ' + esc(n.mod) : '') + '</small></div>'; }).join('');
+  $('arsOut').innerHTML = '<div class="sh"><span class="hav">' + esc(initials(R.name)) + '</span><div style="flex:1"><div class="nm2">' + esc(R.name) + '<small>BSU ID# ' + esc(R.id) + '</small></div><div class="pg">' + esc(R.prog) + (R.year ? ' · ' + esc(R.year) : '') + (R.level ? ' · Level Entry: ' + esc(R.level) : '') + '</div>'
+    + '<div class="chips"><span class="g">● ' + esc(R.status) + '</span>' + (R.dob ? '<span>DOB: ' + esc(R.dob) + '</span>' : '') + (R.age != null ? '<span>Age: ' + R.age + '</span>' : '') + (R.nat || R.gender ? '<span>' + esc([R.nat, R.gender].filter(Boolean).join(' · ')) + '</span>' : '')
+    + (R.att == null ? '<span>Overall Attendance: no classes yet</span>' : '<button type="button" class="attbtn ' + attc + '" id="sCal" title="Open attendance by module">📅 Overall Attendance: ' + R.att + '% ›</button>')
+    + (R.last ? '<span>Last Engagement Date: ' + esc(fmtD(R.last, 1)) + '</span>' : '') + '</div></div>'
+    + '<div style="text-align:right;font-size:11px;color:#93c5fd;font-weight:700;letter-spacing:1px">CAMPUSCORE<br><span style="color:#cbd5e1;font-weight:500;letter-spacing:0">' + nowD.getDate() + ' ' + MON[nowD.getMonth()] + ' ' + nowD.getFullYear() + '</span></div></div>'
+    + '<div class="sb"><div class="cbx">'
+    + '<div class="bx"><h6>Personal contact</h6><table><tr><th>Student phone</th><th>Student email</th><th>Parent phone</th><th>Parent email</th></tr><tr>' + R.contact.map(function(v){ return '<td>' + esc(v) + '</td>'; }).join('') + '</tr></table></div>'
+    + '<div class="bx"><h6>Accounts &amp; registration</h6><table><tr>' + ['Registration', 'Accounts', 'Current due', 'Tuition outstanding', 'Total receivable'].map(function(l){ return '<th>' + l + '</th>'; }).join('') + '</tr><tr>' + R.acc.map(function(v, i){ return '<td style="color:' + accC(i, v) + '">' + esc(v) + '</td>'; }).join('') + '</tr></table></div></div>'
+    + '<h5>Academic record</h5>' + yrs
+    + '<h5>Critical notes <span style="float:right;text-transform:none;letter-spacing:0"><button class="btn-o" type="button" id="sNoteAdd" style="padding:3px 12px;font-size:12px">+ Add note</button></span></h5>' + (notes || '<div style="font-size:12.5px;color:var(--ink3)">No notes.</div>')
+    + '<p class="disc" style="font-size:10.5px;color:var(--ink3);margin-top:12px"><b>Disclaimer</b> · Indicative data for follow-up only. Official submissions are on Blackboard Ultra; official marks and results come from the Home Campus (BSU UK).</p></div>';
+}
+$('arsOut').addEventListener('click', function(e){
+  if(e.target.closest('#sCal')) openCal();
+  if(e.target.closest('#sNoteAdd')) openNote();
+});
+// ---- full attendance calendar, as on the mock (each module: every class from the first to the latest), and its PDF
+function calSes(){ var R = SREC, out = [], sn = R.term ? R.term.sem : 1;
+  (R.attMods || []).forEach(function(m){ m.sess.forEach(function(x){ var p = String(x[0]).split('-'); out.push({ d: new Date(+p[0], +p[1] - 1, +p[2], 12), m: m.m, s: x[1], t: 's' + sn }); }); });
+  return out; }
+function cFmt(d){ return d.getDate() + ' ' + MON[d.getMonth()]; }
+function cTutor(m){ var a = (SREC.attMods || []).filter(function(x){ return x.m === m; })[0], t = a && a.tutors[0]; return t || ['', '']; }
+function calGroups(S){ var T = {}; S.forEach(function(x){ (T[x.t] = T[x.t] || {})[x.m] = (T[x.t] && T[x.t][x.m]) || []; T[x.t][x.m].push(x); });
+  return ['s2', 's1'].filter(function(t){ return T[t]; }).map(function(t){ return { name: t === 's1' ? 'Semester 1 (Fall)' : 'Semester 2 (Spring)', mods: Object.keys(T[t]).sort().map(function(m){
+    var L = T[t][m].slice().sort(function(a, b){ return b.d - a.d; }), P = L.filter(function(x){ return x.s === 'P'; }).length, La = L.filter(function(x){ return x.s === 'L'; }).length;
+    return { m: m, L: L, P: P, La: La, A: L.length - P - La, pc: Math.round((P + La / 2) / L.length * 100) }; }) }; }); }
+function semBlocks(T){ return T.mods.map(function(M){ var L = M.L.slice().sort(function(a, b){ return a.d - b.d; }), rows = []; for(var r = 0; r < Math.max(1, L.length); r += 32) rows.push(L.slice(r, r + 32));
+    var tu = cTutor(M.m);
+    return '<div class="mb"><div class="mh"><b>' + esc(M.m) + (tu[0] ? ' <span class="tu">| ' + esc(tu[0]) + ' · <a href="mailto:' + esc(tu[1]) + '">' + esc(tu[1]) + '</a></span>' : '') + '</b><span class="k">' + M.L.length + ' classes · ' + M.P + ' present · ' + M.La + ' late · ' + M.A + ' absent</span><span class="p" style="color:' + (M.pc >= 85 ? '#16a34a' : M.pc >= 70 ? '#d97706' : '#dc2626') + '">' + M.pc + '%</span></div>'
+      + rows.map(function(R){ var c = R.map(function(x){ return '<div class="c32 ' + x.s + '" title="' + x.d.getDate() + ' ' + MNF[x.d.getMonth()] + ' ' + x.d.getFullYear() + ' · ' + { P: 'present', L: 'late', A: 'absent' }[x.s] + '"><span class="v">' + cFmt(x.d) + ' <i>' + DNS[x.d.getDay()] + '</i></span><span class="mk">' + x.s + '</span></div>'; });
+        while(c.length < 32) c.push('<div class="c32 e"><span class="v"></span><span class="mk"></span></div>'); return '<div class="m32">' + c.join('') + '</div>'; }).join('') + '</div>'; }).join(''); }
+function calTot(S){ var P = S.filter(function(x){ return x.s === 'P'; }).length, La = S.filter(function(x){ return x.s === 'L'; }).length; return { P: P, La: La, A: S.length - P - La, pc: S.length ? Math.round((P + La / 2) / S.length * 100) : 0 }; }
+function openCal(){
+  var R = SREC, S = calSes(); if(!S.length){ toast('No classes taken for this student yet this year.'); return; }
+  CALC = { R: R, S: S }; var t = calTot(S);
+  $('calIni').textContent = initials(R.name); $('calName').textContent = R.name;
+  $('calSub').textContent = 'BSU ID ' + R.id + ' · ' + R.prog + (R.year ? ' · ' + R.year : '') + ' · ' + R.status;
+  $('calSum').innerHTML = [[t.pc + '%', 'overall attendance', t.pc >= 85 ? '#16a34a' : t.pc >= 70 ? '#d97706' : '#dc2626'], [S.length, 'classes'], [t.P, 'present', '#16a34a'], [t.La, 'late', '#d97706'], [t.A, 'absent', '#dc2626'], [R.last ? fmtD(R.last, 1) : '–', 'last engagement']].map(function(x){ return '<div><b style="color:' + (x[2] || 'var(--ink)') + '">' + x[0] + '</b><span>' + x[1] + '</span></div>'; }).join('');
+  $('calMonths').innerHTML = '<div class="cyr">' + esc(R.year || '') + ' · ' + esc(R.term ? R.term.ay : '') + '</div>' + calGroups(S).map(function(T){ return '<div class="csem">' + T.name + '</div>' + semBlocks(T); }).join('');
+  $('calOv').hidden = false;
+}
+$('calX').onclick = function(){ $('calOv').hidden = true; };
+$('calPdf').onclick = function(){
+  if(!(window.jspdf && window.jspdf.jsPDF)){ toast('The PDF tool is still loading. Please try again in a moment.', true); return; }
+  var C = CALC, R = C.R, S = C.S, t = calTot(S), doc = new window.jspdf.jsPDF({ unit: 'pt', format: 'a4', orientation: 'landscape' }), W = doc.internal.pageSize.getWidth(), H = doc.internal.pageSize.getHeight(), M = 30;
+  function head(){ doc.setFillColor(15, 30, 61); doc.rect(0, 0, W, 58, 'F'); doc.setTextColor(255, 255, 255); doc.setFont('helvetica', 'bold'); doc.setFontSize(15); doc.text(R.name + '  -  attendance by module', M, 24);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5); doc.text($('calSub').textContent.replace(/·/g, '-'), M, 40);
+    doc.text('Overall ' + t.pc + '%  -  ' + S.length + ' classes  -  ' + t.P + ' present, ' + t.La + ' late, ' + t.A + ' absent  -  last engagement ' + (R.last ? fmtD(R.last, 1) : '-'), M, 52); }
+  head(); var y = 78, MC = { P: [22, 163, 74], L: [217, 119, 6], A: [220, 38, 38] }, cw = (W - 2 * M) / 32, ch = 56;
+  function need(h){ if(y + h > H - 24){ doc.addPage(); head(); y = 78; } }
+  function pcC(p){ return p >= 85 ? [22, 163, 74] : p >= 70 ? [217, 119, 6] : [220, 38, 38]; }
+  need(90); doc.setDrawColor(15, 30, 61); doc.setLineWidth(1.2); doc.line(M, y + 4, W - M, y + 4); doc.setTextColor(15, 30, 61); doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.text(((R.year || '') + '  -  ' + (R.term ? R.term.ay : '')).toUpperCase(), M, y); y += 14;
+  calGroups(S).forEach(function(T){ need(80); doc.setFillColor(29, 78, 216); doc.roundedRect(M, y, W - 2 * M, 14, 2, 2, 'F'); doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5); doc.setTextColor(255, 255, 255); doc.text(T.name.toUpperCase(), M + 6, y + 10); y += 19;
+    T.mods.forEach(function(Mo){ var L = Mo.L.slice().sort(function(a, b){ return a.d - b.d; }), rows = Math.max(1, Math.ceil(L.length / 32)); need(18 + rows * ch + 6);
+      var top = y; doc.setFillColor(241, 245, 249); doc.rect(M, y, W - 2 * M, 15, 'F'); doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(15, 23, 42); doc.text(Mo.m, M + 5, y + 10.5);
+      var tu = cTutor(Mo.m), tw = doc.getTextWidth(Mo.m); if(tu[0]){ doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(71, 85, 105); doc.text('|  ' + tu[0] + '  -  ' + tu[1], M + 5 + tw + 6, y + 10.5); }
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5); doc.setTextColor(71, 85, 105); doc.text(Mo.L.length + ' classes - ' + Mo.P + ' present - ' + Mo.La + ' late - ' + Mo.A + ' absent', W - M - 50, y + 10.5, { align: 'right' });
+      var c = pcC(Mo.pc); doc.setFont('helvetica', 'bold'); doc.setFontSize(9.5); doc.setTextColor(c[0], c[1], c[2]); doc.text(Mo.pc + '%', W - M - 5, y + 10.5, { align: 'right' }); y += 15;
+      doc.setDrawColor(15, 30, 61); doc.setLineWidth(.8); doc.line(M, y, W - M, y);
+      for(var r = 0; r < rows; r++){ for(var i = 0; i < 32; i++){ var q = L[r * 32 + i], cx = M + i * cw, cy = y; doc.setDrawColor(226, 232, 240); doc.setLineWidth(.5);
+          if(!q){ doc.setFillColor(250, 251, 252); doc.rect(cx, cy, cw, ch, 'F'); continue; }
+          var k = MC[q.s]; if(q.s === 'A'){ doc.setFillColor(254, 242, 242); doc.rect(cx, cy, cw, ch, 'F'); } if(i) doc.line(cx, cy, cx, cy + ch);
+          doc.setFont('helvetica', 'normal'); doc.setFontSize(6.3); doc.setTextColor(71, 85, 105); doc.text(cFmt(q.d) + '  ' + DNS[q.d.getDay()], cx + cw / 2 + 2.2, cy + 40, { angle: 90 });
+          doc.setFont('courier', 'bold'); doc.setFontSize(10); doc.setTextColor(k[0], k[1], k[2]); doc.text(q.s, cx + cw / 2, cy + 51, { align: 'center' }); } y += ch; }
+      doc.setDrawColor(148, 163, 184); doc.setLineWidth(1.1); doc.rect(M, top, W - 2 * M, y - top); y += 8; }); y += 4; });
+  var np = doc.internal.getNumberOfPages(), gen = new Date(); for(var pg = 1; pg <= np; pg++){ doc.setPage(pg); doc.setFont('helvetica', 'normal'); doc.setFontSize(7); doc.setTextColor(120, 130, 145);
+    doc.text('Generated by CampusCore on ' + gen.getDate() + ' ' + MNF[gen.getMonth()] + ' ' + gen.getFullYear() + '  -  Confidential: student record, for staff and the student and parents only.', M, H - 12); doc.text('Page ' + pg + ' of ' + np, W - M, H - 12, { align: 'right' }); }
+  doc.save('Attendance by module - ' + R.name + '.pdf');
+};
+// ---- critical note: always emailed to the student; parent ticked by default; KEY copy_critical_note addresses as boxes
+function openNote(){
+  var R = SREC; if(!R) return;
+  $('noteWho').textContent = R.name;
+  $('noteCopies').innerHTML = '<label class="ck"><input type="checkbox" id="ncP"' + (R.hasParent ? ' checked' : ' disabled') + '> Copy parent' + (R.hasParent ? '' : ' <i>(no parent email in the Records)</i>') + '</label>'
+    + (R.copies || []).map(function(a, i){ return '<label class="ck"><input type="checkbox" data-cc="' + esc(a) + '"> Copy ' + esc(a) + '</label>'; }).join('');
+  $('noteTxt').value = ''; $('noteErr').textContent = ''; $('noteSave').disabled = false; $('noteSave').textContent = 'Save and email';
+  $('noteInfo').innerHTML = R.hasEmail ? '✉️ Saving <b>emails the student</b> (and the copies ticked). Replies come to you. The note shows here and in the Admin Portal.' : '⚠️ This student has no email address in the Records, so a note cannot be sent. Please tell the Records Office.';
+  $('noteSave').disabled = !R.hasEmail;
+  $('noteOv').hidden = false; setTimeout(function(){ $('noteTxt').focus(); }, 50);
+}
+$('noteCancel').onclick = function(){ $('noteOv').hidden = true; };
+$('noteSave').onclick = function(){
+  var R = SREC, t = $('noteTxt').value.trim(), btn = this;
+  if(t.length < 3){ $('noteErr').textContent = 'Please write the note first.'; return; }
+  var cc = [].slice.call(document.querySelectorAll('#noteCopies [data-cc]')).filter(function(x){ return x.checked; }).map(function(x){ return x.dataset.cc; });
+  btn.disabled = true; btn.textContent = 'Saving…'; $('noteErr').textContent = '';
+  if(!btn._n || btn._t !== t) { btn._n = Array.prototype.map.call(crypto.getRandomValues(new Uint8Array(12)), function(x){ return ('0' + x.toString(16)).slice(-2); }).join(''); btn._t = t; }   // the same note, retried, is saved once
+  apiPost('tutNoteAdd', { id: R.id, note: t, cp: !!($('ncP') && $('ncP').checked), cc: cc, nonce: btn._n }).then(function(d){ btn._n = '';
+    $('noteOv').hidden = true;
+    if(SREC && SREC.id === R.id){ SREC.notes = [d.note].concat(SREC.notes || []); cPut(cKey('r', 's' + R.id), SREC); renderStudent(); }
+    toast(d.emailed ? (d.test ? 'Note saved. Test mode: emailed only to the test address.' : 'Note saved and emailed to the student' + (d.cc.length ? ' (copy: ' + d.cc.length + ')' : '') + '.') : 'Note saved, but the email could not be sent. It is recorded.', !d.emailed);
+  }).catch(function(e){ if(isOut(e)) return; btn.disabled = false; btn.textContent = 'Save and email'; $('noteErr').textContent = e.message || 'Could not save. Please try again.'; });
+};
 
 // ============================================================ notices and information pages: the same code as the Classroom
 var NOT = { ann: null, acad: [], ucal: [] };
@@ -1563,11 +1783,15 @@ function openNotices(){
   var now = new Date(), M = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'], FM = ['January','February','March','April','May','June','July','August','September','October','November','December'];
   var m1 = now.getMonth(), m2 = (m1 + 1) % 12, y1 = now.getFullYear(), y2 = m2 === 0 ? y1 + 1 : y1;
   function monthOfText(t){ var k = -1; String(t || '').split(/[\s\-–]+/).forEach(function(w){ var i = M.indexOf(w.slice(0, 3)); if(i > -1 && k < 0) k = i; }); return k; }
+  // 9 Nov 2026: an event whose last day has passed gets a green tick
+  function evDone(e, my){ var n = String(e.d || '').match(/\d+/g), w = String(e.d || '').match(/[A-Za-z]{3,}/g), mo = my[0], yr = my[1]; if(!n) return false;
+    if(w){ var k = M.indexOf(w[w.length - 1].slice(0, 3)); if(k > -1){ if(k < my[0]) yr++; mo = k; } }      // "22 Dec - 4 Jan" ends in January
+    return new Date(yr, mo, +n[n.length - 1], 23, 59, 59) < now; }
   function block(title, ev){
     var h = '<h5>' + title + ' · ' + FM[m1] + ' and ' + FM[m2] + '</h5>';
     [[m1, y1], [m2, y2]].forEach(function(my){
       var L = ev.filter(function(e){ return e.m === my[0]; });
-      h += '<div class="mh">' + FM[my[0]] + ' ' + my[1] + '</div>' + (L.length ? L.map(function(e){ return '<div class="ev"><span class="dt">' + esc(e.d) + '</span><span>' + esc(e.t) + (e.ty ? '<span class="chip ' + esc(String(e.ty).toLowerCase()) + '">' + esc(e.ty) + '</span>' : '') + '</span></div>'; }).join('')
+      h += '<div class="mh">' + FM[my[0]] + ' ' + my[1] + '</div>' + (L.length ? L.map(function(e){ var dn = evDone(e, my); return '<div class="ev' + (dn ? ' done' : '') + '"><span class="dt">' + esc(e.d) + '</span><span>' + esc(e.t) + (e.ty ? '<span class="chip ' + esc(String(e.ty).toLowerCase()) + '">' + esc(e.ty) + '</span>' : '') + (dn ? '<span class="evtick" title="Done">✓</span>' : '') + '</span></div>'; }).join('')
         : '<div class="ev"><span class="dt">–</span><span style="color:#94a3b8">No events</span></div>');
     });
     return h;
