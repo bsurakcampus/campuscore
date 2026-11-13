@@ -1022,7 +1022,7 @@ button.circ:hover{transform:scale(1.12);}
       <button class="nav-item" data-p="acadcalendar"><span class="icon">🗓️</span> Academic Calendar</button>
       <button class="nav-item" data-p="ucalendar"><span class="icon">📅</span> Annual Calendar</button>
       <button class="nav-item" data-p="policies"><span class="icon">📋</span> Essential Policies</button>
-      <button class="nav-item" data-link="https://drive.google.com/drive/folders/1HdJ_Gb8WUhUH5yyCN2xrr9hjVPqGdbKI?usp=sharing"><span class="icon">📁</span> Important Documents</button>
+      <button class="nav-item" data-docs="1"><span class="icon">📁</span> Important Documents</button>
     </div>
     <div class="sidebar-footer"><button class="btn-logout" id="signOutBtn">⎋ &nbsp;Sign Out</button></div>
   </nav>
@@ -2227,7 +2227,7 @@ function go(p){
   $('main-content').scrollTop = 0; $('main-content').classList.toggle('att-mode', p === 'attendance');
 }
 document.querySelectorAll('#nav .nav-item').forEach(function(b){
-  b.onclick = function(){ if(b.dataset.link){ window.open(b.dataset.link, '_blank', 'noopener'); return; } go(b.dataset.p); };
+  b.onclick = function(){ if(b.dataset.docs){ if(_config && _config.docs_url) window.open(_config.docs_url, '_blank', 'noopener'); else toast('Please wait a moment and try again.'); return; } go(b.dataset.p); };   // 13 Nov 2026: the link comes only after sign-in
 });
 $('backBtn').onclick = function(){ go(CUR && CUR.cover ? 'cover' : 'dashboard'); };
 

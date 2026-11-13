@@ -1068,7 +1068,7 @@ body{overflow:hidden}
       <button class="nav" type="button" data-k="acal"><span class="ic">🗓️</span>Academic Calendar</button>
       <button class="nav" type="button" data-k="ucal"><span class="ic">📅</span>Annual Calendar</button>
       <button class="nav" type="button" data-k="pol"><span class="ic">📋</span>Essential Policies</button>
-      <button class="nav" type="button" data-link="https://drive.google.com/drive/folders/1HdJ_Gb8WUhUH5yyCN2xrr9hjVPqGdbKI?usp=sharing"><span class="ic">📁</span>Important Documents</button>
+      <button class="nav" type="button" data-docs="1"><span class="ic">📁</span>Important Documents</button>
     </div>
     <div class="sfoot"><button class="btn-logout" type="button" id="signOutBtn">⎋ Sign Out</button></div>
   </aside>
@@ -1160,7 +1160,6 @@ body{overflow:hidden}
 // Layout and styles: the agreed mock (v28). Data: CampusCore_Tutor.gs. Info pages: the same code as the Classroom.
 var API = 'https://script.google.com/macros/s/AKfycbycKFnbEm2aXY6JJ8QS-x-vUQMAcqp800afJhejux9UofP1YfK49AxoTG8cXMORzZby/exec';
 var SKEY = 'tp_session', IDLE_MS = 2 * 60 * 60 * 1000;
-var DOCS_URL = 'https://drive.google.com/drive/folders/1HdJ_Gb8WUhUH5yyCN2xrr9hjVPqGdbKI?usp=sharing';   // same link as the Classroom page
 var _config = {};                      // used by the reused calendar code
 var SIGNED_OUT = false;
 function $(id){ return document.getElementById(id); }
@@ -1304,7 +1303,7 @@ function go(p){
 }
 document.querySelector('.snav').addEventListener('click', function(e){
   var b = e.target.closest('.nav'); if(!b) return;
-  if(b.dataset.link){ window.open(b.dataset.link, '_blank', 'noopener'); return; }
+  if(b.dataset.docs){ if(BOOT && BOOT.docs) window.open(BOOT.docs, '_blank', 'noopener'); else toast('Please wait a moment and try again.', true); return; }   // 13 Nov 2026: the link comes only after sign-in
   if(b.dataset.k === 'dash'){ if(PAGE !== 'dash') goDash(); return; }
   go(b.dataset.k);
 });
