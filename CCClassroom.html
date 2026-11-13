@@ -987,14 +987,6 @@ button.circ:hover{transform:scale(1.12);}
 .sync-spin{width:11px;height:11px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:ccspin .8s linear infinite;display:inline-block}@keyframes ccspin{to{transform:rotate(360deg)}}
 </style>
 <style id="cc1311">
-/* 13 Nov 2026: the class on the timetable now, much bigger (pulses until started) */
-.now-card:not(.run):not(.next){padding:22px 26px!important;border:2px solid #16a34a!important;border-left:12px solid #16a34a!important;background:#f0fdf4!important;flex-wrap:wrap!important;gap:16px!important;animation:nowPulse 2.2s ease-in-out infinite}
-.now-card:not(.run):not(.next) .now-l{flex-direction:column;align-items:flex-start!important;gap:6px!important;white-space:normal!important}
-.now-card:not(.run):not(.next) .now-tag{font-size:13px!important;letter-spacing:1px}
-.now-card:not(.run):not(.next) .now-mod{font-size:30px!important;line-height:1.15}
-.now-card:not(.run):not(.next) .now-sub{font-size:14px!important}.now-card:not(.run):not(.next) .now-sub::before{content:''!important}
-.now-card:not(.run):not(.next) .now-go{margin-left:auto;padding:20px 40px!important;font-size:22px!important;background:#16a34a!important}
-@keyframes nowPulse{0%,100%{box-shadow:0 0 0 0 rgba(22,163,74,.35)}50%{box-shadow:0 0 0 12px rgba(22,163,74,0)}}
 #notOv .nvoice{margin-left:auto;margin-right:8px;background:#fff;color:#0f1e3d;border:0;padding:9px 16px;font-weight:700;font-size:13px;cursor:pointer}
 #notOv .nvoice.on{background:#facc15}
 #notOv .nvoice[hidden]{display:none}
@@ -1198,9 +1190,9 @@ button.circ:hover{transform:scale(1.12);}
   <div class="g-btns"><button class="g-btn g-go" id="gRemKeep" type="button">✓ Keep the class running</button><button class="g-btn g-fin" id="gRemFin" type="button">⏹ Finish class &amp; sign out</button></div>
 </div></div>
 <div class="g-ov" id="gNoStart" hidden><div class="g-box">
-  <div class="g-tick amber">⏰</div><h2>Your class has not started yet</h2><div class="g-sub" id="gNsSub"></div>
+  <div class="g-tick amber" id="gNsIc">🔔</div><h2 id="gNsH">Start your class</h2><div class="g-sub" id="gNsSub"></div>
   <div class="g-steps"><div><i>→</i><span>Start it now so the register is taken and saved. Marks taken before Start are not recorded.</span></div></div>
-  <div class="g-btns"><button class="g-btn g-go" id="gNsGo" type="button">▶ Start the class now</button><button class="g-btn" id="gNsNo" type="button" style="background:#fff;color:#475569;border:1px solid #cbd5e1">Not now (reminds again in 5 minutes)</button></div>
+  <div class="g-btns"><button class="g-btn g-go" id="gNsGo" type="button" style="font-size:20px;padding:18px">▶ Start your class now</button><button class="g-btn" id="gNsNo" type="button" style="background:#fff;color:#475569;border:1px solid #cbd5e1">Not now (reminds again in 5 minutes)</button></div>
 </div></div>
 <div class="g-ov" id="gAll" hidden><div class="g-box">
   <div class="g-tick">✓</div><h2>Everyone is marked</h2><div class="g-sub" id="gAllSub"></div>
@@ -2332,8 +2324,9 @@ setInterval(function(){
   else if(LIVE.lastAt && now >= LIVE.lastAt && now < LIVE.closeAt && !gFlag('q')) remind('last');
   if(now >= LIVE.closeAt && !STOPPING) doStop('out', true);
 }, 15000);
-// 13 Nov 2026: a class on the timetable now that has not been started: 5 minutes after its start time (or after
-// signing in, if later) a chime and a box, again every 5 minutes until it is started or its time is over.
+// 13 Nov 2026: a class on the timetable now that has not been started: straight after signing in a "Start your class"
+// pop-up with a chime, then "Your class has not started yet" every 5 minutes until it is started or its time is over.
+// (A browser may hold back the very first sound until the teacher's first click on the page; the pop-up shows anyway.)
 // If Edge is behind another window, Edge's own message is used (the Edge button flashes on the taskbar), as for the other reminders.
 var NS = { key: '', at: 0 }, PAGE_T0 = Date.now();
 function nsHit(){
@@ -2343,11 +2336,11 @@ function nsHit(){
     var x = slotNowOf(c); if(x) hit = { c: c, i: i, s: x }; });
   return hit;
 }
-setInterval(function(){
+function nsCheck(){
   if(LIVE || SIGNED_OUT || !PASS || !CLASSES.length || ($('outScr') && $('outScr').style.display === 'flex')){ if(!$('gNoStart').hidden) $('gNoStart').hidden = true; return; }
   var h = nsHit(); if(!h){ NS.key = ''; return; }
   var d = new Date(), p = String(h.s.time).split('-'), st = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime() + tMin(p[0]) * 60000;
-  if(NS.key !== h.c.key){ NS.key = h.c.key; NS.at = Math.max(st, PAGE_T0) + 5 * 60000; }
+  if(NS.key !== h.c.key){ NS.key = h.c.key; NS.at = Date.now(); NS.n = 0; }
   if(Date.now() < NS.at || !$('gNoStart').hidden || document.querySelector('.cc-ov.show') || $('notOv').classList.contains('show')) return;
   NS.at = Date.now() + 5 * 60000;
   try { chime(); } catch(e){}
@@ -2356,8 +2349,10 @@ setInterval(function(){
   gHide();
   $('gNsSub').innerHTML = '<b>' + esc(h.c.module) + '</b> · ' + esc(prettyTime(h.s.time)) + (h.s.room ? ' · Room ' + esc(h.s.room) : '') + ' · ' + h.c.count + ' students';
   $('gNsGo').onclick = function(){ $('gNoStart').hidden = true; var k = CLASSES.findIndex(function(c){ return c.key === h.c.key; }); if(k > -1) startNow(k); };
+  NS.n = (NS.n || 0) + 1; $('gNsIc').textContent = NS.n > 1 ? '⏰' : '🔔'; $('gNsH').textContent = NS.n > 1 ? 'Your class has not started yet' : 'Start your class';
   $('gNoStart').hidden = false;
-}, 15000);
+}
+setInterval(nsCheck, 15000); setTimeout(nsCheck, 2500);
 $('gNsNo').onclick = function(){ $('gNoStart').hidden = true; NS.at = Date.now() + 5 * 60000; };
 
 // ============================================================ fresh class list (group moves, registration, accounts)
