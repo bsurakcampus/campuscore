@@ -2,15 +2,32 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<script>
+/* 10 Nov 2026: the Classroom and the Tutor Portal open on a computer only (phones and small tablets are turned away).
+   The Student and Parent portals are the ones for phones. */
+(function(){
+  var ua = navigator.userAgent || '', sw = Math.min(screen.width || 9999, screen.height || 9999);
+  var phone = /iPhone|iPod|Windows Phone|BlackBerry|IEMobile|Opera Mini/i.test(ua) || (/Android/i.test(ua) && (/Mobile/i.test(ua) || sw < 600)) || (/Mobile/i.test(ua) && sw < 760);
+  if(!phone) return;
+  window.CC_PHONE = true;
+  try { window.stop(); } catch(e){}
+  document.documentElement.innerHTML = '<head><meta name="viewport" content="width=device-width,initial-scale=1"><title>CampusCore</title></head>' +
+    '<body style="margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#0f1e3d;color:#fff;font-family:Arial,Helvetica,sans-serif;text-align:center;padding:28px;box-sizing:border-box">' +
+    '<div style="max-width:360px"><div style="font-size:44px;margin-bottom:12px">🖥️</div><div style="font-size:20px;font-weight:700;margin-bottom:8px">Please use a computer</div>' +
+    '<div style="font-size:15px;line-height:1.6;color:#cbd5e1">The CampusCore Classroom and Tutor Portal open on a computer only: a classroom PC or your laptop.</div>' +
+    '<div style="font-size:13px;line-height:1.6;color:#94a3b8;margin-top:16px">Approving a sign-in on your phone still works as before: just tap the number in the email.</div>' +
+    '<div style="font-size:12px;color:#64748b;margin-top:22px">Bath Spa University - RAK Campus</div></div></body>';
+})();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CampusCore Tutor Portal · Bath Spa University RAK Campus</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700;800&family=Chakra+Petch:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
   --navy:#0f1e3d; --navy2:#1f2f52; --ink:#0f172a; --ink2:#475569; --ink3:#94a3b8; --line:#e2e8f0; --line2:#cbd5e1; --bg:#eef2f7;
   --red:#c8102e; --red-dark:#a50d26; --red-soft:#fdecee; --green:#15803d; --amber:#b45309;
-  --sans:'Inter',system-ui,sans-serif; --mono:'IBM Plex Mono',ui-monospace,monospace; --serif:'Source Serif 4',Georgia,serif;
+  --sans:'Space Grotesk',system-ui,sans-serif; --mono:'JetBrains Mono',ui-monospace,monospace; --serif:'Chakra Petch',Georgia,serif;
 }
 html,body{height:100%;}
 body{font-family:var(--sans);color:var(--ink);background:var(--bg);font-size:14px;}
@@ -20,7 +37,7 @@ button{font-family:inherit;}
 /* ---------- sign-in: the same screen as the Classroom (4 Nov 2026) ---------- */
 #signin{--navy:#14213d; --navy2:#1f2f52; --ink:#0f172a; --muted:#5b6b86; --line:#d8dee9;
   --red:#c8102e; --red-dark:#a50d26; --red-soft:#fdecee; --green:#15803d;
-  --serif:'Source Serif 4',Georgia,serif; --display:'Fraunces',Georgia,serif; --sans:'IBM Plex Sans',system-ui,sans-serif; --mono:'IBM Plex Mono',ui-monospace,monospace;
+  --serif:'Chakra Petch',Georgia,serif; --display:'Chakra Petch',Georgia,serif; --sans:'Space Grotesk',system-ui,sans-serif; --mono:'JetBrains Mono',ui-monospace,monospace;
   font-family:var(--sans);color:var(--ink);background:var(--navy);min-height:100vh;display:flex;}
 #signin.hide{display:none!important;}
 @media (max-width:900px){#signin{flex-direction:column;}}
@@ -31,7 +48,7 @@ button{font-family:inherit;}
 #signin .left::before{content:"";position:absolute;inset:0;pointer-events:none;background:
   repeating-linear-gradient(90deg,rgba(255,255,255,.035) 0 1px,transparent 1px 120px),
   linear-gradient(180deg,rgba(255,255,255,.04),transparent 40%);}
-#signin .logo-tile{position:relative;background:#fff;border-radius:0 0 10px 10px;padding:24px 22px 16px;display:inline-flex;align-items:center;gap:18px;align-self:flex-start;box-shadow:0 14px 40px rgba(0,0,0,.25);min-width:349px;height:164px;}
+#signin .logo-tile{position:relative;background:#fff;border-radius:0;padding:24px 22px 16px;display:inline-flex;align-items:center;gap:18px;align-self:flex-start;box-shadow:0 14px 40px rgba(0,0,0,.25);min-width:349px;height:164px;}
 #signin .logo-tile img{display:block;height:124px;width:auto;}
 #signin .logo-text{display:none;font:600 15px/1.25 var(--serif);color:var(--navy);text-align:center;border-right:1px solid var(--line);padding-right:20px;}
 #signin .logo-tile .t0,#signin .logo-tile .t1,#signin .logo-tile .t2{white-space:nowrap;}
@@ -57,11 +74,11 @@ button{font-family:inherit;}
 #signin .rule-note{display:flex;align-items:center;gap:12px;margin-top:24px;font-size:18px;font-weight:600;line-height:1.4;color:#facc15;white-space:nowrap;}
 #signin .rule-note .ico{flex-shrink:0;width:26px;height:26px;border-radius:50%;border:2px solid #facc15;color:#facc15;font:800 14px var(--sans);display:flex;align-items:center;justify-content:center;}@media (max-width:1400px){ .rule-note{white-space:normal;font-size:16px;} }
 #signin .day{font-size:13px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#9fb0cf;}
-#signin .clock{font:300 84px/1 'DM Mono',var(--mono);letter-spacing:-2px;margin:10px 0 6px;}
+#signin .clock{font:300 84px/1 'JetBrains Mono',var(--mono);letter-spacing:-2px;margin:10px 0 6px;}
 #signin .clock .ampm{font:500 22px var(--sans);letter-spacing:3px;color:#9fb0cf;margin-left:14px;vertical-align:top;}
 #signin .greet{font:500 13px var(--sans);letter-spacing:4px;text-transform:uppercase;color:#9fb0cf;margin-top:14px;}
 #signin .periods{display:flex;gap:6px;margin-top:36px;max-width:620px;}
-#signin .period{flex:1;border-radius:6px;padding:8px 10px;font-size:11.5px;line-height:1.35;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#9fb0cf;}
+#signin .period{flex:1;border-radius:0;padding:8px 10px;font-size:11.5px;line-height:1.35;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#9fb0cf;}
 #signin .period b{display:block;font-family:var(--mono);font-size:12.5px;white-space:nowrap;}
 #signin .period.now{background:var(--red);border-color:var(--red);color:#fff;}
 #signin .period.done{opacity:.45;}
@@ -73,14 +90,14 @@ button{font-family:inherit;}
 #signin h2{font:400 34px var(--display);color:var(--navy);}
 #signin .lead{font-size:14.5px;color:var(--muted);margin:8px 0 28px;line-height:1.6;}
 #signin .field-label{display:block;font-size:11px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--ink);margin-bottom:8px;}
-#signin .email{display:flex;border:1.5px solid var(--line);border-radius:4px;overflow:hidden;background:#fff;transition:border-color .2s,box-shadow .2s;}
+#signin .email{display:flex;border:1.5px solid var(--line);border-radius:0;overflow:hidden;background:#fff;transition:border-color .2s,box-shadow .2s;}
 #signin .email:focus-within{border-color:var(--navy);box-shadow:0 0 0 3px rgba(20,33,61,.12);}
 #signin .email input{flex:1;min-width:0;border:none;outline:none;padding:13px 14px;font:500 15px var(--sans);color:var(--ink);background:transparent;}
 #signin .email span{display:flex;align-items:center;padding:0 14px;background:#eef1f6;color:var(--navy2);font:500 15px var(--sans);border-left:1.5px solid var(--line);}
-#signin .btn{width:100%;border:none;border-radius:4px;padding:15px;font:600 15px var(--sans);cursor:pointer;color:#fff;background:var(--red);margin-top:18px;letter-spacing:.2px;transition:background .15s;}
+#signin .btn{width:100%;border:none;border-radius:0;padding:15px;font:600 15px var(--sans);cursor:pointer;color:#fff;background:var(--red);margin-top:18px;letter-spacing:.2px;transition:background .15s;}
 #signin .btn:hover{background:var(--red-dark);}
 #signin .btn:disabled{background:#e8a3ae;cursor:not-allowed;}
-#signin .err-msg{display:none;background:var(--red-soft);border:1px solid #f3c2ca;border-radius:4px;padding:10px 12px;font-size:13px;color:var(--red-dark);margin-top:14px;line-height:1.5;}
+#signin .err-msg{display:none;background:var(--red-soft);border:1px solid #f3c2ca;border-radius:0;padding:10px 12px;font-size:13px;color:var(--red-dark);margin-top:14px;line-height:1.5;}
 #signin .steps{margin-top:30px;display:grid;gap:12px;}
 #signin .step{display:flex;gap:12px;align-items:flex-start;font-size:13.5px;color:var(--navy2);line-height:1.5;}
 #signin .step i{font-style:normal;flex-shrink:0;width:24px;height:24px;border-radius:50%;background:var(--red-soft);color:var(--red);font:700 12px var(--mono);display:flex;align-items:center;justify-content:center;}
@@ -91,7 +108,7 @@ button{font-family:inherit;}
 #signin .back:hover{color:var(--navy);}
 #signin .sent-to{font-size:14.5px;color:var(--muted);margin:8px 0 22px;line-height:1.6;}
 #signin .sent-to strong{color:var(--ink);}
-#signin .code-box{border:1.5px solid #f3c2ca;background:var(--red-soft);border-radius:8px;padding:16px 20px;display:flex;align-items:center;gap:20px;}
+#signin .code-box{border:1.5px solid #f3c2ca;background:var(--red-soft);border-radius:0;padding:16px 20px;display:flex;align-items:center;gap:20px;}
 #signin .code-lbl{white-space:nowrap;font-size:10.5px;font-weight:700;color:var(--red-dark);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}
 #signin .code-num{font:600 46px/1 var(--mono);color:var(--red);letter-spacing:6px;}
 #signin .code-hint{font-size:13px;color:#7f1d1d;line-height:1.5;}
@@ -114,7 +131,7 @@ button{font-family:inherit;}
 .keep input{width:18px;height:18px;margin-top:2px;flex:none;accent-color:#1d4ed8}
 .keep b{display:block;font-size:13.5px;font-weight:600;color:#0f172a}.keep small{display:block;font-size:12px;color:#64748b;margin-top:2px}
 </style>
-</head>
+<style id="ds2026"> /* CampusCore design system (12 Nov 2026): square corners, technical type */ h1,h2,.ttl,.page-title,.nm2,.calhd b{font-family:'Chakra Petch','Space Grotesk',sans-serif;letter-spacing:.2px} .who .av{border-radius:0!important}.hav{border-radius:0!important}.calhd .hav{border-radius:0!important}.sidebar-avatar{border-radius:0!important}.profile-hero-photo{border-radius:0!important}.profile-photo-large{border-radius:0!important}.sps-photo-circle{border-radius:0!important} .mc{border-radius:50%!important}  /* mark circles stay round */ /* top cards: the person's photo as a full-height 1:1 square on the left edge (as in the Admin Portal) */ .hero2{padding:0 18px 0 0!important;align-items:stretch!important;min-height:92px;flex-wrap:nowrap!important} .hero2>.hav{width:auto!important;height:auto!important;min-height:92px;aspect-ratio:1/1;align-self:stretch;border:0!important;margin:0!important;font-size:28px!important;background-size:cover!important;background-position:center!important} .hero2>*:not(.hav){align-self:center} .sh{padding:0 22px 0 0!important;align-items:stretch!important;min-height:132px;flex-wrap:nowrap!important} .sh>.hav{width:auto!important;height:auto!important;min-height:132px;aspect-ratio:1/1;align-self:stretch;border:0!important;margin:0!important;font-size:38px!important;background-size:cover!important;background-position:center!important} .sh>*:not(.hav){align-self:center;padding:12px 0} .profile-hero{padding:0 24px 0 0!important;align-items:stretch!important;min-height:124px} .profile-hero-photo{width:auto!important;height:auto!important;min-height:124px;aspect-ratio:1/1;align-self:stretch;border:0!important;display:flex!important;align-items:center;justify-content:center;font-size:36px!important;background-size:cover!important;background-position:center!important} .profile-hero-info{align-self:center;padding:14px 0} /* sign-out countdown: the number sits exactly in the middle of the circle */ .g-cnum{display:flex!important;align-items:center;justify-content:center;line-height:1!important;font:700 50px 'Chakra Petch',sans-serif!important;padding:0!important} </style></head>
 <body>
 
 <!-- ============ SIGN-IN ============ -->

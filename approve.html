@@ -5,24 +5,24 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
 <title>CampusCore Sign-In Approval · Bath Spa University RAK Campus</title>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700;800&family=Chakra+Petch:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Sora',sans-serif;background:#f8fafc;color:#0f172a;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:32px 16px;}
-.card{width:100%;max-width:420px;background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:26px 22px;box-shadow:0 4px 20px rgba(15,23,42,0.06);}
+body{font-family:'Space Grotesk',sans-serif;background:#f8fafc;color:#0f172a;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:32px 16px;}
+.card{width:100%;max-width:420px;background:#fff;border:1px solid #e2e8f0;border-radius:0;padding:26px 22px;box-shadow:0 4px 20px rgba(15,23,42,0.06);}
 .logo-row{display:flex;align-items:center;gap:10px;margin-bottom:20px;}
-.logo-mark{width:38px;height:38px;background:#2563eb;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;}
+.logo-mark{width:38px;height:38px;background:#2563eb;border-radius:0;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;}
 .logo-text{font-size:19px;font-weight:700;letter-spacing:-0.3px;}
 .logo-text span{color:#2563eb;}
-.badge{display:inline-flex;align-items:center;gap:6px;border-radius:20px;padding:4px 12px;font-size:11px;font-weight:700;margin-bottom:14px;background:#fef2f2;border:1px solid #fecaca;color:#dc2626;}
+.badge{display:inline-flex;align-items:center;gap:6px;border-radius:0;padding:4px 12px;font-size:11px;font-weight:700;margin-bottom:14px;background:#fef2f2;border:1px solid #fecaca;color:#dc2626;}
 h1{font-size:21px;font-weight:700;line-height:1.25;margin-bottom:8px;}
 p{font-size:13.5px;color:#475569;line-height:1.7;}
 p strong{color:#0f172a;}
-.code-box{border:1.5px solid #fecaca;background:#fef2f2;border-radius:12px;padding:14px 16px;margin:18px 0;display:flex;align-items:center;gap:16px;}
-.code-num{font-family:'DM Mono',monospace;font-size:40px;font-weight:500;color:#dc2626;letter-spacing:4px;line-height:1;}
+.code-box{border:1.5px solid #fecaca;background:#fef2f2;border-radius:0;padding:14px 16px;margin:18px 0;display:flex;align-items:center;gap:16px;}
+.code-num{font-family:'JetBrains Mono',monospace;font-size:40px;font-weight:500;color:#dc2626;letter-spacing:4px;line-height:1;}
 .code-lbl{font-size:10px;font-weight:700;color:#b91c1c;text-transform:uppercase;letter-spacing:0.6px;margin-bottom:4px;}
 .code-hint{font-size:12px;color:#7f1d1d;line-height:1.5;}
-.btn{display:block;width:100%;border:none;border-radius:10px;padding:15px;font-size:15px;font-weight:700;font-family:'Sora',sans-serif;cursor:pointer;margin-bottom:10px;}
+.btn{display:block;width:100%;border:none;border-radius:0;padding:15px;font-size:15px;font-weight:700;font-family:'Space Grotesk',sans-serif;cursor:pointer;margin-bottom:10px;}
 .btn-yes{background:#dc2626;color:#fff;}
 .btn-yes:disabled{background:#fca5a5;}
 .btn-no{background:#fff;color:#475569;border:1.5px solid #cbd5e1;}
@@ -30,20 +30,20 @@ p strong{color:#0f172a;}
 .state .ic{font-size:44px;margin-bottom:10px;}
 .spin{width:28px;height:28px;border:3px solid #e2e8f0;border-top-color:#dc2626;border-radius:50%;animation:spin 0.8s linear infinite;margin:18px auto;}
 @keyframes spin{to{transform:rotate(360deg);}}
-.err{background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:10px 12px;font-size:12.5px;color:#b91c1c;margin-bottom:12px;display:none;}
+.err{background:#fef2f2;border:1px solid #fecaca;border-radius:0;padding:10px 12px;font-size:12.5px;color:#b91c1c;margin-bottom:12px;display:none;}
 .foot{font-size:11px;color:#94a3b8;text-align:center;margin-top:18px;line-height:1.7;}
 .hide{display:none;}
-.cls{border:1.5px solid #bfdbfe;background:#eff6ff;border-radius:10px;padding:11px 13px;margin:12px 0 4px;font-size:13px;color:#1e3a8a;line-height:1.45;}
+.cls{border:1.5px solid #bfdbfe;background:#eff6ff;border-radius:0;padding:11px 13px;margin:12px 0 4px;font-size:13px;color:#1e3a8a;line-height:1.45;}
 .cls b.m{display:block;font-size:16px;color:#0f1e3d;}
 .cls.none{border-color:#fecaca;background:#fef2f2;color:#991b1b;}
 .q{font-size:15px;font-weight:700;text-align:center;margin:16px 0 12px;}
 .choices{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 6px;margin-bottom:14px;}
-.ch{height:72px;border-radius:999px;border:2.5px solid #cbd5e1;background:#fff;font:600 32px 'DM Mono',monospace;color:#0f172a;cursor:pointer;}
+.ch{height:72px;border-radius:0;border:2.5px solid #cbd5e1;background:#fff;font:600 32px 'JetBrains Mono',monospace;color:#0f172a;cursor:pointer;}
 .ch:disabled{opacity:.5;}
 .ch.on{border-color:#16a34a;background:#ecfdf3;color:#166534;opacity:1;}
 .hint{font-size:11.5px;color:#94a3b8;text-align:center;margin-top:4px;}
 </style>
-</head>
+<style id="ds2026"> /* CampusCore design system (12 Nov 2026): square corners, technical type */ h1,h2,.ttl,.page-title,.nm2,.calhd b{font-family:'Chakra Petch','Space Grotesk',sans-serif;letter-spacing:.2px} .who .av{border-radius:0!important}.hav{border-radius:0!important}.calhd .hav{border-radius:0!important}.sidebar-avatar{border-radius:0!important}.profile-hero-photo{border-radius:0!important}.profile-photo-large{border-radius:0!important}.sps-photo-circle{border-radius:0!important} .mc{border-radius:50%!important}  /* mark circles stay round */ /* top cards: the person's photo as a full-height 1:1 square on the left edge (as in the Admin Portal) */ .hero2{padding:0 18px 0 0!important;align-items:stretch!important;min-height:92px;flex-wrap:nowrap!important} .hero2>.hav{width:auto!important;height:auto!important;min-height:92px;aspect-ratio:1/1;align-self:stretch;border:0!important;margin:0!important;font-size:28px!important;background-size:cover!important;background-position:center!important} .hero2>*:not(.hav){align-self:center} .sh{padding:0 22px 0 0!important;align-items:stretch!important;min-height:132px;flex-wrap:nowrap!important} .sh>.hav{width:auto!important;height:auto!important;min-height:132px;aspect-ratio:1/1;align-self:stretch;border:0!important;margin:0!important;font-size:38px!important;background-size:cover!important;background-position:center!important} .sh>*:not(.hav){align-self:center;padding:12px 0} .profile-hero{padding:0 24px 0 0!important;align-items:stretch!important;min-height:124px} .profile-hero-photo{width:auto!important;height:auto!important;min-height:124px;aspect-ratio:1/1;align-self:stretch;border:0!important;display:flex!important;align-items:center;justify-content:center;font-size:36px!important;background-size:cover!important;background-position:center!important} .profile-hero-info{align-self:center;padding:14px 0} /* sign-out countdown: the number sits exactly in the middle of the circle */ .g-cnum{display:flex!important;align-items:center;justify-content:center;line-height:1!important;font:700 50px 'Chakra Petch',sans-serif!important;padding:0!important} </style></head>
 <body>
 <div class="card">
   <div class="logo-row"><div class="logo-mark">CC</div><div class="logo-text">Campus<span>Core</span></div></div>
@@ -128,7 +128,7 @@ function esc(x){ return String(x == null ? '' : x).replace(/[&<>"']/g, function(
       if(!data || data.status !== 'pending'){ byStatusAll(data && data.status); return; }
       document.getElementById('ask-email').textContent = data.maskedEmail || E || 'your BSU email';
       var c = data.cls, box = document.getElementById('ask-cls');
-      if(data.portal === 'tutor'){ tutorWording(); box.style.display = 'none'; if(data.keep){ var kp = document.createElement('p'); kp.className = 'keepw'; kp.innerHTML = '🔒 That computer will <b>stay signed in for 30 days</b>. Approve only if it is <b>your own computer</b>.'; kp.style.cssText = 'background:#fffbeb;border:1px solid #fde68a;color:#78350f;border-radius:10px;padding:10px 12px;font-size:14px;line-height:1.5;margin:10px 0'; var q0 = document.querySelector('#v-ask .q'); if(q0) q0.parentNode.insertBefore(kp, q0); } }
+      if(data.portal === 'tutor'){ tutorWording(); box.style.display = 'none'; if(data.keep){ var kp = document.createElement('p'); kp.className = 'keepw'; kp.innerHTML = '🔒 That computer will <b>stay signed in for 30 days</b>. Approve only if it is <b>your own computer</b>.'; kp.style.cssText = 'background:#fffbeb;border:1px solid #fde68a;color:#78350f;border-radius:0;padding:10px 12px;font-size:14px;line-height:1.5;margin:10px 0'; var q0 = document.querySelector('#v-ask .q'); if(q0) q0.parentNode.insertBefore(kp, q0); } }
       else if(c){ box.innerHTML = '<b class="m">' + esc(c.module) + '</b>' + esc(c.groups) + '<br><b>Room ' + esc(c.room || '-') + ' · ' + esc(c.time) + '</b>'; }
       else { box.className = 'cls none'; box.innerHTML = '<b>You have no class on the timetable right now.</b> If you are not at a classroom PC, do not approve.'; }
       var ch = document.getElementById('choices');
