@@ -23,12 +23,19 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:'Space Grotesk',
 .big{font-weight:700;font-size:17px}
 .sub{color:var(--ink3);font-size:13px}
 .opts{display:grid;gap:8px}
-.opt{display:flex;gap:12px;align-items:flex-start;border:1.5px solid var(--line);padding:12px;cursor:pointer;background:#fff}
+.optw{border:1.5px solid var(--line);background:#fff}
+.optw.on{border-color:var(--navy);background:#f8fafc}
+.optw.off{opacity:.45}
+.opt{display:flex;gap:12px;align-items:flex-start;padding:12px;cursor:pointer}
+.pk{padding:0 12px 12px 42px}
+.pk:empty{display:none}
+.pk .cls{margin-top:0}
+.pk .sum:first-child{margin:0 0 8px}
+@media (max-width:480px){ .pk{padding:0 10px 10px 10px} }
 .opt input{margin-top:4px;width:18px;height:18px;accent-color:var(--navy)}
 .opt b{display:block;font-size:15px}
 .opt span{font-size:13px;color:var(--ink3)}
-.opt.on{border-color:var(--navy);background:#f8fafc}
-.opt.off{opacity:.45;cursor:not-allowed}
+.opt.off{cursor:not-allowed}
 .cls{display:grid;gap:6px;margin-top:10px}
 .row{display:flex;justify-content:space-between;gap:10px;align-items:center;border:1px solid var(--line);padding:10px 12px;background:#fff}
 .row.sel{border-color:var(--navy);background:#f8fafc}
@@ -132,9 +139,9 @@ function draw(note){
   if(left <= 0){ show(h + msg('in', 'All ' + D.max + ' requests for this semester have been used. Please speak to your Programme Leader.')); return; }
   var dc = dayClasses(), dayAsk = dc.filter(function(c){ return c.st !== 'P' && c.st !== 'E' && !c.busy; });
   h += '<div class="card"><div class="lab">What does this cover?</div><div class="opts">' +
-    opt('class', 'One class', 'Choose the class below', !dayAsk.length) +
+    opt('class', 'One class', 'Choose the class', !dayAsk.length) +
     opt('day', 'The whole day', 'Every class on ' + esc(D.dayTxt.replace(/ \d{4}$/, '')), !dayAsk.length) +
-    opt('days', 'Several days', 'For example a medical leave · up to ' + D.maxDays + ' days in the last 10', false) + '</div><div id="pick"></div></div>';
+    opt('days', 'Several days', 'For example a medical leave · up to ' + D.maxDays + ' days in the last 10', false) + '</div></div>';
   h += '<div class="card"><div class="lab" id="tlab">Your request</div><textarea id="tx" maxlength="600" placeholder="Please explain, for example what happened and when."></textarea><div class="cnt"><span id="txn">0</span> / 600</div>' +
     '<div class="lab" style="margin-top:12px">Document (optional)</div><div class="file"><button type="button" class="fbtn" id="fb">＋ Add a photo or PDF</button><span class="sub" id="fn">PDF, JPG or PNG · up to 5 MB</span><input type="file" id="fi" accept="application/pdf,image/jpeg,image/png" class="hide"></div>' +
     '<div class="lab" style="margin-top:14px">Who is asking?</div><div class="seg" id="by"><button type="button" class="on" data-b="Parent">Parent</button><button type="button" data-b="Student">Student</button></div></div>';
@@ -143,9 +150,10 @@ function draw(note){
   show(h);
   wire();
 }
-function opt(k, t, s, off){ return '<label class="opt' + (off ? ' off' : '') + '" data-k="' + k + '"><input type="radio" name="k" value="' + k + '"' + (off ? ' disabled' : '') + '><div><b>' + t + '</b><span>' + s + (off ? ' · nothing to ask on this day' : '') + '</span></div></label>'; }
+// 15 Nov 2026: each choice opens its classes or days INSIDE its own box (as in the agreed mock), not below all three
+function opt(k, t, s, off){ return '<div class="optw' + (off ? ' off' : '') + '" data-k="' + k + '"><label class="opt' + (off ? ' off' : '') + '"><input type="radio" name="k" value="' + k + '"' + (off ? ' disabled' : '') + '><div><b>' + t + '</b><span>' + s + (off ? ' · nothing to ask on this day' : '') + '</span></div></label><div class="pk" id="pk_' + k + '"></div></div>'; }
 function wire(){
-  [].forEach.call(document.querySelectorAll('.opt input'), function(i){ i.onchange = function(){ KIND = i.value; SID = ''; DAYS = {}; [].forEach.call(document.querySelectorAll('.opt'), function(o){ o.classList.toggle('on', o.dataset.k === KIND); }); drawPick(); }; });
+  [].forEach.call(document.querySelectorAll('.opt input'), function(i){ i.onchange = function(){ KIND = i.value; SID = ''; DAYS = {}; [].forEach.call(document.querySelectorAll('.optw'), function(o){ o.classList.toggle('on', o.dataset.k === KIND); }); drawPick(); }; });
   $('tx').oninput = function(){ $('txn').textContent = this.value.length; state(); };
   $('fb').onclick = function(){ $('fi').click(); };
   $('fi').onchange = function(){ var f = this.files[0]; DOC = null; if(!f){ $('fn').textContent = 'PDF, JPG or PNG · up to 5 MB'; return; }
@@ -167,14 +175,16 @@ function drawPick(){
       return '<div class="row' + (inn ? '' : ' dis') + '"><div class="t"><b>' + esc(c.module) + '</b><span>' + esc(c.time) + (c.busy ? ' · already asked' : !inn ? ' · stays as it is' : '') + '</span></div>' + mk(c.st) + '</div>'; }).join('') + '</div>';
     $('tlab').textContent = 'Reason for the day\'s leave';
   } else if(KIND === 'days'){
+    $('tlab').textContent = 'Reason for leave';
     var byDay = {}; D.classes.forEach(function(c){ (byDay[c.date] = byDay[c.date] || []).push(c); });
     var days = []; for(var d = D.to; d >= D.from; d = prevDay(d)) days.push(d);
-    h = '<div class="sub" style="margin:10px 0 6px">Choose up to ' + D.maxDays + ' days. Days with no absence or late mark cannot be chosen.</div><div class="cls" id="dl">' + days.map(function(d){
+    h = '<div class="sub" style="margin:0 0 6px">Choose up to ' + D.maxDays + ' days. Days with no absence or late mark cannot be chosen.</div><div class="cls" id="dl">' + days.map(function(d){
       var L = byDay[d] || [], ask = L.filter(function(c){ return (c.st === 'A' || c.st === 'L') && !c.busy; }), off = !ask.length, lab = L.length ? L[0].dTxt : fmtDay(d);
       return '<label class="day' + (off ? ' dis' : '') + '" data-d="' + d + '"><input type="checkbox" value="' + d + '"' + (off ? ' disabled' : '') + '><div class="t"><b>' + esc(lab) + '</b><span>' + (L.length ? L.length + ' class' + (L.length === 1 ? '' : 'es') + (off ? ' · nothing to ask' : '') : 'no classes') + '</span></div><div class="ms">' + L.map(function(c){ return mk(c.st); }).join('') + '</div></label>'; }).join('') + '</div><div class="sum" id="dsum">Leave applied: 0 days</div>';
   }
-  $('pick').innerHTML = h;
-  if(KIND === 'class') [].forEach.call(document.querySelectorAll('input[name=sid]'), function(i){ i.onchange = function(){ SID = i.value; [].forEach.call(document.querySelectorAll('#pick .row'), function(r){ r.classList.toggle('sel', !!r.querySelector('input:checked')); }); state(); }; });
+  [].forEach.call(document.querySelectorAll('.pk'), function(x){ x.innerHTML = ''; });
+  if(KIND) $('pk_' + KIND).innerHTML = h;
+  if(KIND === 'class') [].forEach.call(document.querySelectorAll('input[name=sid]'), function(i){ i.onchange = function(){ SID = i.value; [].forEach.call(document.querySelectorAll('.pk .row'), function(r){ r.classList.toggle('sel', !!r.querySelector('input:checked')); }); state(); }; });
   if(KIND === 'days') $('dl').onchange = function(e){ var i = e.target; if(i.type !== 'checkbox') return;
     if(i.checked && Object.keys(DAYS).length >= D.maxDays){ i.checked = false; err('At most ' + D.maxDays + ' days can be chosen.'); return; }
     if(i.checked) DAYS[i.value] = 1; else delete DAYS[i.value]; i.closest('.day').classList.toggle('sel', i.checked); daySum(); state(); };
