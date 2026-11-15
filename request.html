@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>Request a review or apply leave · Bath Spa University RAK Campus</title>
+<link rel="icon" href="CampusCore.ico">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&family=Chakra+Petch:wght@600;700&display=swap" rel="stylesheet">
+<style>
+/* 14 Nov 2026: the family page for attendance review and leave requests. It holds no data: everything comes from
+   CampusCore with the signed link in the attendance email (?t=...) or the rating star link (?r=...&s=...). */
+:root{--navy:#0f1e3d;--blue:#1d4ed8;--ink:#0f172a;--ink2:#334155;--ink3:#64748b;--line:#e2e8f0;--bg:#eef2f7;--green:#15803d;--amber:#b45309;--red:#dc2626;--purple:#7c3aed}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Space Grotesk',Arial,sans-serif;font-size:15px;line-height:1.5}
+.hd{background:var(--navy);color:#fff;padding:16px 18px}
+.hd b{display:block;font:700 19px 'Chakra Petch','Space Grotesk',sans-serif;letter-spacing:.2px}
+.hd span{display:block;font:600 11px 'JetBrains Mono',monospace;color:#94a3b8;letter-spacing:1.2px;margin-top:3px}
+.wrap{max-width:640px;margin:0 auto;padding:16px}
+.card{background:#fff;border:1px solid var(--line);padding:16px;margin:0 0 14px}
+.lab{font:700 11px 'JetBrains Mono',monospace;letter-spacing:1px;text-transform:uppercase;color:var(--ink3);margin:0 0 6px}
+.big{font-weight:700;font-size:17px}
+.sub{color:var(--ink3);font-size:13px}
+.opts{display:grid;gap:8px}
+.opt{display:flex;gap:12px;align-items:flex-start;border:1.5px solid var(--line);padding:12px;cursor:pointer;background:#fff}
+.opt input{margin-top:4px;width:18px;height:18px;accent-color:var(--navy)}
+.opt b{display:block;font-size:15px}
+.opt span{font-size:13px;color:var(--ink3)}
+.opt.on{border-color:var(--navy);background:#f8fafc}
+.opt.off{opacity:.45;cursor:not-allowed}
+.cls{display:grid;gap:6px;margin-top:10px}
+.row{display:flex;justify-content:space-between;gap:10px;align-items:center;border:1px solid var(--line);padding:10px 12px;background:#fff}
+.row.sel{border-color:var(--navy);background:#f8fafc}
+.row label{display:flex;gap:10px;align-items:center;cursor:pointer;flex:1;min-width:0}
+.row input{width:18px;height:18px;accent-color:var(--navy);flex:0 0 auto}
+.row .t{min-width:0}.row .t b{display:block;font-size:14.5px}.row .t span{font-size:12.5px;color:var(--ink3)}
+.row.dis{opacity:.5}
+.mk{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;border:1.5px solid;font:700 12px 'JetBrains Mono',monospace;flex:0 0 auto}
+.mk.P{color:var(--green);background:#f0fdf4}.mk.L{color:var(--amber);background:#fffbeb}.mk.A{color:var(--red);background:#fef2f2}.mk.E{color:var(--purple);background:#f5f3ff}
+.day{display:flex;gap:10px;align-items:center;border:1px solid var(--line);padding:10px 12px;background:#fff;cursor:pointer}
+.day.sel{border-color:var(--navy);background:#f8fafc}.day.dis{opacity:.45;cursor:not-allowed}
+.day input{width:18px;height:18px;accent-color:var(--navy)}
+.day .t{flex:1}.day .t b{font-size:14.5px}.day .t span{display:block;font-size:12.5px;color:var(--ink3)}
+.day .ms{display:flex;gap:3px;flex-wrap:wrap;justify-content:flex-end}.day .ms .mk{width:22px;height:22px;font-size:10px}
+.sum{background:#f8fafc;border:1px solid var(--line);padding:10px 12px;margin-top:10px;font-weight:600}
+.sum div+div{margin-top:2px}
+textarea{width:100%;border:1.5px solid #cbd5e1;padding:12px;font:15px 'Space Grotesk',Arial,sans-serif;min-height:110px;resize:vertical}
+textarea:focus{outline:none;border-color:var(--navy)}
+.cnt{font:500 11px 'JetBrains Mono',monospace;color:var(--ink3);text-align:right;margin-top:4px}
+.file{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.fbtn{border:1.5px dashed #94a3b8;background:#fff;padding:10px 14px;font:600 14px 'Space Grotesk',sans-serif;cursor:pointer;color:var(--ink2)}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.seg button{border:1.5px solid var(--line);background:#fff;padding:12px;font:700 15px 'Space Grotesk',sans-serif;cursor:pointer;color:var(--ink)}
+.seg button.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.go{display:block;width:100%;border:0;background:var(--blue);color:#fff;font:700 17px 'Space Grotesk',sans-serif;padding:16px;cursor:pointer}
+.go[disabled]{opacity:.55;cursor:wait}
+.msg{padding:12px 14px;margin:0 0 14px;font-size:14.5px}
+.msg.ok{background:#ecfdf3;border:1px solid #86efac;color:#166534}
+.msg.er{background:#fef2f2;border:1px solid #fca5a5;color:#991b1b}
+.msg.in{background:#eff6ff;border:1px solid #bfdbfe;color:#1e3a8a}
+.st{display:inline-block;font:700 11px 'JetBrains Mono',monospace;letter-spacing:.6px;padding:3px 8px;border:1px solid;text-transform:uppercase}
+.st.w{color:#92400e;border-color:#fcd34d;background:#fffbeb}.st.d{color:#166534;border-color:#86efac;background:#f0fdf4}
+.stars{display:flex;justify-content:center;gap:6px;margin:8px 0}
+.stars button{border:0;background:none;font-size:42px;line-height:1;color:#cbd5e1;cursor:pointer;padding:0 2px}
+.stars button.on{color:#f59e0b}
+.foot{font-size:12px;color:var(--ink3);text-align:center;margin:18px 0 30px;line-height:1.6}
+.hide{display:none!important}
+</style>
+</head>
+<body>
+<div class="hd"><b>Request a review or apply leave</b><span>BATH SPA UNIVERSITY · RAK CAMPUS</span></div>
+<div class="wrap" id="app"><div class="card">Loading…</div></div>
+<div class="foot">Attendance requests · CampusCore<br>Questions: academics@bathspa.ae</div>
+<script>
+(function(){
+var API = 'https://script.google.com/macros/s/AKfycbycKFnbEm2aXY6JJ8QS-x-vUQMAcqp800afJhejux9UofP1YfK49AxoTG8cXMORzZby/exec';
+var Q = new URLSearchParams(location.search), T = Q.get('t') || '', R = Q.get('r') || '', S0 = Number(Q.get('s') || 0);
+var D = null, KIND = '', SID = '', DAYS = {}, BY = 'Parent', DOC = null, RATE = { s: 0, c: '' };
+function $(i){ return document.getElementById(i); }
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+var MK = { P: 'Present', L: 'Late', A: 'Absent', E: 'Excused' };
+function mk(m){ return m ? '<span class="mk ' + m + '" title="' + MK[m] + '">' + m + '</span>' : ''; }
+function show(h){ $('app').innerHTML = h; scrollTo(0, 0); }
+function msg(kind, t){ return '<div class="msg ' + kind + '">' + t + '</div>'; }
+function get(qs){ return fetch(API + '?' + qs + '&_=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.json(); }); }
+function post(o){ return fetch(API, { method: 'POST', body: JSON.stringify(o) }).then(function(r){ return r.json(); }); }
+
+// ---------------------------------------------------------------- rating (from the outcome email)
+if(R){
+  if(!(S0 >= 1 && S0 <= 5)) S0 = 0;
+  get('action=attqRate&r=' + encodeURIComponent(R)).then(function(j){
+    if(j.status !== 'ok') return show(msg('er', esc(j.message || 'This link is not valid.')));
+    RATE = { s: S0 || j.data.stars || 0, c: j.data.comment || '', id: j.data.id, saved: j.data.stars || 0 }; drawRate('');
+  }).catch(function(){ show(msg('er', 'CampusCore could not be reached. Please check your connection and try again.')); });
+  return;
+}
+function drawRate(note){
+  show((note || '') + '<div class="card" style="text-align:center"><div class="lab">Request ' + esc(RATE.id) + '</div><div class="big">' + (RATE.saved ? 'Thank you for your rating' : 'How was your experience?') + '</div>' +
+    '<div class="stars" id="stars">' + [1, 2, 3, 4, 5].map(function(n){ return '<button type="button" data-n="' + n + '" class="' + (n <= RATE.s ? 'on' : '') + '" aria-label="' + n + ' star' + (n > 1 ? 's' : '') + '">★</button>'; }).join('') + '</div>' +
+    '<div class="sub">' + (RATE.saved ? 'Tap a star to change it, then press Send.' : 'Check the stars, add a comment if you like, then press Send.') + '</div></div>' +
+    '<div class="card"><div class="lab">A short comment (optional)</div><textarea id="rc" maxlength="300" placeholder="What went well, or what could be better?">' + esc(RATE.c) + '</textarea><div class="cnt"><span id="rcn">' + RATE.c.length + '</span> / 300</div>' +
+    '<button class="go" id="rgo" style="margin-top:10px">Send rating</button></div>');
+  $('stars').onclick = function(e){ var b = e.target.closest('button'); if(!b) return; RATE.s = +b.dataset.n; [].forEach.call(this.children, function(x){ x.classList.toggle('on', +x.dataset.n <= RATE.s); }); };
+  $('rc').oninput = function(){ $('rcn').textContent = this.value.length; };
+  $('rgo').onclick = function(){ if(!RATE.s) return drawRate(msg('er', 'Please tap 1 to 5 stars.')); var btn = this; btn.disabled = true; btn.textContent = 'Sending…';
+    post({ action: 'attqRateNote', r: R, s: RATE.s, comment: $('rc').value }).then(function(j){
+      if(j.status !== 'ok'){ btn.disabled = false; btn.textContent = 'Send rating'; return drawRate(msg('er', esc(j.message))); }
+      RATE.c = j.data.comment; RATE.saved = j.data.stars; drawRate(msg('ok', 'Thank you. Your rating has been saved.'));
+    }).catch(function(){ btn.disabled = false; btn.textContent = 'Send rating'; drawRate(msg('er', 'CampusCore could not be reached. Please try again.')); }); };
+}
+
+// ---------------------------------------------------------------- the request
+if(!T){ show(msg('er', 'This page opens from the button in your attendance email.')); return; }
+function load(note){
+  get('action=attqInfo&t=' + encodeURIComponent(T)).then(function(j){
+    if(j.status !== 'ok') return show(msg('er', esc(j.message || 'This link is not valid.')));
+    D = j.data; draw(note || '');
+  }).catch(function(){ show(msg('er', 'CampusCore could not be reached. Please check your connection and try again.')); });
+}
+function dayClasses(){ return D.classes.filter(function(c){ return c.date === D.day; }); }
+function draw(note){
+  var h = note || '';
+  h += '<div class="card"><div class="lab">The day</div><div class="big">' + esc(D.dayTxt) + '</div><div class="sub">' + esc(D.name) + ' · ID ending ' + esc(D.idEnd) + '</div></div>';
+  if(D.requests.length) h += '<div class="card"><div class="lab">Requests from this email</div>' + D.requests.map(function(q){
+    var dn = /decided/i.test(q.status);
+    return '<div style="border-top:1px solid var(--line);padding:10px 0 4px"><div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><b>' + esc(q.id) + ' · ' + esc(q.kind) + '</b><span class="st ' + (dn ? 'd' : 'w') + '">' + esc(q.status) + '</span></div>' +
+      '<div class="sub">Sent ' + esc(q.created) + '</div>' + q.classes.map(function(c){ return '<div class="sub" style="display:flex;gap:6px;align-items:center;margin-top:4px">' + mk(c.was) + (c.now && c.now !== c.was ? ' → ' + mk(c.now) : '') + ' ' + esc(c.dTxt) + ' · ' + esc(c.module) + '</div>'; }).join('') + '</div>';
+  }).join('') + '</div>';
+  if(D.expired){ show(h + msg('in', 'This link has closed. For a new request, please speak to your Programme Leader.')); return; }
+  var left = D.max - D.used;
+  if(left <= 0){ show(h + msg('in', 'All ' + D.max + ' requests for this semester have been used. Please speak to your Programme Leader.')); return; }
+  var dc = dayClasses(), dayAsk = dc.filter(function(c){ return c.st !== 'P' && c.st !== 'E' && !c.busy; });
+  h += '<div class="card"><div class="lab">What does this cover?</div><div class="opts">' +
+    opt('class', 'One class', 'Choose the class below', !dayAsk.length) +
+    opt('day', 'The whole day', 'Every class on ' + esc(D.dayTxt.replace(/ \d{4}$/, '')), !dayAsk.length) +
+    opt('days', 'Several days', 'For example a medical leave · up to ' + D.maxDays + ' days in the last 10', false) + '</div><div id="pick"></div></div>';
+  h += '<div class="card"><div class="lab" id="tlab">Your request</div><textarea id="tx" maxlength="600" placeholder="Please explain, for example what happened and when."></textarea><div class="cnt"><span id="txn">0</span> / 600</div>' +
+    '<div class="lab" style="margin-top:12px">Document (optional)</div><div class="file"><button type="button" class="fbtn" id="fb">＋ Add a photo or PDF</button><span class="sub" id="fn">PDF, JPG or PNG · up to 5 MB</span><input type="file" id="fi" accept="application/pdf,image/jpeg,image/png" class="hide"></div>' +
+    '<div class="lab" style="margin-top:14px">Who is asking?</div><div class="seg" id="by"><button type="button" class="on" data-b="Parent">Parent</button><button type="button" data-b="Student">Student</button></div></div>';
+  h += '<div id="er"></div><button class="go" id="go" disabled>Choose what this covers</button>' +
+    '<p class="sub" style="text-align:center;margin:10px 0 0">You will get an email with the decision. Requests used this semester: <b>' + D.used + ' of ' + D.max + '</b>.</p>';
+  show(h);
+  wire();
+}
+function opt(k, t, s, off){ return '<label class="opt' + (off ? ' off' : '') + '" data-k="' + k + '"><input type="radio" name="k" value="' + k + '"' + (off ? ' disabled' : '') + '><div><b>' + t + '</b><span>' + s + (off ? ' · nothing to ask on this day' : '') + '</span></div></label>'; }
+function wire(){
+  [].forEach.call(document.querySelectorAll('.opt input'), function(i){ i.onchange = function(){ KIND = i.value; SID = ''; DAYS = {}; [].forEach.call(document.querySelectorAll('.opt'), function(o){ o.classList.toggle('on', o.dataset.k === KIND); }); drawPick(); }; });
+  $('tx').oninput = function(){ $('txn').textContent = this.value.length; state(); };
+  $('fb').onclick = function(){ $('fi').click(); };
+  $('fi').onchange = function(){ var f = this.files[0]; DOC = null; if(!f){ $('fn').textContent = 'PDF, JPG or PNG · up to 5 MB'; return; }
+    if(['application/pdf', 'image/jpeg', 'image/png'].indexOf(f.type) < 0){ $('fn').textContent = 'Please choose a PDF, JPG or PNG.'; this.value = ''; return; }
+    if(f.size > 5 * 1024 * 1024){ $('fn').textContent = 'That file is larger than 5 MB.'; this.value = ''; return; }
+    var rd = new FileReader(); rd.onload = function(){ DOC = { name: f.name, type: f.type, b64: String(rd.result).split(',')[1] }; $('fn').textContent = '✓ ' + f.name; }; rd.readAsDataURL(f); };
+  $('by').onclick = function(e){ var b = e.target.closest('button'); if(!b) return; BY = b.dataset.b; [].forEach.call(this.children, function(x){ x.classList.toggle('on', x === b); }); };
+  $('go').onclick = send;
+}
+function drawPick(){
+  var h = '', dc = dayClasses();
+  if(KIND === 'class'){
+    h = '<div class="cls">' + dc.map(function(c){ var off = c.st === 'P' || c.st === 'E' || c.busy;
+      return '<div class="row' + (off ? ' dis' : '') + '"><label><input type="radio" name="sid" value="' + esc(c.sid) + '"' + (off ? ' disabled' : '') + '><div class="t"><b>' + esc(c.module) + '</b><span>' + esc(c.time) + (c.tutor ? ' · ' + esc(c.tutor) : '') + (c.busy ? ' · already asked (' + esc(c.busy) + ')' : c.st === 'P' ? ' · present' : '') + '</span></div></label>' + mk(c.st) + '</div>'; }).join('') + '</div>';
+    $('tlab').textContent = 'Your request';
+  } else if(KIND === 'day'){
+    var cov = dc.filter(function(c){ return c.st === 'A' || c.st === 'L'; }).filter(function(c){ return !c.busy; });
+    h = '<div class="sum"><div>Covers: ' + cov.length + ' class' + (cov.length === 1 ? '' : 'es') + '</div></div><div class="cls">' + dc.map(function(c){ var inn = (c.st === 'A' || c.st === 'L') && !c.busy;
+      return '<div class="row' + (inn ? '' : ' dis') + '"><div class="t"><b>' + esc(c.module) + '</b><span>' + esc(c.time) + (c.busy ? ' · already asked' : !inn ? ' · stays as it is' : '') + '</span></div>' + mk(c.st) + '</div>'; }).join('') + '</div>';
+    $('tlab').textContent = 'Reason for the day\'s leave';
+  } else if(KIND === 'days'){
+    var byDay = {}; D.classes.forEach(function(c){ (byDay[c.date] = byDay[c.date] || []).push(c); });
+    var days = []; for(var d = D.to; d >= D.from; d = prevDay(d)) days.push(d);
+    h = '<div class="sub" style="margin:10px 0 6px">Choose up to ' + D.maxDays + ' days. Days with no absence or late mark cannot be chosen.</div><div class="cls" id="dl">' + days.map(function(d){
+      var L = byDay[d] || [], ask = L.filter(function(c){ return (c.st === 'A' || c.st === 'L') && !c.busy; }), off = !ask.length, lab = L.length ? L[0].dTxt : fmtDay(d);
+      return '<label class="day' + (off ? ' dis' : '') + '" data-d="' + d + '"><input type="checkbox" value="' + d + '"' + (off ? ' disabled' : '') + '><div class="t"><b>' + esc(lab) + '</b><span>' + (L.length ? L.length + ' class' + (L.length === 1 ? '' : 'es') + (off ? ' · nothing to ask' : '') : 'no classes') + '</span></div><div class="ms">' + L.map(function(c){ return mk(c.st); }).join('') + '</div></label>'; }).join('') + '</div><div class="sum" id="dsum">Leave applied: 0 days</div>';
+  }
+  $('pick').innerHTML = h;
+  if(KIND === 'class') [].forEach.call(document.querySelectorAll('input[name=sid]'), function(i){ i.onchange = function(){ SID = i.value; [].forEach.call(document.querySelectorAll('#pick .row'), function(r){ r.classList.toggle('sel', !!r.querySelector('input:checked')); }); state(); }; });
+  if(KIND === 'days') $('dl').onchange = function(e){ var i = e.target; if(i.type !== 'checkbox') return;
+    if(i.checked && Object.keys(DAYS).length >= D.maxDays){ i.checked = false; err('At most ' + D.maxDays + ' days can be chosen.'); return; }
+    if(i.checked) DAYS[i.value] = 1; else delete DAYS[i.value]; i.closest('.day').classList.toggle('sel', i.checked); daySum(); state(); };
+  state();
+}
+function prevDay(d){ var x = new Date(d + 'T12:00:00Z'); x.setUTCDate(x.getUTCDate() - 1); return x.toISOString().slice(0, 10); }
+function fmtDay(d){ var x = new Date(d + 'T12:00:00Z'); return ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][x.getUTCDay()] + ' ' + x.getUTCDate() + ' ' + ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][x.getUTCMonth()]; }
+function daySum(){ var n = Object.keys(DAYS).length, cov = D.classes.filter(function(c){ return DAYS[c.date] && (c.st === 'A' || c.st === 'L') && !c.busy; }).length;
+  $('dsum').innerHTML = '<div>Leave applied: ' + n + ' day' + (n === 1 ? '' : 's') + '</div><div>Covers: ' + cov + ' class' + (cov === 1 ? '' : 'es') + '</div>';
+  $('tlab').textContent = n > 1 ? 'Reason for ' + n + ' days leave' : 'Reason for leave'; }
+function state(){
+  var g = $('go'), t = ($('tx').value || '').trim().length, ready = KIND === 'class' ? !!SID : KIND === 'day' ? true : KIND === 'days' ? Object.keys(DAYS).length >= 2 : false;
+  g.textContent = !KIND ? 'Choose what this covers' : KIND === 'class' ? 'Send request' : 'Apply for leave';
+  g.disabled = !(ready && t >= 5);
+}
+function err(t){ $('er').innerHTML = t ? msg('er', esc(t)) : ''; }
+function send(){
+  var g = $('go'); g.disabled = true; g.textContent = 'Sending…'; err('');
+  var o = { action: 'attqSubmit', t: T, kind: KIND, sid: SID, days: Object.keys(DAYS).sort(), text: $('tx').value, by: BY };
+  if(DOC) o.doc = DOC;
+  post(o).then(function(j){
+    if(j.status !== 'ok'){ err(j.message || 'The request could not be sent.'); state(); return; }
+    KIND = ''; SID = ''; DAYS = {}; DOC = null;
+    load(msg('ok', '<b>Request ' + esc(j.data.id) + ' sent.</b> We have emailed you a receipt. You will get an email with the decision.'));
+  }).catch(function(){ err('CampusCore could not be reached. Please check your connection and try again.'); state(); });
+}
+load();
+})();
+</script>
+</body>
+</html>

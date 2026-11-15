@@ -180,6 +180,7 @@ table.reg{border-collapse:separate;border-spacing:0;min-width:100%;font-size:12p
 .circ.P{color:var(--green);border-color:var(--green);background:var(--green-bg)}
 .circ.L{color:var(--amber);border-color:var(--amber);background:var(--amber-bg)}
 .circ.A{color:var(--red);border-color:var(--red);background:var(--red-bg)}
+.circ.E{color:#7c3aed;border-color:#7c3aed;background:#f5f3ff}  /* 14 Nov 2026: excused after a request (counts 50%) */
 .circ.n{color:var(--ink3);border-color:var(--line2);border-style:dashed}
 .pct{font-family:var(--mono);font-weight:700}
 .dates{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:0 0 10px}.dl{font-size:12px;font-weight:700;color:var(--ink2);margin-right:4px}
@@ -592,7 +593,7 @@ table.mt{border-collapse:separate;border-spacing:0;font-size:12px}
 .c32{border-right:1px solid #e2e8f0;text-align:center;padding:4px 0 3px;min-width:0}.c32:last-child{border-right:0}
 .c32 .v{display:flex;align-items:center;justify-content:flex-start;height:60px;width:100%;writing-mode:vertical-rl;transform:rotate(180deg);font-size:9px;color:var(--ink2);font-weight:500;white-space:nowrap;line-height:1}
 .c32 .v i{font-style:normal;color:var(--ink3);font-weight:400;margin-top:4px}
-.c32 .mk{display:block;font:800 13px var(--mono);margin-top:4px;height:16px}.c32.P .mk{color:#16a34a}.c32.L .mk{color:#d97706}.c32.A .mk{color:#dc2626}.c32.A{background:#fef2f2}
+.c32 .mk{display:block;font:800 13px var(--mono);margin-top:4px;height:16px}.c32.P .mk{color:#16a34a}.c32.L .mk{color:#d97706}.c32.A .mk{color:#dc2626}.c32.A{background:#fef2f2}.c32.E .mk{color:#7c3aed}.c32.E{background:#f5f3ff}
 .c32.e{background:#fafbfc}
 /* 23 Oct v2: teaching weeks as columns (Week 1 on the left), each module's classes that week as letters, then the exact absent / late dates */
 .cgw{overflow-x:auto;border:1px solid var(--line);border-radius:0;margin-bottom:8px}
@@ -603,7 +604,7 @@ table.mt{border-collapse:separate;border-spacing:0;font-size:12px}
 .cg .mn{text-align:left;padding:5px 10px;font-weight:700;color:var(--ink);font-size:12px}
 .cg .mn small{display:block;font-weight:500;color:var(--ink3);font-size:10.5px}
 .cg .pc{font:700 12.5px var(--mono)}
-.cg td.wk{font:800 12px var(--mono);letter-spacing:1px;white-space:nowrap}.cg td.wk .P{color:#16a34a}.cg td.wk .L{color:#d97706}.cg td.wk .A{color:#dc2626}
+.cg td.wk{font:800 12px var(--mono);letter-spacing:1px;white-space:nowrap}.cg td.wk .P{color:#16a34a}.cg td.wk .L{color:#d97706}.cg td.wk .A{color:#dc2626}.cg td.wk .E{color:#7c3aed}
 .cg td.wk.hasA{background:#fef2f2}
 .cg td.br,.cg th.br{background:repeating-linear-gradient(135deg,#f8fafc 0 5px,#eef2f7 5px 10px);color:var(--ink3);font-size:9.5px}
 .cg td.nil{color:#cbd5e1}
@@ -1051,7 +1052,52 @@ body{overflow:hidden}
 .wdtxt{font-size:13px;line-height:1.6;color:var(--ink2);margin:6px 0 0}
 @media print{.side,.mtop .btn-o,.mtop .back,#gtabs,.ms{display:none!important}.app{display:block;height:auto}.main,.main.modmode{height:auto;overflow:visible}.twrap{overflow:visible}body{overflow:visible}}
 </style>
-<style id="ds2026"> /* CampusCore design system (12 Nov 2026): square corners, technical type */ h1,h2,.ttl,.page-title,.nm2,.calhd b{font-family:'Chakra Petch','Space Grotesk',sans-serif;letter-spacing:.2px} .who .av{border-radius:0!important}.hav{border-radius:0!important}.calhd .hav{border-radius:0!important}.sidebar-avatar{border-radius:0!important}.profile-hero-photo{border-radius:0!important}.profile-photo-large{border-radius:0!important}.sps-photo-circle{border-radius:0!important} .mc{border-radius:50%!important}  /* mark circles stay round */ /* top cards: the person's photo as a full-height 1:1 square on the left edge (as in the Admin Portal) */ .hero2{padding:0 18px 0 0!important;align-items:stretch!important;min-height:92px;flex-wrap:nowrap!important} .hero2>.hav{width:auto!important;height:auto!important;min-height:92px;aspect-ratio:1/1;align-self:stretch;border:0!important;margin:0!important;font-size:28px!important;background-size:cover!important;background-position:center!important} .hero2>*:not(.hav){align-self:center} .sh{padding:0 22px 0 0!important;align-items:stretch!important;min-height:132px;flex-wrap:nowrap!important} .sh>.hav{width:auto!important;height:auto!important;min-height:132px;aspect-ratio:1/1;align-self:stretch;border:0!important;margin:0!important;font-size:38px!important;background-size:cover!important;background-position:center!important} .sh>*:not(.hav){align-self:center;padding:12px 0} .profile-hero{padding:0 24px 0 0!important;align-items:stretch!important;min-height:124px} .profile-hero-photo{width:auto!important;height:auto!important;min-height:124px;aspect-ratio:1/1;align-self:stretch;border:0!important;display:flex!important;align-items:center;justify-content:center;font-size:36px!important;background-size:cover!important;background-position:center!important} .profile-hero-info{align-self:center;padding:14px 0} /* sign-out countdown: the number sits exactly in the middle of the circle */ .g-cnum{display:flex!important;align-items:center;justify-content:center;line-height:1!important;font:700 50px 'Chakra Petch',sans-serif!important;padding:0!important} </style></head>
+<style id="ds2026"> /* CampusCore design system (12 Nov 2026): square corners, technical type */ h1,h2,.ttl,.page-title,.nm2,.calhd b{font-family:'Chakra Petch','Space Grotesk',sans-serif;letter-spacing:.2px} .who .av{border-radius:0!important}.hav{border-radius:0!important}.calhd .hav{border-radius:0!important}.sidebar-avatar{border-radius:0!important}.profile-hero-photo{border-radius:0!important}.profile-photo-large{border-radius:0!important}.sps-photo-circle{border-radius:0!important} .mc{border-radius:50%!important}  /* mark circles stay round */ /* top cards: the person's photo as a full-height 1:1 square on the left edge (as in the Admin Portal) */ .hero2{padding:0 18px 0 0!important;align-items:stretch!important;min-height:92px;flex-wrap:nowrap!important} .hero2>.hav{width:auto!important;height:auto!important;min-height:92px;aspect-ratio:1/1;align-self:stretch;border:0!important;margin:0!important;font-size:28px!important;background-size:cover!important;background-position:center!important} .hero2>*:not(.hav){align-self:center} .sh{padding:0 22px 0 0!important;align-items:stretch!important;min-height:132px;flex-wrap:nowrap!important} .sh>.hav{width:auto!important;height:auto!important;min-height:132px;aspect-ratio:1/1;align-self:stretch;border:0!important;margin:0!important;font-size:38px!important;background-size:cover!important;background-position:center!important} .sh>*:not(.hav){align-self:center;padding:12px 0} .profile-hero{padding:0 24px 0 0!important;align-items:stretch!important;min-height:124px} .profile-hero-photo{width:auto!important;height:auto!important;min-height:124px;aspect-ratio:1/1;align-self:stretch;border:0!important;display:flex!important;align-items:center;justify-content:center;font-size:36px!important;background-size:cover!important;background-position:center!important} .profile-hero-info{align-self:center;padding:14px 0} /* sign-out countdown: the number sits exactly in the middle of the circle */ .g-cnum{display:flex!important;align-items:center;justify-content:center;line-height:1!important;font:700 50px 'Chakra Petch',sans-serif!important;padding:0!important} </style><style id="cx2026">/* 14 Nov 2026: Classroom menu */
+.nav .cx-badge{margin-left:auto;background:#dc2626;color:#fff;font:700 10.5px var(--mono);padding:1px 6px}
+.cx-tabs{display:flex;gap:0;border-bottom:2px solid var(--navy);margin:0 0 16px;flex-wrap:wrap}
+.cx-tab{border:1px solid var(--line2);border-bottom:none;background:#fff;color:var(--ink2);padding:10px 18px;font:600 13px var(--sans);cursor:pointer;margin-right:4px}
+.cx-tab.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.cx-tab b{font:700 11px var(--mono);margin-left:6px;padding:1px 6px;background:#e2e8f0;color:var(--ink2)}.cx-tab b.bad{background:#dc2626;color:#fff}.cx-tab.on b.z{background:rgba(255,255,255,.2);color:#fff}
+.cx-kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:0 0 14px}
+.cx-kpi div{background:#fff;border:1px solid var(--line);border-top:3px solid var(--navy);padding:12px 14px}
+.cx-kpi b{display:block;font:700 24px var(--serif);color:var(--navy);line-height:1.1}
+.cx-kpi span{display:block;font-weight:700;font-size:12.5px;margin-top:3px}.cx-kpi i{display:block;font-style:normal;font-size:11px;color:var(--ink2)}
+.cx-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:1100px){.cx-2{grid-template-columns:1fr}.cx-kpi{grid-template-columns:repeat(2,1fr)}}
+.cx-card{background:#fff;border:1px solid var(--line);padding:16px;margin-bottom:14px}
+.cx-h{font:700 11px var(--mono);letter-spacing:1px;text-transform:uppercase;color:var(--ink2);margin:0 0 10px}
+.cx-att{display:flex;gap:12px;align-items:center;border:1px solid var(--line);padding:10px 12px;margin:0 0 8px}.cx-att span{font-size:11.5px;color:var(--ink2)}.cx-att button{margin-left:auto}
+.cx-att .dot{width:10px;height:10px;border-radius:50%;flex:0 0 auto}.cx-att .dot.red{background:#dc2626}.cx-att .dot.amber{background:#d97706}
+.cx-t{width:100%;border-collapse:collapse;font-size:12.5px}.cx-t th{text-align:left;font:700 10.5px var(--mono);letter-spacing:.6px;text-transform:uppercase;color:var(--ink2);padding:7px 8px;border-bottom:2px solid var(--navy);white-space:nowrap}
+.cx-t td{padding:8px;border-bottom:1px solid var(--line);vertical-align:middle}.cx-t .r{text-align:right}.cx-t .c{text-align:center;font-family:var(--mono);font-weight:700}
+.cx-t .g{color:#15803d}.cx-t .o{color:#d97706}.cx-t .v{color:#7c3aed}.cx-t .rd{color:#dc2626}
+.cx-big th{background:#f8fafc}.cx-mon td{background:var(--navy);color:#fff;font:700 11px var(--mono);letter-spacing:1px;text-transform:uppercase;padding:6px 10px}
+.cx-s{font-size:11.5px;color:var(--ink2);font-weight:400}
+.cx-late{font:700 10.5px var(--mono);color:#b45309;background:#fffbeb;border:1px solid #fde68a;padding:0 5px}
+.cx-chip{display:inline-block;font:700 10.5px var(--mono);letter-spacing:.4px;padding:3px 8px;border:1px solid;text-transform:uppercase;white-space:nowrap}
+.cx-chip.ok{color:#166534;border-color:#86efac;background:#f0fdf4}.cx-chip.amb{color:#92400e;border-color:#fcd34d;background:#fffbeb}.cx-chip.bad{color:#991b1b;border-color:#fca5a5;background:#fef2f2}
+.cx-bars{display:flex;gap:8px;align-items:flex-end;height:150px;border-bottom:2px solid var(--navy);padding-top:10px}
+.cx-bars div{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;position:relative}
+.cx-bars i{display:block;width:100%;background:var(--navy)}.cx-bars b{font:700 10.5px var(--mono);color:var(--navy);margin-bottom:3px}.cx-bars span{position:absolute;bottom:-20px;font:600 10px var(--mono);color:var(--ink2)}
+.cx-filt{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 12px}.cx-filt select,.cx-filt input{border:1px solid var(--line2);padding:8px 10px;font:500 13px var(--sans);background:#fff}.cx-filt input{min-width:240px}
+.cx-info{background:#eff6ff;border:1px solid #bfdbfe;color:#1e3a8a;padding:12px 14px;font-size:12.5px;line-height:1.55;margin:0 0 14px}.cx-info.cx-pl{background:#f5f3ff;border-color:#ddd6fe;color:#4c1d95}
+.cx-sec{font:700 11px var(--mono);letter-spacing:1px;text-transform:uppercase;color:var(--ink2);margin:16px 0 8px}
+.cx-req{background:#fff;border:1px solid var(--line);margin:0 0 12px}.cx-req.w{border-left:4px solid #dc2626}
+.cx-rh{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line);background:#f8fafc;flex-wrap:wrap}
+.cx-rb{padding:14px}
+.cx-who{display:flex;gap:10px;align-items:center;margin:0 0 10px}.cx-who .av2{width:38px;height:38px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font:700 13px var(--mono)}
+.cx-msg{background:#f8fafc;border-left:3px solid var(--line2);padding:10px 12px;font-size:13px;margin:0 0 10px;white-space:pre-wrap}.cx-doc{color:#1d4ed8;font-weight:700;cursor:pointer}
+.cx-ans{border:1px solid #bbf7d0;background:#f0fdf4;padding:8px 12px;font-size:12.5px;margin-top:8px}
+.cx-lab{font:700 10.5px var(--mono);letter-spacing:.8px;text-transform:uppercase;color:var(--ink2);margin:14px 0 6px}.cx-lab .cx-s{text-transform:none;letter-spacing:0;font-family:var(--sans)}
+.cx-resp{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}.cx-resp button{border:1.5px solid var(--line2);background:#fff;padding:13px;font:700 14px var(--sans);cursor:pointer}
+.cx-resp button[data-a="Agree"].on{background:#15803d;border-color:#15803d;color:#fff}.cx-resp button[data-a="Disagree"].on{background:#dc2626;border-color:#dc2626;color:#fff}.cx-resp button[data-a="Not sure"].on{background:#475569;border-color:#475569;color:#fff}
+.cx-ta{width:100%;box-sizing:border-box;border:1.5px solid var(--line2);padding:10px;font:13px var(--sans);min-height:70px;resize:vertical}
+.cx-go{display:block;width:100%;border:0;background:#1d4ed8;color:#fff;font:700 15px var(--sans);padding:13px;margin-top:10px;cursor:pointer}.cx-go[disabled]{opacity:.6;cursor:wait}
+.cx-seg{display:flex;gap:4px}.cx-seg button{border:1.5px solid var(--line2);background:#fff;padding:6px 10px;font:700 12px var(--mono);cursor:pointer}.cx-seg button[disabled]{opacity:.5;cursor:not-allowed}
+.cx-seg button.on[data-m="P"]{background:#15803d;color:#fff;border-color:#15803d}.cx-seg button.on[data-m="L"]{background:#d97706;color:#fff;border-color:#d97706}.cx-seg button.on[data-m="E"]{background:#7c3aed;color:#fff;border-color:#7c3aed}.cx-seg button.on[data-m="A"]{background:#dc2626;color:#fff;border-color:#dc2626}
+.cx-err{background:#fef2f2;border:1px solid #fca5a5;color:#991b1b;padding:8px 12px;margin-top:10px;font-size:12.5px}
+</style>
+</head>
 <body>
 <div id="boot"><div class="ring"><img src="bsu-logo.png" alt="Bath Spa University" onerror="this.style.display='none'"></div><div class="b1">Bath Spa University · RAK Campus</div><div class="b2" id="bootMsg">Tutor Portal · loading your modules…</div></div>
 <div class="app" id="app" hidden>
@@ -1062,6 +1108,7 @@ body{overflow:hidden}
     <div class="snav">
       <button class="nav on" type="button" data-k="dash"><span class="ic">🏠</span>Dashboard</button>
       <button class="nav" type="button" data-k="ars"><span class="ic">🎓</span>Student Records</button>
+      <button class="nav" type="button" data-k="cls"><span class="ic">🏫</span>Classroom<span class="cx-badge" id="cxBadge" hidden></span></button>
       <div class="sec-l">University</div>
       <button class="nav" type="button" data-k="tt"><span class="ic">🕐</span>My Timetable</button>
       <button class="nav" type="button" data-k="ann"><span class="ic">📢</span>Announcements</button>
@@ -1095,6 +1142,7 @@ body{overflow:hidden}
       <div class="ars-s srs"><input type="text" id="arsIn" autocomplete="off" spellcheck="false" aria-label="BSU ID or name" placeholder="Type a BSU ID or a student's name…"><button class="btn-p" type="button" id="arsGo">Open record →</button><div class="sugg2" id="arsSug" hidden></div></div>
       <div id="arsOut"><div class="nm-info" style="font-size:13px">Type a BSU ID or part of a name, then pick the student.</div></div>
     </div>
+    <div class="pg" id="pg-cls" hidden></div>
     <div class="pg" id="pg-tt" hidden>
       <div class="hrow"><div><h2>My Timetable</h2><p id="ttSub"></p></div><div class="hbtns"><button class="btn-o" type="button" id="ttPdf">📄 Save as PDF</button></div></div>
       <div class="tsum" id="ttSum"></div>
@@ -1299,6 +1347,7 @@ function go(p){
   if(p === 'acal') loadAcadCalendar();
   if(p === 'ucal') loadTutorUCal();
   if(p === 'pol') loadTutorPolicies();
+  if(p === 'cls') cxOpen();   // 14 Nov 2026: Classroom menu
   if(p === 'ars'){ loadSList().catch(function(){}); setTimeout(function(){ if(!SREC) $('arsIn').focus(); }, 60); }
 }
 document.querySelector('.snav').addEventListener('click', function(e){
@@ -1329,6 +1378,7 @@ function loadBoot(quiet){
     if(!d || !Array.isArray(d.runs) || d.runs.some(function(r){ return !Array.isArray(r.classes); })) throw new Error('The Apps Script file CampusCore_Tutor is older than this page. Paste the latest CampusCore_Tutor.gs and deploy a New version.');
     cPut(cKey('c'), d); showBoot(d);
     prefetchRuns();
+    cxBadge();   // 14 Nov 2026: waiting requests on the Classroom menu
   }).catch(function(e){
     if(isOut(e)) return;
     if(BOOT){ if(quiet) toast(e.message || 'Could not refresh.', true); return; }
@@ -1346,7 +1396,7 @@ function drawSide(){
       .map(function(t){ return '<option value="' + esc(t.email) + '"' + (t.email === AS ? ' selected' : '') + '>' + esc(t.name || t.email) + '</option>'; }).join('');
   } else box.hidden = true;
 }
-$('asSel').onchange = function(){ AS = this.value || ''; try { sessionStorage.setItem('tp_as', AS); } catch(e){} $('dashWrap').innerHTML = '<div class="spempty">Loading…</div>'; go('dash'); loadBoot(true); };
+$('asSel').onchange = function(){ AS = this.value || ''; CX.cls = null; CX.rq = null; try { sessionStorage.setItem('tp_as', AS); } catch(e){} $('dashWrap').innerHTML = '<div class="spempty">Loading…</div>'; go('dash'); loadBoot(true); };
 var MODC = ['m1','m2','m3','m4','m5','m6','m7','m8'];
 function drawDash(){
   var d = BOOT, who = d.as, mine = !AS;
@@ -1501,11 +1551,11 @@ function renderMod(){
   groups.forEach(function(g){
     (d.rosters[g] || []).forEach(function(s){
       if(Q && (s.name + ' ' + (s.bsuId || '')).toLowerCase().indexOf(Q) < 0) return;
-      var gc = cls.filter(function(c){ return c.groups.indexOf(g) > -1; }), P = 0, L = 0, A = 0;
-      gc.forEach(function(c){ var h = String((c.hist || {})[s.key] || ''); for(var q = 0; q < h.length; q++){ if(h[q] === 'P') P++; else if(h[q] === 'L') L++; else if(h[q] === 'A') A++; } });
-      var pct = gc.length === 1 ? d.pct[gc[0].key + '||' + s.key] : (P + L + A ? Math.round((P + 0.5 * L) / (P + L + A) * 100) : null);
+      var gc = cls.filter(function(c){ return c.groups.indexOf(g) > -1; }), P = 0, L = 0, A = 0, Ex = 0;
+      gc.forEach(function(c){ var h = String((c.hist || {})[s.key] || ''); for(var q = 0; q < h.length; q++){ if(h[q] === 'P') P++; else if(h[q] === 'L') L++; else if(h[q] === 'A') A++; else if(h[q] === 'E') Ex++; } });
+      var pct = gc.length === 1 ? d.pct[gc[0].key + '||' + s.key] : (P + L + A + Ex ? Math.round((P + 0.5 * (L + Ex)) / (P + L + A + Ex) * 100) : null);   // E (excused) counts 50%
       if(pct === undefined) pct = null;
-      if(pct == null && P + L + A) pct = Math.round((P + 0.5 * L) / (P + L + A) * 100);
+      if(pct == null && P + L + A + Ex) pct = Math.round((P + 0.5 * (L + Ex)) / (P + L + A + Ex) * 100);
       rows.push({ s: s, g: g, gc: gc, P: P, L: L, A: A, pct: pct, acc: /see\s*accounts/i.test(String(s.acc || '')) });
     });
   });
@@ -1555,7 +1605,9 @@ $('modBody').addEventListener('click', function(e){
   var H = cl.hist = cl.hist || {}, run = RUN, rk = cKey('r', RUN.runId);
   function getM(){ var p0 = String(H[k] || ''); return p0.charAt(j) || '-'; }
   function setM(v){ var p0 = String(H[k] || ''); p0 = p0.length < cl.sessions.length ? p0 + new Array(cl.sessions.length - p0.length + 1).join('-') : p0; H[k] = p0.substr(0, j) + v + p0.substr(j + 1); delete run.pct[cl.key + '||' + k]; }
-  var was = getM(), nw = NEXTM[was] || 'P', my = ++_iseq;
+  var was = getM();
+  if(was === 'E'){ toast('This mark was excused by the Programme Leader after a request. It cannot be changed here.', true); return; }   // 14 Nov 2026
+  var nw = NEXTM[was] || 'P', my = ++_iseq;
   INF[cell] = my; EDITING++; LASTEDIT[run.runId] = Date.now();
   setM(nw); renderMod();
   apiPost('tutAttEdit', { runId: run.runId, sessionId: sess.id, key: k, group: c.dataset.g, status: nw })
@@ -1723,20 +1775,20 @@ function cFmt(d){ return d.getDate() + ' ' + MON[d.getMonth()]; }
 function cTutor(m){ var a = (SREC.attMods || []).filter(function(x){ return x.m === m; })[0], t = a && a.tutors[0]; return t || ['', '']; }
 function calGroups(S){ var T = {}; S.forEach(function(x){ (T[x.t] = T[x.t] || {})[x.m] = (T[x.t] && T[x.t][x.m]) || []; T[x.t][x.m].push(x); });
   return ['s2', 's1'].filter(function(t){ return T[t]; }).map(function(t){ return { name: t === 's1' ? 'Semester 1 (Fall)' : 'Semester 2 (Spring)', mods: Object.keys(T[t]).sort().map(function(m){
-    var L = T[t][m].slice().sort(function(a, b){ return b.d - a.d; }), P = L.filter(function(x){ return x.s === 'P'; }).length, La = L.filter(function(x){ return x.s === 'L'; }).length;
-    return { m: m, L: L, P: P, La: La, A: L.length - P - La, pc: Math.round((P + La / 2) / L.length * 100) }; }) }; }); }
+    var L = T[t][m].slice().sort(function(a, b){ return b.d - a.d; }), P = L.filter(function(x){ return x.s === 'P'; }).length, La = L.filter(function(x){ return x.s === 'L'; }).length, Ex = L.filter(function(x){ return x.s === 'E'; }).length;
+    return { m: m, L: L, P: P, La: La, Ex: Ex, A: L.length - P - La - Ex, pc: Math.round((P + (La + Ex) / 2) / L.length * 100) }; }) }; }); }
 function semBlocks(T){ return T.mods.map(function(M){ var L = M.L.slice().sort(function(a, b){ return a.d - b.d; }), rows = []; for(var r = 0; r < Math.max(1, L.length); r += 32) rows.push(L.slice(r, r + 32));
     var tu = cTutor(M.m);
-    return '<div class="mb"><div class="mh"><b>' + esc(M.m) + (tu[0] ? ' <span class="tu">| ' + esc(tu[0]) + ' · <a href="mailto:' + esc(tu[1]) + '">' + esc(tu[1]) + '</a></span>' : '') + '</b><span class="k">' + M.L.length + ' classes · ' + M.P + ' present · ' + M.La + ' late · ' + M.A + ' absent</span><span class="p" style="color:' + (M.pc >= 85 ? '#16a34a' : M.pc >= 70 ? '#d97706' : '#dc2626') + '">' + M.pc + '%</span></div>'
-      + rows.map(function(R){ var c = R.map(function(x){ return '<div class="c32 ' + x.s + '" title="' + x.d.getDate() + ' ' + MNF[x.d.getMonth()] + ' ' + x.d.getFullYear() + ' · ' + { P: 'present', L: 'late', A: 'absent' }[x.s] + '"><span class="v">' + cFmt(x.d) + ' <i>' + DNS[x.d.getDay()] + '</i></span><span class="mk">' + x.s + '</span></div>'; });
+    return '<div class="mb"><div class="mh"><b>' + esc(M.m) + (tu[0] ? ' <span class="tu">| ' + esc(tu[0]) + ' · <a href="mailto:' + esc(tu[1]) + '">' + esc(tu[1]) + '</a></span>' : '') + '</b><span class="k">' + M.L.length + ' classes · ' + M.P + ' present · ' + M.La + ' late · ' + (M.Ex ? M.Ex + ' excused · ' : '') + M.A + ' absent</span><span class="p" style="color:' + (M.pc >= 85 ? '#16a34a' : M.pc >= 70 ? '#d97706' : '#dc2626') + '">' + M.pc + '%</span></div>'
+      + rows.map(function(R){ var c = R.map(function(x){ return '<div class="c32 ' + x.s + '" title="' + x.d.getDate() + ' ' + MNF[x.d.getMonth()] + ' ' + x.d.getFullYear() + ' · ' + { P: 'present', L: 'late', A: 'absent', E: 'excused' }[x.s] + '"><span class="v">' + cFmt(x.d) + ' <i>' + DNS[x.d.getDay()] + '</i></span><span class="mk">' + x.s + '</span></div>'; });
         while(c.length < 32) c.push('<div class="c32 e"><span class="v"></span><span class="mk"></span></div>'); return '<div class="m32">' + c.join('') + '</div>'; }).join('') + '</div>'; }).join(''); }
-function calTot(S){ var P = S.filter(function(x){ return x.s === 'P'; }).length, La = S.filter(function(x){ return x.s === 'L'; }).length; return { P: P, La: La, A: S.length - P - La, pc: S.length ? Math.round((P + La / 2) / S.length * 100) : 0 }; }
+function calTot(S){ var P = S.filter(function(x){ return x.s === 'P'; }).length, La = S.filter(function(x){ return x.s === 'L'; }).length, Ex = S.filter(function(x){ return x.s === 'E'; }).length; return { P: P, La: La, Ex: Ex, A: S.length - P - La - Ex, pc: S.length ? Math.round((P + (La + Ex) / 2) / S.length * 100) : 0 }; }
 function openCal(){
   var R = SREC, S = calSes(); if(!S.length){ toast('No classes taken for this student yet this year.'); return; }
   CALC = { R: R, S: S }; var t = calTot(S);
   $('calIni').textContent = initials(R.name); $('calName').textContent = R.name;
   $('calSub').textContent = 'BSU ID ' + R.id + ' · ' + R.prog + (R.year ? ' · ' + R.year : '') + ' · ' + R.status;
-  $('calSum').innerHTML = [[t.pc + '%', 'overall attendance', t.pc >= 85 ? '#16a34a' : t.pc >= 70 ? '#d97706' : '#dc2626'], [S.length, 'classes'], [t.P, 'present', '#16a34a'], [t.La, 'late', '#d97706'], [t.A, 'absent', '#dc2626'], [R.last ? fmtD(R.last, 1) : '–', 'last engagement']].map(function(x){ return '<div><b style="color:' + (x[2] || 'var(--ink)') + '">' + x[0] + '</b><span>' + x[1] + '</span></div>'; }).join('');
+  $('calSum').innerHTML = [[t.pc + '%', 'overall attendance', t.pc >= 85 ? '#16a34a' : t.pc >= 70 ? '#d97706' : '#dc2626'], [S.length, 'classes'], [t.P, 'present', '#16a34a'], [t.La, 'late', '#d97706'], [t.Ex, 'excused', '#7c3aed'], [t.A, 'absent', '#dc2626'], [R.last ? fmtD(R.last, 1) : '–', 'last engagement']].filter(function(x){ return x[1] !== 'excused' || x[0]; }).map(function(x){ return '<div><b style="color:' + (x[2] || 'var(--ink)') + '">' + x[0] + '</b><span>' + x[1] + '</span></div>'; }).join('');
   $('calMonths').innerHTML = '<div class="cyr">' + esc(R.year || '') + ' · ' + esc(R.term ? R.term.ay : '') + '</div>' + calGroups(S).map(function(T){ return '<div class="csem">' + T.name + '</div>' + semBlocks(T); }).join('');
   $('calOv').hidden = false;
 }
@@ -1746,8 +1798,8 @@ $('calPdf').onclick = function(){
   var C = CALC, R = C.R, S = C.S, t = calTot(S), doc = new window.jspdf.jsPDF({ unit: 'pt', format: 'a4', orientation: 'landscape' }), W = doc.internal.pageSize.getWidth(), H = doc.internal.pageSize.getHeight(), M = 30;
   function head(){ doc.setFillColor(15, 30, 61); doc.rect(0, 0, W, 58, 'F'); doc.setTextColor(255, 255, 255); doc.setFont('helvetica', 'bold'); doc.setFontSize(15); doc.text(R.name + '  -  attendance by module', M, 24);
     doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5); doc.text($('calSub').textContent.replace(/·/g, '-'), M, 40);
-    doc.text('Overall ' + t.pc + '%  -  ' + S.length + ' classes  -  ' + t.P + ' present, ' + t.La + ' late, ' + t.A + ' absent  -  last engagement ' + (R.last ? fmtD(R.last, 1) : '-'), M, 52); }
-  head(); var y = 78, MC = { P: [22, 163, 74], L: [217, 119, 6], A: [220, 38, 38] }, cw = (W - 2 * M) / 32, ch = 56;
+    doc.text('Overall ' + t.pc + '%  -  ' + S.length + ' classes  -  ' + t.P + ' present, ' + t.La + ' late, ' + (t.Ex ? t.Ex + ' excused, ' : '') + t.A + ' absent  -  last engagement ' + (R.last ? fmtD(R.last, 1) : '-'), M, 52); }
+  head(); var y = 78, MC = { P: [22, 163, 74], L: [217, 119, 6], A: [220, 38, 38], E: [124, 58, 237] }, cw = (W - 2 * M) / 32, ch = 56;
   function need(h){ if(y + h > H - 24){ doc.addPage(); head(); y = 78; } }
   function pcC(p){ return p >= 85 ? [22, 163, 74] : p >= 70 ? [217, 119, 6] : [220, 38, 38]; }
   need(90); doc.setDrawColor(15, 30, 61); doc.setLineWidth(1.2); doc.line(M, y + 4, W - M, y + 4); doc.setTextColor(15, 30, 61); doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.text(((R.year || '') + '  -  ' + (R.term ? R.term.ay : '')).toUpperCase(), M, y); y += 14;
@@ -1755,7 +1807,7 @@ $('calPdf').onclick = function(){
     T.mods.forEach(function(Mo){ var L = Mo.L.slice().sort(function(a, b){ return a.d - b.d; }), rows = Math.max(1, Math.ceil(L.length / 32)); need(18 + rows * ch + 6);
       var top = y; doc.setFillColor(241, 245, 249); doc.rect(M, y, W - 2 * M, 15, 'F'); doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(15, 23, 42); doc.text(Mo.m, M + 5, y + 10.5);
       var tu = cTutor(Mo.m), tw = doc.getTextWidth(Mo.m); if(tu[0]){ doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(71, 85, 105); doc.text('|  ' + tu[0] + '  -  ' + tu[1], M + 5 + tw + 6, y + 10.5); }
-      doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5); doc.setTextColor(71, 85, 105); doc.text(Mo.L.length + ' classes - ' + Mo.P + ' present - ' + Mo.La + ' late - ' + Mo.A + ' absent', W - M - 50, y + 10.5, { align: 'right' });
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5); doc.setTextColor(71, 85, 105); doc.text(Mo.L.length + ' classes - ' + Mo.P + ' present - ' + Mo.La + ' late - ' + (Mo.Ex ? Mo.Ex + ' excused - ' : '') + Mo.A + ' absent', W - M - 50, y + 10.5, { align: 'right' });
       var c = pcC(Mo.pc); doc.setFont('helvetica', 'bold'); doc.setFontSize(9.5); doc.setTextColor(c[0], c[1], c[2]); doc.text(Mo.pc + '%', W - M - 5, y + 10.5, { align: 'right' }); y += 15;
       doc.setDrawColor(15, 30, 61); doc.setLineWidth(.8); doc.line(M, y, W - M, y);
       for(var r = 0; r < rows; r++){ for(var i = 0; i < 32; i++){ var q = L[r * 32 + i], cx = M + i * cw, cy = y; doc.setDrawColor(226, 232, 240); doc.setLineWidth(.5);
@@ -2299,6 +2351,161 @@ function buildUCalMonths(){
   window[n] = function(d){ try { localStorage.setItem(k, JSON.stringify(d || [])); } catch(e){} return f.apply(this, arguments); };
   try { var v = JSON.parse(localStorage.getItem(k) || 'null'); if(v) f(v); } catch(e){}
 });
+// ===================================================================================================
+// 14 Nov 2026: Classroom menu · Overview, My classes, Reviews and leave, Decisions (Programme Leaders only)
+// Data: tutCls (classes this semester, students below 70%) and tutReqs (requests). Answers / decisions are
+// signed POSTs (tutReqAnswer, tutReqDecide). Admins viewing as a tutor can look but not answer.
+// ===================================================================================================
+var CX = { tab: 'ov', cls: null, rq: null, mf: '', q: '', busy: false };
+function cxPad(n){ return ('0' + n).slice(-2); }
+function cxD(iso){ var d = new Date(iso + 'T12:00:00Z'); return ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getUTCDay()] + ' ' + d.getUTCDate() + ' ' + ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getUTCMonth()]; }
+function cxMin(t){ var m = String(t || '').match(/^(\d{1,2}):(\d{2})/); return m ? (+m[1]) * 60 + (+m[2]) : null; }
+function cxLate(c){ var a = cxMin(c.start), b = cxMin(c.tt); return a == null || b == null ? 0 : a - b; }
+function cxHM(m){ m = Math.round(m || 0); return Math.floor(m / 60) + ' h ' + cxPad(m % 60); }
+function cxCol(p){ return p == null ? 'var(--ink3)' : p >= 80 ? '#15803d' : p >= 70 ? '#d97706' : '#dc2626'; }
+function cxMk(m){ return m ? '<span class="circ ' + m + '" style="width:26px;height:26px;font-size:11px">' + m + '</span>' : '–'; }
+function cxGroups(g){ return esc(String(g || '').split(' + ').map(function(x){ var p = x.split('|'); return p.length > 2 ? p[2] : x; }).join(' + ')); }
+function cxWaiting(){ var R = CX.rq; if(!R) return 0; return R.reqs.filter(function(r){ return r.status === 'Waiting for tutor' && !r.mine; }).length + (R.isPl ? R.dec.filter(function(r){ return r.status !== 'Decided'; }).length : 0); }
+function cxBadge(){
+  return apiFetch({ action: 'tutReqs' }).then(function(d){ CX.rq = d; cPut(cKey('x'), d); cxBadgeDraw(); if(PAGE === 'cls') cxDraw(); }).catch(function(){});
+}
+function cxBadgeDraw(){ var n = cxWaiting(), b = $('cxBadge'); if(b){ b.textContent = n; b.hidden = !n; } }
+function cxOpen(){
+  var h1 = cGet(cKey('k')), h2 = cGet(cKey('x'));
+  if(h1) CX.cls = h1.d; if(h2) CX.rq = h2.d;
+  cxDraw();
+  if(!h1 || Date.now() - h1.t > 60000) apiFetch({ action: 'tutCls' }).then(function(d){ CX.cls = d; cPut(cKey('k'), d); if(PAGE === 'cls') cxDraw(); })
+    .catch(function(e){ if(isOut(e)) return; if(!CX.cls){ CX.cls = { error: e.message || 'Could not load your classes.' }; if(PAGE === 'cls') cxDraw(); } });
+  cxBadge();
+}
+function cxDraw(){
+  var R = CX.rq, waitT = R ? R.reqs.filter(function(r){ return r.status === 'Waiting for tutor' && !r.mine; }).length : 0, waitP = R && R.isPl ? R.dec.filter(function(r){ return r.status !== 'Decided'; }).length : 0;
+  var tabs = [['ov', 'Overview', ''], ['mc', 'My classes', CX.cls && CX.cls.classes ? CX.cls.classes.length : ''], ['rv', 'Reviews and leave', waitT]];
+  if(R && R.isPl) tabs.push(['dc', 'Decisions', waitP]);
+  if(CX.tab === 'dc' && !(R && R.isPl)) CX.tab = 'ov';
+  var h = '<div class="hrow"><div><h2>Classroom</h2><p>Your classes, registers and attendance requests' + (BOOT && BOOT.term ? ' · ' + esc((BOOT.term.year || '') + ' · ' + (BOOT.term.sem || '')) : '') + '</p></div></div>';
+  h += '<div class="cx-tabs">' + tabs.map(function(t){ var bad = (t[0] === 'rv' || t[0] === 'dc') && t[2]; return '<button type="button" class="cx-tab' + (CX.tab === t[0] ? ' on' : '') + '" data-t="' + t[0] + '">' + t[1] + (t[2] !== '' ? ' <b class="' + (bad ? 'bad' : 'z') + '">' + t[2] + '</b>' : '') + '</button>'; }).join('') + '</div>';
+  h += '<div id="cxBody">' + (CX.tab === 'ov' ? cxOv() : CX.tab === 'mc' ? cxMc() : CX.tab === 'rv' ? cxRv() : cxDc()) + '</div>';
+  $('pg-cls').innerHTML = h;
+}
+function cxLoading(){ return CX.cls && CX.cls.error ? '<div class="spempty" style="color:#b91c1c">' + esc(CX.cls.error) + '</div>' : '<div class="spempty">Loading…</div>'; }
+function cxOv(){
+  var C = CX.cls; if(!C || !C.classes) return cxLoading();
+  var L = C.classes, held = L.length, mins = L.reduce(function(s, c){ return s + (c.mins || 0); }, 0);
+  var days = Math.max(1, Math.round((Date.now() - new Date(C.from + 'T00:00:00+04:00').getTime()) / 86400000)), weeks = Math.max(1, Math.ceil(days / 7));
+  var tt = L.filter(function(c){ return c.tt; }), onT = tt.filter(function(c){ return cxLate(c) <= 5; }).length, nmL = L.filter(function(c){ return c.nm > 0; }), late = L.filter(function(c){ return c.tt && cxLate(c) > 5; });
+  var P = L.filter(function(c){ return c.pct != null; }), att = P.length ? Math.round(P.reduce(function(s, c){ return s + c.pct; }, 0) / P.length) : null;
+  var K = [[held, 'Classes held', 'this semester'], [(mins / 60).toFixed(1) + ' h', 'Teaching hours', 'registered in class'], [(mins / 60 / weeks).toFixed(1) + ' h', 'Average per week', 'over ' + weeks + ' week' + (weeks > 1 ? 's' : '')],
+           [held ? cxHM(mins / held) : '–', 'Average class', 'from Start to Finish'], [tt.length ? Math.round(onT / tt.length * 100) + '%' : '–', 'Started on time', 'within 5 minutes'],
+           [held ? Math.round((held - nmL.length) / held * 100) + '%' : '–', 'Registers complete', nmL.length + ' with students not marked'], [att == null ? '–' : att + '%', 'Average attendance', 'all your classes'], [C.lowCount, 'Below 70%', 'students in your modules']];
+  var h = '<div class="cx-kpi">' + K.map(function(x, i){ return '<div' + (i === 7 && C.lowCount ? ' style="border-top-color:#dc2626"' : '') + '><b' + (i === 7 && C.lowCount ? ' style="color:#dc2626"' : '') + '>' + x[0] + '</b><span>' + x[1] + '</span><i>' + x[2] + '</i></div>'; }).join('') + '</div>';
+  var R = CX.rq, wt = R ? R.reqs.filter(function(r){ return r.status === 'Waiting for tutor' && !r.mine; }) : [], wp = R && R.isPl ? R.dec.filter(function(r){ return r.status !== 'Decided'; }) : [];
+  var att2 = '';
+  if(wt.length) att2 += '<div class="cx-att"><span class="dot red"></span><div><b>' + wt.length + ' request' + (wt.length > 1 ? 's' : '') + ' waiting for your answer</b><br><span>Oldest sent ' + esc(wt[wt.length - 1].sent) + ' · no deadline, a reminder comes on Mondays</span></div><button type="button" class="btn-dark" data-cxgo="rv">Open</button></div>';
+  if(wp.length) att2 += '<div class="cx-att"><span class="dot red"></span><div><b>' + wp.length + ' request' + (wp.length > 1 ? 's' : '') + ' waiting for your decision</b><br><span>Programme Leader</span></div><button type="button" class="btn-dark" data-cxgo="dc">Open</button></div>';
+  if(nmL.length) att2 += '<div class="cx-att"><span class="dot amber"></span><div><b>' + nmL.length + ' class' + (nmL.length > 1 ? 'es' : '') + ' with students not marked</b><br><span>Latest: ' + esc(nmL[0].module) + ' · ' + cxD(nmL[0].date) + ' · ' + nmL[0].nm + ' not marked</span></div><button type="button" class="btn-o" data-cxgo="mc">View</button></div>';
+  if(late.length) att2 += '<div class="cx-att"><span class="dot amber"></span><div><b>' + late.length + ' class' + (late.length > 1 ? 'es' : '') + ' started more than 5 minutes late</b><br><span>Latest: ' + esc(late[0].module) + ' · ' + cxD(late[0].date) + ' · +' + cxLate(late[0]) + ' min</span></div><button type="button" class="btn-o" data-cxgo="mc">View</button></div>';
+  if(!att2) att2 = '<div class="cx-att"><span class="dot" style="background:#16a34a"></span><div><b>Nothing waiting</b><br><span>All registers complete and no requests to answer.</span></div></div>';
+  h += '<div class="cx-2"><div class="cx-card"><div class="cx-h">Needs your attention</div>' + att2 +
+    '<div class="cx-h" style="margin-top:14px">Students below 70% in your modules' + (C.lowCount > C.low.length ? ' · lowest ' + C.low.length + ' of ' + C.lowCount : '') + '</div>' +
+    (C.low.length ? '<table class="cx-t"><tr><th>Student</th><th>Module</th><th class="r">Attendance</th></tr>' + C.low.map(function(r){ return '<tr><td><b>' + esc(r.name) + '</b></td><td>' + esc(r.module) + '</td><td class="r"><b style="color:#dc2626">' + r.pct + '%</b></td></tr>'; }).join('') + '</table>' : '<div class="cx-s">No student below 70%.</div>') + '</div>';
+  var wk = {}; L.forEach(function(c){ var w = Math.floor((new Date(c.date + 'T12:00:00Z') - new Date(C.from + 'T00:00:00Z')) / 604800000) + 1; wk[w] = (wk[w] || 0) + (c.mins || 0); });
+  var W = []; for(var i = 1; i <= weeks; i++) W.push((wk[i] || 0) / 60); var mx = Math.max.apply(null, W.concat([1]));
+  var BM = {}; L.forEach(function(c){ var b = BM[c.module] = BM[c.module] || { n: 0, m: 0, p: [] }; b.n++; b.m += c.mins || 0; if(c.pct != null) b.p.push(c.pct); });
+  h += '<div class="cx-card"><div class="cx-h">Teaching hours per week</div><div class="cx-bars">' + W.slice(-14).map(function(v, i, A){ return '<div><b>' + v.toFixed(1) + '</b><i style="height:' + Math.round(v / mx * 100) + '%"></i><span>W' + (weeks - A.length + i + 1) + '</span></div>'; }).join('') + '</div>' +
+    '<div class="cx-h" style="margin-top:34px">By module</div><table class="cx-t"><tr><th>Module</th><th class="r">Classes</th><th class="r">Hours</th><th class="r">Attendance</th></tr>' +
+    Object.keys(BM).sort().map(function(m){ var b = BM[m], a = b.p.length ? Math.round(b.p.reduce(function(s, x){ return s + x; }, 0) / b.p.length) : null; return '<tr><td><b>' + esc(m) + '</b></td><td class="r">' + b.n + '</td><td class="r">' + (b.m / 60).toFixed(1) + '</td><td class="r"><b style="color:' + cxCol(a) + '">' + (a == null ? '–' : a + '%') + '</b></td></tr>'; }).join('') + '</table></div></div>';
+  return h;
+}
+function cxRows(){ var C = CX.cls, q = CX.q.toLowerCase(); return C.classes.filter(function(c){ return (!CX.mf || c.module === CX.mf) && (!q || (c.module + ' ' + c.groups + ' ' + c.room + ' ' + cxD(c.date)).toLowerCase().indexOf(q) > -1); }); }
+function cxMc(){
+  var C = CX.cls; if(!C || !C.classes) return cxLoading();
+  var mods = []; C.classes.forEach(function(c){ if(mods.indexOf(c.module) < 0) mods.push(c.module); }); mods.sort();
+  var L = cxRows();
+  var h = '<div class="cx-filt"><select id="cxM"><option value="">All modules</option>' + mods.map(function(m){ return '<option' + (CX.mf === m ? ' selected' : '') + '>' + esc(m) + '</option>'; }).join('') + '</select><input id="cxQ" placeholder="Search date, module, room" value="' + esc(CX.q) + '"><span class="cx-s">' + L.length + ' classes · ' + (L.reduce(function(s, c){ return s + (c.mins || 0); }, 0) / 60).toFixed(1) + ' h · newest first · this semester</span><button type="button" class="btn-o" id="cxPdf" style="margin-left:auto">📄 Save as PDF</button></div>';
+  if(!L.length) return h + '<div class="spempty">No classes yet this semester.</div>';
+  h += '<div class="cx-card" style="padding:0;overflow-x:auto"><table class="cx-t cx-big" id="cxTbl"><tr><th>Date</th><th>Class</th><th>Room</th><th>Started · finished</th><th class="r">Length</th><th class="c">P</th><th class="c">L</th><th class="c">E</th><th class="c">A</th><th class="r">Attendance</th><th>Register</th></tr>';
+  var mon = '';
+  L.forEach(function(c){ var m = new Date(c.date + 'T12:00:00Z'), mm = ['January','February','March','April','May','June','July','August','September','October','November','December'][m.getUTCMonth()] + ' ' + m.getUTCFullYear();
+    if(mm !== mon){ mon = mm; h += '<tr class="cx-mon"><td colspan="11">' + mm + '</td></tr>'; }
+    var lt = c.tt ? cxLate(c) : 0;
+    h += '<tr><td><b>' + cxD(c.date) + '</b></td><td><b>' + esc(c.module) + '</b>' + (c.cover ? ' <span class="cx-chip amb">cover</span>' : '') + '<br><span class="cx-s">' + cxGroups(c.groups) + '</span></td><td>' + esc(c.room) + '</td><td>' + esc(c.start) + ' – ' + esc(c.stop || '…') + (lt > 5 ? ' <span class="cx-late">+' + lt + ' min</span>' : '') + (c.tt ? '<br><span class="cx-s">timetable ' + esc(c.tt) + '</span>' : '') + '</td>' +
+      '<td class="r">' + (c.mins ? cxHM(c.mins) : '–') + '</td><td class="c g">' + c.P + '</td><td class="c o">' + c.L + '</td><td class="c v">' + (c.E || '–') + '</td><td class="c rd">' + c.A + '</td>' +
+      '<td class="r"><b style="color:' + cxCol(c.pct) + '">' + (c.pct == null ? '–' : c.pct + '%') + '</b></td><td>' + (c.nm ? '<span class="cx-chip amb">' + c.nm + ' not marked</span>' : '<span class="cx-chip ok">✓ complete</span>') + '</td></tr>'; });
+  return h + '</table></div>';
+}
+function cxCard(r, pl){
+  var wait = pl ? r.status !== 'Decided' : (r.status === 'Waiting for tutor' && !r.mine), ro = !!AS && !r.test;   // admins viewing as a tutor may try TEST requests only
+  var chip = r.status === 'Decided' ? '<span class="cx-chip ok">Decided</span>' : wait ? '<span class="cx-chip bad">' + (pl ? 'Waiting for your decision' : 'Waiting for your answer') + '</span>' : '<span class="cx-chip amb">With the Programme Leader</span>';
+  var h = '<div class="cx-req' + (wait ? ' w' : '') + '" data-id="' + esc(r.id) + '"><div class="cx-rh"><div><b>' + esc(r.id) + ' · ' + esc(r.kind) + '</b><span class="cx-s"> · sent ' + esc(r.sent) + ' by the ' + esc(r.by.toLowerCase()) + '</span>' + (r.test ? ' <span class="cx-chip amb">TEST</span>' : '') + '</div>' + chip + '</div><div class="cx-rb">';
+  h += '<div class="cx-who"><span class="av2">' + esc(r.name.split(/\s+/).slice(0, 2).map(function(x){ return x.charAt(0); }).join('')) + '</span><div><b>' + esc(r.name) + '</b> · BSU ID ' + esc(r.bsu) + '<br><span class="cx-s">' + esc(r.prog) + '</span></div><button type="button" class="btn-o" data-cxstu="' + esc(r.bsu) + '" style="margin-left:auto">🎓 Open record</button></div>';
+  h += '<div class="cx-msg">&ldquo;' + esc(r.reason) + '&rdquo;' + (r.doc ? '<div style="margin-top:6px"><a class="cx-doc" data-cxdoc="' + esc(r.id) + '">📎 ' + esc(r.doc) + '</a></div>' : '') + '</div>';
+  if(r.k === 'days') h += '<div class="cx-s" style="margin:0 0 6px"><b>Leave applied: ' + r.days + ' days</b> · covers ' + r.classes.length + ' class' + (r.classes.length === 1 ? '' : 'es') + '</div>';
+  h += '<table class="cx-t"><tr><th>Class</th><th>Mark when asked</th>' + (pl ? '<th>Tutor</th>' : '') + (pl && wait ? '<th>New mark</th>' : '') + (r.status === 'Decided' ? '<th>Decided</th>' : '') + '</tr>' + r.classes.map(function(c){
+    return '<tr><td><b>' + esc(c.module) + '</b><br><span class="cx-s">' + esc(c.d) + (c.time ? ' · ' + esc(c.time) : '') + '</span></td><td>' + cxMk(c.was) + '</td>' + (pl ? '<td>' + esc(c.tutor) + '</td>' : '') +
+      (pl && wait ? '<td><div class="cx-seg" data-sid="' + esc(c.sid) + '">' + ['P', 'L', 'E', 'A'].map(function(m){ return '<button type="button" data-m="' + m + '"' + (ro ? ' disabled' : '') + '>' + (m === 'A' ? 'keep A' : m) + '</button>'; }).join('') + '</div></td>' : '') +
+      (r.status === 'Decided' ? '<td>' + cxMk(c.now || c.was) + '</td>' : '') + '</tr>'; }).join('') + '</table>';
+  if(!pl && r.mine) h += '<div class="cx-ans">You answered <b>' + esc(r.mine.a) + '</b>' + (r.mine.c ? ': ' + esc(r.mine.c) : '') + ' <span class="cx-s">(' + esc(r.mine.at) + ')</span></div>';
+  if(pl) h += r.answers.map(function(a){ return '<div class="cx-ans">' + esc(a.who) + ': <b>' + esc(a.a) + '</b>' + (a.c ? ' · ' + esc(a.c) : '') + ' <span class="cx-s">(' + esc(a.at) + ')</span></div>'; }).join('') +
+    (wait && r.waitingTutors.length ? '<div class="cx-ans" style="background:#fffbeb;border-color:#fde68a">Not answered yet: ' + esc(r.waitingTutors.join(', ')) + '. You can still decide.</div>' : '');
+  if(r.status === 'Decided') h += '<div class="cx-ans" style="background:#f5f3ff;border-color:#ddd6fe">Decided by ' + esc(r.decidedBy) + ' · ' + esc(r.decidedAt) + (r.note ? ' · note to the family: ' + esc(r.note) : '') + (r.rating ? ' · family rating <span style="color:#f59e0b;letter-spacing:1px">' + '★★★★★'.slice(0, r.rating) + '</span><span style="color:#cbd5e1;letter-spacing:1px">' + '★★★★★'.slice(r.rating) + '</span>' : '') + '</div>';
+  if(wait && ro) h += '<div class="cx-ans" style="background:#f1f5f9;border-color:#cbd5e1">Viewing as this tutor: only the tutor can answer.</div>';
+  if(wait && !ro && !pl) h += '<div class="cx-lab">Your response</div><div class="cx-resp"><button type="button" data-a="Agree">✓ Agree</button><button type="button" data-a="Disagree">✕ Disagree</button><button type="button" data-a="Not sure">? Not sure</button></div>' +
+    '<div class="cx-lab">Comment for the Programme Leader <span class="cx-s" data-cxreq>(optional for Agree, needed for Disagree and Not sure)</span></div><textarea class="cx-ta" maxlength="600" placeholder="For example: I saw the student arrive at 9:20."></textarea><button type="button" class="cx-go" data-cxsend>Send to Programme Leader</button>';
+  if(wait && !ro && pl) h += '<div class="cx-lab">Note for the student and parent <span class="cx-s">(needed when an absence is kept; optional otherwise)</span></div><textarea class="cx-ta" maxlength="600" placeholder="For example: Medical certificate seen. Excused."></textarea><button type="button" class="cx-go" data-cxdec>Save decision and email the family</button>';
+  return h + '</div></div>';
+}
+function cxRqWait(){ return !CX.rq ? '<div class="spempty">Loading…</div>' : ''; }
+function cxRv(){
+  if(!CX.rq) return cxRqWait();
+  var W = CX.rq.reqs.filter(function(r){ return r.status === 'Waiting for tutor' && !r.mine; }), O = CX.rq.reqs.filter(function(r){ return !(r.status === 'Waiting for tutor' && !r.mine); });
+  return '<div class="cx-info">Requests from students and parents about <b>your</b> classes (one class or a whole day). Several days of leave go straight to the Programme Leader. There is no deadline: a request stays here until you answer, and a reminder email comes on Mondays while something is waiting. Your answer and comment go to the Programme Leader only, never to the family.</div>' +
+    '<div class="cx-sec">Waiting for your answer · ' + W.length + '</div>' + (W.length ? W.map(function(r){ return cxCard(r, false); }).join('') : '<div class="cx-s" style="margin-bottom:10px">Nothing waiting.</div>') +
+    (O.length ? '<div class="cx-sec">Answered · ' + O.length + '</div>' + O.map(function(r){ return cxCard(r, false); }).join('') : '');
+}
+function cxDc(){
+  if(!CX.rq) return cxRqWait();
+  var W = CX.rq.dec.filter(function(r){ return r.status !== 'Decided'; }), O = CX.rq.dec.filter(function(r){ return r.status === 'Decided'; });
+  return '<div class="cx-info cx-pl">🔒 Only Programme Leaders see this tab · ' + esc((CX.rq.progs || []).join(', ')) + '. For each class choose <b>P</b> present, <b>L</b> late (50%), <b>E</b> excused (50%) or <b>keep A</b>. Saving changes the register at once (logged) and emails the student and parent. A note is needed only when an absence is kept. No deadline; a reminder email comes on Mondays.</div>' +
+    '<div class="cx-sec">Waiting for your decision · ' + W.length + '</div>' + (W.length ? W.map(function(r){ return cxCard(r, true); }).join('') : '<div class="cx-s" style="margin-bottom:10px">Nothing waiting.</div>') +
+    (O.length ? '<div class="cx-sec">Decided · ' + O.length + '</div>' + O.map(function(r){ return cxCard(r, true); }).join('') : '');
+}
+function cxErr(card, m){ var x = card.querySelector('.cx-err'); if(!x){ x = document.createElement('div'); x.className = 'cx-err'; card.querySelector('.cx-rb').appendChild(x); } x.textContent = m; }
+document.addEventListener('click', function(e){
+  if(!$('pg-cls') || !$('pg-cls').contains(e.target)) return;
+  var t = e.target.closest('.cx-tab'); if(t){ CX.tab = t.dataset.t; cxDraw(); return; }
+  var g = e.target.closest('[data-cxgo]'); if(g){ CX.tab = g.dataset.cxgo; cxDraw(); return; }
+  var a = e.target.closest('.cx-resp button'); if(a){ [].forEach.call(a.parentNode.children, function(x){ x.classList.toggle('on', x === a); }); return; }
+  var s = e.target.closest('.cx-seg button'); if(s && !s.disabled){ [].forEach.call(s.parentNode.children, function(x){ x.classList.toggle('on', x === s); }); return; }
+  var st = e.target.closest('[data-cxstu]'); if(st){ go('ars'); openStudent(st.dataset.cxstu); return; }
+  if(e.target.id === 'cxPdf'){ cxPdf(); return; }
+  var dc = e.target.closest('[data-cxdoc]'); if(dc){ toast('Opening the document…'); apiFetch({ action: 'tutReqDoc', id: dc.dataset.cxdoc }).then(function(f){ var b = atob(f.b64), u = new Uint8Array(b.length); for(var i = 0; i < b.length; i++) u[i] = b.charCodeAt(i);
+      var url = URL.createObjectURL(new Blob([u], { type: f.type })), l = document.createElement('a'); l.href = url; l.download = f.name; document.body.appendChild(l); l.click(); l.remove(); setTimeout(function(){ URL.revokeObjectURL(url); }, 60000); })
+      .catch(function(x){ if(!isOut(x)) toast(x.message || 'Could not open the document.', true); }); return; }
+  var sd = e.target.closest('[data-cxsend]'); if(sd){ var card = sd.closest('.cx-req'), on = card.querySelector('.cx-resp .on'), cm = card.querySelector('textarea').value.trim();
+    if(!on) return cxErr(card, 'Please choose Agree, Disagree or Not sure.');
+    if(on.dataset.a !== 'Agree' && cm.length < 3) return cxErr(card, 'Please write a comment for the Programme Leader: it is needed for ' + on.dataset.a + '.');
+    if(CX.busy) return; CX.busy = true; sd.disabled = true; sd.textContent = 'Sending…';
+    apiPost('tutReqAnswer', { id: card.dataset.id, answer: on.dataset.a, comment: cm }).then(function(r){ CX.busy = false; toast('✓ ' + (r.message || 'Sent.')); return cxBadge(); })
+      .catch(function(x){ CX.busy = false; sd.disabled = false; sd.textContent = 'Send to Programme Leader'; if(!isOut(x)) cxErr(card, x.message || 'Could not send.'); }); return; }
+  var dd = e.target.closest('[data-cxdec]'); if(dd){ var card2 = dd.closest('.cx-req'), marks = {}, miss = false, keepA = false;
+    [].forEach.call(card2.querySelectorAll('.cx-seg'), function(sg){ var o = sg.querySelector('.on'); if(!o) miss = true; else { marks[sg.dataset.sid] = o.dataset.m; if(o.dataset.m === 'A') keepA = true; } });
+    var note = card2.querySelector('textarea').value.trim();
+    if(miss) return cxErr(card2, 'Please choose a mark for every class.');
+    if(keepA && note.length < 3) return cxErr(card2, 'Please write a note for the student and parent: it is needed when an absence is kept.');
+    if(CX.busy) return; CX.busy = true; dd.disabled = true; dd.textContent = 'Saving…';
+    apiPost('tutReqDecide', { id: card2.dataset.id, marks: marks, note: note }).then(function(r){ CX.busy = false; toast('✓ ' + (r.message || 'Saved.')); cDrop(cKey('k')); return cxBadge(); })
+      .catch(function(x){ CX.busy = false; dd.disabled = false; dd.textContent = 'Save decision and email the family'; if(!isOut(x)) cxErr(card2, x.message || 'Could not save.'); }); return; }
+});
+document.addEventListener('change', function(e){ if(e.target.id === 'cxM'){ CX.mf = e.target.value; cxDraw(); } });
+document.addEventListener('input', function(e){ if(e.target.id === 'cxQ'){ CX.q = e.target.value; var p = e.target.selectionStart; cxDraw(); var q = $('cxQ'); q.focus(); try { q.setSelectionRange(p, p); } catch(x){} } });
+function cxPdf(){
+  var w = window.open('', '_blank'); if(!w){ toast('Please allow pop-ups to save the PDF.', true); return; }
+  var me = BOOT && BOOT.me ? BOOT.me.name : '', T = $('cxTbl') ? $('cxTbl').outerHTML : '';
+  w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>CampusCore_Tutor_MyClasses_' + new Date().toISOString().slice(0, 10) + '</title><style>body{font:11px Arial,sans-serif;margin:16px}h1{font-size:16px;margin:0 0 2px}p{margin:0 0 10px;color:#555}table{width:100%;border-collapse:collapse}th,td{border-bottom:1px solid #ddd;padding:4px 6px;text-align:left}th{background:#0f1e3d;color:#fff;font-size:10px}.cx-mon td{background:#e2e8f0;font-weight:700}.cx-s{color:#666}.r{text-align:right}.c{text-align:center}.cx-chip{font-size:9px}@page{size:A4 landscape;margin:10mm}</style></head><body><h1>My classes · ' + esc(me) + '</h1><p>CampusCore Tutor Portal · ' + new Date().toLocaleString('en-GB') + '</p>' + T + '</body></html>');
+  w.document.close(); setTimeout(function(){ w.print(); }, 300);
+}
+
 loadBoot(false);
 setTimeout(function(){ try { loadNotices(); } catch(_){} apiFetch({action:'getNotices'}).then(renderAnnouncements).catch(function(){}); }, 1200);
 setTimeout(function(){ try { loadAcadCalendar(); } catch(_){} }, 1700);

@@ -830,6 +830,7 @@ table.rg{border-collapse:separate;border-spacing:0;min-width:100%;font-size:12px
 .circ.P{color:#16a34a;border-color:#16a34a;background:#ecfdf3;}
 .circ.L{color:#d97706;border-color:#d97706;background:#fffbeb;}
 .circ.A{color:#dc2626;border-color:#dc2626;background:#fef2f2;}
+.circ.E{color:#7c3aed;border-color:#7c3aed;background:#f5f3ff;}  /* 14 Nov 2026: excused after a request (counts 50%) */
 .circ.n{color:#94a3b8;border-color:#cbd5e1;border-style:dashed;}
 button.circ{cursor:pointer;padding:0;}
 button.circ:hover{transform:scale(1.12);}
@@ -951,6 +952,7 @@ button.circ:hover{transform:scale(1.12);}
 .g-count{font-size:16px;color:#334155;margin-top:4px;}.g-cnum{width:96px;height:96px;line-height:96px;border-radius:50%;background:#0f1e3d;color:#fff;font:800 52px Arial,sans-serif;margin:4px auto 10px;}.g-count b{color:#0f1e3d;}
 .now-go.g-start{background:#16a34a!important;}
 @keyframes gPulse{0%{box-shadow:0 0 0 0 rgba(37,99,235,.55)}100%{box-shadow:0 0 0 14px rgba(37,99,235,0)}}
+.ncard.unm-hl{outline:3px solid #dc2626;outline-offset:2px;}
 .ncard.g-pulse{animation:gPulse 1.2s infinite;border-color:#2563eb!important;}
 #gHint{position:fixed;z-index:400;background:#2563eb;color:#fff;font-weight:700;font-size:14px;border-radius:0;padding:9px 14px;box-shadow:0 10px 24px rgba(37,99,235,.35);pointer-events:none;white-space:nowrap;font-family:'Space Grotesk',sans-serif;}
 #gHint[hidden]{display:none;}
@@ -1164,14 +1166,14 @@ button.circ:hover{transform:scale(1.12);}
 
 <!-- STOP MODAL -->
 <div class="cc-ov" id="stopOv"><div class="cc-modal">
-  <h3 id="stopTitle">Finish this session?</h3>
+  <h3 id="stopTitle">End this class and sign out?</h3>
   <div class="mp" id="stopMp"></div>
   <div id="stopWarn"></div>
   <div class="cc-sum" id="stopSum"></div>
   <div class="cc-mbtns">
-    <button class="green" id="stopCancel">✓ Keep the class running</button>
-    <button class="red" id="stopOut">⏹ Finish class &amp; sign out</button>
-    <button class="blue" id="stopShow" style="display:none">Show unmarked students</button>
+    <button class="green" id="stopCancel">Go back</button>
+    <button class="red" id="stopOut">⏹ End class now &amp; sign out</button>
+    <button class="blue" id="stopShow" style="display:none">Show the students to mark</button>
   </div>
 </div></div>
 
@@ -1181,24 +1183,20 @@ button.circ:hover{transform:scale(1.12);}
   <div class="g-tick">✓</div><h2>Class started</h2><div class="g-sub" id="gStartedSub"></div>
   <div class="g-steps"><div><i>1</i><span><b>Teach as usual.</b> Take the register at any point in the class: tap once Present, twice Absent, three times Late. Every tap saves by itself.</span></div>
   <div><i>2</i><span>CampusCore reminds you with a chime <b>halfway</b> and <b>15 minutes before the end</b>.</span></div>
-  <div><i>3</i><span>Register done? Press <b>Finish class &amp; sign out</b>.</span></div></div>
+  <div><i>3</i><span>At the end of the class, press <b>End class now &amp; sign out</b>.</span></div></div>
   <div class="g-tl" id="gStartedTl"></div>
 </div></div>
 <div class="g-ov" id="gRemind" hidden><div class="g-box">
   <div class="g-tick" id="gRemIcon">🔔</div><h2 id="gRemTitle"></h2><div class="g-sub" id="gRemSub"></div>
   <div class="g-steps" id="gRemMsg"></div>
-  <div class="g-btns"><button class="g-btn g-go" id="gRemKeep" type="button">✓ Keep the class running</button><button class="g-btn g-fin" id="gRemFin" type="button">⏹ Finish class &amp; sign out</button></div>
+  <div class="g-btns"><button class="g-btn g-go" id="gRemKeep" type="button">✓ OK</button></div>
 </div></div>
 <div class="g-ov" id="gNoStart" hidden><div class="g-box">
   <div class="g-tick amber" id="gNsIc">🔔</div><h2 id="gNsH">Start your class</h2><div class="g-sub" id="gNsSub"></div>
   <div class="g-steps"><div><i>→</i><span>Start it now so the register is taken and saved. Marks taken before Start are not recorded.</span></div></div>
   <div class="g-btns"><button class="g-btn g-go" id="gNsGo" type="button" style="font-size:20px;padding:18px">▶ Start your class now</button><button class="g-btn" id="gNsNo" type="button" style="background:#fff;color:#475569;border:1px solid #cbd5e1">Not now (reminds again in 5 minutes)</button></div>
 </div></div>
-<div class="g-ov" id="gAll" hidden><div class="g-box">
-  <div class="g-tick">✓</div><h2>Everyone is marked</h2><div class="g-sub" id="gAllSub"></div>
-  <div class="g-steps"><div><i>✓</i><span>All marks are <b>saved</b>.</span></div><div><i>→</i><span>Still teaching, or expecting late arrivals? <b>Keep the class running</b> and finish at the end. Done? <b>Finish class &amp; sign out</b>.</span></div></div>
-  <div class="g-btns"><button class="g-btn g-go" id="gAllKeep" type="button">✓ Keep the class running</button><button class="g-btn g-fin" id="gAllFin" type="button">⏹ Finish class &amp; sign out</button></div>
-</div></div>
+<!-- 15 Nov 2026: the "Everyone is marked" box was removed. Tutors mark at any time; no box opens. -->
 <div class="g-ov" id="gDone" hidden><div class="g-box">
   <div class="g-tick">✓</div><h2 id="gDoneTitle">Class closed and saved</h2><div class="g-sub" id="gDoneSub"></div>
   <div class="g-out">🔒 You are signed out</div>
@@ -1344,7 +1342,7 @@ function autoSignOut(){
 
 
 // ============================================================ guided class flow (19 Oct 2026)
-function gHide(){ ['gStarted','gRemind','gAll','gNoStart'].forEach(function(i){ var e = $(i); if(e) e.hidden = true; }); }
+function gHide(){ ['gStarted','gRemind','gNoStart'].forEach(function(i){ var e = $(i); if(e) e.hidden = true; }); }
 var G_FLAGS = {};   // also kept in memory, so a PC without session storage never repeats a reminder
 function gFlag(k, set){ var id = 'cc_g' + k + '_' + (LIVE ? LIVE.id : ''); if(set) G_FLAGS[id] = 1; try { if(set){ sessionStorage.setItem(id, '1'); return true; } return G_FLAGS[id] === 1 || sessionStorage.getItem(id) === '1'; } catch(e){ return G_FLAGS[id] === 1; } }
 function hm12(ms){ var d = new Date(ms), h = d.getHours() % 12 || 12; return h + ':' + String(d.getMinutes()).padStart(2, '0'); }
@@ -1384,7 +1382,7 @@ function remind(kind){
   try { chime(); } catch(e){}
   if(document.hidden || !document.hasFocus()){
     var msg = (kind === 'half' ? 'Halfway through the class' : '15 minutes left') + ': ' + mod + '. ' + L.n + ' of ' + L.tot + ' marked. ' +
-              (all ? 'Finish the class when it ends.' : 'Please take the register.');
+              (all ? 'The register is complete.' : 'Please take the register.');
     try { window.alert(msg); } catch(e){}
     goLive(); return;
   }
@@ -1393,24 +1391,21 @@ function remind(kind){
   $('gRemTitle').textContent = kind === 'half' ? 'Halfway through the class' : '15 minutes left';
   $('gRemSub').innerHTML = '<b>' + esc(mod) + '</b> · ' + (kind === 'last' ? 'ends at <b>' + hm12(LIVE.endAt) + '</b> · ' : '') + '<b>' + L.n + ' of ' + L.tot + ' marked</b>';
   $('gRemMsg').innerHTML = all
-    ? '<div><i>✓</i><span>The register is complete and saved. Finish now, or keep the class running and finish at the end.</span></div>'
+    ? '<div><i>✓</i><span>The register is complete and saved.</span></div>'
     : '<div><i>→</i><span>' + (L.n ? 'Some students are not marked yet.' : 'The register has not been taken yet.') + ' Please take it now.</span></div>' +
       (kind === 'last' ? '<div><i>!</i><span>If nobody finishes it, the class closes by itself at <b>' + hm12(LIVE.closeAt) + '</b> with all marks saved, and the PC signs out.</span></div>' : '');
-  $('gRemKeep').textContent = all ? '✓ Keep the class running' : '✓ Take the register now';
+  $('gRemKeep').textContent = all ? '✓ OK' : '✓ Take the register now';
   $('gRemind').hidden = false;
 }
 $('gRemKeep').onclick = function(){ $('gRemind').hidden = true; goLive(); };
-$('gRemFin').onclick = function(){ $('gRemind').hidden = true; doStop('out'); };
-$('gAllKeep').onclick = function(){ $('gAll').hidden = true; };
-$('gAllFin').onclick = function(){ $('gAll').hidden = true; doStop('out'); };
 // The hint on the first card while nobody is marked
 setInterval(function(){
   if(!LIVE || SIGNED_OUT){ $('gHint').hidden = true; return; }
   var L = liveCounts(), busy = document.querySelector('.cc-ov.show') || ($('notOv') && $('notOv').classList.contains('show')) || !$('gStarted').hidden || !$('gRemind').hidden || !$('gDone').hidden;
   // 9 Nov 2026: the "Everyone is marked" box no longer opens (it came up on the first tap of the last student,
-  // before an Absent or Late could be given). Finishing stays with the Finish class button.
+  // before an Absent or Late could be given). Ending stays with the End class button.
   var h = $('gHint'), onPage = $('page-attendance') && $('page-attendance').classList.contains('active');
-  var card = onPage && liveHere() && L.n === 0 && !busy && $('gAll').hidden ? document.querySelector('#att-tbody .ncard') : null;
+  var card = onPage && liveHere() && L.n === 0 && !busy ? document.querySelector('#att-tbody .ncard') : null;
   document.querySelectorAll('.g-pulse').forEach(function(x){ if(x !== card) x.classList.remove('g-pulse'); });
   if(!card){ h.hidden = true; return; }
   card.classList.add('g-pulse');
@@ -1588,6 +1583,10 @@ async function boot(){
   renderDashboard();
   $('cc-boot').style.display = 'none'; $('app').style.display = '';
   if(LIVE){ var i = CLASSES.findIndex(function(c){ return c.key === LIVE.key; }); if(i > -1){ openAtt(i); toast('Your class in progress has been reopened'); } }
+  // 15 Nov 2026: check for the "Start your class" box as soon as the classes are on screen. Before, the first check ran
+  // 2.5 s after the page opened: when the classes took longer to load, the box only came at the next check (15 s later),
+  // and most tutors had pressed the green bar by then.
+  setTimeout(function(){ try { nsCheck(); } catch(_){} }, 600);
   setTimeout(function(){ try { loadAcadCalendar(); loadTutorUCal(); loadTutorPolicies(); } catch(_){} apiFetch({action:'getNotices'}).then(renderAnnouncements).catch(function(){}); }, 1200);
 }
 
@@ -1829,7 +1828,7 @@ function renderCtl(){
   } else pb.className = 'past-banner';
   var big = $('bigBtn'), sub = $('bigSub');
   if(running){
-    big.className = 'cc-big fin'; big.innerHTML = '⏹ Finish Session &amp; Sign Out'; big.onclick = askStop;
+    big.className = 'cc-big fin'; big.innerHTML = '⏹ End class now &amp; sign out'; big.onclick = askStop;
     sub.innerHTML = '<span class="live-dot"></span> <b>Session ' + LIVE.num + ' in progress</b> · started ' + esc(LIVE.start) + ' · <span id="liveElapsed">' + elapsedTxt() + '</span> · marks save automatically · <a href="#" class="cc-cancel-lk" onclick="askCancel();return false">Started by mistake? Cancel session</a>';
   } else if(other){
     var oc = CLASSES.find(function(c){ return c.key === LIVE.key; });
@@ -1861,7 +1860,7 @@ function liveHere(){ return !!(LIVE && CUR && LIVE.key === CUR.key && VIEW && VI
 // Module %: Present 100%, Late 50%, Absent 0%, over the sessions where the student was marked (today included).
 function modPct(key, past){
   var s = 0, t = 0;
-  past.forEach(function(x){ var m = pastMark(x.id, key); if(m){ t++; s += m === 'P' ? 1 : m === 'L' ? 0.5 : 0; } });
+  past.forEach(function(x){ var m = pastMark(x.id, key); if(m){ t++; s += m === 'P' ? 1 : (m === 'L' || m === 'E') ? 0.5 : 0; } });
   if(liveHere()){ var m2 = VIEW.marks[key]; if(m2){ t++; s += m2 === 'P' ? 1 : m2 === 'L' ? 0.5 : 0; } }
   return t ? Math.round(s / t * 100) : null;
 }
@@ -1893,7 +1892,7 @@ function renderTable(){
     if(!accH) accH = '<span class="accp none">–</span>';
     var note = s.moved ? '<span class="nw out">Moved to another group</span>' : s.joined ? '<span class="nw">Joined this group</span>' : '';
     h += '<tr data-key="' + esc(s.key) + '" data-name="' + esc(s.name) + '" data-id="' + esc(s.bsuId || '') + '" data-group="' + esc(r.group) + '"' + (st ? ' data-att-status="' + st + '"' : '') + '>'
-      + '<td class="nm"><button type="button" class="ncard' + (st ? ' st-' + st : '') + (s.moved ? ' moved' : '') + '" data-key="' + esc(s.key) + '" title="' + esc(s.name) + '"><span><span class="nn">' + esc(s.name) + '</span><span class="ni">' + id + '</span>'
+      + '<td class="nm"><button type="button" class="ncard' + (st ? ' st-' + st : '') + (s.moved ? ' moved' : '') + (UNM_ONLY && !st && !s.moved && liveHere() ? ' unm-hl' : '') + '" data-key="' + esc(s.key) + '" title="' + esc(s.name) + '"><span><span class="nn">' + esc(s.name) + '</span><span class="ni">' + id + '</span>'
       + '' + note + '</span>'
       + '<span class="nt">' + (st ? LBL[st] : (live ? 'NOT MARKED' : '')) + '</span></button></td>'
       + '<td class="ax">' + accH + '</td>'
@@ -1938,7 +1937,9 @@ function cardClick(key){
 }
 // An earlier session: the tutor picks its date first, then clicks the circles (P → A → L). Saved at once, no emails.
 function pastClick(sid, key){
-  var cur = pastMark(sid, key), nx = { '': 'P', P: 'A', A: 'L', L: 'P' }[cur || ''];
+  var cur = pastMark(sid, key);
+  if(cur === 'E'){ toast('This mark was excused by the Programme Leader after a request. It cannot be changed here.'); return; }   // 14 Nov 2026
+  var nx = { '': 'P', P: 'A', A: 'L', L: 'P' }[cur || ''];
   (PAST[sid] = PAST[sid] || {})[key] = nx; EDITED[sid + '|' + key] = 1;
   var wrap = document.querySelector('#att-body .att-table-wrap'), sx = wrap.scrollLeft, sy = wrap.scrollTop;
   renderTable(); wrap.scrollLeft = sx; wrap.scrollTop = sy;
@@ -1952,7 +1953,23 @@ function pastClick(sid, key){
 }
 // Search: hides rows that do not match, without changing the counts or what is saved.
 var UNM_ONLY = false;
-function showUnmarked(){ $('stopOv').classList.remove('show'); }
+// 15 Nov 2026: the students still to mark in the running class (moved students do not count)
+function unmarkedKeys(){
+  if(!liveHere()) return [];
+  var out = [];
+  document.querySelectorAll('#att-tbody tr[data-key]').forEach(function(tr){
+    var k = tr.dataset.key, card = tr.querySelector('.ncard');
+    if(card && card.classList.contains('moved')) return;
+    var m = VIEW.marks[k]; if(m !== 'P' && m !== 'L' && m !== 'A') out.push(k);
+  });
+  return out;
+}
+function showUnmarked(){
+  $('stopOv').classList.remove('show');
+  UNM_ONLY = true; renderTable();
+  var f = document.querySelector('#att-tbody .ncard.unm-hl'); if(f) try { f.scrollIntoView({ block: 'center' }); } catch(e){}
+  toast('Please mark the students outlined in red');
+}
 function filterAtt(){
   var q = normKey($('attSearch').value), digits = String($('attSearch').value).replace(/\D/g, ''), n = 0, tot = 0;
   var words = q ? q.split(' ') : [];
@@ -2126,13 +2143,22 @@ function askStop(){
   if(!(VIEW && VIEW.live && VIEW.id === LIVE.id && CUR && CUR.key === LIVE.key)){ var k = CLASSES.findIndex(function(x){ return x.key === LIVE.key; }); if(k > -1) openAtt(k); }
   clearSearch(); SEL = null; renderTable();
   var c = counts();
-  $('stopTitle').textContent = 'Finish this session?';
-  $('stopMp').innerHTML = '<b style="color:var(--green)">' + c.p + ' present</b>, <b style="color:var(--amber)">' + c.l + ' late</b>, <b style="color:var(--red)">' + c.a + ' absent</b>' + (c.un ? ', <b>' + c.un + ' not marked</b>.<br><span style="font-size:12.5px;color:var(--text2)">Students not marked stay unmarked: nothing is saved for them and no email is sent.</span>' : '.')
-    + '<div style="font-size:12px;color:var(--text2);margin-top:8px">The register is saved, absence and late emails go (if switched on) only for students you marked, and you are signed out.</div>';
+  // 15 Nov 2026: every student must be marked before the class can end (students moved to another group are not counted)
+  var un = unmarkedKeys();
+  if(un.length){
+    $('stopTitle').textContent = 'Please mark these students to end the class';
+    $('stopMp').innerHTML = '<b>' + un.length + ' student' + (un.length === 1 ? ' is' : 's are') + ' not marked yet.</b> Mark every student, then press <b>End class now &amp; sign out</b> again.';
+    $('stopOut').style.display = 'none'; $('stopShow').style.display = ''; $('stopCancel').style.display = 'none';
+    $('stopWarn').innerHTML = ''; $('stopSum').style.display = 'none';
+    $('stopOv').classList.add('show');
+    return;
+  }
+  $('stopTitle').textContent = 'End this class and sign out?';
+  $('stopMp').innerHTML = '<b style="color:var(--green)">' + c.p + ' present</b>, <b style="color:var(--amber)">' + c.l + ' late</b>, <b style="color:var(--red)">' + c.a + ' absent</b>.';
   $('stopOut').style.display = ''; $('stopShow').style.display = 'none'; $('stopCancel').style.display = '';
   $('stopWarn').innerHTML = '';
   $('stopSum').style.display = '';
-  $('stopSum').innerHTML = '<span>Module</span><span>' + esc(CUR.module) + '</span><span>Session</span><span>' + LIVE.num + '</span><span>Started</span><span>' + esc(LIVE.start) + '</span><span>Finishing</span><span>' + hhmm(new Date()) + '</span>';
+  $('stopSum').innerHTML = '<span>Module</span><span>' + esc(CUR.module) + '</span><span>Session</span><span>' + LIVE.num + '</span><span>Started</span><span>' + esc(LIVE.start) + '</span><span>Ending</span><span>' + hhmm(new Date()) + '</span>';
   $('stopOv').classList.add('show');
 }
 // A class started by mistake: removed on screen at once (teacher stays signed in); CampusCore marks
