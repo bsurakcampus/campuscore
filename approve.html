@@ -128,7 +128,7 @@ function esc(x){ return String(x == null ? '' : x).replace(/[&<>"']/g, function(
       if(!data || data.status !== 'pending'){ byStatusAll(data && data.status); return; }
       document.getElementById('ask-email').textContent = data.maskedEmail || E || 'your BSU email';
       var c = data.cls, box = document.getElementById('ask-cls');
-      if(data.portal === 'tutor'){ tutorWording(); box.style.display = 'none'; if(data.keep){ var kp = document.createElement('p'); kp.className = 'keepw'; kp.innerHTML = '🔒 That computer will <b>stay signed in for 30 days</b>. Approve only if it is <b>your own computer</b>.'; kp.style.cssText = 'background:#fffbeb;border:1px solid #fde68a;color:#78350f;border-radius:0;padding:10px 12px;font-size:14px;line-height:1.5;margin:10px 0'; var q0 = document.querySelector('#v-ask .q'); if(q0) q0.parentNode.insertBefore(kp, q0); } }
+      if(data.portal === 'tutor' || data.portal === 'admin'){ tutorWording(data.portal === 'admin' ? 'Admin Portal' : 'Tutor Portal'); box.style.display = 'none'; if(data.keep){ var kp = document.createElement('p'); kp.className = 'keepw'; kp.innerHTML = '🔒 That computer will <b>stay signed in for 30 days</b>. Approve only if it is <b>your own computer</b>.'; kp.style.cssText = 'background:#fffbeb;border:1px solid #fde68a;color:#78350f;border-radius:0;padding:10px 12px;font-size:14px;line-height:1.5;margin:10px 0'; var q0 = document.querySelector('#v-ask .q'); if(q0) q0.parentNode.insertBefore(kp, q0); } }
       else if(c){ box.innerHTML = '<b class="m">' + esc(c.module) + '</b>' + esc(c.groups) + '<br><b>Room ' + esc(c.room || '-') + ' · ' + esc(c.time) + '</b>'; }
       else { box.className = 'cls none'; box.innerHTML = '<b>You have no class on the timetable right now.</b> If you are not at a classroom PC, do not approve.'; }
       var ch = document.getElementById('choices');
@@ -139,8 +139,10 @@ function esc(x){ return String(x == null ? '' : x).replace(/[&<>"']/g, function(
     .catch(function(){ show('v-fail'); });
 })();
 // 4 Nov 2026: the Tutor Portal uses the same link and numbers; only the words differ.
-function tutorWording(){
-  function set(sel, html){ var el = document.querySelector(sel); if(el) el.innerHTML = html; }
+// 16 Nov 2026: the same wording for the Admin Portal, with its own name
+function tutorWording(pn){
+  pn = pn || 'Tutor Portal';
+  function set(sel, html){ var el = document.querySelector(sel); if(el) el.innerHTML = html.replace(/Tutor Portal/g, pn); }
   set('#v-ask .badge', '📚 Tutor Portal');
   set('#v-ask p', 'Someone is signing in to the <b>CampusCore Tutor Portal</b> as <strong id="ask-email">' + esc(document.getElementById('ask-email').textContent) + '</strong>.');
   set('#v-ask .q', 'Which number is on your Tutor Portal screen?');

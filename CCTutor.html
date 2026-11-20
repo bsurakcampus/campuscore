@@ -1052,6 +1052,41 @@ body{overflow:hidden}
 .wdtxt{font-size:13px;line-height:1.6;color:var(--ink2);margin:6px 0 0}
 @media print{.side,.mtop .btn-o,.mtop .back,#gtabs,.ms{display:none!important}.app{display:block;height:auto}.main,.main.modmode{height:auto;overflow:visible}.twrap{overflow:visible}body{overflow:visible}}
 </style>
+<style id="asm2026">
+/* 17 Nov 2026: assessment page extras */
+.as[data-asm]{cursor:pointer!important}.as[data-asm]:hover .n{text-decoration:underline}
+.upb.dis{opacity:.45;cursor:not-allowed}
+.asmtest{background:#fef3c7;color:#92400e;border:1px solid #fcd34d;font-size:11px;font-weight:800;padding:4px 10px}
+.nslist{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}.nslist span{background:#fef2f2;border:1px solid #fecaca;color:#991b1b;font-size:12px;padding:3px 8px}.nslist small{color:#b91c1c;opacity:.7;font-family:var(--mono)}
+.nsbtns{display:flex;gap:8px;flex-wrap:wrap}.btn-p.red{background:#dc2626;border-color:#dc2626}
+.nshist{margin-top:10px;border-top:1px dashed var(--line);padding-top:6px;font-size:11.5px;color:var(--ink2)}.nshist div{padding:2px 0}
+.empty-s{background:#fff;border:1px dashed var(--line2);padding:24px;text-align:center;color:var(--ink2)}
+</style>
+<style id="mst2026">
+/* 16 Nov 2026: marking status on each assessment card (agreed 13 Nov). Short words on the card; the full name in the box. */
+.mst{all:unset;box-sizing:border-box;display:inline-flex;align-items:center;gap:5px;cursor:pointer;border:1.5px solid;padding:2px 7px 2px 3px;font:700 11px var(--sans);white-space:nowrap;line-height:1.3;background:#fff}
+.mst i{font:800 9px var(--mono,monospace);font-style:normal;color:#fff;padding:1px 4px;min-width:12px;text-align:center}
+.mst:hover{filter:brightness(.96)}.mst:focus-visible{outline:2px solid #2563eb;outline-offset:1px}
+.mst.dl{border-color:#cbd5e1;color:#475569}.mst.dl i{background:#64748b}
+.mst.dn{border-color:#fca5a5;color:#b91c1c}.mst.dn i{background:#dc2626}
+.mst.p{border-color:#f59e0b;color:#92400e}.mst.p i{background:#d97706}
+.mst.lkd{cursor:default}.mst.lkd:hover{filter:none}
+.mst.m{border-color:#93c5fd;color:#1e40af}.mst.m i{background:#2563eb}
+.mst.md{border-color:#c4b5fd;color:#5b21b6}.mst.md i{background:#7c3aed}
+.mst.r{border-color:#86efac;color:#166534}.mst.r i{background:#16a34a}
+.mst .dn{font-size:9px;opacity:.7}
+.as .lk{font-size:12px;color:var(--ink3);cursor:help;padding:0 2px}
+.stopt{display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:center;width:100%;border:1.5px solid var(--line2,#cbd5e1);background:#fff;padding:10px 12px;margin:6px 0;cursor:pointer;text-align:left;font:inherit;color:inherit}
+.stopt i{font:800 13px var(--mono,monospace);font-style:normal;color:#fff;display:flex;align-items:center;justify-content:center;height:36px}
+.stopt b{display:block;font-size:14px}.stopt small{display:block;color:var(--ink2,#475569);font-size:12px;margin-top:2px}
+.stopt.dl i{background:#64748b}.stopt.dn i{background:#dc2626}.stopt.au i{background:#0f1e3d;font-size:11px}.stopt.p i{background:#d97706}.stopt.m i{background:#2563eb}.stopt.md i{background:#7c3aed}.stopt.r i{background:#16a34a}
+.stopt.on{border-color:#0f1e3d;box-shadow:inset 0 0 0 1px #0f1e3d;background:#f8fafc}.stopt.on b::after{content:'  ✓ current';font-size:11px;color:#16a34a}
+.stopt:disabled{opacity:.6;cursor:wait}
+.sast{display:inline-flex;align-items:center;gap:4px;border:1.5px solid;padding:1px 6px 1px 2px;font:700 10px var(--sans);white-space:nowrap}
+.sast i{font:800 8px monospace;font-style:normal;color:#fff;padding:1px 3px}
+.sast.dl{border-color:#cbd5e1;color:#475569}.sast.dl i{background:#64748b}.sast.dn{border-color:#fca5a5;color:#b91c1c}.sast.dn i{background:#dc2626}.sast.p{border-color:#f59e0b;color:#92400e}.sast.p i{background:#d97706}.sast.m{border-color:#93c5fd;color:#1e40af}.sast.m i{background:#2563eb}
+.sast.md{border-color:#c4b5fd;color:#5b21b6}.sast.md i{background:#7c3aed}.sast.r{border-color:#86efac;color:#166534}.sast.r i{background:#16a34a}
+</style>
 <style id="ds2026"> /* CampusCore design system (12 Nov 2026): square corners, technical type */ h1,h2,.ttl,.page-title,.nm2,.calhd b{font-family:'Chakra Petch','Space Grotesk',sans-serif;letter-spacing:.2px} .who .av{border-radius:0!important}.hav{border-radius:0!important}.calhd .hav{border-radius:0!important}.sidebar-avatar{border-radius:0!important}.profile-hero-photo{border-radius:0!important}.profile-photo-large{border-radius:0!important}.sps-photo-circle{border-radius:0!important} .mc{border-radius:50%!important}  /* mark circles stay round */ /* top cards: the person's photo as a full-height 1:1 square on the left edge (as in the Admin Portal) */ .hero2{padding:0 18px 0 0!important;align-items:stretch!important;min-height:92px;flex-wrap:nowrap!important} .hero2>.hav{width:auto!important;height:auto!important;min-height:92px;aspect-ratio:1/1;align-self:stretch;border:0!important;margin:0!important;font-size:28px!important;background-size:cover!important;background-position:center!important} .hero2>*:not(.hav){align-self:center} .sh{padding:0 22px 0 0!important;align-items:stretch!important;min-height:132px;flex-wrap:nowrap!important} .sh>.hav{width:auto!important;height:auto!important;min-height:132px;aspect-ratio:1/1;align-self:stretch;border:0!important;margin:0!important;font-size:38px!important;background-size:cover!important;background-position:center!important} .sh>*:not(.hav){align-self:center;padding:12px 0} .profile-hero{padding:0 24px 0 0!important;align-items:stretch!important;min-height:124px} .profile-hero-photo{width:auto!important;height:auto!important;min-height:124px;aspect-ratio:1/1;align-self:stretch;border:0!important;display:flex!important;align-items:center;justify-content:center;font-size:36px!important;background-size:cover!important;background-position:center!important} .profile-hero-info{align-self:center;padding:14px 0} /* sign-out countdown: the number sits exactly in the middle of the circle */ .g-cnum{display:flex!important;align-items:center;justify-content:center;line-height:1!important;font:700 50px 'Chakra Petch',sans-serif!important;padding:0!important} </style><style id="cx2026">/* 14 Nov 2026: Classroom menu */
 .nav .cx-badge{margin-left:auto;background:#dc2626;color:#fff;font:700 10.5px var(--mono);padding:1px 6px}
 .cx-tabs{display:flex;gap:0;border-bottom:2px solid var(--navy);margin:0 0 16px;flex-wrap:wrap}
@@ -1143,6 +1178,7 @@ body{overflow:hidden}
       <div id="arsOut"><div class="nm-info" style="font-size:13px">Type a BSU ID or part of a name, then pick the student.</div></div>
     </div>
     <div class="pg" id="pg-cls" hidden></div>
+    <div class="pg" id="pg-asm" hidden><div id="asmMain"></div></div>
     <div class="pg" id="pg-tt" hidden>
       <div class="hrow"><div><h2>My Timetable</h2><p id="ttSub"></p></div><div class="hbtns"><button class="btn-o" type="button" id="ttPdf">📄 Save as PDF</button></div></div>
       <div class="tsum" id="ttSum"></div>
@@ -1175,6 +1211,27 @@ body{overflow:hidden}
   <label>Weight set for this module</label><div class="wbar"><i id="aBar" style="width:0"></i></div><div style="font-size:11.5px;color:var(--ink2);margin-top:4px" id="aSum"></div>
   <div class="err" id="aErr"></div>
   <div class="nm-row"><button class="btn-o" type="button" id="aCancel">Cancel</button><button class="btn-p" type="button" id="aSave">Save assessment</button></div>
+</div></div>
+<div class="nm-ov" id="upOv" hidden><div class="nm-box" style="width:min(760px,100%);max-height:90vh;overflow:auto">
+  <h3 id="upTitle">Check before saving</h3><div class="s" id="upSub"></div>
+  <div class="upk" id="upK"></div>
+  <div id="upBody"></div>
+  <div class="nm-info" id="upInfo"></div>
+  <div class="err" id="upErr"></div>
+  <div class="nm-row"><button class="btn-o" type="button" id="upCancel">Cancel · nothing saved</button><button class="btn-p" type="button" id="upSave">Save</button></div>
+</div></div>
+<div class="nm-ov" id="ntOv" hidden><div class="nm-box">
+  <h3 id="ntTitle">Send notice?</h3><div class="s" id="ntSub"></div>
+  <div id="ntBody" style="font-size:13px;line-height:1.55"></div>
+  <div class="err" id="ntErr"></div>
+  <div class="nm-row"><button class="btn-o" type="button" id="ntNo">Cancel</button><button class="btn-p" type="button" id="ntGo">Send</button></div>
+</div></div>
+<div class="nm-ov" id="stOv" hidden><div class="nm-box af">
+  <h3>Marking status</h3><div class="s" id="stS"></div>
+  <div id="stList"></div>
+  <p class="wdtxt" style="margin-top:8px">Choose any of these, in any order (to correct a mistake). Each change is recorded with your name and the time. When the marks are in, it becomes <b>Complete · Marks released</b> by itself and is locked.</p>
+  <div class="err" id="stErr"></div>
+  <div class="nm-row"><button class="btn-o" type="button" id="stNo">Close</button></div>
 </div></div>
 <div class="nm-ov" id="wdOv" hidden><div class="nm-box af">
   <h3>Withdraw this assessment?</h3><div class="s" id="wdS"></div>
@@ -1340,7 +1397,7 @@ var PAGE = 'dash';
 function go(p){
   PAGE = p;
   document.querySelectorAll('.pg').forEach(function(e){ e.hidden = e.id !== 'pg-' + p; });
-  var navK = p === 'mod' ? 'dash' : p;
+  var navK = p === 'mod' || p === 'asm' ? 'dash' : p;
   document.querySelectorAll('.snav .nav[data-k]').forEach(function(b){ b.classList.toggle('on', b.dataset.k === navK); });
   $('main').classList.toggle('modmode', p === 'mod');
   $('main').scrollTop = 0;
@@ -1431,9 +1488,12 @@ function modCard(r, i){
   var act = r.assessments.filter(function(a){ return a.status !== 'Withdrawn'; });
   act.forEach(function(a){
     var n = Number(String(a.sa).replace(/\D/g, '')), dd = daysTo(a.deadline);
-    h += '<div class="as" style="cursor:default"><span class="c">' + esc(a.sa) + ' · ' + a.weight + '%</span><span class="n" title="' + esc(a.title) + '">' + esc(a.title) + '</span><span class="d">due ' + fmtD(a.deadline) + (dd != null && dd >= 0 ? ' · ' + dd + ' day' + (dd === 1 ? '' : 's') : '') + '</span><span class="b a">' + (a.locked ? 'Locked' : 'Marks due') + '</span>'
-      + (a.locked ? '<span></span>' : '<span><button class="ed2" type="button" data-ed="' + i + ':' + n + '" title="Edit">✎</button><button class="ed2" type="button" data-del="' + i + ':' + n + '" title="Withdraw">✕</button></span>')
-      + (dd != null && dd >= 0 ? '<span class="big">' + dd + '<small>days left</small></span>' : '') + '</div>';
+    var M = mstOf(a.mstNow), early = M.k === 'dl' || M.k === 'dn';
+    h += '<div class="as' + (M.k === 'r' ? ' rel' : '') + '" data-asm="' + i + ':' + n + '" title="Open the assessment page"><span class="c">' + esc(a.sa) + ' · ' + a.weight + '%</span><span class="n" title="' + esc(a.title) + '">' + esc(a.title) + '</span><span class="d">due ' + fmtD(a.deadline) + (dd != null && dd >= 0 && early ? ' · ' + dd + ' day' + (dd === 1 ? '' : 's') : '') + '</span>'
+      + (a.locked ? '<span class="mst ' + M.k + ' lkd" title="Locked: nothing can be changed."><i>' + M.code + '</i>' + M.short + '</span>'
+                  : '<button type="button" class="mst ' + M.k + '" data-st="' + i + ':' + n + '" title="' + esc(M.name + (a.mst ? ' · set by hand' + (a.mstAt ? ' on ' + fmtD(a.mstAt) : '') : ' · automatic from the deadline') + ' · click to change') + '"><i>' + M.code + '</i>' + M.short + ' <span class="dn">▾</span></button>')
+      + (a.locked ? '<span class="lk" title="Locked: nothing can be changed.">🔒</span>' : '<span><button class="ed2" type="button" data-ed="' + i + ':' + n + '" title="Edit">✎</button><button class="ed2" type="button" data-del="' + i + ':' + n + '" title="Withdraw">✕</button></span>')
+      + (dd != null && dd >= 0 && early ? '<span class="big">' + dd + '<small>days left</small></span>' : '') + '</div>';
   });
   if(act.length < 2 && r.weightSet < 100) h += '<button type="button" class="adda" data-add="' + i + ':' + (act.length + 1) + '">＋ Add assessment<span class="wt">' + r.weightSet + '% of 100% set</span></button>';
   else if(r.weightSet === 100) h += '<div style="font-size:11.5px;color:#15803d;font-weight:700;padding:2px 2px">✓ 100% set up</div>';
@@ -1441,6 +1501,9 @@ function modCard(r, i){
   return h + '</div></div>';
 }
 $('dashWrap').addEventListener('click', function(e){
+  var st = e.target.closest('[data-st]'); if(st){ var sp = st.dataset.st.split(':'); openStatus(+sp[0], +sp[1]); return; }
+  if(e.target.closest('.mst.lkd, .lk')) return;
+  if(!e.target.closest('[data-add],[data-ed],[data-del]')){ var am = e.target.closest('[data-asm]'); if(am){ var ap = am.dataset.asm.split(':'); openAsm(+ap[0], +ap[1]); return; } }
   var a = e.target.closest('[data-add]'); if(a){ var p = a.dataset.add.split(':'); openAdd(+p[0], +p[1]); return; }
   var ed = e.target.closest('[data-ed]'); if(ed){ var q = ed.dataset.ed.split(':'); openAdd(+q[0], +q[1]); return; }
   var dl = e.target.closest('[data-del]'); if(dl){ var w = dl.dataset.del.split(':'); askWithdraw(+w[0], +w[1]); return; }
@@ -1486,6 +1549,261 @@ $('aSave').onclick = function(){
   apiPost('tutAssessSave', { runId: r.runId, sa: EDIT.n, title: t, weight: w, deadline: d })
     .then(function(){ cDrop(cKey('r', r.runId)); $('addOv').hidden = true; toast('✓ Saved · ' + r.module + ' · ' + t + ' (' + w + '%) · for all groups'); loadBoot(true); })
     .catch(function(x){ b.disabled = false; b.textContent = 'Save assessment'; if(!isOut(x)) e.textContent = x.message || 'Could not save. Please try again.'; });
+};
+// ================================================================ ASSESSMENT PAGE (17 Nov 2026)
+// One page per assessment card. Four uploads, each read here and shown as a check; nothing is saved until Save,
+// and CampusCore checks everything again. Notices go only to the non-submitters saved on the server.
+var ASM = null, ASMQ = null, UP = null;
+function asmGrade(m){ return m == null ? 'NS' : m >= 70 ? 'A' : m >= 60 ? 'B' : m >= 50 ? 'C' : m >= 40 ? 'D' : 'F'; }
+var ASM_GC = { A: '#16a34a', B: '#2563eb', C: '#d97706', D: '#ea580c', F: '#dc2626', NS: '#64748b' };
+function openAsm(i, n){
+  var r = BOOT.runs[i]; if(!r || !r.runId) return;
+  ASMQ = { i: i, n: n, runId: r.runId };
+  go('asm');
+  $('asmMain').innerHTML = '<div class="mtop"><button class="back" type="button" data-asmback>← Dashboard</button><div><h2>' + esc(r.module) + ' · SA' + n + '</h2><p>Loading…</p></div></div><div class="empty-s">Reading the latest from CampusCore…</div>';
+  asmLoad();
+}
+function asmLoad(){
+  var q = ASMQ; if(!q) return;
+  apiFetch({ action: 'tutAsmGet', runId: q.runId, sa: q.n }).then(function(d){ if(ASMQ !== q || PAGE !== 'asm') return; ASM = d; asmDraw(); })
+    .catch(function(e){ if(isOut(e)) return; $('asmMain').innerHTML = '<div class="mtop"><button class="back" type="button" data-asmback>← Dashboard</button></div><div class="empty-s">' + esc(e.message) + ' <button class="btn-o" type="button" data-asmretry>Retry</button></div>'; });
+}
+function asmLast(what){ var L = (ASM.log || []).filter(function(x){ return x.what === what; }); return L.length ? L[0] : null; }
+function asmDraw(){
+  var A = ASM, rows = A.rows, c = { A: 0, B: 0, C: 0, D: 0, F: 0, NS: 0 }, sum = 0, nm = 0, marked = rows.filter(function(r){ return r.mark != null; });
+  marked.forEach(function(r){ var g = r.grade === 'NS' ? 'NS' : asmGrade(r.mark); c[g]++; if(g !== 'NS'){ sum += r.mark; nm++; } });
+  var M = mstOf(A.mstNow), has = marked.length > 0;
+  var notSub = rows.filter(function(r){ return r.mark == null && r.sub === 'NOT_SUBMITTED'; }), subd = rows.filter(function(r){ return r.sub === 'SUBMITTED'; });
+  var reRows = rows.filter(function(r){ return r.re; }), reNot = rows.filter(function(r){ return r.sub === 'RE_NOT_SUBMITTED'; });
+  function st(what, extra){ var l = asmLast(what); return l ? '✓ ' + esc(l.at) + (extra ? ' · ' + extra : '') : ''; }
+  function u(cls, ic, label, kind, hint, status, off){ return '<div class="up"><label class="upb' + cls + (off ? ' dis' : '') + '" title="' + esc(off || hint) + '">' + ic + ' ' + label + (off ? '' : '<input type="file" accept="' + (kind === 'sub' || kind === 'resub' ? '.csv' : '.xls,.csv,.txt,.tsv') + '" hidden data-asmup="' + kind + '">') + '</label><span class="ust' + (status ? ' ok' : '') + '">' + (status || '○ Not uploaded yet') + '</span><span class="uphint">' + esc(off || hint) + '</span></div>'; }
+  var noRe = !has ? 'After the marks are in' : !reRows.length ? 'Nobody needs a re-assessment' : '';
+  var h = '<div class="mtop"><button class="back" type="button" data-asmback>← Dashboard</button><div><h2>' + esc(A.module) + '</h2><p>' + rows.length + ' students' + (A.noId.length ? ' · ' + A.noId.length + ' without a BSU ID (not in the Records yet)' : '') + '</p></div><span class="sp"></span>' +
+    (A.mode !== 'on' ? '<span class="asmtest" title="KEY assess_email is not on">TEST MODE · notices go only to the test address</span>' : '') + '</div>' +
+    '<div class="ac"><div class="ach"><div><b>SA' + A.sa + ' · ' + esc(A.title) + '</b><small>Weight: ' + A.weight + '% · Max: 100 · Deadline: ' + fmtD(A.deadline) + '</small></div><span class="mst ' + M.k + ' lkd"><i>' + M.code + '</i>' + esc(M.short) + '</span></div><div class="acb">' +
+    '<div class="gstats"><div class="g-en"><b>' + rows.length + '</b><span>Enrolled</span></div>' + ['A', 'B', 'C', 'D', 'F'].map(function(g){ return '<div class="g-' + g.toLowerCase() + '"><b>' + (has ? c[g] : '–') + '</b><span>' + g + ' ' + { A: '70+', B: '60-69', C: '50-59', D: '40-49', F: '0-39' }[g] + '</span></div>'; }).join('') +
+    '<div class="g-ns"><b>' + (has ? c.NS : (subd.length || notSub.length ? notSub.length : '–')) + '</b><span>Not sub</span></div><div class="g-av"><b>' + (nm ? (sum / nm).toFixed(1) : '–') + '</b><span>Avg mark</span></div></div>' +
+    '<div class="ups">' +
+      u('', '📤', 'Upload Assessment Submission Report', 'sub', 'Ultra submission CSV · non-submitters listed', st('Submission report', subd.length + notSub.length ? subd.length + ' in · ' + notSub.length + ' not' : ''), has ? 'Marks are in: the submission report is no longer needed' : '') +
+      u('', '📊', 'Upload Assessment Marks', 'marks', 'Ultra gradebook (gc_) · column G · blank = 0 not submitted · no emails', st('Marks')) +
+      u(' re', '🔄', 'Upload Re-Assessment Submission Report', 'resub', 'Only students below 40 or not submitted', st('Re-assessment submission report'), noRe) +
+      u(' re', '📋', 'Upload Re-Assessment Marks', 'remarks', 'Capped at 40 · blank = 0 · no emails', st('Re-assessment marks'), noRe) + '</div>' +
+    '<div class="pnote">Marks are never emailed from here: the Programme Leader sends the results. Every upload is checked before saving and recorded with your name.</div></div></div>';
+  // notices
+  function notices(re, list, kinds){
+    var label = re ? 'Re-assessment non-submitters' : 'Non-submitters', sent = (A.log || []).filter(function(x){ return kinds.some(function(k){ return x.what === k[2]; }); });
+    return '<div class="ac"><div class="acb"><div class="gbt"><b>' + (re ? '🔄 ' : '✉️ ') + label + ' · ' + list.length + '</b><span style="font-size:12px;color:var(--ink2)">From the saved ' + (re ? 're-assessment ' : '') + 'submission report · each gets the notice, parent copied</span></div>' +
+      (list.length ? '<div class="nslist">' + list.map(function(r){ return '<span>' + esc(r.name) + ' <small>' + esc(r.id) + '</small></span>'; }).join('') + '</div>' +
+        '<div class="nsbtns">' + kinds.map(function(k){ return '<button type="button" class="' + k[3] + '" data-asmnotice="' + k[0] + '">' + k[1] + '</button>'; }).join('') + '</div>' : '<div class="pnote">Nobody: everyone in the report submitted.</div>') +
+      (sent.length ? '<div class="nshist">' + sent.map(function(x){ return '<div>' + esc(x.at) + ' · <b>' + esc(x.what) + '</b> · ' + x.count + ' student' + (x.count === 1 ? '' : 's') + ' · ' + esc(x.by) + (/TEST/.test(x.details) ? ' · <i>test</i>' : '') + '</div>'; }).join('') + '</div>' : '') + '</div></div>';
+  }
+  if(!has && (notSub.length || subd.length)) h += notices(false, notSub, [['2day', '✉ Send 2-Day Extension Notice', '2-Day Extension Notice', 'btn-o'], ['closed', '🔒 Close the assessment · send Closed Notice', 'Assessment Closed Notice', 'btn-p red']]);
+  if(rows.some(function(r){ return /^RE_/.test(r.sub); })) h += notices(true, reNot, [['re2day', '✉ Send Re-Assessment 2-Day Extension Notice', 'Re-Assessment 2-Day Extension Notice', 'btn-o'], ['reclosed', '🔒 Close the re-assessment · send Closed Notice', 'Re-Assessment Closed Notice', 'btn-p red']]);
+  // gradebook in three bands
+  if(has){
+    var R = marked.slice().sort(function(a, b){ return b.mark - a.mark || (a.name < b.name ? -1 : 1); }), tot = R.length, fails = R.filter(function(r){ return r.re; });
+    var B = [{ c: 'hi', t: '70 – 100', s: 'A', f: function(m){ return m >= 70; } }, { c: 'md', t: '50 – 69', s: 'B and C', f: function(m){ return m >= 50 && m < 70; } }, { c: 'lo', t: '0 – 49', s: 'D, F and not submitted · below 40 = re-assessment', f: function(m){ return m < 50; } }];
+    h += '<div class="ac"><div class="acb"><div class="gbt"><b>📋 Gradebook · ' + tot + ' students · highest first</b>' + (fails.length ? '<span class="rat">Re-assessment · ' + fails.length + ' below 40 or not submitted' + (A.reDeadline ? ' <span>· deadline ' + esc(A.reDeadline) + '</span>' : '') + '</span>' : '') + '</div>' +
+      '<div class="gbar">' + B.map(function(b){ var n = R.filter(function(x){ return b.f(x.mark); }).length; return '<span style="width:' + (n / tot * 100) + '%;background:' + { hi: '#22c55e', md: '#f59e0b', lo: '#ef4444' }[b.c] + '"></span>'; }).join('') + '</div>' +
+      '<div class="gb3">' + B.map(function(b){ var L = R.filter(function(x){ return b.f(x.mark); });
+        return '<div class="band ' + b.c + '"><h6><span>' + b.t + '<small>' + b.s + '</small></span><b>' + L.length + '<em>(' + Math.round(L.length / tot * 100) + '%)</em></b></h6><table>' + L.map(function(x){ var g = x.grade === 'NS' ? 'NS' : asmGrade(x.mark);
+          return '<tr' + (x.mark < 40 ? ' class="f"' : '') + '><td class="i">' + esc(x.id) + '</td><td class="n" title="' + esc(x.name) + '">' + esc(x.name) + '</td><td class="m">' + (x.first != null && x.reAt ? '<small style="color:var(--ink3)">' + x.first + ' → </small>' : '') + (g === 'NS' ? '0 <small>NS</small>' : x.mark) + '</td><td class="g" style="color:' + ASM_GC[g] + '">' + g + '</td></tr>'; }).join('') + '</table></div>'; }).join('') + '</div></div></div>';
+  }
+  if(A.noId.length) h += '<div class="pnote">Not in the Records yet (no BSU ID), so nothing can be saved for them: ' + A.noId.map(function(x){ return esc(x.name); }).join(', ') + '.</div>';
+  $('asmMain').innerHTML = h;
+}
+// ---------------------------------------------------------------- reading the Ultra files
+function asmNorm(s){ return String(s || '').toUpperCase().replace(/[^A-Z0-9]+/g, ' ').trim(); }
+function asmTokens(s){ return asmNorm(s).split(' ').filter(function(t){ return t.length > 0; }); }
+function asmCsv(text){
+  var nl = text.search(/[\r\n]/), sep = (nl < 0 ? text : text.slice(0, nl)).indexOf('\t') > -1 ? '\t' : ',';   // tab file (gradebook) or comma file (submission report)
+  var rows = [], row = [], cur = '', q = false;
+  for(var i = 0; i < text.length; i++){
+    var ch = text[i];
+    if(q){ if(ch === '"'){ if(text[i + 1] === '"'){ cur += '"'; i++; } else q = false; } else cur += ch; }
+    else if(ch === '"' && cur === '') q = true;                    // a quote only opens a field at its start
+    else if(ch === sep){ row.push(cur); cur = ''; }
+    else if(ch === '\n' || ch === '\r'){ if(ch === '\r' && text[i + 1] === '\n') i++; row.push(cur); cur = ''; if(row.some(function(x){ return x.trim() !== ''; })) rows.push(row); row = []; }
+    else cur += ch;
+  }
+  row.push(cur); if(row.some(function(x){ return x.trim() !== ''; })) rows.push(row);
+  return rows;
+}
+function asmReadFile(f){
+  return f.arrayBuffer().then(function(buf){
+    var b = new Uint8Array(buf), enc = (b[0] === 0xFF && b[1] === 0xFE) ? 'utf-16le' : (b[0] === 0xFE && b[1] === 0xFF) ? 'utf-16be' : (b.length > 1 && b[1] === 0 && b[0] !== 0) ? 'utf-16le' : 'utf-8';
+    return new TextDecoder(enc).decode(buf).replace(/^﻿/, '');
+  });
+}
+// a name in the file -> the students it can be (every word of the file name must be in the student's name)
+function asmWords(name){
+  var t = asmTokens(name), w = {};
+  for(var i = 0; i < t.length; i++){ w[t[i]] = 1; if(i + 1 < t.length) w[t[i] + t[i + 1]] = 1; if(i + 2 < t.length) w[t[i] + t[i + 1] + t[i + 2]] = 1; }
+  return w;
+}
+function asmMatch(first, last, rows){
+  var toks = asmTokens(first + ' ' + last); if(!toks.length) return [];
+  return rows.filter(function(r){ var w = r._w || (r._w = asmWords(r.name)); return toks.every(function(t){ return w[t]; }); });
+}
+function asmPrepare(kind, text, fname){
+  var A = ASM, re = kind === 'resub' || kind === 'remarks', marks = kind === 'marks' || kind === 'remarks', T = asmCsv(text);
+  if(T.length < 2) throw new Error('The file has no rows.');
+  var H = T[0].map(function(x){ return asmNorm(x); }), byId = {}; A.rows.forEach(function(r){ byId[r.id] = r; });
+  var pool = re ? A.rows.filter(function(r){ return r.re; }) : A.rows;
+  var P = { kind: kind, re: re, marks: marks, fname: fname, read: T.length - 1, match: {}, unm: [], outside: [], notNum: [], head: '' };
+  if(!marks){
+    var fi = H.indexOf('FIRST NAME'), li = H.indexOf('LAST NAME'), si = H.indexOf('SUBMITTED');
+    if(fi < 0 || li < 0 || si < 0) throw new Error('This does not look like an Ultra submission report (it needs First Name, Last Name and Submitted).');
+    var hits = {}, tmp = [];
+    T.slice(1).forEach(function(x){
+      var file = (String(x[fi] || '') + ' ' + String(x[li] || '')).trim(), sub = /^y/i.test(String(x[si] || '').trim()), all = asmMatch(x[fi], x[li], A.rows);
+      if(all.length === 1){ var one = all[0];
+        if(re && !one.re){ P.outside.push(file); return; }                                       // passed: not part of the re-assessment
+        hits[one.id] = (hits[one.id] || 0) + 1; tmp.push({ id: one.id, file: file, sub: sub }); return; }
+      P.unm.push({ file: file, sub: sub, opts: (all.length ? all.filter(function(r){ return !re || r.re; }) : pool) });
+    });
+    tmp.forEach(function(t){ if(hits[t.id] > 1) P.unm.push({ file: t.file + ' (more than one row matched this student)', sub: t.sub, opts: pool }); else P.match[t.id] = { sub: t.sub, file: t.file }; });
+  } else {
+    var ui = H.indexOf('USERNAME');
+    if(ui < 0 || T[0].length < 7) throw new Error('This does not look like an Ultra gradebook (it needs Username and the mark in column G).');
+    P.head = String(T[0][6] || '').trim();
+    T.slice(1).forEach(function(x){
+      var id = String(x[ui] || '').replace(/\D/g, ''), raw = String(x[6] == null ? '' : x[6]).trim(), r = byId[id];
+      if(!r){ P.outside.push((String(x[1] || '') + ' ' + String(x[0] || '')).trim() + ' (' + (id || '?') + ')'); return; }
+      if(re && !r.re) return;                                       // passed already: left as it is
+      var m = raw === '' ? null : Number(raw); if(raw !== '' && (isNaN(m) || m < 0 || m > 100)){ P.notNum.push(r.name + ': "' + raw + '"'); return; }
+      P.match[id] = { mark: m };
+    });
+    P.missing = []; P.kept = [];
+    pool.forEach(function(r){ if(P.match[r.id]) return; if(r.mark != null && !P.re) P.kept.push(r); else P.missing.push(r); });   // a mark already saved is kept
+    P.colOk = new RegExp('\\bSA\\s*' + A.sa + '\\b', 'i').test(P.head);
+  }
+  return P;
+}
+function asmShowCheck(P){
+  var A = ASM, byId = {}; A.rows.forEach(function(r){ byId[r.id] = r; });
+  var lbl = { sub: 'Assessment Submission Report', marks: 'Assessment Marks', resub: 'Re-Assessment Submission Report', remarks: 'Re-Assessment Marks' }[P.kind];
+  $('upTitle').textContent = 'Check before saving · ' + lbl;
+  $('upSub').textContent = A.module + ' · SA' + A.sa + ' · ' + A.title + ' · file: ' + P.fname;
+  var ids = Object.keys(P.match), h = '', chg = [], ns = 0;
+  if(P.marks){
+    ids.forEach(function(id){ var m = P.match[id].mark, r = byId[id], nv = P.re ? (m == null ? 0 : Math.min(m, 40)) : (m == null ? 0 : m); if(m == null) ns++;
+      if(r.mark !== nv || (m == null) !== (r.grade === 'NS')) chg.push({ r: r, o: r.mark == null ? (r.sub ? r.sub.replace('_', ' ').toLowerCase() : 'none') : r.mark + (r.grade === 'NS' ? ' NS' : ''), v: m == null ? '0 NS' : (P.re && m > 40 ? m + ' → 40' : nv) }); });
+    (P.missing || []).forEach(function(r){ ns++; });
+  }
+  var nsub = P.marks ? 0 : ids.filter(function(id){ return !P.match[id].sub; }).length;
+  var K = [['Rows read', P.read, ''], ['Matched', ids.length, ''], ['Not matched', P.unm.length, P.unm.length ? 'bad' : ''],
+           P.marks ? ['Blank or missing = 0 NS', ns, ''] : ['Not submitted', nsub, ''], P.marks ? ['Marks that change', chg.length, chg.length ? 'chg' : ''] : ['Not in this list', P.outside.length, '']];
+  $('upK').innerHTML = K.map(function(x){ return '<div class="' + x[2] + '"><b>' + x[1] + '</b>' + x[0] + '</div>'; }).join('');
+  if(P.marks) h += '<div class="pnote" style="margin-top:0">Column G in the file: <b>' + esc(P.head || '(empty)') + '</b>' + (P.colOk ? '' : '<br><label style="color:#b91c1c;font-weight:700;font-style:normal"><input type="checkbox" id="upColOk"> Column G does not say SA' + A.sa + '. Tick only if it really holds the SA' + A.sa + ' marks out of 100.</label>') + '</div>';
+  if(P.unm.length) h += '<div class="uph">Not matched (' + P.unm.length + '): pick the student or leave it out</div><table class="upt"><tr><th>In the file</th><th>Submitted</th><th>Match to</th></tr>' + P.unm.map(function(x, j){ return '<tr><td>' + esc(x.file) + '</td><td>' + (x.sub ? 'Yes' : 'No') + '</td><td><select data-unm="' + j + '"><option value="">Leave out (not saved)</option>' + x.opts.map(function(o){ return '<option value="' + esc(o.id) + '">' + esc(o.name) + ' (' + esc(o.id) + ')</option>'; }).join('') + '</select></td></tr>'; }).join('') + '</table>';
+  if(!P.marks){
+    var miss = (P.re ? A.rows.filter(function(r){ return r.re; }) : A.rows).filter(function(r){ return !P.match[r.id]; });
+    P.miss = miss;
+    if(miss.length) h += '<div class="uph">In the module but not in the file (' + miss.length + ')</div><table class="upt">' + miss.map(function(r, j){ return '<tr><td>' + esc(r.name) + ' <small style="color:var(--ink3)">' + esc(r.id) + '</small></td><td><label style="font-size:12px"><input type="checkbox" data-miss="' + j + '"> count as not submitted</label></td></tr>'; }).join('') + '</table>';
+    var nl = ids.filter(function(id){ return !P.match[id].sub; }).map(function(id){ return esc(byId[id].name); });
+    if(nl.length) h += '<div class="uph">Not submitted (' + nl.length + ')</div><div style="font-size:12.5px;color:var(--ink2)">' + nl.join(', ') + '</div>';
+  } else {
+    if(P.kept && P.kept.length) h += '<div class="uph">Not in the file, mark already saved (' + P.kept.length + '): kept as it is</div><div style="font-size:12.5px;color:var(--ink2)">' + P.kept.map(function(r){ return esc(r.name) + ' (' + r.mark + ')'; }).join(', ') + '</div>';
+    if(P.missing && P.missing.length) h += '<div class="uph">In the module but not in the file (' + P.missing.length + '): saved as 0, not submitted</div><div style="font-size:12.5px;color:var(--ink2)">' + P.missing.map(function(r){ return esc(r.name); }).join(', ') + '</div>';
+    if(P.notNum.length) h += '<div class="uph" style="color:#b91c1c">Not a mark (' + P.notNum.length + '): cannot save. Please finish the marking in Ultra (for example "Needs Grading") and export again.</div><div style="font-size:12.5px;color:var(--ink2)">' + P.notNum.map(esc).join(', ') + '</div>';
+    if(chg.length) h += '<div class="uph">Marks that change (' + chg.length + '): saved with old → new in the log</div><table class="upt"><tr><th>Student</th><th>BSU ID</th><th>Now</th><th>New</th></tr>' + chg.map(function(x){ return '<tr><td>' + esc(x.r.name) + '</td><td style="font-family:var(--mono)">' + esc(x.r.id) + '</td><td>' + esc(x.o) + '</td><td><b>' + esc(x.v) + '</b></td></tr>'; }).join('') + '</table>';
+  }
+  if(P.outside.length) h += '<div class="uph">Not ' + (P.re ? 're-assessment students' : 'in this module') + ' (' + P.outside.length + '): left out</div><div style="font-size:12px;color:var(--ink3)">' + P.outside.map(esc).join(', ') + '</div>';
+  $('upBody').innerHTML = h;
+  $('upInfo').innerHTML = P.marks ? (P.re ? 'Only students below 40 or not submitted. A mark is <b>capped at 40</b>; blank = <b>0, not submitted</b>. The first mark is kept. <b>No emails.</b>' : 'Marks from column G, matched by Username (BSU ID). Blank or missing = <b>0, not submitted</b>. <b>No emails</b>: the Programme Leader sends the results.')
+                                  : (P.re ? 'Saved for students below 40 or not submitted only. <b>No emails yet</b>: you send the notices after saving.' : 'Submitted / not submitted is saved for each matched student. <b>No emails yet</b>: you send the notices after saving.');
+  UP = P; asmCount(); $('upErr').textContent = ''; $('upOv').hidden = false;
+}
+function asmRowsToSave(){
+  var P = UP, out = {}, rows = [];
+  Object.keys(P.match).forEach(function(id){ out[id] = P.marks ? { mark: P.match[id].mark } : { sub: P.match[id].sub }; });
+  document.querySelectorAll('#upBody select[data-unm]').forEach(function(s){ var x = P.unm[+s.dataset.unm]; if(s.value && !out[s.value]) out[s.value] = P.marks ? { mark: null } : { sub: x.sub }; });
+  if(!P.marks) document.querySelectorAll('#upBody input[data-miss]').forEach(function(c){ if(c.checked){ var r = P.miss[+c.dataset.miss]; if(!out[r.id]) out[r.id] = { sub: false }; } });
+  if(P.marks) (P.missing || []).forEach(function(r){ if(!out[r.id]) out[r.id] = { mark: null }; });   // never for a mark already saved (P.kept)
+  Object.keys(out).forEach(function(id){ rows.push(Object.assign({ id: id }, out[id])); });
+  return rows;
+}
+function asmCount(){
+  var n = asmRowsToSave().length, P = UP, block = P.marks && (P.notNum.length || (!P.colOk && !($('upColOk') && $('upColOk').checked)));
+  $('upSave').textContent = block ? (P.notNum.length ? 'Cannot save: not all marks are numbers' : 'Tick the column G box first') : 'Save ' + n + (P.marks ? ' mark' : ' student') + (n === 1 ? '' : 's');
+  $('upSave').disabled = !!block || !n;
+}
+document.addEventListener('change', function(e){
+  var f = e.target.closest('input[data-asmup]');
+  if(f && f.files.length){ var kind = f.dataset.asmup, file = f.files[0]; f.value = '';
+    if(file.size > 3 * 1024 * 1024){ toast('This file is too large for an Ultra export.', true); return; }
+    asmReadFile(file).then(function(t){ asmShowCheck(asmPrepare(kind, t, file.name)); }).catch(function(x){ toast(x.message || 'The file could not be read.', true); });
+    return; }
+  if(e.target.closest('#upBody select, #upBody input')) asmCount();
+});
+$('upCancel').onclick = function(){ $('upOv').hidden = true; UP = null; toast('Cancelled · nothing was saved'); };
+$('upSave').onclick = function(){
+  var P = UP, rows = asmRowsToSave(), b = this; if(!P || !rows.length){ $('upErr').textContent = 'Nothing to save.'; return; }
+  b.disabled = true; b.textContent = 'Saving…'; $('upErr').textContent = '';
+  apiPost(P.marks ? 'tutAsmMarks' : 'tutAsmSub', { runId: ASM.runId, sa: ASM.sa, re: P.re, rows: rows })
+    .then(function(d){ $('upOv').hidden = true; UP = null;
+      toast('✓ Saved · ' + (P.marks ? d.saved + ' marks · ' + d.changed + ' changed · ' + d.ns + ' not submitted (0)' : d.submitted + ' submitted · ' + d.notSubmitted + ' not submitted') + ' · no emails');
+      cDrop(cKey('r', ASM.runId)); if(P.marks) loadBoot(true); asmLoad(); })
+    .catch(function(x){ b.disabled = false; asmCount(); if(!isOut(x)) $('upErr').textContent = x.message || 'Could not save. Please try again.'; });
+};
+// ---------------------------------------------------------------- notices
+var NK = null;
+var ASM_NL = { '2day': ['2-Day Extension Notice', 'They are told they may submit within the next two days. You can send it again later.'],
+               'closed': ['Assessment Closed Notice', 'This closes the assessment: they are told to submit it as a re-assessment. The card moves to Closed · Marking at RAK Campus.'],
+               're2day': ['Re-Assessment 2-Day Extension Notice', 'They get one final chance to submit within two days. You can send it again later.'],
+               'reclosed': ['Re-Assessment Closed Notice', 'This closes the re-assessment: they are told they will repeat the module.'] };
+$('asmMain').addEventListener('click', function(e){
+  if(e.target.closest('[data-asmback]')){ go('dash'); return; }
+  if(e.target.closest('[data-asmretry]')){ asmLoad(); return; }
+  var b = e.target.closest('[data-asmnotice]'); if(!b || !ASM) return;
+  var k = b.dataset.asmnotice, re = /^re/.test(k), list = ASM.rows.filter(function(r){ return re ? r.sub === 'RE_NOT_SUBMITTED' : (r.mark == null && r.sub === 'NOT_SUBMITTED'); });
+  NK = k;
+  $('ntTitle').textContent = 'Send the ' + ASM_NL[k][0] + '?';
+  $('ntSub').textContent = ASM.module + ' · SA' + ASM.sa + ' · ' + ASM.title;
+  $('ntBody').innerHTML = '<p><b>' + list.length + ' student' + (list.length === 1 ? '' : 's') + '</b>, each with their parent copied: ' + list.map(function(r){ return esc(r.name); }).join(', ') + '.</p><p>' + esc(ASM_NL[k][1]) + '</p>' +
+    (ASM.mode !== 'on' ? '<p style="color:#b91c1c;font-weight:700">TEST MODE: up to 3 samples go only to the test address. Nobody else gets anything.</p>' : '<p>Replies come to you. Sent from CampusCore.</p>');
+  $('ntErr').textContent = ''; $('ntGo').disabled = false; $('ntGo').textContent = 'Send to ' + list.length; $('ntOv').hidden = false;
+});
+$('ntNo').onclick = function(){ $('ntOv').hidden = true; };
+$('ntGo').onclick = function(){
+  var b = this; b.disabled = true; b.textContent = 'Sending…'; $('ntErr').textContent = '';
+  apiPost('tutAsmNotice', { runId: ASM.runId, sa: ASM.sa, kind: NK })
+    .then(function(d){ $('ntOv').hidden = true;
+      toast('✓ ' + ASM_NL[NK][0] + ': ' + (d.test ? 'TEST · ' + d.sent + ' sample(s) to ' + d.testTo : d.sent + ' of ' + d.of + ' sent') + (d.noEmail.length ? ' · no email for ' + d.noEmail.join(', ') : '') + (d.failed.length ? ' · failed: ' + d.failed.join(', ') : ''));
+      if(NK === 'closed') loadBoot(true); asmLoad(); })
+    .catch(function(x){ b.disabled = false; b.textContent = 'Try again'; if(!isOut(x)) $('ntErr').textContent = x.message || 'Could not send. Please try again.'; });
+};
+
+// ---------------------------------------------------------------- marking status (16 Nov 2026)
+// The first three come from the deadline by themselves; the last three are chosen by the tutor. Marks in = Complete, locked.
+var MSTS = [{ k: 'dl', code: 'DL', name: 'Due later', short: 'Due later', what: 'The deadline is more than a week away.', auto: 1 },
+            { k: 'dn', code: 'DN', name: 'Due now', short: 'Due now', what: 'The deadline is within a week.', auto: 1 },
+            { k: 'p', code: 'P', name: 'Pending', short: 'Pending', what: 'The deadline has passed; marking has not started.', auto: 1 },
+            { k: 'm', code: 'M', name: 'Closed · Marking at RAK Campus', short: 'Marking · RAK', what: 'Submissions are closed and you are marking them.' },
+            { k: 'md', code: 'MD', name: 'Closed · Moderation at UK Campus', short: 'Moderation · UK', what: 'Marking is done; the marks are with the UK Campus for moderation.' },
+            { k: 'r', code: 'R', name: 'Complete · Marks released', short: 'Released', what: 'The marks are final and released. The card turns green.' }];
+function mstOf(name){ for(var j = 0; j < MSTS.length; j++) if(MSTS[j].name === name) return MSTS[j]; return MSTS[0]; }
+var STE = null;
+function openStatus(i, n){
+  var r = BOOT.runs[i], a = null; r.assessments.forEach(function(x){ if(x.sa === 'SA' + n && x.status !== 'Withdrawn') a = x; }); if(!a) return;
+  if(a.locked) return;
+  STE = { i: i, n: n, cur: a.mst || '' };
+  var auto = a.mst ? '' : mstOf(a.mstNow).name;
+  $('stS').textContent = r.module + ' · SA' + n + ' · ' + a.title + ' · due ' + a.deadline;
+  $('stList').innerHTML = '<button type="button" class="stopt au' + (STE.cur === '' ? ' on' : '') + '" data-mst=""><i>AUTO</i><span><b>By the deadline' + (auto ? ': ' + esc(auto) : '') + '</b><small>Due later (more than a week away), then Due now (within a week), then Pending (after the deadline). Changes by itself.</small></span></button>' +
+    MSTS.filter(function(m){ return !m.auto; }).map(function(m){ return '<button type="button" class="stopt ' + m.k + (m.name === STE.cur ? ' on' : '') + '" data-mst="' + esc(m.name) + '"><i>' + m.code + '</i><span><b>' + esc(m.name) + '</b><small>' + esc(m.what) + '</small></span></button>'; }).join('');
+  $('stErr').textContent = ''; $('stOv').hidden = false;
+}
+$('stNo').onclick = function(){ $('stOv').hidden = true; };
+$('stList').onclick = function(e){
+  var b = e.target.closest('[data-mst]'); if(!b || !STE) return;   // data-mst "" = back to automatic
+  var st = b.dataset.mst, r = BOOT.runs[STE.i], n = STE.n;
+  if(st === STE.cur){ $('stOv').hidden = true; return; }
+  $('stList').querySelectorAll('button').forEach(function(x){ x.disabled = true; }); $('stErr').textContent = '';
+  apiPost('tutAssessStatus', { runId: r.runId, sa: n, st: st })
+    .then(function(){ cDrop(cKey('r', r.runId)); $('stOv').hidden = true; toast('✓ ' + r.module + ' · SA' + n + ': ' + (st || 'by the deadline again')); loadBoot(true); })
+    .catch(function(x){ $('stList').querySelectorAll('button').forEach(function(y){ y.disabled = false; }); if(!isOut(x)) $('stErr').textContent = x.message || 'Could not save. Please try again.'; });
 };
 var WD = null;
 function askWithdraw(i, n){ WD = { i: i, n: n }; $('wdS').textContent = BOOT.runs[i].module + ' · SA' + n; $('wdErr').textContent = ''; $('wdYes').disabled = false; $('wdOv').hidden = false; }
@@ -1553,10 +1871,12 @@ function renderMod(){
       if(Q && (s.name + ' ' + (s.bsuId || '')).toLowerCase().indexOf(Q) < 0) return;
       var gc = cls.filter(function(c){ return c.groups.indexOf(g) > -1; }), P = 0, L = 0, A = 0, Ex = 0;
       gc.forEach(function(c){ var h = String((c.hist || {})[s.key] || ''); for(var q = 0; q < h.length; q++){ if(h[q] === 'P') P++; else if(h[q] === 'L') L++; else if(h[q] === 'A') A++; else if(h[q] === 'E') Ex++; } });
-      var pct = gc.length === 1 ? d.pct[gc[0].key + '||' + s.key] : (P + L + A + Ex ? Math.round((P + 0.5 * (L + Ex)) / (P + L + A + Ex) * 100) : null);   // E (excused) counts 50%
+      var pr = null;      // 19 Nov 2026: classes of this module in the student's group before a move count too
+      gc.forEach(function(c){ var x = (c.prior || {})[s.key]; if(x){ P += x.p; L += x.l; A += x.a; Ex += x.e; pr = pr ? { from: pr.from.concat(x.from), n: pr.n + x.p + x.l + x.a + x.e } : { from: x.from.slice(), n: x.p + x.l + x.a + x.e }; } });
+      var pct = (gc.length === 1 && !pr) ? d.pct[gc[0].key + '||' + s.key] : (P + L + A + Ex ? Math.round((P + 0.5 * (L + Ex)) / (P + L + A + Ex) * 100) : null);   // E (excused) counts 50%
       if(pct === undefined) pct = null;
       if(pct == null && P + L + A + Ex) pct = Math.round((P + 0.5 * (L + Ex)) / (P + L + A + Ex) * 100);
-      rows.push({ s: s, g: g, gc: gc, P: P, L: L, A: A, pct: pct, acc: /see\s*accounts/i.test(String(s.acc || '')) });
+      rows.push({ s: s, g: g, gc: gc, P: P, L: L, A: A, pct: pct, pr: pr, acc: /see\s*accounts/i.test(String(s.acc || '')) });
     });
   });
   function val(r, k){ return k === 'n' ? r.s.name : k === 'pct' ? (r.pct == null ? 999 : r.pct) : k === 'P' ? r.P : k === 'L' ? r.L : k === 'A' ? r.A : k === 'acc' ? (r.acc ? 1 : 0) : 0; }
@@ -1579,7 +1899,8 @@ function renderMod(){
       if(on) return '<td class="dc' + sc + '"><span class="circ ' + (has ? x : 'n') + ' ed' + (INF[d.runId + '|' + c.c.key + '|' + c.j + '|' + s.key] ? ' busy' : '') + '" data-ck="' + esc(c.c.key) + '" data-j="' + c.j + '" data-k="' + esc(s.key) + '" data-g="' + esc(r.g) + '">' + (has ? x : '') + '</span></td>';
       return '<td class="dc">' + (has ? '<span class="circ ' + x + '">' + x + '</span>' : '<span class="na">·</span>') + '</td>';
     }).join('');
-    return '<tr><td class="s1"><span class="nm">' + esc(s.name) + '</span><span class="id">' + id + '</span></td><td class="s2">' + (accH || '–') + '</td>'
+    var mv = r.pr ? ' · <b style="color:#2563eb" title="' + esc(r.pr.n + ' classes of this module in ' + r.pr.from.join(', ') + ', counted here') + '">moved from ' + esc(r.pr.from.map(function(g){ return String(g).split('|')[2] || g; }).join(', ')) + '</b>' : '';
+    return '<tr><td class="s1"><span class="nm">' + esc(s.name) + '</span><span class="id">' + id + mv + '</span></td><td class="s2">' + (accH || '–') + '</td>'
       + '<td class="s3">' + (r.pct == null ? '<span class="pct">–</span>' : '<span class="pct pc ' + cls3(r.pct) + '">' + r.pct + '%</span>') + '</td><td class="s4">' + r.P + '</td><td class="s5">' + r.L + '</td><td class="s6">' + r.A + '</td>'
       + cells + '<td></td>' + act.map(function(a, k){ return '<td class="' + (one ? 'r2' : (k === 0 ? 'r1' : 'r2')) + '"><span class="mk">–</span></td>'; }).join('') + (act.length ? '<td class="r3"><span class="tot">–</span></td>' : '') + '</tr>';
   }).join('') : '<tr><td colspan="' + (8 + cols.length + act.length) + '" style="padding:30px;text-align:left;color:#64748b">' + (Q ? 'No student matches your search.' : 'No students in this group yet.') + '</td></tr>';
@@ -1725,7 +2046,8 @@ function sPill(v){ if(v == null || v === '') return '<span class="mc m">–</spa
 function sAtt(p, big){ if(p == null) return '<span class="mc m' + (big ? ' big' : '') + '">–</span>'; return '<span class="mc ' + (p >= 85 ? 'g' : p >= 70 ? 'a' : 'r') + (big ? ' big' : '') + sLong(p + '%') + '">' + p + '%</span>'; }
 function sSA(a){
   if(!a) return '<td class="c" style="color:var(--ink3);font-size:11px">N/A</td>';
-  if(a.mark == null) return '<td class="c" title="' + esc(a.t) + ' · ' + a.w + '%">' + (a.sub ? '<span class="subst ' + (/NOT/.test(a.sub) ? 'no' : 'ok') + '">' + (/NOT/.test(a.sub) ? 'Not submitted' : 'Submitted') + '</span>' : '<span class="mc m">–</span>') + '</td>';
+  if(a.mark == null){ var M = a.st ? mstOf(a.st) : null;   // 16 Nov 2026: the marking status shows until a mark arrives
+    return '<td class="c" title="' + esc(a.t) + ' · ' + a.w + '%' + (M ? ' · ' + esc(M.name) : '') + '">' + (a.sub ? '<span class="subst ' + (/NOT/.test(a.sub) ? 'no' : 'ok') + '">' + (/NOT/.test(a.sub) ? 'Not submitted' : 'Submitted') + '</span>' : '') + (M ? (a.sub ? '<br>' : '') + '<span class="sast ' + M.k + '"><i>' + M.code + '</i>' + esc(M.short) + '</span>' : (a.sub ? '' : '<span class="mc m">–</span>')) + '</td>'; }
   return '<td class="c" title="' + esc(a.t) + ' · ' + a.w + '%">' + sPill(a.mark) + (a.ns ? '<span class="nsx">NS</span>' : '') + '</td>';
 }
 function sSw(m){ var p = []; if(m.sa1) p.push('SA1 ' + m.sa1.w + '% ' + m.sa1.t); if(m.sa2) p.push('SA2 ' + m.sa2.w + '% ' + m.sa2.t); return p.length ? esc(p.join(' · ')) : 'Assessments not set yet'; }

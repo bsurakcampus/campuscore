@@ -1,0 +1,426 @@
+<!doctype html>
+<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex, nofollow"><meta name="referrer" content="no-referrer">
+<script>
+/* The Admin Portal opens on a computer only (phones and small tablets are turned away), like the Classroom and the Tutor Portal. */
+(function(){
+  var ua = navigator.userAgent || '', sw = Math.min(screen.width || 9999, screen.height || 9999);
+  var phone = /iPhone|iPod|Windows Phone|BlackBerry|IEMobile|Opera Mini/i.test(ua) || (/Android/i.test(ua) && (/Mobile/i.test(ua) || sw < 600)) || (/Mobile/i.test(ua) && sw < 760);
+  if(!phone) return;
+  window.CC_PHONE = true;
+  try { window.stop(); } catch(e){}
+  document.documentElement.innerHTML = '<head><meta name="viewport" content="width=device-width,initial-scale=1"><title>CampusCore</title></head>' +
+    '<body style="margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#0f1e3d;color:#fff;font-family:Arial,Helvetica,sans-serif;text-align:center;padding:28px;box-sizing:border-box">' +
+    '<div style="max-width:360px"><div style="font-size:44px;margin-bottom:12px">🖥️</div><div style="font-size:20px;font-weight:700;margin-bottom:8px">Please use a computer</div>' +
+    '<div style="font-size:15px;line-height:1.6;color:#cbd5e1">The CampusCore Admin Portal opens on a computer only.</div>' +
+    '<div style="font-size:13px;line-height:1.6;color:#94a3b8;margin-top:16px">Approving a sign-in on your phone still works: just tap the number in the email.</div></div></body>';
+})();
+</script>
+<title>CampusCore Admin Portal</title>
+<link rel="icon" href="CampusCore.ico">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<style>
+/* 16 Nov 2026: CampusCore Admin Portal, stage 1. Layout from the agreed mock (v11). This file holds no data:
+   everything comes from CampusCore (CampusCore_Admin.gs) after sign-in, signed with the admin's own pass. */
+:root{--navy:#0f1e3d;--ink:#0f172a;--ink2:#475569;--line:#e2e8f0;--bg:#eef2f7;--blue:#2563eb;--green:#16a34a;--amber:#d97706;--red:#dc2626;--sans:'Inter',Arial,sans-serif}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;font:14px/1.45 var(--sans);color:var(--ink);background:var(--bg)}
+button{font:inherit;cursor:pointer}
+.app{display:flex;min-height:100vh}
+.side{width:230px;flex:none;background:var(--navy);color:#cbd5e1;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
+.brand{display:flex;gap:10px;align-items:center;padding:18px 16px;border-bottom:1px solid rgba(255,255,255,.08)}
+.brand img{width:34px;height:34px;background:#fff;border-radius:4px;object-fit:contain}
+.brand b{display:block;color:#fff;font-size:15px}.brand span{font-size:11px;color:#94a3b8;line-height:1.3}
+.who{display:flex;gap:10px;align-items:center;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.08)}
+.who .av{width:34px;height:34px;border-radius:50%;background:#1e3a8a;color:#bfdbfe;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px}
+.who b{display:block;color:#fff;font-size:13px}.who i{font-style:normal;font-size:10px;font-weight:800;background:#7c3aed;color:#fff;border-radius:5px;padding:1px 7px}
+.nav{flex:1;overflow:auto;padding:8px 10px}
+.nav .sec{font-size:10px;letter-spacing:1.2px;text-transform:uppercase;color:#64748b;margin:14px 8px 6px}
+.nav button{display:flex;gap:10px;align-items:center;width:100%;border:0;background:none;color:#cbd5e1;padding:8px 10px;border-radius:6px;text-align:left;font-size:13.5px}
+.nav button:hover{background:rgba(255,255,255,.06)}.nav button.on{background:#16294f;color:#60a5fa;font-weight:700}
+.nav button small{margin-left:auto;font-size:10px;color:#64748b}
+.nav button .bd{margin-left:auto;background:#dc2626;color:#fff;border-radius:999px;font-size:10.5px;padding:0 7px;font-weight:700}
+.foot{padding:12px}.foot button{width:100%;border:1px solid #1e2f52;background:none;color:#94a3b8;padding:8px;border-radius:6px}
+.main{flex:1;min-width:0;padding:26px 30px 60px}
+.hrow{display:flex;align-items:flex-start;gap:12px;margin-bottom:18px}.hrow h2{margin:0;font-size:24px}.hrow p{margin:4px 0 0;color:var(--ink2);font-size:13px}.hrow .sp{flex:1}
+.btn{border:1px solid #cbd5e1;background:#fff;color:var(--ink);padding:8px 14px;border-radius:6px;font-weight:600;font-size:13px}
+.btn.p{background:var(--blue);border-color:var(--blue);color:#fff}.btn:disabled{opacity:.5;cursor:not-allowed}
+.kp4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.kp{background:#fff;border:1px solid var(--line);border-top:3px solid var(--blue);padding:13px 16px}
+.kp h6{margin:0 0 6px;font-size:10.5px;letter-spacing:1px;text-transform:uppercase;color:var(--ink2)}
+.kp b{font-size:26px;font-weight:800;color:var(--blue)}.kp small{display:block;font-size:11.5px;color:var(--ink2);margin-top:2px}
+.kp.g{border-top-color:var(--green)}.kp.g b{color:var(--green)}.kp.o{border-top-color:var(--amber)}.kp.o b{color:var(--amber)}.kp.r{border-top-color:var(--red)}.kp.r b{color:var(--red)}
+.adh{display:flex;align-items:flex-end;gap:10px;border-bottom:2px solid var(--navy);padding-bottom:8px;margin:22px 0 12px}
+.adh b{font-size:17px;color:var(--navy)}.adh small{display:block;font-size:12px;color:var(--ink2)}.adh .sp{flex:1}
+.cnt{background:var(--blue);color:#fff;border-radius:999px;padding:3px 11px;font-size:11.5px;font-weight:700}
+.pn4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.pnl{background:#fff;border:1px solid var(--line)}.pnl>h5{background:var(--navy);color:#fff;margin:0;padding:10px 14px;font-size:13px}.pnl .bd{padding:10px 14px}
+.br3{display:grid;grid-template-columns:1fr 90px 36px;gap:8px;align-items:center;font-size:12.5px;padding:4px 0}.br3 i{display:block;height:7px;border-radius:4px;background:var(--blue)}.br3 b{text-align:right}
+.pgr{padding:6px 0;border-bottom:1px dashed var(--line)}.pgr:last-child{border:0}.pgr .t{display:flex;justify-content:space-between;font-size:12.5px;font-weight:700}
+.pgr .ch{display:flex;gap:5px;flex-wrap:wrap;margin-top:4px}.pgr .ch span{font-size:10.5px;font-weight:700;border-radius:5px;padding:1px 6px;background:#eff6ff;color:#1e40af}
+.gsplit{display:flex;height:22px;border-radius:999px;overflow:hidden;font-size:10.5px;font-weight:700;color:#fff}.gsplit span{display:flex;align-items:center;justify-content:center}
+.gnum{display:grid;grid-template-columns:repeat(3,1fr);text-align:center;margin-top:12px}.gnum b{display:block;font-size:22px;font-weight:800}.gnum small{font-size:10.5px;color:var(--ink2)}
+.tbl{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);font-size:12.5px}
+.tbl th{background:var(--navy);color:#fff;font-size:10px;letter-spacing:.4px;text-transform:uppercase;padding:9px 10px;text-align:left;position:sticky;top:0}
+.tbl td{padding:8px 10px;border-bottom:1px solid #eef1f6;vertical-align:top}.tbl tr.ck{cursor:pointer}.tbl tr.ck:hover td{background:#f8fafc}
+.tbl td.n,.tbl th.n{text-align:right}.tbl tr.tot td{background:#f1f5f9;font-weight:700}
+.pl{display:inline-block;border-radius:999px;padding:2px 9px;font-size:10.5px;font-weight:700;white-space:nowrap}
+.pl.ok{background:#dcfce7;color:#166534}.pl.no{background:#fee2e2;color:#991b1b}.pl.mid{background:#fef3c7;color:#92400e}.pl.gr{background:#e2e8f0;color:#334155}.pl.t{background:#ede9fe;color:#5b21b6}
+.ptb{display:flex;gap:6px;flex-wrap:wrap;margin:4px 0 12px}
+.ptb button{border:1.5px solid #cbd5e1;background:#fff;border-radius:999px;padding:5px 13px;font-size:12.5px;font-weight:600;color:var(--ink2)}
+.ptb button.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.inf{background:#eff6ff;border:1px solid #bfdbfe;color:#1e3a8a;padding:9px 13px;font-size:12.5px;margin-bottom:12px;line-height:1.55}
+.live3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.lc{background:#fff;border:1px solid var(--line);border-left:4px solid var(--green);padding:11px 14px}.lc.ns{border-left-color:var(--red);background:#fffafa}
+.lc b{display:block;font-size:14px}.lc small{display:block;color:var(--ink2);font-size:12px}.lc .tag{float:right;font:700 10.5px monospace;color:var(--green)}.lc.ns .tag{color:var(--red)}
+.lc .bar{height:6px;background:#e2e8f0;border-radius:3px;margin:8px 0 4px;overflow:hidden}.lc .bar i{display:block;height:100%;background:var(--green)}
+.lc .nums{font:600 11.5px monospace;display:flex;justify-content:space-between}
+.search{display:flex;gap:8px;margin-bottom:12px}.search input,.search select{border:1.5px solid #cbd5e1;padding:9px 11px;font:500 13.5px var(--sans);border-radius:6px}.search input{flex:1}
+.empty{background:#fff;border:1px dashed #cbd5e1;padding:26px;text-align:center;color:var(--ink2)}
+.xov{position:fixed;inset:0;background:rgba(15,23,42,.55);display:flex;align-items:center;justify-content:center;z-index:300;padding:16px}
+.xov .bx{background:#fff;max-width:640px;width:100%;padding:22px;max-height:92vh;overflow:auto;border-radius:10px}
+.xov h3{margin:0;font-size:18px;color:var(--navy)}.xov .s{font-size:12.5px;color:var(--ink2);margin:4px 0 12px}
+.xov label{display:block;font-size:10.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--ink2);margin:12px 0 5px}
+.xov textarea{width:100%;border:1.5px solid #cbd5e1;padding:9px;font:13.5px var(--sans);min-height:80px;border-radius:6px}
+.xov .btns{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}
+.mk{display:inline-flex;width:24px;height:24px;border-radius:50%;border:1.5px solid;align-items:center;justify-content:center;font:700 11px monospace}
+.mk.P{color:var(--green);background:#f0fdf4}.mk.L{color:var(--amber);background:#fffbeb}.mk.A{color:var(--red);background:#fef2f2}.mk.E{color:#7c3aed;background:#f5f3ff}
+.mpick{display:flex;gap:6px}.mpick button{border:1.5px solid #cbd5e1;background:#fff;border-radius:6px;padding:5px 11px;font-weight:700}.mpick button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.rec h3{margin:0 0 2px;font-size:20px}.rec .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
+.rec .box{background:#fff;border:1px solid var(--line);padding:12px 14px}.rec .box h6{margin:0 0 8px;font-size:10.5px;letter-spacing:1px;text-transform:uppercase;color:var(--ink2)}
+.rec .kv{display:grid;grid-template-columns:150px 1fr;gap:4px 10px;font-size:12.5px}.rec .kv span{color:var(--ink2)}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:#0f172a;color:#fff;padding:10px 18px;border-radius:8px;font-size:13px;z-index:400}
+#boot{position:fixed;inset:0;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;z-index:500}
+.sugg{background:#fff;border:1px solid var(--line);max-height:260px;overflow:auto;margin-top:-8px;margin-bottom:12px}
+.sugg button{display:block;width:100%;text-align:left;border:0;background:#fff;padding:8px 12px;font-size:13px;border-bottom:1px solid #f1f5f9}.sugg button:hover{background:#eff6ff}
+@media print{ .side,.hrow .btn,.ptb,.search,.noprint{display:none!important} .main{padding:0} body{background:#fff} }
+</style>
+</head>
+<body>
+<div id="boot"><div style="font-size:18px;font-weight:700">CampusCore Admin Portal</div><div style="color:#94a3b8;font-size:13px" id="bootMsg">Loading…</div></div>
+<div class="app" id="app" hidden>
+  <aside class="side">
+    <div class="brand"><img src="bsu-logo.png" alt="" onerror="this.style.display='none'"><div><b>CampusCore</b><span>Bath Spa University<br>RAK Campus</span></div></div>
+    <div class="who"><span class="av" id="av"></span><div><b id="meName"></b><i>Admin</i></div></div>
+    <nav class="nav" id="nav">
+      <button data-go="dash">🏠 Dashboard</button>
+      <div class="sec">Academic</div>
+      <button data-go="progs">🎓 Programmes <small>next</small></button>
+      <button data-go="class">🏫 Classrooms <span class="bd" id="reqBadge" hidden></span></button>
+      <button data-go="acc" id="navAcc" hidden>💳 Accounts</button>
+      <button data-go="rec">🧾 Student Records</button>
+      <button data-go="staff">👥 Staff Records <small>next</small></button>
+      <button data-go="alumni">🏛️ Alumni <small>next</small></button>
+      <div class="sec">Communication</div>
+      <button data-go="cohort">✉️ Send Notifications <small>next</small></button>
+      <div class="sec">University</div>
+      <button data-go="ann">📢 Announcements <small>next</small></button>
+      <button data-go="acal">🗓️ Academic Calendar <small>next</small></button>
+      <button data-go="ucal">📅 Annual Calendar <small>next</small></button>
+      <button data-go="pol">📋 Essential Policies <small>next</small></button>
+      <button data-link="docs">📁 Important Documents</button>
+    </nav>
+    <div class="foot"><button id="outBtn">⎋ Sign Out</button></div>
+  </aside>
+  <main class="main" id="main"></main>
+</div>
+<div class="toast" id="toast" hidden></div>
+<script>
+// ============================================================ CampusCore Admin Portal (16 Nov 2026, stage 1)
+var API = 'https://script.google.com/macros/s/AKfycbycKFnbEm2aXY6JJ8QS-x-vUQMAcqp800afJhejux9UofP1YfK49AxoTG8cXMORzZby/exec';
+var SKEY = 'ap_session', IDLE_MS = 60 * 60 * 1000;      // signs out after 1 hour without use (the server after 3)
+var SIGNED_OUT = false;
+function $(id){ return document.getElementById(id); }
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function toast(t, bad){ var e = $('toast'); e.textContent = t; e.style.background = bad ? '#b91c1c' : ''; e.hidden = false; clearTimeout(e._h); e._h = setTimeout(function(){ e.hidden = true; }, bad ? 6000 : 3200); }
+function money(n){ return Math.round(Number(n) || 0).toLocaleString('en-GB'); }
+function stamp(){ var d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0') + '_' + String(d.getHours()).padStart(2, '0') + String(d.getMinutes()).padStart(2, '0'); }
+
+// ---------------------------------------------------------------- session and signed requests (the pass never leaves this tab)
+var PASS = '', PID = '', OFF = 0, ME = '', _hk = null;
+function readSess(){ try { return JSON.parse(sessionStorage.getItem(SKEY) || 'null'); } catch(e){ return null; } }
+(function guard(){
+  if(window.CC_PHONE) return;
+  var s = readSess();
+  if(!s || !s.pass || !s.email || (s.exp && Date.now() > s.exp)){ clearSess(); window.location.replace('admin.html'); return; }
+  PASS = String(s.pass); PID = PASS.slice(0, 16); OFF = Number(s.off) || 0; ME = s.email;
+  var last = Date.now();
+  ['click','keydown','mousemove','scroll'].forEach(function(ev){ document.addEventListener(ev, function(){ last = Date.now(); var c = readSess(); if(c){ c.exp = Date.now() + IDLE_MS; try { sessionStorage.setItem(SKEY, JSON.stringify(c)); } catch(e){} } }, { passive: true }); });
+  setInterval(function(){ if(PASS && Date.now() - last > IDLE_MS) signOut('Signed out after 1 hour without use.'); }, 60000);
+})();
+function passKey(){ if(!_hk) _hk = crypto.subtle.importKey('raw', new TextEncoder().encode(PASS), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']); return _hk; }
+function hmacHex(msg){
+  return passKey().then(function(k){ return crypto.subtle.sign('HMAC', k, new TextEncoder().encode(msg)); })
+    .then(function(b){ return Array.prototype.map.call(new Uint8Array(b), function(x){ return ('0' + x.toString(16)).slice(-2); }).join(''); });
+}
+function sealGet(params){
+  var q = Object.assign({}, params, { pid: PID, ts: String(Date.now() + OFF) }), keys = Object.keys(q).sort();
+  return hmacHex('GET\n' + keys.map(function(k){ return k + '=' + String(q[k]); }).join('&')).then(function(sig){ q.sig = sig; return q; });
+}
+function sealPost(obj){ var p = JSON.stringify(obj); return hmacHex('POST\n' + p).then(function(sig){ return JSON.stringify({ action: obj.action, pid: PID, sig: sig, p: p }); }); }
+function saveOff(){ var s = readSess(); if(s){ s.off = OFF; try { sessionStorage.setItem(SKEY, JSON.stringify(s)); } catch(e){} } }
+function isOut(e){ return e && /^SIGNED_OUT/.test(String(e.message || '')); }
+async function apiGet(params){
+  var last, fixed = false;
+  for(var a = 0; a < 3; a++){
+    try {
+      var q = await sealGet(params);
+      var ctl = new AbortController(), tmo = setTimeout(function(){ ctl.abort(); }, 45000), r;
+      try { r = await fetch(API + '?' + Object.keys(q).map(function(k){ return k + '=' + encodeURIComponent(q[k]); }).join('&'), { cache: 'no-store', signal: ctl.signal }); }
+      catch(fe){ throw new Error(ctl.signal.aborted ? 'CampusCore took too long to answer. Please try again.' : 'Could not reach CampusCore. Check the internet connection.'); }
+      finally { clearTimeout(tmo); }
+      var j; try { j = JSON.parse(await r.text()); } catch(_){ throw new Error('CampusCore did not reply properly. Please try again.'); }
+      if(j.status !== 'ok' && !fixed && /^CLOCK:\d+$/.test(String(j.message || ''))){ fixed = true; OFF = Number(String(j.message).slice(6)) - Date.now(); saveOff(); a--; continue; }
+      if(j.status !== 'ok'){ var se = new Error(j.message || 'Error'); se.said = true; throw se; }
+      return j.data;
+    } catch(e){ last = e; if(e.said) break; if(a < 2) await new Promise(function(res){ setTimeout(res, 800 * (a + 1)); }); }
+  }
+  if(isOut(last)) ended();
+  throw last;
+}
+async function apiPost(action, body){
+  var last, fixed = false;
+  for(var a = 0; a < 2; a++){
+    try {
+      var obj = Object.assign({ action: action }, body, { ts: Date.now() + OFF });
+      var r = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: await sealPost(obj), redirect: 'follow' });
+      var j; try { j = JSON.parse(await r.text()); } catch(_){ throw new Error('CampusCore did not reply properly.'); }
+      if(j.status !== 'ok' && !fixed && /^CLOCK:\d+$/.test(String(j.message || ''))){ fixed = true; OFF = Number(String(j.message).slice(6)) - Date.now(); saveOff(); a--; continue; }
+      if(j.status !== 'ok'){ var se = new Error(j.message || 'Error'); se.said = true; throw se; }
+      return j.data;
+    } catch(e){ last = e; if(e.said) break; if(a < 1) await new Promise(function(res){ setTimeout(res, 1500); }); }
+  }
+  if(isOut(last)) ended();
+  throw last;
+}
+function clearSess(){ PASS = ''; try { Object.keys(sessionStorage).forEach(function(k){ if(/^ap_/.test(k)) sessionStorage.removeItem(k); }); } catch(e){} }
+function ended(){ if(SIGNED_OUT) return; SIGNED_OUT = true; clearSess(); try { localStorage.setItem('ap_msg', 'Your sign-in has ended. Please sign in again.'); } catch(e){} window.location.replace('admin.html'); }
+function signOut(msg){
+  if(SIGNED_OUT) return; SIGNED_OUT = true;
+  var go = function(){ clearSess(); try { localStorage.setItem('ap_msg', msg || 'You are signed out.'); } catch(e){} window.location.replace('admin.html'); };
+  if(!PASS){ go(); return; }
+  sealPost({ action: 'admEndPass', ts: Date.now() + OFF }).then(function(b){ return fetch(API, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: b, keepalive: true }); }).catch(function(){}).then(go);
+  setTimeout(go, 1500);
+}
+$('outBtn').onclick = function(){ signOut(); };
+
+// ---------------------------------------------------------------- shell
+var BOOT = null, CUR = 'dash', CACHE = {};
+var SOON = { progs: 'Programmes', staff: 'Staff Records', alumni: 'Alumni', cohort: 'Send Notifications', ann: 'Announcements', acal: 'Academic Calendar', ucal: 'Annual Calendar', pol: 'Essential Policies' };
+function go(p){
+  CUR = p;
+  document.querySelectorAll('#nav [data-go]').forEach(function(b){ b.classList.toggle('on', b.dataset.go === p); });
+  window.scrollTo(0, 0);
+  if(p === 'dash') return drawDash();
+  if(p === 'class') return drawClass();
+  if(p === 'acc') return drawAcc();
+  if(p === 'rec') return drawRec();
+  $('main').innerHTML = '<div class="hrow"><div><h2>' + esc(SOON[p] || '') + '</h2><p>Coming in the next update</p></div></div><div class="empty">This section is being built. It will follow the agreed mock.</div>';
+}
+$('nav').onclick = function(e){
+  var b = e.target.closest('button'); if(!b) return;
+  if(b.dataset.link === 'docs'){ if(BOOT && BOOT.docs) window.open(BOOT.docs, '_blank', 'noopener'); return; }
+  if(b.dataset.go) go(b.dataset.go);
+};
+function loading(t){ $('main').innerHTML = '<div class="hrow"><div><h2>' + esc(t) + '</h2><p>Loading from CampusCore…</p></div></div>'; }
+function failed(t, e, retry){ $('main').innerHTML = '<div class="hrow"><div><h2>' + esc(t) + '</h2></div></div><div class="empty">' + esc(e.message || e) + '<br><br><button class="btn" id="retry">Try again</button></div>'; $('retry').onclick = retry; }
+
+(async function start(){
+  if(window.CC_PHONE || !PASS) return;
+  try { BOOT = await apiGet({ action: 'admBoot' }); }
+  catch(e){ $('bootMsg').textContent = e.message || 'CampusCore could not be reached.'; return; }
+  $('meName').textContent = BOOT.me.name; $('av').textContent = String(BOOT.me.name || '?').split(/\s+/).map(function(w){ return w.charAt(0); }).join('').slice(0, 2).toUpperCase();
+  $('navAcc').hidden = !BOOT.me.acc;
+  $('boot').remove(); $('app').hidden = false;
+  go('dash');
+  setTimeout(function(){ apiGet({ action: 'admClass' }).then(function(d){ CACHE.cls = d; badge(d); }).catch(function(){}); }, 400);
+})();
+function badge(d){ var n = (d.reqs || []).filter(function(r){ return r.canDecide; }).length; $('reqBadge').hidden = !n; $('reqBadge').textContent = n; }
+
+// ---------------------------------------------------------------- dashboard
+async function drawDash(fresh){
+  if(!CACHE.dash || fresh){ loading('Dashboard'); try { CACHE.dash = await apiGet({ action: 'admDash', fresh: fresh ? '1' : '0' }); } catch(e){ return failed('Dashboard', e, function(){ drawDash(true); }); } }
+  if(CUR !== 'dash') return;
+  var D = CACHE.dash, max = Math.max.apply(null, D.progs.map(function(p){ return p.n; }).concat([1]));
+  function bars(L){ var m = Math.max.apply(null, L.map(function(x){ return x[1]; }).concat([1])); return L.map(function(x){ return '<div class="br3"><span>' + esc(x[0]) + '</span><i style="width:' + Math.max(4, Math.round(x[1] / m * 90)) + 'px"></i><b>' + x[1] + '</b></div>'; }).join(''); }
+  var g = D.gender, gt = g.m + g.f || 1;
+  $('main').innerHTML =
+    '<div class="hrow"><div><h2>Dashboard</h2><p>' + esc(BOOT.term || '') + ' · ' + new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' }) + '</p></div><span class="sp"></span><button class="btn" id="dRef">↻ Refresh</button></div>' +
+    '<div class="search"><input id="dFind" placeholder="Find a student: type a name or BSU ID, and press Enter" autocomplete="off"></div><div id="dSug"></div>' +
+    '<div class="kp4"><div class="kp"><h6>Students</h6><b>' + D.total + '</b><small>' + D.newN + ' new · ' + D.contN + ' continuing</small></div>' +
+    '<div class="kp g"><h6>Staff</h6><b>' + D.staff + '</b><small>' + D.teaching + ' on the timetable</small></div>' +
+    '<div class="kp o"><h6>On campus today</h6><b>' + D.onCampus + '</b><small>present or late in at least one class</small></div>' +
+    '<div class="kp r"><h6>New this semester</h6><b>' + D.newN + '</b><small>from Records NEW</small></div></div>' +
+    '<div class="adh"><div><b>Students</b><small>Enrolment and demographics · from the Records sheet</small></div><span class="sp"></span><span class="cnt">' + D.total + ' students</span></div>' +
+    '<div class="pn4">' +
+      '<div class="pnl"><h5>📊 By programme and year</h5><div class="bd">' + D.progs.map(function(p){ return '<div class="pgr"><div class="t"><span>' + esc(p.name) + '</span><span>' + p.n + '</span></div><i style="display:block;height:6px;border-radius:3px;margin:5px 0;background:#2563eb;width:' + Math.round(p.n / max * 100) + '%"></i><div class="ch">' + p.years.map(function(y){ return '<span>' + esc(y[0].replace('Year ', 'Y')) + ' · ' + y[1] + '</span>'; }).join('') + (p.newN ? '<span style="background:#dcfce7;color:#166534">New · ' + p.newN + '</span>' : '') + '</div></div>'; }).join('') + '</div></div>' +
+      '<div class="pnl"><h5>🌍 Nationality</h5><div class="bd">' + bars(D.nat) + '</div></div>' +
+      '<div class="pnl"><h5>👥 Gender</h5><div class="bd"><div class="gsplit"><span style="background:#2563eb;width:' + Math.round(g.m / gt * 100) + '%">Male ' + Math.round(g.m / gt * 100) + '%</span><span style="background:#db2777;width:' + Math.round(g.f / gt * 100) + '%">Female ' + Math.round(g.f / gt * 100) + '%</span></div><div class="gnum"><div><b style="color:#2563eb">' + g.m + '</b><small>MALE</small></div><div><b style="color:#db2777">' + g.f + '</b><small>FEMALE</small></div><div><b>' + D.total + '</b><small>TOTAL</small></div></div>' + (g.o ? '<div style="font-size:11.5px;color:var(--ink2);margin-top:8px">' + g.o + ' not given</div>' : '') + '</div></div>' +
+      '<div class="pnl"><h5>📍 Emirate</h5><div class="bd">' + bars(D.emirate) + '</div></div>' +
+    '</div><p style="font-size:11.5px;color:var(--ink2);margin-top:14px">Figures from ' + new Date(D.at).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) + ' (kept 5 minutes; ↻ Refresh reads again).</p>';
+  $('dRef').onclick = function(){ drawDash(true); };
+  findBox('dFind', 'dSug');
+}
+
+// ---------------------------------------------------------------- student search and record
+async function stuList(){ if(!CACHE.stu) CACHE.stu = (await apiGet({ action: 'admStudents' })).list; return CACHE.stu; }
+function findBox(inp, sug){
+  var el = $(inp), box = $(sug);
+  el.oninput = async function(){
+    var q = el.value.trim().toLowerCase(); if(q.length < 2){ box.innerHTML = ''; return; }
+    var L; try { L = await stuList(); } catch(e){ return; }
+    var hits = L.filter(function(s){ return String(s[1]).toLowerCase().indexOf(q) > -1 || String(s[0]).indexOf(q) > -1; }).slice(0, 12);
+    box.className = hits.length ? 'sugg' : ''; box.innerHTML = hits.map(function(s){ return '<button data-id="' + esc(s[0]) + '"><b>' + esc(s[1]) + '</b> · ' + esc(s[0]) + ' · ' + esc(s[2]) + ' ' + esc(s[3]) + (s[4] ? ' · New' : '') + '</button>'; }).join('');
+  };
+  el.onkeydown = function(e){ if(e.key === 'Enter'){ var f = box.querySelector('[data-id]'); openRec(f ? f.dataset.id : el.value.trim()); } };
+  box.onclick = function(e){ var b = e.target.closest('[data-id]'); if(b) openRec(b.dataset.id); };
+}
+function drawRec(){
+  $('main').innerHTML = '<div class="hrow"><div><h2>Student Records</h2><p>Type a name or BSU ID · every record opened is recorded with your name</p></div></div>' +
+    '<div class="search"><input id="rFind" placeholder="Name or BSU ID" autocomplete="off"></div><div id="rSug"></div><div id="rOut"></div>';
+  findBox('rFind', 'rSug'); $('rFind').focus();
+}
+async function openRec(id){
+  if(CUR !== 'rec'){ go('rec'); }
+  $('rSug').innerHTML = ''; $('rSug').className = '';
+  $('rOut').innerHTML = '<div class="empty">Opening the record…</div>';
+  var d; try { d = await apiGet({ action: 'admStudent', q: id }); } catch(e){ $('rOut').innerHTML = '<div class="empty">' + esc(e.message) + '</div>'; return; }
+  var c = d.contact || [], a = d.acc || [];
+  var years = (d.years || []).map(function(y){
+    return '<div class="adh"><div><b>' + (y.y != null ? 'Year ' + y.y + ' · Level ' + y.lvl : 'Year') + ' · ' + esc(y.ay) + '</b></div></div>' + y.s.map(function(s){
+      if(!s.mods.length) return '';
+      return '<table class="tbl" style="margin-bottom:10px"><tr><th>Semester ' + s.n + ' · module</th><th>SA1</th><th>SA2</th><th class="n">Overall</th><th class="n">Attendance</th></tr>' + s.mods.map(function(m){
+        function sa(x){ return x ? (x.ns ? 'Not submitted' : (x.mark != null ? x.mark : '–')) + '<br><small style="color:var(--ink2)">' + esc(x.t || '') + (x.w ? ' · ' + x.w + '%' : '') + '</small>' : '–'; }
+        return '<tr><td><b>' + esc(m.m) + '</b></td><td>' + sa(m.sa1) + '</td><td>' + sa(m.sa2) + '</td><td class="n">' + (m.ov != null ? m.ov : '–') + '</td><td class="n">' + (m.att != null ? m.att + '%' : '–') + '</td></tr>'; }).join('') + '</table>';
+    }).join('');
+  }).join('');
+  $('rOut').innerHTML = '<div class="rec"><div style="display:flex;gap:14px;align-items:center;background:var(--navy);color:#fff;padding:16px">' +
+    (d.photo ? '<img src="' + esc(d.photo) + '" alt="" style="width:76px;height:76px;object-fit:cover;border-radius:6px">' : '') +
+    '<div><h3>' + esc(d.name) + '</h3><div style="color:#cbd5e1;font-size:13px">' + esc(d.id) + ' · ' + esc(d.prog) + ' · ' + esc(d.year) + ' · ' + esc(d.status) + '</div>' +
+    '<div style="color:#cbd5e1;font-size:12.5px;margin-top:3px">' + (d.att != null ? 'Attendance ' + d.att + '%' : '') + (d.last ? ' · last in class ' + esc(d.last) : '') + '</div></div></div>' +
+    '<div class="grid2"><div class="box"><h6>Contact</h6><div class="kv"><span>Phone</span><b>' + esc(c[0]) + '</b><span>Email</span><b>' + esc(c[1]) + '</b><span>Parent phone</span><b>' + esc(c[2]) + '</b><span>Parent email</span><b>' + esc(c[3]) + '</b><span>Nationality</span><b>' + esc(d.nat || '–') + '</b><span>Date of birth</span><b>' + esc(d.dob || '–') + (d.age != null ? ' (' + d.age + ')' : '') + '</b></div></div>' +
+    (d.acc ? '<div class="box"><h6>Accounts and registration</h6><div class="kv"><span>Registration</span><b>' + esc(a[0]) + '</b><span>Accounts status</span><b>' + esc(a[1]) + '</b><span>Current due</span><b>' + esc(a[2]) + '</b><span>Tuition outstanding</span><b>' + esc(a[3]) + '</b><span>Total receivable</span><b>' + esc(a[4]) + '</b></div></div>' : '<div class="box"><h6>Accounts and registration</h6><div style="font-size:12.5px;color:var(--ink2)">Only for the people in KEY accounts_access.</div></div>') + '</div>' +
+    years + '</div>';
+}
+
+// ---------------------------------------------------------------- classrooms and requests
+var RQF = 'wait';
+async function drawClass(fresh){
+  if(!CACHE.cls || fresh){ loading('Classrooms'); try { CACHE.cls = await apiGet({ action: 'admClass' }); badge(CACHE.cls); } catch(e){ return failed('Classrooms', e, function(){ drawClass(true); }); } }
+  if(CUR !== 'class') return;
+  var C = CACHE.cls, t = C.today;
+  var cards = C.live.map(function(c){ var m = c.p + c.l + c.a, pc = m ? Math.round((c.p + 0.5 * c.l) / m * 100) : 0;
+    return '<div class="lc"><span class="tag">● LIVE · since ' + esc(c.start) + '</span><b>' + esc(c.module) + '</b><small>' + esc(c.prog) + ' · ' + esc(c.groups) + '</small><small>' + esc(c.tutor) + ' · Room ' + esc(c.room || '–') + (c.cover ? ' · covering ' + esc(c.cover) : '') + '</small>' +
+      '<div class="bar"><i style="width:' + (c.size ? Math.round(m / c.size * 100) : 0) + '%"></i></div><div class="nums"><span>' + c.p + ' present ' + c.l + ' late ' + c.a + ' absent</span><span>' + m + ' of ' + c.size + '</span></div></div>'; }).join('') +
+    C.notStarted.map(function(c){ return '<div class="lc ns"><span class="tag">NOT STARTED</span><b>' + esc(c.module) + '</b><small>' + esc(c.prog) + ' · ' + esc(c.groups) + '</small><small>' + esc(c.tutor) + ' · ' + esc(c.time) + '</small></div>'; }).join('');
+  var R = C.reqs, F = { wait: function(r){ return r.status !== 'Decided'; }, admin: function(r){ return r.canDecide; }, done: function(r){ return r.status === 'Decided'; }, all: function(){ return true; } };
+  var L = R.filter(F[RQF]);
+  $('main').innerHTML =
+    '<div class="hrow"><div><h2>Classrooms</h2><p>Live classes now, today\'s registers and every attendance request</p></div><span class="sp"></span><button class="btn" id="cRef">↻ Refresh</button></div>' +
+    '<div class="kp4"><div class="kp"><h6>Live now</h6><b>' + C.live.length + '</b><small>classes</small></div><div class="kp g"><h6>In class now</h6><b>' + C.inClass + '</b><small>present or late</small></div>' +
+    '<div class="kp o"><h6>Today so far</h6><b>' + (t.pct != null ? t.pct + '%' : '–') + '</b><small>' + t.p + ' present · ' + t.l + ' late · ' + t.a + ' absent</small></div><div class="kp r"><h6>Register not started</h6><b>' + C.notStarted.length + '</b><small>on the timetable now</small></div></div>' +
+    '<div class="adh"><div><b>Live classes</b><small>Running in the Classroom now</small></div></div>' + (cards ? '<div class="live3">' + cards + '</div>' : '<div class="empty">No class is running right now.</div>') +
+    '<div class="adh"><div><b>Reviews and leave</b><small>Requests from families · tutors answer and Programme Leaders decide in the Tutor Portal · admins decide when the programme has no Programme Leader who teaches</small></div><span class="sp"></span>' + (C.reqOn !== 'on' ? '<span class="pl t">Requests: ' + esc(C.reqOn) + '</span>' : '') + '</div>' +
+    '<div class="ptb" id="rqF">' + [['wait', 'Waiting'], ['admin', 'For you to decide'], ['done', 'Decided'], ['all', 'All']].map(function(x){ return '<button data-f="' + x[0] + '" class="' + (RQF === x[0] ? 'on' : '') + '">' + x[1] + ' · ' + R.filter(F[x[0]]).length + '</button>'; }).join('') + '</div>' +
+    (L.length ? '<table class="tbl"><tr><th>Request</th><th>Kind</th><th>Student</th><th>Programme</th><th>Covers</th><th>Programme Leader</th><th>Status</th><th></th></tr>' + L.map(function(r){
+      var cv = r.classes.length === 1 ? esc(r.classes[0].module) + ' · ' + esc(r.classes[0].d) : r.classes.length + ' classes' + (r.days ? ' · ' + r.days + ' day' + (r.days > 1 ? 's' : '') : '');
+      var sc = r.status === 'Decided' ? 'ok' : r.canDecide ? 'no' : 'mid';
+      return '<tr class="ck" data-rq="' + esc(r.id) + '"><td><b>' + esc(r.id) + '</b>' + (r.test ? ' <span class="pl t">TEST</span>' : '') + (r.doc ? ' 📎' : '') + '<br><small style="color:var(--ink2)">' + esc(r.sent) + '</small></td><td>' + esc(r.kind) + '</td><td>' + esc(r.name) + '<br><small style="color:var(--ink2)">' + esc(r.bsu) + ' · ' + esc(r.by) + '</small></td><td>' + esc(r.prog) + '</td><td>' + cv + '</td><td>' + esc(r.pl) + '</td><td><span class="pl ' + sc + '">' + esc(r.canDecide ? 'For you to decide' : r.status) + '</span>' + (r.rating ? '<br><small>' + '★'.repeat(r.rating) + '</small>' : '') + '</td><td>' + (r.canDecide ? '<button class="btn p" data-dec="' + esc(r.id) + '">Decide</button>' : '<button class="btn">Open</button>') + '</td></tr>'; }).join('') + '</table>'
+      : '<div class="empty">No requests here.</div>');
+  $('cRef').onclick = function(){ drawClass(true); };
+  $('rqF').onclick = function(e){ var b = e.target.closest('[data-f]'); if(b){ RQF = b.dataset.f; drawClass(); } };
+  $('main').querySelectorAll('[data-rq]').forEach(function(tr){ tr.onclick = function(e){ var id = tr.dataset.rq, r = R.filter(function(x){ return x.id === id; })[0]; if(!r) return; if(e.target.closest('[data-dec]')) decide(r); else openReq(r); }; });
+}
+function reqHtml(r){
+  return '<div class="s">' + esc(r.kind) + ' · ' + esc(r.name) + ' (' + esc(r.bsu) + ') · ' + esc(r.prog) + ' · sent ' + esc(r.sent) + ' by ' + esc(r.by) + '</div>' +
+    '<label>Reason</label><div style="white-space:pre-wrap;background:#f8fafc;border:1px solid var(--line);padding:10px;font-size:13px">' + esc(r.reason) + '</div>' +
+    (r.doc ? '<div style="margin-top:8px"><button class="btn" data-doc>📎 Open the document</button></div>' : '') +
+    '<label>Tutors</label>' + (r.answers.length ? r.answers.map(function(a){ return '<div style="font-size:13px;margin:3px 0"><b>' + esc(a.who) + '</b>: ' + esc(a.a) + (a.c ? ' · “' + esc(a.c) + '”' : '') + '</div>'; }).join('') : '') +
+    (r.waiting.length ? '<div style="font-size:12.5px;color:var(--ink2)">Not answered yet: ' + r.waiting.map(esc).join(', ') + '</div>' : '') +
+    (r.status === 'Decided' ? '<label>Decision</label><div style="font-size:13px">' + esc(r.decidedBy) + ' · ' + esc(r.decidedAt) + (r.note ? ' · “' + esc(r.note) + '”' : '') + '</div>' : '');
+}
+function ov(html){ var o = document.createElement('div'); o.className = 'xov'; o.innerHTML = '<div class="bx">' + html + '</div>'; document.body.appendChild(o); o.addEventListener('click', function(e){ if(e.target === o || e.target.closest('[data-x]')) o.remove(); }); return o; }
+function openReq(r){
+  var o = ov('<h3>' + esc(r.id) + '</h3>' + reqHtml(r) + '<label>Classes</label>' + r.classes.map(function(c){ return '<div style="display:flex;gap:8px;align-items:center;font-size:13px;margin:4px 0"><span class="mk ' + esc(c.was) + '">' + esc(c.was) + '</span>' + (c.now ? ' → <span class="mk ' + esc(c.now) + '">' + esc(c.now) + '</span>' : '') + ' ' + esc(c.d) + ' · ' + esc(c.module) + ' · ' + esc(c.time) + ' · ' + esc(c.tutor) + '</div>'; }).join('') + '<div class="btns"><button class="btn" data-x>Close</button></div>');
+  docBtn(o, r);
+}
+function docBtn(o, r){
+  var b = o.querySelector('[data-doc]'); if(!b) return;
+  b.onclick = async function(){ b.disabled = true; b.textContent = 'Opening…';
+    try { var d = await apiGet({ action: 'admReqDoc', id: r.id }); var bin = atob(d.b64), u = new Uint8Array(bin.length); for(var i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
+      var url = URL.createObjectURL(new Blob([u], { type: d.type })); window.open(url, '_blank', 'noopener'); setTimeout(function(){ URL.revokeObjectURL(url); }, 60000); }
+    catch(e){ toast(e.message, true); }
+    b.disabled = false; b.textContent = '📎 Open the document'; };
+}
+function decide(r){
+  var M = {};
+  var o = ov('<h3>Decide ' + esc(r.id) + '</h3>' + reqHtml(r) + '<label>Mark for each class</label>' + r.classes.map(function(c){ return '<div style="display:flex;gap:10px;align-items:center;justify-content:space-between;border:1px solid var(--line);padding:8px 10px;margin:5px 0;font-size:13px"><span>' + esc(c.d) + ' · ' + esc(c.module) + ' · was <span class="mk ' + esc(c.was) + '">' + esc(c.was) + '</span></span><span class="mpick" data-sid="' + esc(c.sid) + '">' + ['P', 'L', 'E', 'A'].map(function(m){ return '<button type="button" data-m="' + m + '">' + (m === 'A' ? 'Keep A' : m) + '</button>'; }).join('') + '</span></div>'; }).join('') +
+    '<label>Note to the family <span id="nReq" style="text-transform:none;letter-spacing:0;font-weight:500"></span></label><textarea id="dNote" maxlength="600"></textarea>' +
+    '<div class="btns"><button class="btn" data-x>Cancel</button><button class="btn p" id="dGo">Save decision</button></div>');
+  docBtn(o, r);
+  function need(){ var keep = Object.keys(M).some(function(k){ return M[k] === 'A'; }); o.querySelector('#nReq').textContent = keep ? '(needed: Keep A)' : '(optional)'; return keep; }
+  need();
+  o.querySelectorAll('.mpick').forEach(function(p){ p.onclick = function(e){ var b = e.target.closest('[data-m]'); if(!b) return; M[p.dataset.sid] = b.dataset.m; p.querySelectorAll('button').forEach(function(x){ x.classList.toggle('on', x === b); }); need(); }; });
+  o.querySelector('#dGo').onclick = async function(){
+    if(r.classes.some(function(c){ return !M[c.sid]; })){ toast('Please choose a mark for every class.', true); return; }
+    var note = o.querySelector('#dNote').value.trim(); if(need() && !note){ toast('Keep A needs a note to the family.', true); return; }
+    var b = this; b.disabled = true; b.textContent = 'Saving…';
+    try { await apiPost('admReqDecide', { id: r.id, marks: M, note: note }); o.remove(); toast('Decision saved. The family is told.'); drawClass(true); }
+    catch(e){ b.disabled = false; b.textContent = 'Save decision'; toast(e.message, true); }
+  };
+}
+
+// ---------------------------------------------------------------- accounts (KEY accounts_access only)
+var ACB = 0, BANDS = [['All', function(){ return true; }], ['Over 5,000', function(r){ return r[6] > 5000; }], ['Over 10,000', function(r){ return r[6] > 10000; }], ['Over 20,000', function(r){ return r[6] > 20000; }], ['Something due', function(r){ return r[6] > 0; }], ['Clear', function(r){ return !(r[6] > 0); }]];
+async function drawAcc(fresh){
+  if(!BOOT.me.acc){ go('dash'); return; }
+  if(!CACHE.acc || fresh){ loading('Accounts'); try { CACHE.acc = await apiGet({ action: 'admAcc' }); } catch(e){ return failed('Accounts', e, function(){ drawAcc(true); }); } }
+  if(CUR !== 'acc') return;
+  var A = CACHE.acc.rows, sum = function(i, L){ return (L || A).reduce(function(t, r){ return t + (r[i] || 0); }, 0); };
+  var progs = {}; A.forEach(function(r){ progs[r[2]] = 1; });
+  var syn = {}; A.forEach(function(r){ var k = r[2] + '|' + r[3]; var s = syn[k] = syn[k] || { p: r[2], y: r[3], n: 0, w: 0, due: 0, out: 0 }; s.n++; if(r[6] > 0) s.w++; s.due += r[6]; s.out += r[7]; });
+  var SL = Object.keys(syn).sort().map(function(k){ return syn[k]; }), last = '';
+  $('main').innerHTML =
+    '<div class="hrow"><div><h2>Accounts</h2><p>From the receivable file · only the people in KEY accounts_access see this page</p></div><span class="sp"></span><button class="btn" id="aRep">📄 Accounts report</button><button class="btn p" id="aNot"' + (BOOT.me.notify ? '' : ' hidden') + ' disabled title="Comes with Send Notifications">✉ Send notification</button></div>' +
+    '<div class="kp4"><div class="kp"><h6>Total receivable</h6><b>AED ' + money(sum(8)) + '</b><small>' + A.length + ' students</small></div><div class="kp o"><h6>Current due</h6><b>AED ' + money(sum(6)) + '</b><small>due now</small></div>' +
+    '<div class="kp r"><h6>Outstanding</h6><b>AED ' + money(sum(7)) + '</b><small>tuition outstanding</small></div><div class="kp g"><h6>Clear</h6><b>' + A.filter(function(r){ return !(r[6] > 0); }).length + '</b><small>nothing due now</small></div></div>' +
+    '<div class="adh"><div><b>By programme and year</b><small>Click a row to filter the list below</small></div></div>' +
+    '<table class="tbl" id="aSyn"><tr><th>Programme</th><th>Year</th><th class="n">Students</th><th class="n">With something due</th><th class="n">Current due</th><th class="n">Outstanding</th></tr>' + SL.map(function(s){ var h = '<tr class="ck" data-p="' + esc(s.p) + '" data-y="' + esc(s.y) + '"><td>' + (s.p !== last ? '<b>' + esc(s.p) + '</b>' : '') + '</td><td>' + esc(s.y) + '</td><td class="n">' + s.n + '</td><td class="n">' + s.w + '</td><td class="n"><b>' + money(s.due) + '</b></td><td class="n">' + money(s.out) + '</td></tr>'; last = s.p; return h; }).join('') +
+    '<tr class="tot"><td>Total</td><td></td><td class="n">' + A.length + '</td><td class="n">' + A.filter(function(r){ return r[6] > 0; }).length + '</td><td class="n">' + money(sum(6)) + '</td><td class="n">' + money(sum(7)) + '</td></tr></table>' +
+    '<div class="adh"><div><b>Students</b><small>The download is exactly the list shown</small></div><span class="sp"></span><button class="btn" id="aXl">⬇ Excel of this list</button><button class="btn" id="aPdf">🖨 PDF of this list</button></div>' +
+    '<div class="ptb" id="aBands"></div><div class="search"><input id="aQ" placeholder="Search name or BSU ID"><select id="aP"><option value="">All programmes</option>' + Object.keys(progs).sort().map(function(p){ return '<option>' + esc(p) + '</option>'; }).join('') + '</select><select id="aY"><option value="">All years</option><option>Foundation</option><option>Year 1</option><option>Year 2</option><option>Year 3</option></select></div><div id="aList"></div>' +
+    (CACHE.acc.missing ? '<p style="font-size:11.5px;color:var(--ink2)">' + CACHE.acc.missing + ' students in the Records have no row in the receivable file.</p>' : '');
+  function list(){ var q = $('aQ').value.toLowerCase(), p = $('aP').value, y = $('aY').value;
+    return A.filter(function(r){ return BANDS[ACB][1](r) && (!p || r[2] === p) && (!y || r[3] === y) && (!q || String(r[1]).toLowerCase().indexOf(q) > -1 || String(r[0]).indexOf(q) > -1); }).sort(function(a, b){ return b[6] - a[6]; }); }
+  function draw(){
+    $('aBands').innerHTML = BANDS.map(function(b, i){ return '<button data-b="' + i + '" class="' + (i === ACB ? 'on' : '') + '">' + b[0] + ' · ' + A.filter(b[1]).length + '</button>'; }).join('');
+    var L = list();
+    $('aList').innerHTML = '<table class="tbl"><tr><th>Student</th><th>BSU ID</th><th>Programme</th><th>Year</th><th>Registration</th><th>Accounts status</th><th class="n">Current due</th><th class="n">Tuition outstanding</th><th class="n">Total receivable</th></tr>' + L.map(function(r){
+      var rc = /^registered/i.test(r[4]) ? 'ok' : /partial/i.test(r[4]) ? 'mid' : r[4] ? 'no' : 'gr', sc = /^clear/i.test(r[5]) ? 'ok' : /see/i.test(r[5]) ? 'no' : r[5] ? 'mid' : 'gr';
+      return '<tr><td><b>' + esc(r[1]) + '</b>' + (r[9] ? ' <span class="pl ok">New</span>' : '') + '</td><td>' + esc(r[0]) + '</td><td>' + esc(r[2]) + '</td><td>' + esc(r[3]) + '</td><td><span class="pl ' + rc + '">' + esc(r[4] || '–') + '</span></td><td><span class="pl ' + sc + '">' + esc(r[5] || '–') + '</span></td><td class="n"><b>' + (r[6] ? money(r[6]) : '–') + '</b></td><td class="n">' + (r[7] ? money(r[7]) : '–') + '</td><td class="n">' + money(r[8]) + '</td></tr>'; }).join('') +
+      '<tr class="tot"><td colspan="6">' + L.length + ' students</td><td class="n">' + money(sum(6, L)) + '</td><td class="n">' + money(sum(7, L)) + '</td><td class="n">' + money(sum(8, L)) + '</td></tr></table>';
+  }
+  draw();
+  $('aBands').onclick = function(e){ var b = e.target.closest('[data-b]'); if(b){ ACB = +b.dataset.b; draw(); } };
+  $('aQ').oninput = draw; $('aP').onchange = draw; $('aY').onchange = draw;
+  $('aSyn').onclick = function(e){ var tr = e.target.closest('[data-p]'); if(!tr) return; $('aP').value = tr.dataset.p; $('aY').value = tr.dataset.y; draw(); $('aList').scrollIntoView({ behavior: 'smooth' }); };
+  function bandName(){ return BANDS[ACB][0].replace(/[^A-Za-z0-9]+/g, ''); }
+  $('aXl').onclick = function(){
+    var L = list(), H = ['Student', 'BSU ID', 'Programme', 'Year', 'Registration', 'Accounts status', 'Current due', 'Tuition outstanding', 'Total receivable'];
+    var csv = [H].concat(L.map(function(r){ return [r[1], r[0], r[2], r[3], r[4], r[5], r[6], r[7], r[8]]; })).map(function(row){ return row.map(function(v){ if(typeof v === 'number') return String(v); v = String(v == null ? '' : v); if(/^[=+\-@\t\r]/.test(v)) v = "'" + v; return '"' + v.replace(/"/g, '""') + '"'; }).join(','); }).join('\r\n');
+    var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['﻿' + csv], { type: 'text/csv' })); a.download = 'CampusCore_Admin_Accounts_' + bandName() + '_' + stamp() + '.csv'; a.click(); setTimeout(function(){ URL.revokeObjectURL(a.href); }, 5000);
+  };
+  $('aPdf').onclick = function(){ printView('Accounts · ' + BANDS[ACB][0] + ($('aP').value ? ' · ' + $('aP').value : '') + ($('aY').value ? ' · ' + $('aY').value : ''), $('aList').innerHTML, 'CampusCore_Admin_Accounts_' + bandName() + '_' + stamp()); };
+  $('aRep').onclick = function(){ printView('Accounts report', '<table class="tbl"><tr><th>Total receivable</th><th>Current due</th><th>Outstanding</th><th>Students</th><th>With something due</th></tr><tr><td>AED ' + money(sum(8)) + '</td><td>AED ' + money(sum(6)) + '</td><td>AED ' + money(sum(7)) + '</td><td>' + A.length + '</td><td>' + A.filter(function(r){ return r[6] > 0; }).length + '</td></tr></table><h3>By programme and year</h3>' + $('aSyn').outerHTML, 'CampusCore_Admin_AccountsReport_' + stamp()); };
+}
+// a clean printable page (Save as PDF in the print box); the title becomes the file name
+function printView(title, html, file){
+  var w = window.open('', '_blank'); if(!w){ toast('Please allow pop-ups for this page to print.', true); return; }
+  var css = Array.prototype.map.call(document.querySelectorAll('style'), function(s){ return s.textContent; }).join('\n');
+  w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>' + esc(file) + '</title><style>' + css + ' body{background:#fff;padding:20px} .tbl th{position:static} @page{size:A4 landscape;margin:12mm}</style></head><body><h2 style="margin:0 0 4px">' + esc(title) + '</h2><p style="color:#475569;margin:0 0 14px;font-size:12px">CampusCore Admin Portal · ' + esc(new Date().toLocaleString('en-GB')) + ' · ' + esc(ME) + '</p>' + html + '</body></html>');
+  w.document.close(); setTimeout(function(){ w.focus(); w.print(); }, 400);
+}
+</script>
+</body>
+</html>

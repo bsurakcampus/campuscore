@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>Learning &amp; Teaching Evaluation · Bath Spa University RAK Campus</title>
+<link rel="icon" href="CampusCore.ico">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&family=Chakra+Petch:wght@600;700&display=swap" rel="stylesheet">
+<style>
+/* 20 Nov 2026: the student evaluation page. It holds no data: everything comes from CampusCore with the personal link
+   in the student's email (after #, so the code never reaches GitHub). Answers are anonymous. */
+:root{--navy:#0f1e3d;--blue:#1d4ed8;--ink:#0f172a;--ink2:#334155;--ink3:#64748b;--line:#e2e8f0;--bg:#eef2f7;--green:#15803d;--red:#dc2626}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Space Grotesk',Arial,sans-serif;font-size:15px;line-height:1.5}
+.hd{background:var(--navy);color:#fff;padding:16px 18px}
+.hd b{display:block;font:700 19px 'Chakra Petch','Space Grotesk',sans-serif;letter-spacing:.2px}
+.hd span{display:block;font:600 11px 'JetBrains Mono',monospace;color:#94a3b8;letter-spacing:1.2px;margin-top:3px}
+.wrap{max-width:680px;margin:0 auto;padding:16px}
+.card{background:#fff;border:1px solid var(--line);padding:16px;margin:0 0 14px}
+.title{font-weight:700;font-size:18px;margin:0 0 10px}
+.intro p{margin:0 0 10px;color:var(--ink2);font-size:14.5px}
+.anon{background:#ecfdf5;border:1px solid #a7f3d0;color:#065f46;font-size:13px;padding:8px 12px;margin-top:6px}
+.test{background:#fff7ed;border:1px dashed #f59e0b;color:#92400e;font-size:13px;padding:8px 12px;margin-bottom:12px}
+.sec{border-top:4px solid var(--navy)}
+.sec h2{margin:0 0 2px;font-size:16.5px}
+.sec .tut{color:var(--ink3);font-size:13px;margin-bottom:10px}
+.q{padding:12px 0;border-top:1px dashed var(--line)}
+.q.miss{background:#fff1f2;margin:0 -16px;padding:12px 16px}
+.qt{font-size:14.5px;margin-bottom:8px}
+.qt i{color:var(--red);font-style:normal}
+.sc{display:grid;grid-template-columns:repeat(10,1fr);gap:4px}
+.sc button{border:1.5px solid #cbd5e1;background:#fff;padding:9px 0;font:700 14px 'JetBrains Mono',monospace;color:var(--ink2);cursor:pointer;border-radius:4px}
+.sc button.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.ends{display:flex;justify-content:space-between;font-size:11px;color:var(--ink3);margin-top:3px}
+textarea{width:100%;min-height:80px;font:inherit;font-size:14.5px;padding:8px 10px;border:1.5px solid #cbd5e1;resize:vertical}
+.cl{font-size:14px;margin:12px 0 6px}
+.go{display:block;width:100%;background:var(--navy);color:#fff;border:0;padding:15px;font:700 16px 'Space Grotesk',Arial,sans-serif;cursor:pointer}
+.go:disabled{opacity:.6;cursor:default}
+.msg{font-size:14px;margin-top:10px;text-align:center}
+.msg.bad{color:var(--red);font-weight:600}
+.done{text-align:center;padding:34px 16px}
+.done .big{font-size:40px}
+.done b{display:block;font-size:18px;margin:8px 0 4px}
+.muted{color:var(--ink3);font-size:13px}
+@media(max-width:420px){.sc{grid-template-columns:repeat(5,1fr)}.sc button{padding:11px 0}}
+</style>
+</head>
+<body>
+<div class="hd"><b>Bath Spa University</b><span>RAK CAMPUS · LEARNING &amp; TEACHING EVALUATION</span></div>
+<div class="wrap" id="main"><div class="card muted">Loading…</div></div>
+<script>
+var API = 'https://script.google.com/macros/s/AKfycbycKFnbEm2aXY6JJ8QS-x-vUQMAcqp800afJhejux9UofP1YfK49AxoTG8cXMORzZby/exec';
+var T = String(location.hash || '').replace(/^#/, '').trim(), D = null, ANS = [];
+function $(id){ return document.getElementById(id); }
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+function get(qs){ return fetch(API + '?' + qs + '&_=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.json(); }); }
+function post(o){ return fetch(API, { method: 'POST', body: JSON.stringify(o) }).then(function(r){ return r.json(); }); }
+function finish(icon, head, text){ $('main').innerHTML = '<div class="card done"><div class="big">' + icon + '</div><b>' + esc(head) + '</b><div class="muted">' + esc(text || '') + '</div></div>'; }
+function draw(){
+  var h = '<div class="card">' + (D.test ? '<div class="test"><b>TEST.</b> These answers are saved as a test and are not counted.</div>' : '') +
+    '<div class="title">' + esc(D.title) + '</div><div class="intro">' + String(D.intro || '').split(/\n\s*\n/).map(function(p){ return '<p>' + esc(p).replace(/\n/g, '<br>') + '</p>'; }).join('') + '</div>' +
+    '<div class="anon">🔒 Anonymous: your name and email are not saved with your answers. You can submit once' + (D.closes ? ', until ' + esc(D.closes) : '') + '.</div></div>';
+  D.sec.forEach(function(s, i){
+    h += '<div class="card sec" id="s' + i + '"><h2>' + esc(s.m) + '</h2><div class="tut">' + esc(s.t) + '</div>';
+    D.q.forEach(function(q, j){
+      h += '<div class="q" id="q' + i + '_' + j + '"><div class="qt">' + esc(q) + ' <i>*</i></div><div class="sc">';
+      for(var n = 1; n <= 10; n++) h += '<button type="button" data-i="' + i + '" data-j="' + j + '" data-n="' + n + '"' + (ANS[i].r[j] === n ? ' class="on"' : '') + ' aria-label="' + n + ' out of 10">' + n + '</button>';
+      h += '</div><div class="ends"><span>1 · Lowest</span><span>10 · Highest</span></div></div>';
+    });
+    h += '<div class="cl">' + esc(D.cl) + '</div><textarea maxlength="' + (D.max || 1000) + '" data-c="' + i + '">' + esc(ANS[i].c) + '</textarea></div>';
+  });
+  h += '<div class="card"><button class="go" id="go" type="button">Submit my feedback</button><div class="msg" id="msg"></div></div>';
+  $('main').innerHTML = h;
+}
+document.addEventListener('click', function(e){
+  var b = e.target.closest('.sc button'); if(b){ var i = +b.dataset.i, j = +b.dataset.j; ANS[i].r[j] = +b.dataset.n;
+    b.parentNode.querySelectorAll('button').forEach(function(x){ x.classList.toggle('on', x === b); }); var q = $('q' + i + '_' + j); if(q) q.classList.remove('miss'); return; }
+  if(e.target.id === 'go') submit();
+});
+document.addEventListener('input', function(e){ var t = e.target; if(t.dataset && t.dataset.c != null) ANS[+t.dataset.c].c = t.value; });
+function submit(){
+  var first = null;
+  ANS.forEach(function(a, i){ a.r.forEach(function(v, j){ var q = $('q' + i + '_' + j); if(!v){ if(q) q.classList.add('miss'); if(!first) first = q; } }); });
+  if(first){ $('msg').className = 'msg bad'; $('msg').textContent = 'Please answer every question marked *. The missing ones are highlighted.'; first.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+  var go = $('go'); go.disabled = true; go.textContent = 'Sending…'; $('msg').textContent = '';
+  post({ action: 'svSubmit', t: T, a: ANS.map(function(a){ return { r: a.r, c: a.c }; }) }).then(function(r){
+    if(r && r.status === 'ok'){ window.scrollTo(0, 0); finish('✅', 'Thank you', (r.data && r.data.done) || 'Your feedback has been received.'); return; }
+    go.disabled = false; go.textContent = 'Submit my feedback'; $('msg').className = 'msg bad'; $('msg').textContent = (r && r.message) || 'Something went wrong. Please press Submit again.';
+  }).catch(function(){ go.disabled = false; go.textContent = 'Submit my feedback'; $('msg').className = 'msg bad'; $('msg').textContent = 'No connection. Your answers are still here: please press Submit again.'; });
+}
+if(!/^[a-f0-9]{48}$/.test(T)) finish('🔗', 'Link not complete', 'Please open the link from the button in your email.');
+else get('action=svGet&t=' + encodeURIComponent(T)).then(function(r){
+  if(!r || r.status !== 'ok'){ finish('⚠️', 'This link cannot be used', (r && r.message) || 'Please use the button in your latest email.'); return; }
+  if(r.data.done){ finish('✅', 'Thank you', r.data.done); return; }
+  D = r.data; ANS = D.sec.map(function(){ return { r: D.q.map(function(){ return 0; }), c: '' }; }); draw();
+}).catch(function(){ finish('📶', 'No connection', 'Please check your internet and open the link again.'); });
+</script>
+</body>
+</html>

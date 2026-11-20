@@ -1568,7 +1568,7 @@ async function boot(){
   _config = B.config || {};
   CLASSES = B.classes || [];
   CLASSES.forEach(function(c){ c.count = c.groups.reduce(function(n, g){ return n + ((B.rosters[g] || []).length); }, 0); });
-  B.hist = B.hist || {}; indexHist(B.sessions);
+  B.hist = B.hist || {}; B.prior = B.prior || {}; indexHist(B.sessions);
   // resume a class this tutor left running (e.g. after a refresh)
   Object.keys(B.sessions || {}).forEach(function(k){
     (B.sessions[k] || []).forEach(function(s){ if(s.status === 'Running' && String(s.tutor).toLowerCase() === TUTOR){
@@ -1645,7 +1645,7 @@ setInterval(function(){
   apiFetch({action:'getClassroomBundle'}).then(function(B2){
     if(LIVE || !B2 || !B2.classes) return;
     var keep = CLASSES.filter(function(c){ return c.cover; });
-    B = B2; _config = B.config || _config; B.hist = B.hist || {}; HIDX = {}; indexHist(B.sessions);
+    B = B2; _config = B.config || _config; B.hist = B.hist || {}; B.prior = B.prior || {}; HIDX = {}; indexHist(B.sessions);
     CLASSES = (B.classes || []).concat(keep);
     CLASSES.forEach(function(c){ if(c.count == null) c.count = c.groups.reduce(function(n, g){ return n + ((B.rosters[g] || []).length); }, 0); });
     var open = Array.prototype.map.call(document.querySelectorAll('.tutor-sem-block'), function(b){ return !b.classList.contains('collapsed'); });
@@ -1858,8 +1858,11 @@ function pastMark(sid, key){
 }
 function liveHere(){ return !!(LIVE && CUR && LIVE.key === CUR.key && VIEW && VIEW.live && VIEW.id === LIVE.id); }
 // Module %: Present 100%, Late 50%, Absent 0%, over the sessions where the student was marked (today included).
+// 19 Nov 2026: marks of this module from the student's group before a move (sent by CampusCore) count too
+function priorOf(key){ return ((B.prior || {})[CUR.key] || {})[key] || null; }
 function modPct(key, past){
-  var s = 0, t = 0;
+  var s = 0, t = 0, pr = priorOf(key);
+  if(pr){ t += pr.p + pr.l + pr.a + pr.e; s += pr.p + 0.5 * (pr.l + pr.e); }
   past.forEach(function(x){ var m = pastMark(x.id, key); if(m){ t++; s += m === 'P' ? 1 : (m === 'L' || m === 'E') ? 0.5 : 0; } });
   if(liveHere()){ var m2 = VIEW.marks[key]; if(m2){ t++; s += m2 === 'P' ? 1 : m2 === 'L' ? 0.5 : 0; } }
   return t ? Math.round(s / t * 100) : null;
@@ -1890,7 +1893,9 @@ function renderTable(){
         : /see\s*accounts/i.test(accV) ? '<span class="accp no">Please see Accounts!</span>'
         : '<span class="accp mid">' + esc(accV) + '</span>');
     if(!accH) accH = '<span class="accp none">–</span>';
-    var note = s.moved ? '<span class="nw out">Moved to another group</span>' : s.joined ? '<span class="nw">Joined this group</span>' : '';
+    var pr = priorOf(s.key);
+    var note = s.moved ? '<span class="nw out">Moved to another group</span>' : s.joined ? '<span class="nw">Joined this group</span>'
+      : pr ? '<span class="nw" title="' + esc((pr.p + pr.l + pr.a + pr.e) + ' classes of this module in ' + pr.from.map(gShort).join(', ') + ', counted in the Module %') + '">Moved from ' + esc(pr.from.map(function(g){ return gParts(g)[2]; }).join(', ')) + '</span>' : '';
     h += '<tr data-key="' + esc(s.key) + '" data-name="' + esc(s.name) + '" data-id="' + esc(s.bsuId || '') + '" data-group="' + esc(r.group) + '"' + (st ? ' data-att-status="' + st + '"' : '') + '>'
       + '<td class="nm"><button type="button" class="ncard' + (st ? ' st-' + st : '') + (s.moved ? ' moved' : '') + (UNM_ONLY && !st && !s.moved && liveHere() ? ' unm-hl' : '') + '" data-key="' + esc(s.key) + '" title="' + esc(s.name) + '"><span><span class="nn">' + esc(s.name) + '</span><span class="ni">' + id + '</span>'
       + '' + note + '</span>'
@@ -1901,6 +1906,7 @@ function renderTable(){
       + past.map(function(x){
           var m = pastMark(x.id, s.key), ed = EDITED[x.id + '|' + s.key] ? ' ed' : '';
           if(SEL === x.id) return '<td class="on"><button type="button" class="circ ' + (m || 'n') + ed + '" data-sid="' + esc(x.id) + '" data-key="' + esc(s.key) + '" title="Click to change">' + (m || '–') + '</button></td>';
+          if(!m && pr && x.date <= pr.until) return '<td title="In ' + esc(pr.from.map(gShort).join(', ')) + ' then"></td>';   // 19 Nov 2026: before the move, no circle
           return '<td><span class="circ ' + (m || 'n') + ed + '">' + (m || '–') + '</span></td>';
         }).join('')
       + '<td class="fill"></td></tr>';
@@ -2299,7 +2305,7 @@ async function openCover(i){
     Object.keys(d.rosters || {}).forEach(function(g){ B.rosters[g] = d.rosters[g]; });
     B.sessions[key] = (d.sessions || {})[key] || [];
     Object.keys(d.pct || {}).forEach(function(k){ B.pct[k] = d.pct[k]; });
-    B.hist = B.hist || {}; B.hist[key] = (d.hist || {})[key] || {}; var one = {}; one[key] = B.sessions[key]; indexHist(one);
+    B.hist = B.hist || {}; B.hist[key] = (d.hist || {})[key] || {}; B.prior = B.prior || {}; B.prior[key] = (d.prior || {})[key] || {}; var one = {}; one[key] = B.sessions[key]; indexHist(one);
     var c = d.cls; c.count = c.groups.reduce(function(n, g){ return n + ((B.rosters[g] || []).length); }, 0);
     CLASSES.push(c); openAtt(CLASSES.length - 1);
   } catch(e){ toast('Could not open the class: ' + e.message); }
