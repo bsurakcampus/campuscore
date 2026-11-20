@@ -25,14 +25,18 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:'Space Grotesk',
 .test{background:#fff7ed;border:1px dashed #f59e0b;color:#92400e;font-size:13px;padding:8px 12px;margin-bottom:12px}
 .sec{border-top:4px solid var(--navy)}
 .sec h2{margin:0 0 2px;font-size:16.5px}
-.sec .tut{color:var(--ink3);font-size:13px;margin-bottom:10px}
+.sec .tut{color:var(--red);font-size:16px;font-weight:700;margin:2px 0 10px}
+.sec .tut small{display:block;color:var(--ink3);font-size:11px;font-weight:600;letter-spacing:.8px;text-transform:uppercase}
 .q{padding:12px 0;border-top:1px dashed var(--line)}
 .q.miss{background:#fff1f2;margin:0 -16px;padding:12px 16px}
 .qt{font-size:14.5px;margin-bottom:8px}
 .qt i{color:var(--red);font-style:normal}
-.sc{display:grid;grid-template-columns:repeat(10,1fr);gap:4px}
-.sc button{border:1.5px solid #cbd5e1;background:#fff;padding:9px 0;font:700 14px 'JetBrains Mono',monospace;color:var(--ink2);cursor:pointer;border-radius:4px}
-.sc button.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.sc{display:flex;justify-content:space-between;gap:2px}
+.sc button{flex:1;border:0;background:none;padding:2px 0;cursor:pointer;line-height:1;color:#cbd5e1;font-size:30px;-webkit-tap-highlight-color:transparent}
+.sc.n10 button{font-size:27px}
+.sc button.on{color:#f59e0b}
+.sc button span{display:block;font:600 10px 'JetBrains Mono',monospace;color:var(--ink3);margin-top:1px}
+.pick{font:700 12px 'JetBrains Mono',monospace;color:var(--ink3);margin-top:4px;min-height:15px}
 .ends{display:flex;justify-content:space-between;font-size:11px;color:var(--ink3);margin-top:3px}
 textarea{width:100%;min-height:80px;font:inherit;font-size:14.5px;padding:8px 10px;border:1.5px solid #cbd5e1;resize:vertical}
 .cl{font-size:14px;margin:12px 0 6px}
@@ -44,7 +48,7 @@ textarea{width:100%;min-height:80px;font:inherit;font-size:14.5px;padding:8px 10
 .done .big{font-size:40px}
 .done b{display:block;font-size:18px;margin:8px 0 4px}
 .muted{color:var(--ink3);font-size:13px}
-@media(max-width:420px){.sc{grid-template-columns:repeat(5,1fr)}.sc button{padding:11px 0}}
+@media(max-width:360px){.sc.n10 button{font-size:23px}}
 </style>
 </head>
 <body>
@@ -52,7 +56,7 @@ textarea{width:100%;min-height:80px;font:inherit;font-size:14.5px;padding:8px 10
 <div class="wrap" id="main"><div class="card muted">Loading…</div></div>
 <script>
 var API = 'https://script.google.com/macros/s/AKfycbycKFnbEm2aXY6JJ8QS-x-vUQMAcqp800afJhejux9UofP1YfK49AxoTG8cXMORzZby/exec';
-var T = String(location.hash || '').replace(/^#/, '').trim(), D = null, ANS = [];
+var T = String(location.hash || '').replace(/^#/, '').trim(), D = null, ANS = [], SC = 10;
 function $(id){ return document.getElementById(id); }
 function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
 function get(qs){ return fetch(API + '?' + qs + '&_=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.json(); }); }
@@ -63,11 +67,11 @@ function draw(){
     '<div class="title">' + esc(D.title) + '</div><div class="intro">' + String(D.intro || '').split(/\n\s*\n/).map(function(p){ return '<p>' + esc(p).replace(/\n/g, '<br>') + '</p>'; }).join('') + '</div>' +
     '<div class="anon">🔒 Anonymous: your name and email are not saved with your answers. You can submit once' + (D.closes ? ', until ' + esc(D.closes) : '') + '.</div></div>';
   D.sec.forEach(function(s, i){
-    h += '<div class="card sec" id="s' + i + '"><h2>' + esc(s.m) + '</h2><div class="tut">' + esc(s.t) + '</div>';
+    h += '<div class="card sec" id="s' + i + '"><h2>' + esc(s.m) + '</h2><div class="tut"><small>Tutor</small>' + esc(s.t) + '</div>';
     D.q.forEach(function(q, j){
-      h += '<div class="q" id="q' + i + '_' + j + '"><div class="qt">' + esc(q) + ' <i>*</i></div><div class="sc">';
-      for(var n = 1; n <= 10; n++) h += '<button type="button" data-i="' + i + '" data-j="' + j + '" data-n="' + n + '"' + (ANS[i].r[j] === n ? ' class="on"' : '') + ' aria-label="' + n + ' out of 10">' + n + '</button>';
-      h += '</div><div class="ends"><span>1 · Lowest</span><span>10 · Highest</span></div></div>';
+      h += '<div class="q" id="q' + i + '_' + j + '"><div class="qt">' + esc(q) + ' <i>*</i></div><div class="sc n' + SC + '">';
+      for(var n = 1; n <= SC; n++) h += '<button type="button" data-i="' + i + '" data-j="' + j + '" data-n="' + n + '"' + (ANS[i].r[j] >= n ? ' class="on"' : '') + ' aria-label="' + n + ' out of ' + SC + '">★<span>' + n + '</span></button>';
+      h += '</div><div class="ends"><span>1 · Lowest</span><span class="pick" id="p' + i + '_' + j + '">' + (ANS[i].r[j] ? ANS[i].r[j] + ' / ' + SC : '') + '</span><span>' + SC + ' · Highest</span></div></div>';
     });
     h += '<div class="cl">' + esc(D.cl) + '</div><textarea maxlength="' + (D.max || 1000) + '" data-c="' + i + '">' + esc(ANS[i].c) + '</textarea></div>';
   });
@@ -75,8 +79,9 @@ function draw(){
   $('main').innerHTML = h;
 }
 document.addEventListener('click', function(e){
-  var b = e.target.closest('.sc button'); if(b){ var i = +b.dataset.i, j = +b.dataset.j; ANS[i].r[j] = +b.dataset.n;
-    b.parentNode.querySelectorAll('button').forEach(function(x){ x.classList.toggle('on', x === b); }); var q = $('q' + i + '_' + j); if(q) q.classList.remove('miss'); return; }
+  var b = e.target.closest('.sc button'); if(b){ var i = +b.dataset.i, j = +b.dataset.j, n = +b.dataset.n; ANS[i].r[j] = n;
+    b.parentNode.querySelectorAll('button').forEach(function(x){ x.classList.toggle('on', +x.dataset.n <= n); });
+    var pk = $('p' + i + '_' + j); if(pk) pk.textContent = n + ' / ' + SC; var q = $('q' + i + '_' + j); if(q) q.classList.remove('miss'); return; }
   if(e.target.id === 'go') submit();
 });
 document.addEventListener('input', function(e){ var t = e.target; if(t.dataset && t.dataset.c != null) ANS[+t.dataset.c].c = t.value; });
@@ -94,7 +99,7 @@ if(!/^[a-f0-9]{48}$/.test(T)) finish('🔗', 'Link not complete', 'Please open t
 else get('action=svGet&t=' + encodeURIComponent(T)).then(function(r){
   if(!r || r.status !== 'ok'){ finish('⚠️', 'This link cannot be used', (r && r.message) || 'Please use the button in your latest email.'); return; }
   if(r.data.done){ finish('✅', 'Thank you', r.data.done); return; }
-  D = r.data; ANS = D.sec.map(function(){ return { r: D.q.map(function(){ return 0; }), c: '' }; }); draw();
+  D = r.data; SC = D.scale === 5 ? 5 : 10; ANS = D.sec.map(function(){ return { r: D.q.map(function(){ return 0; }), c: '' }; }); draw();
 }).catch(function(){ finish('📶', 'No connection', 'Please check your internet and open the link again.'); });
 </script>
 </body>
