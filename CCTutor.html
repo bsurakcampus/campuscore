@@ -1131,6 +1131,17 @@ body{overflow:hidden}
 .cx-seg{display:flex;gap:4px}.cx-seg button{border:1.5px solid var(--line2);background:#fff;padding:6px 10px;font:700 12px var(--mono);cursor:pointer}.cx-seg button[disabled]{opacity:.5;cursor:not-allowed}
 .cx-seg button.on[data-m="P"]{background:#15803d;color:#fff;border-color:#15803d}.cx-seg button.on[data-m="L"]{background:#d97706;color:#fff;border-color:#d97706}.cx-seg button.on[data-m="E"]{background:#7c3aed;color:#fff;border-color:#7c3aed}.cx-seg button.on[data-m="A"]{background:#dc2626;color:#fff;border-color:#dc2626}
 .cx-err{background:#fef2f2;border:1px solid #fca5a5;color:#991b1b;padding:8px 12px;margin-top:10px;font-size:12.5px}
+.cpd-f{background:#fff;border:1px solid var(--line);padding:16px;display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px 12px;align-items:end;margin-bottom:16px}
+.cpd-f label{display:block;font:600 11.5px var(--sans);color:var(--ink2);margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em}
+.cpd-f input,.cpd-f select{width:100%;border:1px solid var(--line2);padding:9px 10px;font:14px var(--sans);background:#fff}
+.cpd-drop{grid-column:1/3;border:2px dashed var(--line2);padding:14px;text-align:center;color:var(--ink2);font-size:13px;cursor:pointer;background:#f8fafc}
+.cpd-drop.on{border-color:var(--navy);background:#eef2ff;color:var(--ink)}
+.cpd-t{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line)}
+.cpd-t th{background:var(--navy);color:#fff;font:600 11.5px var(--sans);text-transform:uppercase;letter-spacing:.04em;text-align:left;padding:10px 12px}
+.cpd-t td{padding:10px 12px;border-top:1px solid var(--line);font-size:13.5px}
+.cpd-t .k{display:inline-block;font:600 11px var(--sans);padding:2px 8px;background:#e0e7ff;color:#3730a3}
+.cpd-t button{border:1px solid var(--line2);background:#fff;padding:5px 10px;font-size:12px;cursor:pointer;margin-left:4px}
+@media (max-width:900px){.cpd-f{grid-template-columns:1fr}.cpd-drop{grid-column:auto}}
 </style>
 </head>
 <body>
@@ -1145,6 +1156,7 @@ body{overflow:hidden}
       <button class="nav" type="button" data-k="ars"><span class="ic">🎓</span>Student Records</button>
       <button class="nav" type="button" data-k="cls"><span class="ic">🏫</span>Classroom<span class="cx-badge" id="cxBadge" hidden></span></button>
       <div class="sec-l">University</div>
+      <button class="nav" type="button" data-k="cpd"><span class="ic">🏅</span>My CPD</button>
       <button class="nav" type="button" data-k="tt"><span class="ic">🕐</span>My Timetable</button>
       <button class="nav" type="button" data-k="ann"><span class="ic">📢</span>Announcements</button>
       <button class="nav" type="button" data-k="acal"><span class="ic">🗓️</span>Academic Calendar</button>
@@ -1179,6 +1191,7 @@ body{overflow:hidden}
     </div>
     <div class="pg" id="pg-cls" hidden></div>
     <div class="pg" id="pg-asm" hidden><div id="asmMain"></div></div>
+    <div class="pg" id="pg-cpd" hidden></div>
     <div class="pg" id="pg-tt" hidden>
       <div class="hrow"><div><h2>My Timetable</h2><p id="ttSub"></p></div><div class="hbtns"><button class="btn-o" type="button" id="ttPdf">📄 Save as PDF</button></div></div>
       <div class="tsum" id="ttSum"></div>
@@ -1405,6 +1418,7 @@ function go(p){
   if(p === 'ucal') loadTutorUCal();
   if(p === 'pol') loadTutorPolicies();
   if(p === 'cls') cxOpen();   // 14 Nov 2026: Classroom menu
+  if(p === 'cpd') cpdOpen();  // 24 Nov 2026: My CPD
   if(p === 'ars'){ loadSList().catch(function(){}); setTimeout(function(){ if(!SREC) $('arsIn').focus(); }, 60); }
 }
 document.querySelector('.snav').addEventListener('click', function(e){
@@ -2051,6 +2065,11 @@ function sSA(a){
   return '<td class="c" title="' + esc(a.t) + ' · ' + a.w + '%">' + sPill(a.mark) + (a.ns ? '<span class="nsx">NS</span>' : '') + '</td>';
 }
 function sSw(m){ var p = []; if(m.sa1) p.push('SA1 ' + m.sa1.w + '% ' + m.sa1.t); if(m.sa2) p.push('SA2 ' + m.sa2.w + '% ' + m.sa2.t); return p.length ? esc(p.join(' · ')) : 'Assessments not set yet'; }
+// 23 Nov 2026: the student's group(s) from the Groups tab, WEEKDAY / WEEKEND clear at a glance
+function grpName(g){ var p = gP(g); return (p[2] || g); }
+function grpChips(G){ if(!G || !G.length) return '<div class="grpl" style="margin:4px 0 2px;font-size:12px;color:#fca5a5;font-weight:700">Not in any group on the Groups tab</div>';
+  return '<div class="grpl" style="margin:6px 0 2px;display:flex;gap:6px;flex-wrap:wrap">' + G.map(function(g){ var we = /weekend/i.test(grpName(g));
+    return '<span style="font:800 11px var(--mono);letter-spacing:.6px;padding:3px 9px;background:' + (we ? '#7c3aed' : '#0891b2') + ';color:#fff">' + (we ? 'WEEKEND' : 'WEEKDAY') + '</span><span style="font-size:12.5px;font-weight:700;color:#fff;align-self:center">' + esc(grpName(g)) + '</span>'; }).join('<span style="width:10px"></span>') + '</div>'; }
 function renderStudent(){
   var R = SREC; if(!R) return;
   var nowD = new Date(), yrs = '';
@@ -2072,9 +2091,9 @@ function renderStudent(){
   var accC = function(i, v){ return (i === 0 && /^registered$/i.test(v)) || (i === 1 && /^clear$/i.test(v)) ? '#16a34a' : v === '–' ? '#94a3b8' : '#dc2626'; };
   var attc = R.att == null ? '' : R.att >= 85 ? 'g' : R.att >= 70 ? 'a' : 'r';
   var notes = (R.notes || []).map(function(n){ return '<div class="nm-old" style="white-space:pre-wrap">' + esc(n.note) + '<small>' + esc(n.by || '') + (n.date ? ' · ' + esc(fmtD(n.date, 1)) : '') + (n.mod ? ' · ' + esc(n.mod) : '') + '</small></div>'; }).join('');
-  $('arsOut').innerHTML = '<div class="sh"><span class="hav" id="sHav">' + esc(initials(R.name)) + '</span><div style="flex:1"><div class="nm2">' + esc(R.name) + '<small>BSU ID# ' + esc(R.id) + '</small></div><div class="pg">' + esc(R.prog) + (R.year ? ' · ' + esc(R.year) : '') + (R.level ? ' · Level Entry: ' + esc(R.level) : '') + '</div>'
+  $('arsOut').innerHTML = '<div class="sh"><span class="hav" id="sHav">' + esc(initials(R.name)) + '</span><div style="flex:1"><div class="nm2">' + esc(R.name) + '<small>BSU ID# ' + esc(R.id) + '</small></div><div class="pg">' + esc(R.prog) + (R.year ? ' · ' + esc(R.year) : '') + (R.level ? ' · Level Entry: ' + esc(R.level) : '') + '</div>' + grpChips(R.groups)
     + '<div class="chips"><span class="g">● ' + esc(R.status) + '</span>' + (R.dob ? '<span>DOB: ' + esc(R.dob) + '</span>' : '') + (R.age != null ? '<span>Age: ' + R.age + '</span>' : '') + (R.nat || R.gender ? '<span>' + esc([R.nat, R.gender].filter(Boolean).join(' · ')) + '</span>' : '')
-    + (R.att == null ? '<span>Overall Attendance: no classes yet</span>' : '<button type="button" class="attbtn ' + attc + '" id="sCal" title="Open attendance by module">📅 Overall Attendance: ' + R.att + '% ›</button>')
+    + (R.att == null ? '<span>Overall Attendance: no classes yet</span>' : '<button type="button" class="attbtn ' + attc + '" id="sCal" title="Open the complete attendance record">📅 Overall Attendance: ' + R.att + '% ›</button>')
     + (R.last ? '<span>Last Engagement Date: ' + esc(fmtD(R.last, 1)) + '</span>' : '') + '</div></div>'
     + '<div style="text-align:right;font-size:11px;color:#93c5fd;font-weight:700;letter-spacing:1px">CAMPUSCORE<br><span style="color:#cbd5e1;font-weight:500;letter-spacing:0">' + nowD.getDate() + ' ' + MON[nowD.getMonth()] + ' ' + nowD.getFullYear() + '</span></div></div>'
     + '<div class="sb"><div class="cbx">'
@@ -2091,7 +2110,7 @@ $('arsOut').addEventListener('click', function(e){
 });
 // ---- full attendance calendar, as on the mock (each module: every class from the first to the latest), and its PDF
 function calSes(){ var R = SREC, out = [], sn = R.term ? R.term.sem : 1;
-  (R.attMods || []).forEach(function(m){ m.sess.forEach(function(x){ var p = String(x[0]).split('-'); out.push({ d: new Date(+p[0], +p[1] - 1, +p[2], 12), m: m.m, s: x[1], t: 's' + sn }); }); });
+  (R.attMods || []).forEach(function(m){ m.sess.forEach(function(x){ var p = String(x[0]).split('-'); out.push({ d: new Date(+p[0], +p[1] - 1, +p[2], 12), m: m.m, s: x[1], t: 's' + sn, g: x[2] || '' }); }); });
   return out; }
 function cFmt(d){ return d.getDate() + ' ' + MON[d.getMonth()]; }
 function cTutor(m){ var a = (SREC.attMods || []).filter(function(x){ return x.m === m; })[0], t = a && a.tutors[0]; return t || ['', '']; }
@@ -2102,14 +2121,14 @@ function calGroups(S){ var T = {}; S.forEach(function(x){ (T[x.t] = T[x.t] || {}
 function semBlocks(T){ return T.mods.map(function(M){ var L = M.L.slice().sort(function(a, b){ return a.d - b.d; }), rows = []; for(var r = 0; r < Math.max(1, L.length); r += 32) rows.push(L.slice(r, r + 32));
     var tu = cTutor(M.m);
     return '<div class="mb"><div class="mh"><b>' + esc(M.m) + (tu[0] ? ' <span class="tu">| ' + esc(tu[0]) + ' · <a href="mailto:' + esc(tu[1]) + '">' + esc(tu[1]) + '</a></span>' : '') + '</b><span class="k">' + M.L.length + ' classes · ' + M.P + ' present · ' + M.La + ' late · ' + (M.Ex ? M.Ex + ' excused · ' : '') + M.A + ' absent</span><span class="p" style="color:' + (M.pc >= 85 ? '#16a34a' : M.pc >= 70 ? '#d97706' : '#dc2626') + '">' + M.pc + '%</span></div>'
-      + rows.map(function(R){ var c = R.map(function(x){ return '<div class="c32 ' + x.s + '" title="' + x.d.getDate() + ' ' + MNF[x.d.getMonth()] + ' ' + x.d.getFullYear() + ' · ' + { P: 'present', L: 'late', A: 'absent', E: 'excused' }[x.s] + '"><span class="v">' + cFmt(x.d) + ' <i>' + DNS[x.d.getDay()] + '</i></span><span class="mk">' + x.s + '</span></div>'; });
+      + rows.map(function(R){ var c = R.map(function(x){ return '<div class="c32 ' + x.s + '" title="' + DNS[x.d.getDay()] + ' ' + x.d.getDate() + ' ' + MNF[x.d.getMonth()] + ' ' + x.d.getFullYear() + ' · ' + { P: 'present', L: 'late', A: 'absent', E: 'excused' }[x.s] + (x.g ? ' · ' + esc(grpName(x.g)) : '') + '"><span class="v">' + cFmt(x.d) + ' <i>' + DNS[x.d.getDay()] + '</i></span><span class="mk">' + x.s + '</span></div>'; });
         while(c.length < 32) c.push('<div class="c32 e"><span class="v"></span><span class="mk"></span></div>'); return '<div class="m32">' + c.join('') + '</div>'; }).join('') + '</div>'; }).join(''); }
 function calTot(S){ var P = S.filter(function(x){ return x.s === 'P'; }).length, La = S.filter(function(x){ return x.s === 'L'; }).length, Ex = S.filter(function(x){ return x.s === 'E'; }).length; return { P: P, La: La, Ex: Ex, A: S.length - P - La - Ex, pc: S.length ? Math.round((P + (La + Ex) / 2) / S.length * 100) : 0 }; }
 function openCal(){
   var R = SREC, S = calSes(); if(!S.length){ toast('No classes taken for this student yet this year.'); return; }
   CALC = { R: R, S: S }; var t = calTot(S);
   $('calIni').textContent = initials(R.name); $('calName').textContent = R.name;
-  $('calSub').textContent = 'BSU ID ' + R.id + ' · ' + R.prog + (R.year ? ' · ' + R.year : '') + ' · ' + R.status;
+  $('calSub').textContent = 'BSU ID ' + R.id + ' · ' + R.prog + (R.year ? ' · ' + R.year : '') + (R.groups && R.groups.length ? ' · ' + R.groups.map(function(g){ return grpName(g) + (/weekend/i.test(grpName(g)) ? ' (WEEKEND)' : ' (WEEKDAY)'); }).join(', ') : '') + ' · ' + R.status;
   $('calSum').innerHTML = [[t.pc + '%', 'overall attendance', t.pc >= 85 ? '#16a34a' : t.pc >= 70 ? '#d97706' : '#dc2626'], [S.length, 'classes'], [t.P, 'present', '#16a34a'], [t.La, 'late', '#d97706'], [t.Ex, 'excused', '#7c3aed'], [t.A, 'absent', '#dc2626'], [R.last ? fmtD(R.last, 1) : '–', 'last engagement']].filter(function(x){ return x[1] !== 'excused' || x[0]; }).map(function(x){ return '<div><b style="color:' + (x[2] || 'var(--ink)') + '">' + x[0] + '</b><span>' + x[1] + '</span></div>'; }).join('');
   $('calMonths').innerHTML = '<div class="cyr">' + esc(R.year || '') + ' · ' + esc(R.term ? R.term.ay : '') + '</div>' + calGroups(S).map(function(T){ return '<div class="csem">' + T.name + '</div>' + semBlocks(T); }).join('');
   $('calOv').hidden = false;
@@ -2118,7 +2137,7 @@ $('calX').onclick = function(){ $('calOv').hidden = true; };
 $('calPdf').onclick = function(){
   if(!(window.jspdf && window.jspdf.jsPDF)){ toast('The PDF tool is still loading. Please try again in a moment.', true); return; }
   var C = CALC, R = C.R, S = C.S, t = calTot(S), doc = new window.jspdf.jsPDF({ unit: 'pt', format: 'a4', orientation: 'landscape' }), W = doc.internal.pageSize.getWidth(), H = doc.internal.pageSize.getHeight(), M = 30;
-  function head(){ doc.setFillColor(15, 30, 61); doc.rect(0, 0, W, 58, 'F'); doc.setTextColor(255, 255, 255); doc.setFont('helvetica', 'bold'); doc.setFontSize(15); doc.text(R.name + '  -  attendance by module', M, 24);
+  function head(){ doc.setFillColor(15, 30, 61); doc.rect(0, 0, W, 58, 'F'); doc.setTextColor(255, 255, 255); doc.setFont('helvetica', 'bold'); doc.setFontSize(15); doc.text('Complete Attendance Record  -  ' + R.name, M, 24);
     doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5); doc.text($('calSub').textContent.replace(/·/g, '-'), M, 40);
     doc.text('Overall ' + t.pc + '%  -  ' + S.length + ' classes  -  ' + t.P + ' present, ' + t.La + ' late, ' + (t.Ex ? t.Ex + ' excused, ' : '') + t.A + ' absent  -  last engagement ' + (R.last ? fmtD(R.last, 1) : '-'), M, 52); }
   head(); var y = 78, MC = { P: [22, 163, 74], L: [217, 119, 6], A: [220, 38, 38], E: [124, 58, 237] }, cw = (W - 2 * M) / 32, ch = 56;
@@ -2140,7 +2159,7 @@ $('calPdf').onclick = function(){
       doc.setDrawColor(148, 163, 184); doc.setLineWidth(1.1); doc.rect(M, top, W - 2 * M, y - top); y += 8; }); y += 4; });
   var np = doc.internal.getNumberOfPages(), gen = new Date(); for(var pg = 1; pg <= np; pg++){ doc.setPage(pg); doc.setFont('helvetica', 'normal'); doc.setFontSize(7); doc.setTextColor(120, 130, 145);
     doc.text('Generated by CampusCore on ' + gen.getDate() + ' ' + MNF[gen.getMonth()] + ' ' + gen.getFullYear() + '  -  Confidential: student record, for staff and the student and parents only.', M, H - 12); doc.text('Page ' + pg + ' of ' + np, W - M, H - 12, { align: 'right' }); }
-  doc.save('Attendance by module - ' + R.name + '.pdf');
+  doc.save('Complete Attendance Record - ' + R.name + '.pdf');
 };
 // ---- critical note: always emailed to the student; parent ticked by default; KEY copy_critical_note addresses as boxes
 function openNote(){
@@ -2687,7 +2706,7 @@ function cxHM(m){ m = Math.round(m || 0); return Math.floor(m / 60) + ' h ' + cx
 function cxCol(p){ return p == null ? 'var(--ink3)' : p >= 80 ? '#15803d' : p >= 70 ? '#d97706' : '#dc2626'; }
 function cxMk(m){ return m ? '<span class="circ ' + m + '" style="width:26px;height:26px;font-size:11px">' + m + '</span>' : '–'; }
 function cxGroups(g){ return esc(String(g || '').split(' + ').map(function(x){ var p = x.split('|'); return p.length > 2 ? p[2] : x; }).join(' + ')); }
-function cxWaiting(){ var R = CX.rq; if(!R) return 0; return R.reqs.filter(function(r){ return r.status === 'Waiting for tutor' && !r.mine; }).length + (R.isPl ? R.dec.filter(function(r){ return r.status !== 'Decided'; }).length : 0); }
+function cxWaiting(){ var R = CX.rq; if(!R) return 0; return (R.isPl ? R.dec.filter(function(r){ return r.status !== 'Decided'; }).length : 0); }
 function cxBadge(){
   return apiFetch({ action: 'tutReqs' }).then(function(d){ CX.rq = d; cPut(cKey('x'), d); cxBadgeDraw(); if(PAGE === 'cls') cxDraw(); }).catch(function(){});
 }
@@ -2701,8 +2720,10 @@ function cxOpen(){
   cxBadge();
 }
 function cxDraw(){
-  var R = CX.rq, waitT = R ? R.reqs.filter(function(r){ return r.status === 'Waiting for tutor' && !r.mine; }).length : 0, waitP = R && R.isPl ? R.dec.filter(function(r){ return r.status !== 'Decided'; }).length : 0;
-  var tabs = [['ov', 'Overview', ''], ['mc', 'My classes', CX.cls && CX.cls.classes ? CX.cls.classes.length : ''], ['rv', 'Reviews and leave', waitT]];
+  var R = CX.rq, waitP = R && R.isPl ? R.dec.filter(function(r){ return r.status !== 'Decided'; }).length : 0;
+  // 24 Nov 2026 (Saqib): "Reviews and leave" removed for tutors; requests go to the Programme Leader only (Decisions)
+  var tabs = [['ov', 'Overview', ''], ['mc', 'My classes', CX.cls && CX.cls.classes ? CX.cls.classes.length : '']];
+  if(CX.tab === 'rv') CX.tab = 'ov';
   if(R && R.isPl) tabs.push(['dc', 'Decisions', waitP]);
   if(CX.tab === 'dc' && !(R && R.isPl)) CX.tab = 'ov';
   var h = '<div class="hrow"><div><h2>Classroom</h2><p>Your classes, registers and attendance requests' + (BOOT && BOOT.term ? ' · ' + esc((BOOT.term.year || '') + ' · ' + (BOOT.term.sem || '')) : '') + '</p></div></div>';
@@ -2721,13 +2742,13 @@ function cxOv(){
            [held ? cxHM(mins / held) : '–', 'Average class', 'from Start to Finish'], [tt.length ? Math.round(onT / tt.length * 100) + '%' : '–', 'Started on time', 'within 5 minutes'],
            [held ? Math.round((held - nmL.length) / held * 100) + '%' : '–', 'Registers complete', nmL.length + ' with students not marked'], [att == null ? '–' : att + '%', 'Average attendance', 'all your classes'], [C.lowCount, 'Below 70%', 'students in your modules']];
   var h = '<div class="cx-kpi">' + K.map(function(x, i){ return '<div' + (i === 7 && C.lowCount ? ' style="border-top-color:#dc2626"' : '') + '><b' + (i === 7 && C.lowCount ? ' style="color:#dc2626"' : '') + '>' + x[0] + '</b><span>' + x[1] + '</span><i>' + x[2] + '</i></div>'; }).join('') + '</div>';
-  var R = CX.rq, wt = R ? R.reqs.filter(function(r){ return r.status === 'Waiting for tutor' && !r.mine; }) : [], wp = R && R.isPl ? R.dec.filter(function(r){ return r.status !== 'Decided'; }) : [];
+  var R = CX.rq, wt = [], wp = R && R.isPl ? R.dec.filter(function(r){ return r.status !== 'Decided'; }) : [];
   var att2 = '';
   if(wt.length) att2 += '<div class="cx-att"><span class="dot red"></span><div><b>' + wt.length + ' request' + (wt.length > 1 ? 's' : '') + ' waiting for your answer</b><br><span>Oldest sent ' + esc(wt[wt.length - 1].sent) + ' · no deadline, a reminder comes on Mondays</span></div><button type="button" class="btn-dark" data-cxgo="rv">Open</button></div>';
   if(wp.length) att2 += '<div class="cx-att"><span class="dot red"></span><div><b>' + wp.length + ' request' + (wp.length > 1 ? 's' : '') + ' waiting for your decision</b><br><span>Programme Leader</span></div><button type="button" class="btn-dark" data-cxgo="dc">Open</button></div>';
   if(nmL.length) att2 += '<div class="cx-att"><span class="dot amber"></span><div><b>' + nmL.length + ' class' + (nmL.length > 1 ? 'es' : '') + ' with students not marked</b><br><span>Latest: ' + esc(nmL[0].module) + ' · ' + cxD(nmL[0].date) + ' · ' + nmL[0].nm + ' not marked</span></div><button type="button" class="btn-o" data-cxgo="mc">View</button></div>';
   if(late.length) att2 += '<div class="cx-att"><span class="dot amber"></span><div><b>' + late.length + ' class' + (late.length > 1 ? 'es' : '') + ' started more than 5 minutes late</b><br><span>Latest: ' + esc(late[0].module) + ' · ' + cxD(late[0].date) + ' · +' + cxLate(late[0]) + ' min</span></div><button type="button" class="btn-o" data-cxgo="mc">View</button></div>';
-  if(!att2) att2 = '<div class="cx-att"><span class="dot" style="background:#16a34a"></span><div><b>Nothing waiting</b><br><span>All registers complete and no requests to answer.</span></div></div>';
+  if(!att2) att2 = '<div class="cx-att"><span class="dot" style="background:#16a34a"></span><div><b>Nothing waiting</b><br><span>All registers complete.</span></div></div>';
   h += '<div class="cx-2"><div class="cx-card"><div class="cx-h">Needs your attention</div>' + att2 +
     '<div class="cx-h" style="margin-top:14px">Students below 70% in your modules' + (C.lowCount > C.low.length ? ' · lowest ' + C.low.length + ' of ' + C.lowCount : '') + '</div>' +
     (C.low.length ? '<table class="cx-t"><tr><th>Student</th><th>Module</th><th class="r">Attendance</th></tr>' + C.low.map(function(r){ return '<tr><td><b>' + esc(r.name) + '</b></td><td>' + esc(r.module) + '</td><td class="r"><b style="color:#dc2626">' + r.pct + '%</b></td></tr>'; }).join('') + '</table>' : '<div class="cx-s">No student below 70%.</div>') + '</div>';
@@ -2826,6 +2847,69 @@ function cxPdf(){
   var me = BOOT && BOOT.me ? BOOT.me.name : '', T = $('cxTbl') ? $('cxTbl').outerHTML : '';
   w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>CampusCore_Tutor_MyClasses_' + new Date().toISOString().slice(0, 10) + '</title><style>body{font:11px Arial,sans-serif;margin:16px}h1{font-size:16px;margin:0 0 2px}p{margin:0 0 10px;color:#555}table{width:100%;border-collapse:collapse}th,td{border-bottom:1px solid #ddd;padding:4px 6px;text-align:left}th{background:#0f1e3d;color:#fff;font-size:10px}.cx-mon td{background:#e2e8f0;font-weight:700}.cx-s{color:#666}.r{text-align:right}.c{text-align:center}.cx-chip{font-size:9px}@page{size:A4 landscape;margin:10mm}</style></head><body><h1>My classes · ' + esc(me) + '</h1><p>CampusCore Tutor Portal · ' + new Date().toLocaleString('en-GB') + '</p>' + T + '</body></html>');
   w.document.close(); setTimeout(function(){ w.print(); }, 300);
+}
+
+// ---------------------------------------------------------------- My CPD (24 Nov 2026)
+// A simple list of your CPD and research: title, date, kind and the certificate or article (PDF, JPG or PNG, up to 5 MB).
+// Files are kept privately by CampusCore (never shared); only you open them here. Remove hides a line; nothing is deleted.
+var CPD = null, CPDF = null;
+function cpdOpen(){ cpdDraw(); apiFetch({ action: 'tutCpd' }).then(function(d){ CPD = d; if(PAGE === 'cpd') cpdDraw(); }).catch(function(e){ if(!isOut(e)){ CPD = { error: e.message || 'Could not load your CPD.' }; if(PAGE === 'cpd') cpdDraw(); } }); }
+function cpdDate(d){ var x = new Date(d + 'T12:00:00'); return isNaN(x) ? d : x.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }); }
+function cpdDraw(){
+  var box = $('pg-cpd'), mine = !AS, kinds = (CPD && CPD.kinds) || ['CPD / training', 'Research article', 'Conference', 'Other'];
+  var h = '<div class="hrow"><div><h2>My CPD</h2><p>Your CPD, training and research in one simple list · files are kept privately and only you can open them here</p></div></div>';
+  if(mine) h += '<div class="cpd-f"><div><label for="cpT">Title</label><input id="cpT" maxlength="200" placeholder="e.g. Advance HE Fellowship workshop, or the article title"></div>' +
+    '<div><label for="cpK">What is it</label><select id="cpK">' + kinds.map(function(k){ return '<option>' + esc(k) + '</option>'; }).join('') + '</select></div>' +
+    '<div><label for="cpD">Date</label><input type="date" id="cpD" max="' + new Date().toISOString().slice(0, 10) + '"></div>' +
+    '<div class="cpd-drop" id="cpDrop" tabindex="0" role="button">' + (CPDF ? '📎 <b>' + esc(CPDF.name) + '</b> · ' + Math.round(CPDF.size / 1024) + ' KB · click to change' : '📎 Drop the certificate or article here (PDF, JPG or PNG, up to 5 MB), or click to choose') + '</div>' +
+    '<div><button class="btn-dark" type="button" id="cpGo" style="width:100%;padding:11px">＋ Add to my CPD</button></div><input type="file" id="cpFile" accept="application/pdf,image/jpeg,image/png" hidden></div>';
+  if(!CPD) h += '<div class="spempty">Loading…</div>';
+  else if(CPD.error) h += '<div class="spempty" style="color:#b91c1c">' + esc(CPD.error) + '</div>';
+  else if(!CPD.list.length) h += '<div class="spempty">Nothing added yet. Add your first CPD or research above.</div>';
+  else h += '<table class="cpd-t"><tr><th>Date</th><th>Title</th><th>What</th><th>File</th><th></th></tr>' + CPD.list.map(function(r){
+      return '<tr><td style="white-space:nowrap">' + esc(cpdDate(r.date)) + '</td><td><b>' + esc(r.title) + '</b></td><td><span class="k">' + esc(r.kind) + '</span></td><td>' + esc(r.file) + '</td><td style="text-align:right;white-space:nowrap"><button type="button" data-cpo="' + esc(r.id) + '"' + (mine ? '' : ' disabled') + '>Open</button>' + (mine ? '<button type="button" data-cpx="' + esc(r.id) + '">Remove</button>' : '') + '</td></tr>'; }).join('') + '</table>' +
+      '<p style="font-size:12px;color:var(--ink2);margin-top:8px">' + CPD.list.length + ' item' + (CPD.list.length === 1 ? '' : 's') + '. Remove only hides a line from this list; CampusCore keeps the record.</p>';
+  box.innerHTML = h;
+  if(!mine) return;
+  var drop = $('cpDrop'), inp = $('cpFile');
+  function take(f){
+    if(!f) return;
+    if(!/^(application\/pdf|image\/jpeg|image\/png)$/.test(f.type)){ toast('Please choose a PDF, JPG or PNG file.', true); return; }
+    if(f.size > 5 * 1024 * 1024){ toast('The file must be smaller than 5 MB.', true); return; }
+    var t = $('cpT').value, k = $('cpK').value, d = $('cpD').value;
+    CPDF = f; cpdDraw(); $('cpT').value = t; $('cpK').value = k; $('cpD').value = d;
+  }
+  drop.onclick = function(){ inp.click(); }; drop.onkeydown = function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); inp.click(); } };
+  inp.onchange = function(){ take(inp.files[0]); };
+  drop.ondragover = function(e){ e.preventDefault(); drop.classList.add('on'); }; drop.ondragleave = function(){ drop.classList.remove('on'); };
+  drop.ondrop = function(e){ e.preventDefault(); drop.classList.remove('on'); take(e.dataTransfer.files[0]); };
+  $('cpGo').onclick = function(){
+    var t = $('cpT').value.trim(), k = $('cpK').value, d = $('cpD').value, btn = $('cpGo');
+    if(t.length < 3){ toast('Please write a title.', true); return; }
+    if(!d){ toast('Please choose the date.', true); return; }
+    if(!CPDF){ toast('Please add the certificate or the article.', true); return; }
+    btn.disabled = true; btn.textContent = 'Saving…';
+    var rd = new FileReader();
+    rd.onload = function(){
+      var b64 = String(rd.result).split(',')[1] || '';
+      apiPost('tutCpdAdd', { title: t, kind: k, date: d, file: { name: CPDF.name, type: CPDF.type, b64: b64 } })
+        .then(function(r){ CPD = r; CPDF = null; toast('✓ Added to your CPD.'); cpdDraw(); })
+        .catch(function(e){ if(!isOut(e)) toast(e.message || 'Could not save.', true); btn.disabled = false; btn.textContent = '＋ Add to my CPD'; });
+    };
+    rd.onerror = function(){ toast('The file could not be read.', true); btn.disabled = false; btn.textContent = '＋ Add to my CPD'; };
+    rd.readAsDataURL(CPDF);
+  };
+  box.querySelectorAll('[data-cpo]').forEach(function(b){ b.onclick = function(){
+    toast('Opening…');
+    apiFetch({ action: 'tutCpdFile', id: b.dataset.cpo }).then(function(f){ var s = atob(f.b64), u = new Uint8Array(s.length); for(var i = 0; i < s.length; i++) u[i] = s.charCodeAt(i);
+      var url = URL.createObjectURL(new Blob([u], { type: f.type })), l = document.createElement('a'); l.href = url; l.download = f.name; document.body.appendChild(l); l.click(); l.remove(); setTimeout(function(){ URL.revokeObjectURL(url); }, 60000); })
+      .catch(function(x){ if(!isOut(x)) toast(x.message || 'Could not open the file.', true); });
+  }; });
+  box.querySelectorAll('[data-cpx]').forEach(function(b){ b.onclick = function(){
+    if(b.dataset.sure !== '1'){ b.dataset.sure = '1'; b.textContent = 'Sure? Remove'; b.style.color = '#b91c1c'; return; }
+    b.disabled = true;
+    apiPost('tutCpdHide', { id: b.dataset.cpx }).then(function(r){ CPD = r; toast('Removed from your list.'); cpdDraw(); }).catch(function(e){ if(!isOut(e)) toast(e.message || 'Could not remove.', true); b.disabled = false; });
+  }; });
 }
 
 loadBoot(false);
