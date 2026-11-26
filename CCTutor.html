@@ -1142,6 +1142,23 @@ body{overflow:hidden}
 .cpd-t .k{display:inline-block;font:600 11px var(--sans);padding:2px 8px;background:#e0e7ff;color:#3730a3}
 .cpd-t button{border:1px solid var(--line2);background:#fff;padding:5px 10px;font-size:12px;cursor:pointer;margin-left:4px}
 @media (max-width:900px){.cpd-f{grid-template-columns:1fr}.cpd-drop{grid-column:auto}}
+.btn-mail{display:flex;align-items:center;gap:8px;padding:8px 12px;margin-bottom:8px;width:100%;font-size:12px;font-weight:700;cursor:pointer;border:1px solid #b91c1c;background:#dc2626;color:#fff}
+.btn-mail.ok{background:transparent;border-color:#166534;color:#4ade80;font-weight:600}
+.mx-ov{position:fixed;inset:0;background:rgba(15,23,42,.55);display:flex;align-items:center;justify-content:center;z-index:400;padding:16px}
+.mx-bx{background:#fff;max-width:520px;width:100%;padding:22px 24px;box-shadow:0 20px 50px rgba(0,0,0,.3);font-size:13.5px;line-height:1.6;color:#334155}
+.mx-bx h3{margin:0 0 8px;font-size:18px;color:#0f1e3d}.mx-bx ol{margin:10px 0 14px 18px;padding:0}
+.mx-bx .r{text-align:right;margin-top:14px}.mx-bx .r button{margin-left:6px}
+.mx-bar{height:10px;background:#e2e8f0;margin:12px 0 6px}.mx-bar i{display:block;height:100%;background:#16a34a;width:0;transition:width .3s}
+.xp-sub{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px}.xp-sub button{border:1px solid var(--line2);background:#fff;padding:7px 12px;font:600 12.5px var(--sans);cursor:pointer}.xp-sub button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.xp-t{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line)}.xp-t th{background:var(--navy);color:#fff;font:600 11px var(--sans);text-transform:uppercase;letter-spacing:.04em;text-align:left;padding:9px 10px}
+.xp-t td{padding:9px 10px;border-top:1px solid var(--line);font-size:13px;vertical-align:top}.xp-t tr.xr{cursor:pointer}.xp-t tr.xr:hover td{background:#f8fafc}.xp-t tr.on td{background:#eff6ff}
+.xp-b{font-weight:700}.xp-b.A{color:#b45309}.xp-b.R{color:#dc2626}.xp-b.F{color:#7f1d1d}.xp-b.G{color:#15803d}
+.xp-d{background:#fff;border:1px solid var(--line2);padding:16px;margin:0 0 14px}.xp-d q{display:block;background:#f8fafc;border-left:3px solid #94a3b8;padding:8px 12px;margin:10px 0;quotes:none;font-size:13.5px}
+.xp-d label{display:block;font:700 11px var(--sans);text-transform:uppercase;letter-spacing:.04em;color:var(--ink2);margin:10px 0 4px}.xp-d input[type=date],.xp-d input[type=text],.xp-d textarea{width:100%;border:1px solid var(--line2);padding:8px 10px;font:13.5px var(--sans);box-sizing:border-box}
+.xp-g{display:grid;grid-template-columns:200px 1fr;gap:10px}.xp-step{font:700 13px var(--sans);margin:14px 0 4px;color:var(--navy)}
+.xp-hint{background:#fffbeb;border:1px solid #fcd34d;padding:8px 10px;font-size:12.5px;margin:10px 0}.xp-btns button{border:0;color:#fff;padding:10px 14px;font:700 12.5px var(--sans);margin:4px 6px 0 0;cursor:pointer}.xp-btns button[disabled]{opacity:.45;cursor:not-allowed}
+.xp-err{color:#b91c1c;font-size:12.5px;margin-top:8px}.xp-ok{color:#15803d;font-size:12.5px;margin-top:8px}
+@media (max-width:800px){.xp-g{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -1164,7 +1181,7 @@ body{overflow:hidden}
       <button class="nav" type="button" data-k="pol"><span class="ic">📋</span>Essential Policies</button>
       <button class="nav" type="button" data-docs="1"><span class="ic">📁</span>Important Documents</button>
     </div>
-    <div class="sfoot"><button class="btn-logout" type="button" id="signOutBtn">⎋ Sign Out</button></div>
+    <div class="sfoot"><button class="btn-mail" type="button" id="mailSet" hidden></button><button class="btn-logout" type="button" id="signOutBtn">⎋ Sign Out</button></div>
   </aside>
   <div class="main" id="main">
     <div class="pg" id="pg-dash">
@@ -1438,7 +1455,7 @@ function goDash(){
 }
 function showBoot(d){
   BOOT = d; _config = { academic_year: d.term ? d.term.year : '', current_semester: d.term ? d.term.sem : '' };
-  drawSide(); if(PAGE === 'dash') drawDash(); else drawDashQuiet(); drawTT();
+  drawSide(); if(PAGE === 'dash') drawDash(); else drawDashQuiet(); drawTT(); mailBtn();
   $('boot').hidden = true; $('app').hidden = false;
 }
 function drawDashQuiet(){ try { drawDash(); } catch(e){} }
@@ -1776,17 +1793,27 @@ $('asmMain').addEventListener('click', function(e){
   $('ntTitle').textContent = 'Send the ' + ASM_NL[k][0] + '?';
   $('ntSub').textContent = ASM.module + ' · SA' + ASM.sa + ' · ' + ASM.title;
   $('ntBody').innerHTML = '<p><b>' + list.length + ' student' + (list.length === 1 ? '' : 's') + '</b>, each with their parent copied: ' + list.map(function(r){ return esc(r.name); }).join(', ') + '.</p><p>' + esc(ASM_NL[k][1]) + '</p>' +
-    (ASM.mode !== 'on' ? '<p style="color:#b91c1c;font-weight:700">TEST MODE: up to 3 samples go only to the test address. Nobody else gets anything.</p>' : '<p>Replies come to you. Sent from CampusCore.</p>');
+    (ASM.mode !== 'on' ? '<p style="color:#b91c1c;font-weight:700">TEST MODE: up to 3 samples go only to the test address. Nobody else gets anything.</p>' : (BOOT.me.sender && BOOT.me.sender.url ? '<p>Sent from <b>your own email</b> (' + esc(BOOT.me.email) + '), so replies come to you. A new tab opens to send them.</p>' : '<p>Replies come to you. Sent from CampusCore.</p>'));
   $('ntErr').textContent = ''; $('ntGo').disabled = false; $('ntGo').textContent = 'Send to ' + list.length; $('ntOv').hidden = false;
 });
 $('ntNo').onclick = function(){ $('ntOv').hidden = true; };
 $('ntGo').onclick = function(){
-  var b = this; b.disabled = true; b.textContent = 'Sending…'; $('ntErr').textContent = '';
+  var S = (BOOT && BOOT.me.sender) || {}, viaS = ASM.mode === 'on' && !!S.url;
+  if(ASM.mode === 'on' && AS){ $('ntErr').textContent = 'Notices are sent by the tutor from their own portal and email account.'; return; }
+  if(viaS && !S.ok){ $('ntOv').hidden = true; mailSetup(); return; }            // set up first, then send
+  var b = this; b.disabled = true; b.textContent = viaS ? 'Preparing…' : 'Sending…'; $('ntErr').textContent = '';
+  var w = viaS ? window.open('', '_blank') : null;                                // opened now, so the browser does not block it
   apiPost('tutAsmNotice', { runId: ASM.runId, sa: ASM.sa, kind: NK })
     .then(function(d){ $('ntOv').hidden = true;
+      if(d.sender){
+        var u = d.url + (d.url.indexOf('?') > -1 ? '&' : '?') + 'job=' + encodeURIComponent(d.job) + '&key=' + encodeURIComponent(d.key);
+        if(w && !w.closed){ try { w.opener = null; } catch(e){} w.location.href = u; mailProgress(d, ''); } else mailProgress(d, u);
+        if(NK === 'closed') loadBoot(true); asmLoad(); return;
+      }
+      if(w) w.close();
       toast('✓ ' + ASM_NL[NK][0] + ': ' + (d.test ? 'TEST · ' + d.sent + ' sample(s) to ' + d.testTo : d.sent + ' of ' + d.of + ' sent') + (d.noEmail.length ? ' · no email for ' + d.noEmail.join(', ') : '') + (d.failed.length ? ' · failed: ' + d.failed.join(', ') : ''));
       if(NK === 'closed') loadBoot(true); asmLoad(); })
-    .catch(function(x){ b.disabled = false; b.textContent = 'Try again'; if(!isOut(x)) $('ntErr').textContent = x.message || 'Could not send. Please try again.'; });
+    .catch(function(x){ if(w) w.close(); b.disabled = false; b.textContent = 'Try again'; if(!isOut(x)) $('ntErr').textContent = x.message || 'Could not send. Please try again.'; });
 };
 
 // ---------------------------------------------------------------- marking status (16 Nov 2026)
@@ -2157,6 +2184,23 @@ $('calPdf').onclick = function(){
           doc.setFont('helvetica', 'normal'); doc.setFontSize(6.3); doc.setTextColor(71, 85, 105); doc.text(cFmt(q.d) + '  ' + DNS[q.d.getDay()], cx + cw / 2 + 2.2, cy + 40, { angle: 90 });
           doc.setFont('courier', 'bold'); doc.setFontSize(10); doc.setTextColor(k[0], k[1], k[2]); doc.text(q.s, cx + cw / 2, cy + 51, { align: 'center' }); } y += ch; }
       doc.setDrawColor(148, 163, 184); doc.setLineWidth(1.1); doc.rect(M, top, W - 2 * M, y - top); y += 8; }); y += 4; });
+  // 25 Nov 2026: explanations and the Programme Leader's decisions (filed, dates, explanation, met on, decision, notes, by)
+  var XL = R.exp || [];
+  if(XL.length){
+    need(60); doc.setDrawColor(15, 30, 61); doc.setLineWidth(1.2); doc.line(M, y + 4, W - M, y + 4); doc.setTextColor(15, 30, 61); doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.text('EXPLANATIONS AND DECISIONS', M, y); y += 14;
+    var cols = [['Filed', 62], ['Dates', 92], ['Explanation', 210], ['Met on', 62], ['Decision', 130], ['Notes', 150], ['By', 76]], xs = [], xx = M; cols.forEach(function(c){ xs.push(xx); xx += c[1]; });
+    function hdr(){ doc.setFillColor(15, 30, 61); doc.rect(M, y, W - 2 * M, 14, 'F'); doc.setFont('helvetica', 'bold'); doc.setFontSize(8); doc.setTextColor(255, 255, 255); cols.forEach(function(c, i){ doc.text(c[0], xs[i] + 4, y + 10); }); y += 14; }
+    hdr();
+    XL.forEach(function(X){
+      var cells = [X.filed, X.dates + (X.advance ? ' (in advance)' : ''), X.text + (X.doc ? ' [document attached]' : ''), X.met || '-', X.decision, X.notes || '-', X.by || (X.startedBy === 'Programme Leader' ? 'Programme Leader' : '-')];
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(8);
+      var lines = cells.map(function(v, i){ return doc.splitTextToSize(String(v || '-'), cols[i][1] - 8); }), hh = Math.max.apply(null, lines.map(function(l){ return l.length; })) * 10 + 6;
+      if(y + hh > H - 24){ doc.addPage(); head(); y = 78; hdr(); }
+      doc.setTextColor(15, 23, 42); lines.forEach(function(l, i){ doc.text(l, xs[i] + 4, y + 10); });
+      doc.setDrawColor(226, 232, 240); doc.setLineWidth(.5); doc.line(M, y + hh, W - M, y + hh); y += hh;
+    });
+    y += 8;
+  }
   var np = doc.internal.getNumberOfPages(), gen = new Date(); for(var pg = 1; pg <= np; pg++){ doc.setPage(pg); doc.setFont('helvetica', 'normal'); doc.setFontSize(7); doc.setTextColor(120, 130, 145);
     doc.text('Generated by CampusCore on ' + gen.getDate() + ' ' + MNF[gen.getMonth()] + ' ' + gen.getFullYear() + '  -  Confidential: student record, for staff and the student and parents only.', M, H - 12); doc.text('Page ' + pg + ' of ' + np, W - M, H - 12, { align: 'right' }); }
   doc.save('Complete Attendance Record - ' + R.name + '.pdf');
@@ -2706,8 +2750,9 @@ function cxHM(m){ m = Math.round(m || 0); return Math.floor(m / 60) + ' h ' + cx
 function cxCol(p){ return p == null ? 'var(--ink3)' : p >= 80 ? '#15803d' : p >= 70 ? '#d97706' : '#dc2626'; }
 function cxMk(m){ return m ? '<span class="circ ' + m + '" style="width:26px;height:26px;font-size:11px">' + m + '</span>' : '–'; }
 function cxGroups(g){ return esc(String(g || '').split(' + ').map(function(x){ var p = x.split('|'); return p.length > 2 ? p[2] : x; }).join(' + ')); }
-function cxWaiting(){ var R = CX.rq; if(!R) return 0; return (R.isPl ? R.dec.filter(function(r){ return r.status !== 'Decided'; }).length : 0); }
+function cxWaiting(){ var R = CX.rq, n = CX.xp && CX.xp.isPl ? CX.xp.waiting || 0 : 0; if(!R) return n; return n + (R.isPl ? R.dec.filter(function(r){ return r.status !== 'Decided'; }).length : 0); }
 function cxBadge(){
+  apiFetch({ action: 'tutXList' }).then(function(d){ CX.xp = d; cxBadgeDraw(); if(PAGE === 'cls') cxDraw(); }).catch(function(){});   // 25 Nov 2026: explanations
   return apiFetch({ action: 'tutReqs' }).then(function(d){ CX.rq = d; cPut(cKey('x'), d); cxBadgeDraw(); if(PAGE === 'cls') cxDraw(); }).catch(function(){});
 }
 function cxBadgeDraw(){ var n = cxWaiting(), b = $('cxBadge'); if(b){ b.textContent = n; b.hidden = !n; } }
@@ -2719,16 +2764,29 @@ function cxOpen(){
     .catch(function(e){ if(isOut(e)) return; if(!CX.cls){ CX.cls = { error: e.message || 'Could not load your classes.' }; if(PAGE === 'cls') cxDraw(); } });
   cxBadge();
 }
+// 25 Nov 2026: a background refresh must not wipe what a Programme Leader has typed or ticked
 function cxDraw(){
+  var pg = $('pg-cls'), keep = {};
+  if(pg) pg.querySelectorAll('input[id^="xm_"],input[id^="xn_"],#xsB,#xsT,#xsF,#xsU,#xsA,input[data-xs]').forEach(function(i){ keep[i.id || 'xs:' + i.dataset.xs] = i.type === 'checkbox' ? i.checked : i.value; });
+  var fid = document.activeElement && document.activeElement.id;
+  cxDraw0();
+  if(!pg) return;
+  Object.keys(keep).forEach(function(k){ var i = k.indexOf('xs:') === 0 ? pg.querySelector('input[data-xs="' + k.slice(3).replace(/"/g, '') + '"]') : $(k); if(!i) return; if(i.type === 'checkbox') i.checked = keep[k]; else i.value = keep[k]; });
+  pg.querySelectorAll('.xp-btns[data-xid]').forEach(function(b){ xpLock(b.dataset.xid); });
+  if(fid && $(fid) && /^(x[mn]_|xs[BTFU]$)/.test(fid)) $(fid).focus();
+}
+function cxDraw0(){
   var R = CX.rq, waitP = R && R.isPl ? R.dec.filter(function(r){ return r.status !== 'Decided'; }).length : 0;
-  // 24 Nov 2026 (Saqib): "Reviews and leave" removed for tutors; requests go to the Programme Leader only (Decisions)
+  // 24 Nov 2026: "Reviews and leave" removed for tutors; requests go to the Programme Leader only (Decisions)
   var tabs = [['ov', 'Overview', ''], ['mc', 'My classes', CX.cls && CX.cls.classes ? CX.cls.classes.length : '']];
   if(CX.tab === 'rv') CX.tab = 'ov';
+  if(CX.xp && CX.xp.isPl) tabs.push(['ex', 'Explanations', CX.xp.waiting || 0]);      // 25 Nov 2026: File an explanation (Programme Leaders)
   if(R && R.isPl) tabs.push(['dc', 'Decisions', waitP]);
   if(CX.tab === 'dc' && !(R && R.isPl)) CX.tab = 'ov';
+  if(CX.tab === 'ex' && !(CX.xp && CX.xp.isPl)) CX.tab = 'ov';
   var h = '<div class="hrow"><div><h2>Classroom</h2><p>Your classes, registers and attendance requests' + (BOOT && BOOT.term ? ' · ' + esc((BOOT.term.year || '') + ' · ' + (BOOT.term.sem || '')) : '') + '</p></div></div>';
-  h += '<div class="cx-tabs">' + tabs.map(function(t){ var bad = (t[0] === 'rv' || t[0] === 'dc') && t[2]; return '<button type="button" class="cx-tab' + (CX.tab === t[0] ? ' on' : '') + '" data-t="' + t[0] + '">' + t[1] + (t[2] !== '' ? ' <b class="' + (bad ? 'bad' : 'z') + '">' + t[2] + '</b>' : '') + '</button>'; }).join('') + '</div>';
-  h += '<div id="cxBody">' + (CX.tab === 'ov' ? cxOv() : CX.tab === 'mc' ? cxMc() : CX.tab === 'rv' ? cxRv() : cxDc()) + '</div>';
+  h += '<div class="cx-tabs">' + tabs.map(function(t){ var bad = (t[0] === 'rv' || t[0] === 'dc' || t[0] === 'ex') && t[2]; return '<button type="button" class="cx-tab' + (CX.tab === t[0] ? ' on' : '') + '" data-t="' + t[0] + '">' + t[1] + (t[2] !== '' ? ' <b class="' + (bad ? 'bad' : 'z') + '">' + t[2] + '</b>' : '') + '</button>'; }).join('') + '</div>';
+  h += '<div id="cxBody">' + (CX.tab === 'ov' ? cxOv() : CX.tab === 'mc' ? cxMc() : CX.tab === 'rv' ? cxRv() : CX.tab === 'ex' ? cxEx() : cxDc()) + '</div>';
   $('pg-cls').innerHTML = h;
 }
 function cxLoading(){ return CX.cls && CX.cls.error ? '<div class="spempty" style="color:#b91c1c">' + esc(CX.cls.error) + '</div>' : '<div class="spempty">Loading…</div>'; }
@@ -2911,6 +2969,127 @@ function cpdDraw(){
     apiPost('tutCpdHide', { id: b.dataset.cpx }).then(function(r){ CPD = r; toast('Removed from your list.'); cpdDraw(); }).catch(function(e){ if(!isOut(e)) toast(e.message || 'Could not remove.', true); b.disabled = false; });
   }; });
 }
+
+// ---------------------------------------------------------------- Email setup and sending from your own account (25 Nov 2026)
+// Live assessment reminders go from the tutor's OWN @bathspa.ae account through the CampusCore Sender. One-time setup.
+function mxOv(html){ var o = document.createElement('div'); o.className = 'mx-ov'; o.innerHTML = '<div class="mx-bx">' + html + '</div>'; document.body.appendChild(o); o.addEventListener('click', function(e){ if(e.target === o || e.target.closest('[data-mxx]')) o.remove(); }); return o; }
+function mailBtn(){
+  var b = $('mailSet'); if(!b || !BOOT) return;
+  var S = BOOT.me.sender || {};
+  b.hidden = !S.url || !!AS;                     // only once the Sender is installed; not while an admin views as a tutor
+  b.className = 'btn-mail' + (S.ok ? ' ok' : '');
+  b.textContent = S.ok ? '✓ Email: set up' : '✉ Email setup required';
+  b.onclick = mailSetup;
+}
+function mailSetup(){
+  var S = BOOT.me.sender || {};
+  var o = mxOv('<h3>' + (S.ok ? '✓ Your email is set up' : 'Set up your email (once)') + '</h3>' +
+    '<p>Your assessment reminders go from <b>your own</b> Bath Spa account (' + esc(BOOT.me.email) + '), so replies come straight to you. Every email is recorded in CampusCore.</p>' +
+    '<ol><li>Press <b>Open setup</b>. A new tab opens.</li><li>Google asks you to allow <b>CampusCore Sender</b>. Choose your @bathspa.ae account and press <b>Allow</b>.</li><li>When it says <b>Your email is set up</b>, come back here. The button turns green.</li></ol>' +
+    '<p id="mxSt" style="font-size:12.5px;color:#64748b"></p><div class="r"><button class="btn-o" type="button" data-mxx>Close</button><button class="btn-dark" type="button" id="mxGo">Open setup</button></div>');
+  $('mxGo').onclick = function(){
+    window.open(S.url, '_blank', 'noopener'); $('mxSt').textContent = 'Waiting for the setup to finish…';
+    var n = 0, t = setInterval(function(){
+      if(!document.body.contains(o) || ++n > 60){ clearInterval(t); return; }
+      apiFetch({ action: 'tutSndStatus' }).then(function(r){ if(r.ok){ clearInterval(t); BOOT.me.sender = r; mailBtn(); $('mxSt').innerHTML = '<b style="color:#15803d">✓ Done. Your email is set up.</b>'; } }).catch(function(){});
+    }, 3000);
+  };
+}
+function mailProgress(J, link){
+  var o = mxOv('<h3>Sending · ' + J.count + ' emails</h3>' +
+    (link ? '<p style="color:#b91c1c">Your browser blocked the new tab. <a href="' + esc(link) + '" target="_blank" rel="noopener">Open the Sender</a> to start sending.</p>' : '<p>The CampusCore Sender opened in a new tab and is sending from your account. Keep that tab open until it says finished.</p>') +
+    '<div class="mx-bar"><i id="mxB"></i></div><p id="mxT">Waiting for the Sender…</p>' +
+    (J.noEmail && J.noEmail.length ? '<p style="font-size:12px;color:#92400e">No email in Records for: ' + J.noEmail.map(esc).join(', ') + '</p>' : '') +
+    '<div class="r"><button class="btn-o" type="button" data-mxx>Close</button></div>');
+  var n = 0, t = setInterval(function(){
+    if(!document.body.contains(o) || ++n > 400){ clearInterval(t); return; }
+    apiFetch({ action: 'tutSndJob', job: J.job }).then(function(p){
+      $('mxB').style.width = Math.round(100 * (p.sent + p.failed + (p.unsure || 0)) / (p.total || 1)) + '%';
+      $('mxT').innerHTML = '<b>' + p.sent + ' of ' + p.total + '</b> sent' + (p.failed ? ', <span style="color:#b91c1c">' + p.failed + ' failed</span>' : '') + (p.done ? ' · <b style="color:#15803d">Finished.</b> A summary was emailed to you.' : '');
+      if(p.done) clearInterval(t);
+    }).catch(function(){});
+  }, 3000);
+}
+
+// ---------------------------------------------------------------- Explanations (25 Nov 2026, Programme Leaders)
+// Students below 70% overall file an explanation from their daily email. Nothing is decided without meeting the
+// student: the decision buttons stay locked until "Met the student on" and the notes are filled in.
+var XPV = { f: 'w', open: '', start: false };
+var XPST = { w: 'Waiting for the student', d: 'Decided', c: 'Closed, did not attend' };
+function xpIs(x, f){ return f === 'w' ? (x.status === 'Waiting for the meeting' || x.status === 'Notified in advance') : f === 'd' ? x.status === 'Decided' : x.status === 'Closed, did not attend'; }
+function cxEx(){
+  var X = CX.xp; if(!X) return '<div class="spempty">Loading…</div>';
+  var L = X.list || [], cnt = { w: 0, d: 0, c: 0 }; L.forEach(function(x){ ['w', 'd', 'c'].forEach(function(f){ if(xpIs(x, f)) cnt[f]++; }); });
+  var S = L.filter(function(x){ return xpIs(x, XPV.f); });
+  var h = '<div class="cx-info cx-pl">🔒 Only Programme Leaders see this tab. Students below 70% overall file an explanation from their daily email. <b>Decide each one with the student, at a meeting in person.</b> If they do not meet you within 10 working days, it closes as not excused. No emails are sent to you: check this tab regularly.</div>';
+  h += '<div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><div class="xp-sub">' + ['w', 'd', 'c'].map(function(f){ return '<button type="button" data-xf="' + f + '" class="' + (XPV.f === f ? 'on' : '') + '">' + XPST[f] + ' · ' + cnt[f] + '</button>'; }).join('') + '</div>' +
+       '<div><button type="button" class="btn-o" data-xstart="1">＋ Start an explanation</button></div></div>';
+  if(XPV.start) h += xpStartForm();
+  if(!S.length) return h + '<div class="spempty">' + (XPV.f === 'w' ? 'Nothing waiting.' : 'None.') + '</div>';
+  h += '<table class="xp-t"><tr><th>Student</th><th>Overall</th><th>Dates</th><th>Absences</th><th>Filed</th><th>' + (XPV.f === 'w' ? 'Meet by' : 'Decision') + '</th></tr>' + S.map(function(x){
+    var BN = { G: 'On track', A: 'Amber', R: 'Red', F: 'Formal' }[x.band] || '';
+    return '<tr class="xr' + (XPV.open === x.id ? ' on' : '') + '" data-xo="' + esc(x.id) + '"><td><b>' + esc(x.name) + '</b> · ' + esc(x.bsu) + (x.test ? ' <span class="cx-s">TEST</span>' : '') + (x.nth >= 3 ? ' <span class="xp-b F">· 3rd this semester</span>' : '') + '</td>' +
+      '<td><span class="xp-b ' + esc(x.band) + '">' + (x.pct == null ? '–' : x.pct + '%') + ' ' + BN + '</span></td><td>' + esc(x.from === x.to ? x.fromTxt : x.fromTxt + ' – ' + x.toTxt) + (x.advance ? '<br><span class="cx-s">in advance</span>' : '') + '</td>' +
+      '<td>' + (x.advance && !x.abs.length ? '–' : x.abs.length) + '</td><td>' + esc(x.filed) + '</td><td>' + (XPV.f === 'w' ? esc(x.meetBy) + (x.daysLeft != null ? ' · <i class="cx-s">' + x.daysLeft + ' days left</i>' : '') : esc(xpDecTxt(x))) + '</td></tr>' +
+      (XPV.open === x.id ? '<tr><td colspan="6" style="padding:0">' + xpDetail(x) + '</td></tr>' : '');
+  }).join('') + '</table>';
+  return h;
+}
+function xpDecTxt(x){ return x.status === 'Closed, did not attend' ? 'Closed: no meeting' : x.decision === 'none' ? 'Not excused, noted' : (x.excused || []).length + ' of ' + x.abs.length + ' excused'; }
+function xpDetail(x){
+  var open = xpIs(x, 'w'), h = '<div class="xp-d"><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><div><b>' + esc(x.name) + '</b> · ' + esc(x.bsu) + ' · ' + esc(x.prog) +
+    '<br><span class="cx-s">Filed ' + esc(x.filed) + ' by ' + esc(/^Programme Leader/.test(x.by) ? 'you' : 'the student') + (x.pct != null ? ' · overall ' + x.pct + '% then' : '') + (x.pctAfter != null && !open ? ' · ' + x.pctAfter + '% after' : '') + '</span></div>' +
+    (x.doc ? '<button type="button" class="btn-o" data-xdoc="' + esc(x.id) + '">📎 ' + esc(x.doc) + '</button>' : '') + '</div><q>' + esc(x.text) + '</q>';
+  if(!open){
+    return h + '<div class="xp-step">Outcome</div><div>' + esc(xpDecTxt(x)) + (x.met ? ' · met on ' + esc(x.met) : '') + (x.decidedBy ? ' · ' + esc(x.decidedBy) : '') + '</div>' + (x.notes ? '<q>' + esc(x.notes) + '</q>' : '') +
+      (x.abs.length ? '<table class="xp-t" style="margin-top:8px"><tr><th>Date</th><th>Module</th><th>Now</th></tr>' + x.abs.map(function(a){ var e = (x.excused || []).indexOf(a.sid) > -1; return '<tr><td>' + esc(a.d) + '</td><td>' + esc(a.module) + '</td><td>' + (e ? '<b style="color:#7c3aed">E</b> excused' : '<b style="color:#dc2626">A</b> not excused') + '</td></tr>'; }).join('') + '</table>' : '') + '</div>';
+  }
+  var adv = x.advance && !x.canDecide;      // planned absence: decided once the dates have passed
+  h += '<div class="xp-step">1 · Meet the student</div><div class="xp-g"><div><label>Met the student on (required)</label><input type="date" id="xm_' + esc(x.id) + '" max="' + new Date(Date.now() + 4 * 3600e3).toISOString().slice(0, 10) + '"></div>' +
+       '<div><label>Meeting notes (required)</label><input type="text" id="xn_' + esc(x.id) + '" maxlength="1500" placeholder="What was discussed and agreed"></div></div>';
+  h += '<div class="xp-step">2 · Decide, with the student</div>' + (adv ? '<div class="cx-s">This was notified in advance. Its absences are listed once the dates have passed (after ' + esc(x.toTxt) + ').</div>' :
+       '<table class="xp-t"><tr><th style="width:40px"></th><th>Date</th><th>Module</th><th>Now</th></tr>' + x.abs.map(function(a){ return '<tr><td><input type="checkbox" data-xs="' + esc(a.sid) + '" checked></td><td>' + esc(a.d) + '</td><td>' + esc(a.module) + '</td><td><b style="color:#dc2626">A</b></td></tr>'; }).join('') + '</table>');
+  h += '<div class="xp-hint">Excuse for medical reasons, emergencies and University events. Holidays and weddings: note, do not excuse. Two weeks or more in a row: consider a study break.</div>' +
+       (adv ? '' : '<div class="xp-btns" data-xid="' + esc(x.id) + '"><button type="button" data-xd="all" style="background:#15803d" disabled>Excuse all (' + x.abs.length + ')</button><button type="button" data-xd="some" style="background:#1d4ed8" disabled>Excuse ticked</button><button type="button" data-xd="none" style="background:#475569" disabled>Not excused, explanation noted</button></div>') +
+       '<div class="cx-s" style="margin-top:6px">The buttons unlock once step 1 is filled in. Excused = 50%. The student and parent are emailed, and it goes into the Complete Attendance Record.</div><div id="xe_' + esc(x.id) + '"></div></div>';
+  return h;
+}
+function xpStartForm(){
+  return '<div class="xp-d"><div class="xp-step" style="margin-top:0">Start an explanation for a student</div><div class="cx-s">For a student who comes to you in person, or tells you in advance about a planned absence. The same rules apply: meet, then decide.</div>' +
+    '<div class="xp-g"><div><label>BSU ID</label><input type="text" id="xsB" maxlength="8" inputmode="numeric"></div><div><label>Explanation (required)</label><input type="text" id="xsT" maxlength="1500" placeholder="What the student told you"></div></div>' +
+    '<div class="xp-g"><div><label>From</label><input type="date" id="xsF"></div><div><label>To (same date for one day)</label><input type="date" id="xsU"></div></div>' +
+    '<label style="text-transform:none;font-weight:600;font-size:13px"><input type="checkbox" id="xsA"> Planned absence, told in advance (decided after the dates have passed)</label>' +
+    '<div class="xp-btns"><button type="button" data-xsgo="1" style="background:var(--navy)">Start</button><button type="button" data-xstart="0" style="background:#94a3b8">Cancel</button></div><div id="xsE"></div></div>';
+}
+function xpLock(id){
+  var m = $('xm_' + id), n = $('xn_' + id), ok = m && m.value && n && n.value.trim().length >= 5;
+  document.querySelectorAll('.xp-btns[data-xid="' + id + '"] button').forEach(function(b){ b.disabled = !ok; });
+}
+document.addEventListener('input', function(e){ var t = e.target; if(t.id && /^x[mn]_/.test(t.id)) xpLock(t.id.slice(3)); });
+document.addEventListener('change', function(e){ var t = e.target; if(t.id && /^xm_/.test(t.id)) xpLock(t.id.slice(3)); });
+document.addEventListener('click', function(e){
+  if(!$('pg-cls') || !$('pg-cls').contains(e.target)) return;
+  var f = e.target.closest('[data-xf]'); if(f){ XPV.f = f.dataset.xf; XPV.open = ''; cxDraw(); return; }
+  var st = e.target.closest('[data-xstart]'); if(st){ XPV.start = st.dataset.xstart === '1'; cxDraw(); return; }
+  var o = e.target.closest('tr[data-xo]'); if(o){ XPV.open = XPV.open === o.dataset.xo ? '' : o.dataset.xo; cxDraw(); return; }
+  var dc = e.target.closest('[data-xdoc]'); if(dc){ toast('Opening…'); apiFetch({ action: 'tutXDoc', id: dc.dataset.xdoc }).then(function(f){ var s = atob(f.b64), u = new Uint8Array(s.length); for(var i = 0; i < s.length; i++) u[i] = s.charCodeAt(i);
+      var url = URL.createObjectURL(new Blob([u], { type: f.type })), l = document.createElement('a'); l.href = url; l.download = f.name; document.body.appendChild(l); l.click(); l.remove(); setTimeout(function(){ URL.revokeObjectURL(url); }, 60000); })
+      .catch(function(x){ if(!isOut(x)) toast(x.message || 'Could not open the document.', true); }); return; }
+  var d = e.target.closest('[data-xd]'); if(d && !d.disabled){
+    var id = d.parentNode.dataset.xid, sids = [].map.call(document.querySelectorAll('.xp-d [data-xs]:checked'), function(c){ return c.dataset.xs; });
+    var all = d.parentNode.querySelectorAll('button'); [].forEach.call(all, function(b){ b.disabled = true; });
+    apiPost('tutXDecide', { id: id, mode: d.dataset.xd, sids: sids, met: $('xm_' + id).value, notes: $('xn_' + id).value }).then(function(r){
+      CX.xp.list = CX.xp.list.map(function(x){ return x.id === id ? Object.assign(x, r.item) : x; }); CX.xp.waiting = Math.max(0, (CX.xp.waiting || 1) - 1);
+      toast('✓ ' + r.message); XPV.f = 'd'; XPV.open = id; cxBadgeDraw(); cxDraw();
+    }).catch(function(x){ if(isOut(x)) return; $('xe_' + id).innerHTML = '<div class="xp-err">' + esc(x.message || 'Could not save.') + '</div>'; xpLock(id); });
+    return; }
+  var sg = e.target.closest('[data-xsgo]'); if(sg){
+    sg.disabled = true;
+    apiPost('tutXStart', { bsu: $('xsB').value, text: $('xsT').value, from: $('xsF').value, to: $('xsU').value || $('xsF').value, advance: $('xsA').checked }).then(function(r){
+      CX.xp.list.unshift(r.item); CX.xp.waiting = (CX.xp.waiting || 0) + 1; XPV.start = false; XPV.f = 'w'; XPV.open = r.item.id; toast('✓ ' + r.message); cxBadgeDraw(); cxDraw();
+    }).catch(function(x){ if(isOut(x)) return; sg.disabled = false; $('xsE').innerHTML = '<div class="xp-err">' + esc(x.message || 'Could not start it.') + '</div>'; });
+    return; }
+});
 
 loadBoot(false);
 setTimeout(function(){ try { loadNotices(); } catch(_){} apiFetch({action:'getNotices'}).then(renderAnnouncements).catch(function(){}); }, 1200);

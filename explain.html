@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>File an explanation · Bath Spa University RAK Campus</title>
+<link rel="icon" href="CampusCore.ico">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&family=Chakra+Petch:wght@600;700&display=swap" rel="stylesheet">
+<style>
+/* 25 Nov 2026: File an explanation. It holds no data: everything comes from CampusCore with the signed link in the
+   daily attendance email (?t=...). */
+:root{--navy:#0f1e3d;--blue:#1d4ed8;--ink:#0f172a;--ink2:#334155;--ink3:#64748b;--line:#e2e8f0;--bg:#eef2f7;--green:#15803d;--amber:#b45309;--red:#dc2626;--purple:#7c3aed}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Space Grotesk',Arial,sans-serif;font-size:15px;line-height:1.5}
+.hd{background:var(--navy);color:#fff;padding:16px 18px}
+.hd b{display:block;font:700 19px 'Chakra Petch','Space Grotesk',sans-serif;letter-spacing:.2px}
+.hd span{display:block;font:600 11px 'JetBrains Mono',monospace;color:#94a3b8;letter-spacing:1.2px;margin-top:3px}
+.wrap{max-width:640px;margin:0 auto;padding:16px}
+.card{background:#fff;border:1px solid var(--line);padding:16px;margin:0 0 14px}
+.lab{font:700 11px 'JetBrains Mono',monospace;letter-spacing:1px;text-transform:uppercase;color:var(--ink3);margin:0 0 6px}
+.big{font-weight:700;font-size:17px}
+.sub{color:var(--ink3);font-size:13px}
+.opts{display:grid;gap:8px}
+.optw{border:1.5px solid var(--line);background:#fff}
+.optw.on{border-color:var(--navy);background:#f8fafc}
+.optw.off{opacity:.45}
+.opt{display:flex;gap:12px;align-items:flex-start;padding:12px;cursor:pointer}
+.pk{padding:0 12px 12px 42px}
+.pk:empty{display:none}
+.pk .cls{margin-top:0}
+.pk .sum:first-child{margin:0 0 8px}
+@media (max-width:480px){ .pk{padding:0 10px 10px 10px} }
+.opt input{margin-top:4px;width:18px;height:18px;accent-color:var(--navy)}
+.opt b{display:block;font-size:15px}
+.opt span{font-size:13px;color:var(--ink3)}
+.opt.off{cursor:not-allowed}
+.cls{display:grid;gap:6px;margin-top:10px}
+.row{display:flex;justify-content:space-between;gap:10px;align-items:center;border:1px solid var(--line);padding:10px 12px;background:#fff}
+.row.sel{border-color:var(--navy);background:#f8fafc}
+.row label{display:flex;gap:10px;align-items:center;cursor:pointer;flex:1;min-width:0}
+.row input{width:18px;height:18px;accent-color:var(--navy);flex:0 0 auto}
+.row .t{min-width:0}.row .t b{display:block;font-size:14.5px}.row .t span{font-size:12.5px;color:var(--ink3)}
+.row.dis{opacity:.5}
+.mk{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;border:1.5px solid;font:700 12px 'JetBrains Mono',monospace;flex:0 0 auto}
+.mk.P{color:var(--green);background:#f0fdf4}.mk.L{color:var(--amber);background:#fffbeb}.mk.A{color:var(--red);background:#fef2f2}.mk.E{color:var(--purple);background:#f5f3ff}
+.day{display:flex;gap:10px;align-items:center;border:1px solid var(--line);padding:10px 12px;background:#fff;cursor:pointer}
+.day.sel{border-color:var(--navy);background:#f8fafc}.day.dis{opacity:.45;cursor:not-allowed}
+.day input{width:18px;height:18px;accent-color:var(--navy)}
+.day .t{flex:1}.day .t b{font-size:14.5px}.day .t span{display:block;font-size:12.5px;color:var(--ink3)}
+.day .ms{display:flex;gap:3px;flex-wrap:wrap;justify-content:flex-end}.day .ms .mk{width:22px;height:22px;font-size:10px}
+.sum{background:#f8fafc;border:1px solid var(--line);padding:10px 12px;margin-top:10px;font-weight:600}
+.sum div+div{margin-top:2px}
+textarea{width:100%;border:1.5px solid #cbd5e1;padding:12px;font:15px 'Space Grotesk',Arial,sans-serif;min-height:110px;resize:vertical}
+textarea:focus{outline:none;border-color:var(--navy)}
+.cnt{font:500 11px 'JetBrains Mono',monospace;color:var(--ink3);text-align:right;margin-top:4px}
+.file{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.fbtn{border:1.5px dashed #94a3b8;background:#fff;padding:10px 14px;font:600 14px 'Space Grotesk',sans-serif;cursor:pointer;color:var(--ink2)}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.seg button{border:1.5px solid var(--line);background:#fff;padding:12px;font:700 15px 'Space Grotesk',sans-serif;cursor:pointer;color:var(--ink)}
+.seg button.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.go{display:block;width:100%;border:0;background:var(--blue);color:#fff;font:700 17px 'Space Grotesk',sans-serif;padding:16px;cursor:pointer}
+.go[disabled]{opacity:.55;cursor:wait}
+.msg{padding:12px 14px;margin:0 0 14px;font-size:14.5px}
+.msg.ok{background:#ecfdf3;border:1px solid #86efac;color:#166534}
+.msg.er{background:#fef2f2;border:1px solid #fca5a5;color:#991b1b}
+.msg.in{background:#eff6ff;border:1px solid #bfdbfe;color:#1e3a8a}
+.st{display:inline-block;font:700 11px 'JetBrains Mono',monospace;letter-spacing:.6px;padding:3px 8px;border:1px solid;text-transform:uppercase}
+.st.w{color:#92400e;border-color:#fcd34d;background:#fffbeb}.st.d{color:#166534;border-color:#86efac;background:#f0fdf4}
+.stars{display:flex;justify-content:center;gap:6px;margin:8px 0}
+.stars button{border:0;background:none;font-size:42px;line-height:1;color:#cbd5e1;cursor:pointer;padding:0 2px}
+.stars button.on{color:#f59e0b}
+.foot{font-size:12px;color:var(--ink3);text-align:center;margin:18px 0 30px;line-height:1.6}
+.hide{display:none!important}
+.band{display:flex;justify-content:space-between;align-items:center;border:1px solid;padding:12px 14px;margin-top:10px}
+.band b{font:800 24px 'Space Grotesk',sans-serif}.band.A{color:var(--amber);background:#fffbeb;border-color:#fcd34d}.band.R{color:var(--red);background:#fef2f2;border-color:#fca5a5}.band.F{color:#7f1d1d;background:#fef2f2;border-color:#7f1d1d}.band.G{color:var(--green);background:#f0fdf4;border-color:#bbf7d0}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+input[type=date]{width:100%;border:1.5px solid #cbd5e1;padding:11px;font:15px 'Space Grotesk',Arial,sans-serif;background:#fff}
+.abs{margin-top:10px;border:1px solid var(--line)}.abs div{display:flex;justify-content:space-between;gap:8px;padding:8px 12px;border-top:1px solid var(--line);font-size:14px}.abs div:first-child{border-top:0}
+.abs .tk{color:var(--ink3);font-size:12.5px}
+</style>
+</head>
+<body>
+<div class="hd"><b>File an explanation</b><span>BATH SPA UNIVERSITY · RAK CAMPUS</span></div>
+<div class="wrap" id="app"><div class="card">Loading…</div></div>
+<div class="foot">Attendance · CampusCore<br>Questions: please see your Programme Leader in person</div>
+<script>
+(function(){
+var API = 'https://script.google.com/macros/s/AKfycbycKFnbEm2aXY6JJ8QS-x-vUQMAcqp800afJhejux9UofP1YfK49AxoTG8cXMORzZby/exec';
+var T = new URLSearchParams(location.search).get('t') || '', D = null, MODE = 'one', DOC = null;
+function $(i){ return document.getElementById(i); }
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+function show(h){ $('app').innerHTML = h; scrollTo(0, 0); }
+function msg(kind, t){ return '<div class="msg ' + kind + '">' + t + '</div>'; }
+function get(qs){ return fetch(API + '?' + qs + '&_=' + Date.now(), { cache: 'no-store' }).then(function(r){ return r.json(); }); }
+function post(o){ return fetch(API, { method: 'POST', body: JSON.stringify(o) }).then(function(r){ return r.json(); }); }
+var BAND = { G: 'On track', A: 'Amber', R: 'Red', F: 'Formal notice' };
+function dTxt(iso){ var p = String(iso).split('-'); return new Date(+p[0], +p[1] - 1, +p[2]).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }); }
+if(!T){ show(msg('er', 'This page opens from the File an explanation button in your attendance email.')); return; }
+function load(note){
+  get('action=attqXInfo&t=' + encodeURIComponent(T)).then(function(j){
+    if(j.status !== 'ok') return show(msg('er', esc(j.message || 'This link is not valid.')));
+    D = j.data; draw(note || '');
+  }).catch(function(){ show(msg('er', 'CampusCore could not be reached. Please check your connection and try again.')); });
+}
+function head(){
+  return '<div class="card"><div class="lab">Student</div><div class="big">' + esc(D.name) + '</div><div class="sub">ID ending ' + esc(D.idEnd) + ' · ' + esc(D.prog) + '</div>' +
+    (D.pct != null ? '<div class="band ' + esc(D.band) + '"><span>Overall attendance this semester</span><span style="text-align:right"><b>' + D.pct + '%</b><br><small>' + esc(BAND[D.band] || '') + '</small></span></div>' : '') + '</div>';
+}
+function draw(note){
+  var h = (note || '') + head();
+  if(D.open){
+    show(h + msg('in', 'You already filed explanation <b>' + esc(D.open.id) + '</b> on ' + esc(D.open.filed) + '. ' + (D.pl ? 'Your Programme Leader, <b>' + esc(D.pl) + '</b>,' : 'Your Programme Leader') +
+      ' is waiting for you to meet them in person to resolve it. If you do not meet them by <b>' + esc(D.open.meetBy) + '</b>, it will be closed as not excused.'));
+    return;
+  }
+  if(D.expired){ show(h + msg('in', 'This link has closed. Please use the button in your latest attendance email, or see your Programme Leader in person.')); return; }
+  if(D.decidedSince){ show(h + msg('in', 'Your explanation has been decided since this email. If a new one is needed, your attendance email will show the button again.')); return; }
+  var free = D.absences.filter(function(a){ return !a.taken; });
+  if(!free.length){ show(h + msg('in', 'There is no absence to explain in the last 30 days (or it has already been decided).')); return; }
+  h += '<div class="card"><div class="lab">What do you want to explain?</div><div class="seg" id="seg"><button type="button" data-m="one" class="' + (MODE === 'one' ? 'on' : '') + '">One date</button><button type="button" data-m="range" class="' + (MODE === 'range' ? 'on' : '') + '">From – to</button></div>' +
+    '<div class="two" style="margin-top:10px"><div><div class="lab" id="fl">' + (MODE === 'one' ? 'Date' : 'From') + '</div><input type="date" id="df" min="' + D.from + '" max="' + D.to + '"></div>' +
+    '<div id="tw"' + (MODE === 'one' ? ' class="hide"' : '') + '><div class="lab">To</div><input type="date" id="dt" min="' + D.from + '" max="' + D.to + '"></div></div>' +
+    '<div id="found"></div></div>';
+  h += '<div class="card"><div class="lab">Your explanation (required)</div><textarea id="tx" maxlength="1500" placeholder="Please explain what happened, and when."></textarea><div class="cnt"><span id="txn">0</span> / 1500</div>' +
+    '<div class="lab" style="margin-top:12px">Document (optional)</div><div class="file"><button type="button" class="fbtn" id="fb">＋ Add a photo or PDF</button><span class="sub" id="fn">PDF, JPG or PNG · up to 5 MB</span><input type="file" id="fi" accept="application/pdf,image/jpeg,image/png" class="hide"></div></div>';
+  h += '<div class="msg in">' + (D.pl ? 'Your Programme Leader, <b>' + esc(D.pl) + '</b>,' : 'Your Programme Leader') + ' will <b>wait for you to meet them in person</b> and will decide it <b>with you, at that meeting</b>. Please meet them within <b>10 working days</b>, or it will be closed as not excused.</div>' +
+    '<div id="er"></div><button class="go" id="go" disabled>Choose the date</button><p class="sub" style="text-align:center;margin:10px 0 0">You can go back up to 30 days. Your parent or guardian gets a copy of the emails about it.</p>';
+  show(h); wire();
+}
+function picked(){
+  var f = $('df').value, t = MODE === 'one' ? f : $('dt').value;
+  if(!f || !t || t < f) return [];
+  return D.absences.filter(function(a){ return a.date >= f && a.date <= t; });
+}
+function state(){
+  var L = picked(), free = L.filter(function(a){ return !a.taken; }), txt = $('tx').value.trim(), b = $('go');
+  $('found').innerHTML = !$('df').value ? '' : !L.length ? '<div class="sub" style="margin-top:10px">No absence in ' + (MODE === 'one' ? 'that date' : 'those dates') + '.</div>' :
+    '<div class="sub" style="margin-top:10px">You were marked <b>absent in ' + L.length + ' class' + (L.length === 1 ? '' : 'es') + '</b>' + (free.length < L.length ? ' (' + (L.length - free.length) + ' already decided)' : '') + ':</div><div class="abs">' +
+    L.map(function(a){ return '<div><span>' + esc(a.dTxt) + ' · ' + esc(a.module) + '</span>' + (a.taken ? '<span class="tk">already decided</span>' : '') + '</div>'; }).join('') + '</div>';
+  b.disabled = !free.length || txt.length < 10;
+  b.textContent = !$('df').value ? 'Choose the date' : !free.length ? 'No absence to explain' : txt.length < 10 ? 'Write your explanation' : 'Send my explanation';
+}
+function wire(){
+  $('seg').onclick = function(e){ var x = e.target.closest('button'); if(!x) return; MODE = x.dataset.m; [].forEach.call(this.children, function(c){ c.classList.toggle('on', c === x); });
+    $('tw').classList.toggle('hide', MODE === 'one'); $('fl').textContent = MODE === 'one' ? 'Date' : 'From'; state(); };
+  $('df').onchange = state; $('dt').onchange = state;
+  $('tx').oninput = function(){ $('txn').textContent = this.value.length; state(); };
+  $('fb').onclick = function(){ $('fi').click(); };
+  $('fi').onchange = function(){ var f = this.files[0]; DOC = null; if(!f){ $('fn').textContent = 'PDF, JPG or PNG · up to 5 MB'; return; }
+    if(['application/pdf', 'image/jpeg', 'image/png'].indexOf(f.type) < 0){ $('fn').textContent = 'Please choose a PDF, JPG or PNG.'; this.value = ''; return; }
+    if(f.size > 5 * 1024 * 1024){ $('fn').textContent = 'That file is larger than 5 MB.'; this.value = ''; return; }
+    var rd = new FileReader(); rd.onload = function(){ DOC = { name: f.name, type: f.type, b64: String(rd.result).split(',')[1] }; $('fn').textContent = '✓ ' + f.name; }; rd.readAsDataURL(f); };
+  $('go').onclick = send;
+}
+function send(){
+  var b = $('go'), f = $('df').value, t = MODE === 'one' ? f : $('dt').value; b.disabled = true; b.textContent = 'Sending…'; $('er').innerHTML = '';
+  post({ action: 'attqXSubmit', t: T, from: f, to: t, text: $('tx').value, doc: DOC }).then(function(j){
+    if(j.status !== 'ok'){ $('er').innerHTML = msg('er', esc(j.message || 'Could not send. Please try again.')); state(); return; }
+    show(head() + msg('ok', '<b>Thank you. Your explanation ' + esc(j.data.id) + ' was received</b> (' + j.data.n + ' absence' + (j.data.n === 1 ? '' : 's') + ').') +
+      msg('in', (D.pl ? 'Your Programme Leader, <b>' + esc(D.pl) + '</b>,' : 'Your Programme Leader') + ' is waiting for you to meet them in person to resolve it. Please meet them by <b>' + esc(j.data.meetBy) + '</b>. If you do not, it will be closed as not excused. A confirmation email is on its way.'));
+  }).catch(function(){ $('er').innerHTML = msg('er', 'CampusCore could not be reached. Please try again.'); state(); });
+}
+load();
+})();
+</script>
+</body>
+</html>
